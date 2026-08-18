@@ -1,0 +1,210 @@
+/* 設定サイドパネル */
+.settings-panel {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    width: 360px;
+    height: 100vh;
+    z-index: 99999;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-left: 1px solid var(--glass-border);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+
+    /* ★ これを追加！縦並びのFlexコンテナにして中身のスクロールを有効化する */
+    display: flex;
+    flex-direction: column;
+    
+    /* 初期状態：画面右外へ退避 */
+    transform: translateX(100%) !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* 開いた状態 */
+.settings-panel.active {
+    transform: translateX(0) !important;
+}
+
+/* active クラスがついたら右からスライドイン */
+.settings-panel.active {
+    transform: translateX(0);
+}
+
+.settings-panel.active {
+    right: 0;
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.settings-header h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.settings-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.settings-body::-webkit-scrollbar {
+    width: 6px;
+}
+.settings-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
+
+.settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.settings-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+.settings-input {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 12px;
+    color: #fff;
+    outline: none;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.settings-input:focus {
+    border-color: var(--p);
+}
+
+/* トグルスイッチスタイル */
+.toggle-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 0.95rem;
+}
+
+/* ピッカー (カラー、フォント) */
+.picker {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.color-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.color-dot:hover {
+    transform: scale(1.1);
+}
+
+.color-dot.active {
+    border-color: #fff;
+    transform: scale(1.1);
+}
+
+.font-btn {
+    padding: 8px 14px;
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    transition: all 0.2s;
+}
+
+.font-btn:hover, .font-btn.active {
+    background: var(--p);
+    border-color: var(--p);
+    transform: scale(1.03);
+}
+
+/* 背景ピッカーのグリッド */
+.bg-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.bg-option {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    background-size: cover !important;
+}
+
+.bg-option:hover {
+    transform: scale(1.1);
+}
+
+.bg-option.active {
+    border-color: #fff;
+    transform: scale(1.1);
+}
+
+.bg-img-option {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    display: grid;
+    place-items: center;
+}
+
+.bg-img-option span {
+    font-size: 20px;
+}
+
+.settings-help {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+@media (max-width: 480px) {
+    .settings-panel {
+        width: 100%;
+        right: -100%;
+        border-left: none;
+    }
+    .settings-panel.active {
+        right: 0;
+    }
+    .settings-body {
+        padding: 20px;
+        gap: 20px;
+    }
+    .settings-header {
+        padding: 16px 20px;
+    }
+}

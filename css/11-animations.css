@@ -1,0 +1,63 @@
+/* ===================================================
+   LifeTop - Minimal & Responsive Animations
+   コンセプト: 視界を邪魔しない、サクサク軽快な操作感
+   =================================================== */
+
+/* 1. 基本パーツのホバー／タップフィードバック
+   回転や大きな移動は全廃し、わずかな浮きと色変化のみに統一 */
+a, button, .bookmark-item, .icon-btn, .icon-btn-small {
+    transition: transform 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
+}
+
+/* ホバー時：ごくわずかに浮く（2px） */
+a:hover, button:hover, .bookmark-item:hover, .icon-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* クリック時：軽やかに沈む */
+a:active, button:active, .bookmark-item:active, .icon-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+
+/* 2. ページ読み込み時の初期表示フェード
+   大きく移動させず、8px下の位置から不透明度だけでスッと出す */
+.animate-fade-in,
+.animate-clock {
+    animation: simpleFadeIn 0.25s ease-out both;
+}
+
+@keyframes simpleFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* 3. モーダル・ダイアログのふわっと表示（お天気詳細など） */
+.animate-pop-in {
+    animation: modalFadeIn 0.2s ease-out both;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* 4. 出現ディレイ（テンポ感を良くするため極小に設定） */
+.delay-100 { animation-delay: 0.02s; }
+.delay-200 { animation-delay: 0.04s; }
+.delay-300 { animation-delay: 0.06s; }
+.delay-400 { animation-delay: 0.06s; }

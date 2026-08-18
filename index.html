@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeTop│いつものネットを、ここから。</title>
+    <!-- Google Fonts: Outfit (Main), and other classic styles as options -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Courier+Prime&family=DotGothic16&family=M+PLUS+1+Code&family=Oswald:wght@300&family=Roboto+Mono:wght@200&display=swap" rel="stylesheet">
+    <!-- Material Symbols Outlined -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+
+<!-- 背景のオーバーレイ -->
+<div class="bg-overlay" id="bg-overlay"></div>
+
+<!-- ヘッダーエリア：天気とコントロール -->
+<header class="dashboard-header">
+    <div class="header-left">
+        <!-- 天気ウィジェット -->
+        <div id="weather-widget" class="weather-widget animate-fade-in" onclick="showWeatherDetail()" style="cursor: pointer;" title="天気の詳細を表示">
+            <span class="material-symbols-outlined" id="weather-icon">filter_drama</span>
+            <div class="weather-info">
+                <span id="weather-temp">0°C</span>
+                <span id="weather-desc">読込中...</span>
+            </div>
+        </div>
+    </div>
+    <div class="header-right">
+        <!-- PWAインストールボタン -->
+        <button id="pwa-install-btn" class="icon-btn animate-fade-in" style="display: none;" title="アプリをインストール">
+            <span class="material-symbols-outlined">download_for_offline</span>
+        </button>
+        <!-- 設定トリガー -->
+        <button class="icon-btn animate-fade-in" onclick="toggleSettings()" title="設定"><span class="material-symbols-outlined">settings</span></button>
+    </div>
+</header>
+
+<!-- メインダッシュボード -->
+<div class="dashboard-content">
+    <!-- ヒーローエリア（時計と検索） -->
+    <section class="hero-section">
+        <div id="clock-container" class="animate-clock">
+            <div id="clock">00:00</div>
+            <div id="clock-sec">00</div>
+        </div>
+        <div id="date-display" class="animate-fade-in" style="animation-delay: 0.1s;">2026年7月10日 (金)</div>
+        <div id="greeting" class="animate-fade-in" style="animation-delay: 0.2s;">こんにちは、ゲストさん</div>
+        
+        <div class="search-container animate-fade-in" style="animation-delay: 0.3s;">
+            <form action="https://www.google.com/search" method="get" class="search-form" id="search-form">
+                <button type="button" class="search-engine-selector" onclick="toggleSearchEngines(event)">
+                    <span id="current-engine-icon" class="material-symbols-outlined">search</span>
+                </button>
+                <input type="text" name="q" class="search-bar" placeholder="Googleで検索" autocomplete="off">
+                <button type="submit" class="search-button"><span class="material-symbols-outlined">arrow_forward</span></button>
+                
+                <!-- 検索エンジン選択ドロップダウン -->
+                <div class="search-engines-dropdown" id="engines-dropdown">
+                    <div class="engine-option" onclick="selectEngine('google')">Google</div>
+                    <div class="engine-option" onclick="selectEngine('bing')">Bing</div>
+                    <div class="engine-option" onclick="selectEngine('duckduckgo')">DuckDuckGo</div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- お知らせエリア -->
+    <div class="notice-board animate-fade-in" id="notice-area" style="animation-delay: 0.4s;">
+        <span class="notice-tag">INFO</span>
+        <span id="notice-text">お知らせはありません。</span>
+    </div>
+
+    <!-- コンテンツグリッド -->
+    <div class="container">
+        <div class="dashboard-grid animate-fade-in" style="animation-delay: 0.4s;">
+            
+            <!-- ブックマーク -->
+            <div class="card glass-card bookmark-card">
+                <div class="card-header">
+                    <h3><span class="material-symbols-outlined">bookmarks</span> Quickアクセス</h3>
+                    <button class="icon-btn-small" id="edit-bookmarks-btn" onclick="toggleBookmarkEditMode()" title="ブックマークを編集">
+                        <span class="material-symbols-outlined">edit</span>
+                    </button>
+                </div>
+                <!-- 左右スクロール矢印ボタン付きのタブコンテナ -->
+                <div class="bookmark-tabs-container">
+                    <button class="tab-scroll-btn prev" onclick="scrollTabs(-150)">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    
+                    <div class="bookmark-tabs" id="bookmark-tabs"></div>
+                    
+                    <button class="tab-scroll-btn next" onclick="scrollTabs(150)">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
+                <div class="bookmark-grid" id="bookmark-grid"></div>
+                <button class="add-bookmark-btn" onclick="addBookmark()"><span class="material-symbols-outlined">add</span> 追加</button>
+            </div>
+            
+            <!-- ToDo & メモ (タブ切り替え) -->
+            <div class="card glass-card utility-card">
+                <div class="card-header utility-tabs">
+                    <button class="tab-btn active" onclick="switchUtilityTab('todo')">Quickタスク</button>
+                    <button class="tab-btn" onclick="switchUtilityTab('memo')">Quickメモ</button>
+                </div>
+                
+                <!-- ToDoタブ -->
+                <div id="todo-tab-content" class="tab-content active">
+                    <div class="todo-input-wrapper">
+                        <input type="text" id="todo-input" placeholder="新しいタスクを追加。" onkeydown="if(event.key==='Enter') addTodo()">
+                        <button onclick="addTodo()"><span class="material-symbols-outlined">add</span></button>
+                    </div>
+                    <ul id="todo-list" class="todo-list">
+                        <!-- 動的に挿入 -->
+                    </ul>
+                </div>
+                
+                <!-- メモタブ -->
+                <div id="memo-tab-content" class="tab-content">
+                    <textarea id="memo-area" placeholder="メモは自動保存されます。"></textarea>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 設定サイドパネル -->
+<div class="settings-panel" id="settings-panel">
+    <div class="settings-header">
+        <h2>Quickパネル</h2>
+        <button class="icon-btn" onclick="toggleSettings()"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    
+    <div class="settings-body">
+        <!-- ユーザー名設定 -->
+        <div class="settings-section">
+            <label class="settings-label">ユーザー名</label>
+            <input type="text" id="username-input" class="settings-input" placeholder="ゲスト" oninput="saveUsername(this.value)">
+        </div>
+
+        <!-- テーマ背景選択 -->
+        <div class="settings-section">
+            <label class="settings-label">背景デザイン</label>
+            <div class="bg-selector-grid" id="bg-selector-grid">
+                <!-- JSで動的に出力 -->
+            </div>
+            <p class="settings-help">「image」アイコンを選択すると、Unsplashから美しい自然の壁紙をランダムに読み込みます。</p>
+        </div>
+
+        <!-- 時計表示設定 -->
+        <div class="settings-section">
+            <label class="settings-label">時計の設定</label>
+            <div class="toggle-wrapper">
+                <span>12時間表記</span>
+                <input type="checkbox" id="clock-12h-toggle" onchange="toggleClock12h(this.checked)">
+            </div>
+            <div class="toggle-wrapper">
+                <span>秒数を表示</span>
+                <input type="checkbox" id="clock-show-sec-toggle" onchange="toggleClockSec(this.checked)">
+            </div>
+        </div>
+
+        <!-- テーマカラー (アクセントカラー) -->
+        <div class="settings-section">
+            <label class="settings-label">テーマカラー</label>
+            <div class="picker" id="theme-colors"></div>
+        </div>
+
+        <!-- フォントスタイル -->
+        <div class="settings-section">
+            <label class="settings-label">時計フォント</label>
+            <div class="picker font-picker" id="font-styles"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 天気拡張表示 -->
+<div class="weather-modal" id="weather-detail-modal">
+    <div class="weather-modal-content animate-pop-in">
+        <button class="icon-btn weather-modal-close" onclick="closeWeatherDetail()" title="閉じる">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <div id="weather-detail-content">
+            <!-- 天気詳細が動的に出力される -->
+        </div>
+    </div>
+</div>
+
+<script type="module" src="./js/main.js"></script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('SW registered:', reg))
+      .catch(err => console.error('SW registration failed:', err));
+  });
+}
+</script>
+
+</body>
+</html>

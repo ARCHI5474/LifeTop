@@ -1,0 +1,134 @@
+/* Weather Detail Modal styles */
+
+.weather-modal {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    
+    /* 初期状態は非表示（これがないと画面に出っぱなしになる） */
+    display: none;
+    place-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* active クラスがついたらモーダル表示 */
+.weather-modal.active {
+    display: grid !important;
+    opacity: 1;
+}
+
+.weather-modal-content {
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 24px;
+    width: 90%;
+    max-width: 500px;
+    padding: 24px;
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.weather-modal.active .weather-modal-content {
+    transform: translateY(0);
+}
+
+.weather-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+}
+
+/* モーダル内部のレイアウト */
+.weather-detail-main {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 20px;
+}
+
+.detail-main-text h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.detail-temp-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.detail-temp {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--p);
+}
+
+.detail-meta {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* 3時間ごとの時間予報 */
+.weather-hourly-section h4 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.weather-hourly-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.weather-hourly-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+}
+
+.hourly-time {
+    font-weight: 700;
+    color: var(--text-secondary);
+    min-width: 50px;
+}
+
+.hourly-temp {
+    font-weight: 700;
+    color: #fff;
+    min-width: 50px;
+    text-align: center;
+}
+
+.hourly-prec {
+    color: var(--p);
+    min-width: 70px;
+    text-align: right;
+}
+
+.hourly-hum {
+    color: var(--text-secondary);
+    min-width: 70px;
+    text-align: right;
+}

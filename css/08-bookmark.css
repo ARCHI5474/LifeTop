@@ -1,0 +1,247 @@
+/* ブックマークカードが親要素を突き抜けない設定 */
+.bookmark-card {
+    min-width: 0;
+    width: 100%;
+}
+
+
+/* カードヘッダー */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding-bottom: 12px;
+}
+
+.card h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+}
+
+.card h3 span {
+    color: var(--p);
+}
+
+/* ブックマークカード */
+.bookmark-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.bookmark-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    text-align: center;
+    padding: 10px;
+    border-radius: 14px;
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid transparent;
+}
+
+.bookmark-item:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #fff;
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.bookmark-item .icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    margin-bottom: 8px;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    color: var(--p);
+    font-size: 1.2rem;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.bookmark-item:hover .icon-wrapper {
+    background: rgba(var(--p-rgb), 0.15);
+    border-color: rgba(var(--p-rgb), 0.3);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.bookmark-item img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.bookmark-title {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* タブを囲むラッパーコンテナ */
+.bookmark-tabs-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* 左右の矢印ボタンのデザイン */
+.tab-scroll-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+    flex-shrink: 0;
+    backdrop-filter: blur(5px);
+}
+
+.tab-scroll-btn:hover {
+    background: rgba(var(--p-rgb), 0.2);
+    color: #fff;
+    border-color: rgba(var(--p-rgb), 0.4);
+    transform: scale(1.1);
+}
+
+.tab-scroll-btn span {
+    font-size: 18px;
+}
+
+.tab-scroll-btn.prev {
+    margin-right: 6px;
+}
+
+.tab-scroll-btn.next {
+    margin-left: 6px;
+}
+
+/* ブックマークフォルダ切り替えタブ（※PC完全スクロール対応） */
+/* ブックマークフォルダ切り替えタブ（※PC完全スクロール対応） */
+.bookmark-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-grow: 1;
+    min-width: 0; /* ★ max-width: calc(...) を消してこれに変更！ */
+    white-space: nowrap;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.bookmark-tabs::-webkit-scrollbar {
+    display: none;          /* Chrome, Safari用 */
+}
+
+.bookmark-tab-item {
+    display: inline-block;  /* 要素をインラインブロック化 */
+    flex-shrink: 0;         /* フレックスアイテムとして絶対に縮まないように設定 */
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+}
+
+.bookmark-tab-item.active, .bookmark-tab-item:hover {
+    background: rgba(var(--p-rgb), 0.15);
+    color: #fff;
+    border-color: rgba(var(--p-rgb), 0.3);
+}
+
+/* ブックマークの編集モード */
+.bookmark-card.edit-mode .bookmark-item {
+    animation: wiggle 0.3s ease infinite alternate;
+}
+
+@keyframes wiggle {
+    0% { transform: rotate(-1deg) translateY(0); }
+    100% { transform: rotate(1deg) translateY(-1px); }
+}
+
+.bookmark-card.edit-mode .bookmark-delete-btn {
+    display: grid !important;
+    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.bookmark-delete-btn {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ef4444;
+    border: none;
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    display: none;
+    place-items: center;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    z-index: 10;
+    transition: transform 0.2s;
+}
+.bookmark-delete-btn:hover {
+    transform: scale(1.15);
+    background: #dc2626;
+}
+
+.add-bookmark-btn {
+    width: 100%;
+    padding: 12px;
+    border: 1px dashed var(--glass-border);
+    background: rgba(255,255,255,0.02);
+    color: var(--text-secondary);
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.add-bookmark-btn:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: var(--p);
+    color: #fff;
+}
+
+

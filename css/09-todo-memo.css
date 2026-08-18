@@ -1,0 +1,209 @@
+/* ToDo & メモ */
+.utility-tabs {
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding-bottom: 0;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    font-weight: 600;
+    padding: 10px 0;
+    cursor: pointer;
+    position: relative;
+    font-family: inherit;
+    transition: color 0.2s;
+}
+
+.tab-btn:hover, .tab-btn.active {
+    color: #fff;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--p);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: tabFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes tabFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ToDo リスト */
+.todo-input-wrapper {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.todo-input-wrapper input {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 12px 15px;
+    color: #fff;
+    outline: none;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+}
+.todo-input-wrapper input:focus {
+    background: rgba(255,255,255,0.08);
+    border-color: var(--p);
+}
+
+.todo-input-wrapper button {
+    background: var(--p);
+    border: none;
+    color: #fff;
+    width: 44px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.todo-input-wrapper button:hover {
+    background: rgba(var(--p-rgb), 0.8);
+    transform: scale(1.05);
+}
+
+.todo-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 220px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.todo-list::-webkit-scrollbar {
+    width: 4px;
+}
+.todo-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.02);
+    animation: todoPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes todoPop {
+    from { opacity: 0; transform: scale(0.9) translateY(12px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.todo-item-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    cursor: pointer;
+}
+
+.todo-checkbox {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 2px solid rgba(255,255,255,0.4);
+    display: grid;
+    place-items: center;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.todo-item.completed .todo-checkbox {
+    background: var(--p);
+    border-color: var(--p);
+    transform: scale(1.05);
+}
+
+.todo-checkbox span {
+    font-size: 14px;
+    color: #fff;
+    display: none;
+}
+
+.todo-item.completed .todo-checkbox span {
+    display: block;
+}
+
+.todo-text {
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.todo-item.completed .todo-text {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+}
+
+.todo-delete {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    opacity: 1;
+    transition: opacity 0.2s, color 0.2s;
+}
+
+.todo-delete:hover {
+    color: #ef4444;
+}
+
+/* クイックメモ */
+textarea {
+    width: 100%;
+    height: 220px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 15px;
+    color: #fff;
+    resize: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    line-height: 1.5;
+    transition: all 0.3s;
+}
+textarea:focus {
+    background: rgba(255,255,255,0.08);
+    border-color: var(--p);
+}
+
+textarea::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+

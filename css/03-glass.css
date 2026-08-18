@@ -1,0 +1,20 @@
+/* ガラスモーフィズムカードの共通設定 */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 20px;
+    padding: 24px;
+    /* transform のアニメーションを除外し、背景色と影の変化のみにする */
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-card:hover {
+    /* transform: translateY(-4px); ←★これを削除！カード自体は浮かせない */
+    background: rgba(255, 255, 255, 0.10); /* ほんのり明るくするだけ */
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+

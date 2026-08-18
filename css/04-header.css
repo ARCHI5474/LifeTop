@@ -1,0 +1,128 @@
+/* ヘッダー */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    position: relative;
+    z-index: 10;
+}
+
+.weather-widget {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    padding: 10px 18px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+.weather-widget:hover {
+    transform: scale(1.03);
+}
+
+.weather-widget #weather-icon {
+    font-size: 28px;
+    color: var(--p);
+}
+
+.weather-info {
+    display: flex;
+    flex-direction: column;
+}
+
+#weather-temp {
+    font-weight: 700;
+}
+
+#weather-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.icon-btn {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: #fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(10px);
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1) rotate(45deg);
+}
+
+.icon-btn-small {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.icon-btn-small:hover, .icon-btn-small.active {
+    background: var(--p);
+    border-color: var(--p);
+    transform: scale(1.08);
+}
+
+/* ヘッダー右側コントロールエリア */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ヘッダー右側コントロールボタンのホバー/アクティブ（削ぎ落とし版） */
+.icon-btn {
+    /* イージングを自然な ease に変更し、時間を 0.15s に縮めてサクサク化 */
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.icon-btn:hover {
+    background: rgba(var(--p-rgb), 0.18);
+    border-color: rgba(var(--p-rgb), 0.35);
+    box-shadow: 0 2px 10px rgba(var(--p-rgb), 0.2);
+    transform: scale(1.03); /* 大きく拡大せず、ごくわずかに主張させる */
+}
+
+.icon-btn:active {
+    transform: scale(0.97); /* 押した瞬間の心地よい沈み込み */
+}
+
+/* 設定ボタン・インストールボタンの回転・バウンド演出は全廃 */
+.icon-btn[onclick*="toggleSettings"]:hover,
+#pwa-install-btn:hover {
+    /* 個別の過剰な変形（rotate/scale(1.15)）は削除し、上記の共通スタイルに統一 */
+    transform: scale(1.03);
+}
+
+#pwa-install-btn:hover span {
+    /* バウンドアニメーション（bounceIcon）を削除 */
+    animation: none;
+}
+
+@media (max-width: 600px) {
+    .dashboard-header {
+        padding: 15px 16px;
+    }
+    .header-right {
+        gap: 8px;
+    }
+}

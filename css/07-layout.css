@@ -1,0 +1,31 @@
+/* コンテナ（中央寄せと幅の制限） */
+.container {
+    width: 100%;
+    max-width: 1200px; /* 画面が大きくても広がりすぎないように制限 */
+    margin: 0 auto;    /* 中央寄せ */
+    padding: 0 20px 40px;
+    box-sizing: border-box;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(0, 1fr); /* 2列並び */
+    gap: 20px;
+    width: 100%;
+    margin-top: 10px;
+    align-items: start;
+    box-sizing: border-box;
+}
+
+/* --- レスポンシブ --- */
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr; /* 画面が狭くなったら1列に */
+    }
+}
+
+@media (max-width: 720px) {
+    .container {
+        padding: 0 12px 20px;
+    }
+}
