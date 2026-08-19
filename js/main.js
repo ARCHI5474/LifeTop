@@ -14,10 +14,7 @@ import {
     toggleSettings
 } from "./settings.js";
 import { updateClock, updateGreeting } from "./clock.js";
-import {
-    toggleSearchEngines,
-    selectEngine
-} from "./search.js";
+import { toggleSearchEngines, selectEngine } from "./search.js";
 import {
     toggleBookmarkEditMode,
     renderBookmarks,
@@ -87,60 +84,109 @@ Object.assign(window, {
 });
 
 
+/*
+ * ============================================================
+ * LifeTop v3.2
+ * 起動時パフォーマンス負荷テスト
+ * ============================================================
+ */
 function simulateV4HeavyLoad() {
     const start = performance.now();
-    const duration = 1800; 
+    const duration = 3000;
 
-    function work() {
-        const frameStart = performance.now();
+    // 一時的なDOMコンテナを作成
+    const container = document.createElement("div");
 
-        while (performance.now() - frameStart < 10) {
-            Math.sqrt(Math.random() * 1000000);
-        }
+    container.id = "v4-heavy-load";
+    container.style.display = "none";
 
-        if (performance.now() - start < duration) {
-            requestAnimationFrame(work);
+    document.body.appendChild(container);
+
+
+    /*
+     * 大量の一時DOMを生成
+     */
+    for (let i = 0; i < 3000; i++) {
+        const element = document.createElement("div");
+
+        element.className = "v4-temp-element";
+        element.textContent = `LifeTop initialization ${i}`;
+
+        container.appendChild(element);
+    }
+
+
+    /*
+     * 計算処理
+     * 一定時間だけCPU負荷を発生させる
+     */
+    let result = 0;
+
+    while (performance.now() - start < duration) {
+        for (let i = 0; i < 5000; i++) {
+            result += Math.sqrt(i * Math.random());
         }
     }
 
-    requestAnimationFrame(work);
+
+    /*
+     * 一時データを削除
+     */
+    container.remove();
+
+
+    console.log(
+        "LifeTop v4 initialization completed:",
+        result
+    );
 }
 
 
 let deferredPrompt;
 
 
-window.addEventListener('beforeinstallprompt', (e) => {
+window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
+
     deferredPrompt = e;
 
-    const installBtn = document.getElementById('pwa-install-btn');
+    const installBtn =
+        document.getElementById("pwa-install-btn");
 
     if (installBtn) {
-        installBtn.style.display = 'flex';
+        installBtn.style.display = "flex";
     }
 });
 
 
-window.addEventListener('appinstalled', (evt) => {
-    console.log('LifeTop was installed.');
+window.addEventListener("appinstalled", (evt) => {
+    console.log("LifeTop was installed.");
 
-    const installBtn = document.getElementById('pwa-install-btn');
+    const installBtn =
+        document.getElementById("pwa-install-btn");
 
     if (installBtn) {
-        installBtn.style.display = 'none';
+        installBtn.style.display = "none";
     }
 });
 
 
-window.addEventListener('load', () => {
+window.addEventListener("load", () => {
 
+    /*
+     * ========================================================
+     * LifeTop v3.2
+     * performance stress test on startup
+     * ========================================================
+     */
     simulateV4HeavyLoad();
 
 
-    // =========================================================
-    // LifeTop起動処理
-    // =========================================================
+    /*
+     * ========================================================
+     * 通常のLifeTop初期化
+     * ========================================================
+     */
 
     loadData();
 
@@ -154,58 +200,98 @@ window.addEventListener('load', () => {
 
     initPickers();
 
-    selectEngine(userConfig.searchEngine, false);
+    selectEngine(
+        userConfig.searchEngine,
+        false
+    );
 
     updateClock();
 
     updateGreeting();
 
 
-    // 時計
+    /*
+     * 時計
+     */
     setInterval(updateClock, 1000);
 
-    // 挨拶
-    setInterval(updateGreeting, 1800000);
+
+    /*
+     * 挨拶
+     */
+    setInterval(
+        updateGreeting,
+        1800000
+    );
 
 
-    // 天気
+    /*
+     * 天気
+     */
     fetchWeather();
 
-    setInterval(fetchWeather, 3600000);
+    setInterval(
+        fetchWeather,
+        3600000
+    );
 
 
-    // =========================================================
-    // PWA インストールボタン
-    // =========================================================
+    /*
+     * ========================================================
+     * PWA インストールボタン
+     * ========================================================
+     */
 
-    const installBtn = document.getElementById('pwa-install-btn');
+    const installBtn =
+        document.getElementById("pwa-install-btn");
 
     if (installBtn) {
-        installBtn.addEventListener('click', async () => {
 
-            if (!deferredPrompt) return;
+        installBtn.addEventListener(
+            "click",
+            async () => {
 
-            deferredPrompt.prompt();
+                if (!deferredPrompt) {
+                    return;
+                }
 
-            const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt.prompt();
 
-            console.log(`User choice outcome: ${outcome}`);
+                const { outcome } =
+                    await deferredPrompt.userChoice;
 
-            deferredPrompt = null;
+                console.log(
+                    `User choice outcome: ${outcome}`
+                );
 
-            installBtn.style.display = 'none';
-        });
+                deferredPrompt = null;
+
+                installBtn.style.display = "none";
+            }
+        );
     }
 });
 
 
 /*
+ * ============================================================
  * メモ欄
+ * ============================================================
  */
-document.getElementById('memo-area').addEventListener('input', () => {
 
-    userConfig.memo =
-        document.getElementById('memo-area').value;
+const memoArea =
+    document.getElementById("memo-area");
 
-    save();
-});
+if (memoArea) {
+
+    memoArea.addEventListener(
+        "input",
+        () => {
+
+            userConfig.memo =
+                memoArea.value;
+
+            save();
+        }
+    );
+}
