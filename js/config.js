@@ -4,7 +4,7 @@ LifeTop v3.1 Codename: "Pleasantly quick"
    ======================== */
 const UPDATE_CONFIG = {
     notice: "いつものネットを、ここから。より便利に、より快適に。LifeTopはあなたのブラウザの新しいスタートページです。",
-    tag: "LifeTop v3.1" 
+    tag: "LifeTop v3.2" 
 };
 /* ========================================= */
 
