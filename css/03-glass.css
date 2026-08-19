@@ -12,8 +12,8 @@
 }
 
 .glass-card:hover {
-    /* transform: translateY(-4px); ←★これを削除！カード自体は浮かせない */
-    background: rgba(255, 255, 255, 0.10); /* ほんのり明るくするだけ */
+    /* transform: translateY(-4px);*/
+    background: rgba(255, 255, 255, 0.10); 
     border-color: rgba(255, 255, 255, 0.18);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
