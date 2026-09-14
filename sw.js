@@ -1,4 +1,4 @@
-const CACHE_NAME = "lifetop-v3.4.0-cache";
+const CACHE_NAME = "lifetop-v3.5.0-cache";
 const ASSETS = [
   "./",
   "./index.html",
