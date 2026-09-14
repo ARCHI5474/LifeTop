@@ -13,8 +13,8 @@
 
 .glass-card:hover {
     /* transform: translateY(-4px);*/
-    background: rgba(255, 255, 255, 0.10); 
-    border-color: rgba(255, 255, 255, 0.18);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    /* background: rgb(100, 100, 100); */
+    border-color: #f7f4f4;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.00);
 }
 

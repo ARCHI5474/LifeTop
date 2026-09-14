@@ -30,17 +30,17 @@ export function updateClock() {
 export function updateGreeting() {
     const now = new Date();
     const hours = now.getHours();
-    let greetingText = "こんにちは";
+    let greetingText = "ようこそ";
     
     if (hours >= 4 && hours < 11) {
-        greetingText = "おはようございます";
+        greetingText = "今日も頑張りましょう";
     } else if (hours >= 11 && hours < 17) {
-        greetingText = "こんにちは";
+        greetingText = "リラックスしつつ過ごしましょう";
     } else {
-        greetingText = "こんばんは";
+        greetingText = "お疲れ様です";
     }
     
     const name = userConfig.username || "ゲスト";
-    document.getElementById('greeting').innerText = `${greetingText}、${name}さん。`;
+    document.getElementById('greeting').innerText = `${greetingText}、${name}さん！`;
 }
 

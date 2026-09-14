@@ -3,14 +3,14 @@
 LifeTop v3.1 Codename: "Pleasantly quick"
    ======================== */
 const UPDATE_CONFIG = {
-    notice: "LifeTop v3.4 起動時負荷テストを終了しました。起動時の処理を最適化し、より快適にご利用いただけるよう改善しました。ご協力ありがとうございました。",
-    tag: "LifeTop v3.4" 
+    notice: "LifeTop v3.5 一部不具合修正とテーマ追加",
+    tag: "LifeTop v3.5" 
 };
 /* ========================================= */
 
 const STORAGE_KEY = 'lifetop_v1_0_data';
 const themes = [
-    "#607D8B","#05508d", "#12788a", "#97123e", "#441594", "#c03f18", "#b91616"
+    "#3e3f3f", "#7e7e7e",  "#7279c5", "#E040FB", "#1cad67", "#FF2A6D"
 ];
 const fontStyles = [
     { name: 'Standard', family: "'Outfit', sans-serif" },
@@ -21,20 +21,14 @@ const fontStyles = [
 ];
 
 const bgGradients = {
-    'gradient-blue': 'linear-gradient(135deg, #202125 0%, #2f3846 100%)',
-    'gradient-dark': 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-    'gradient-sunset': 'linear-gradient(135deg, #440c19 0%, #762f07 50%, #9a5f07 100%)',
-    'gradient-aurora': 'linear-gradient(135deg, #3b0d4c 0%, #173b5c 50%, #0d5440 100%)',
-    'gradient-cyber': 'linear-gradient(135deg, #f72585 0%, #7209b7 50%, #3f37c9 100%)',
-    'gradient-deepsea': 'linear-gradient(135deg, #020024 0%, #090979 35%, #00d4ff 100%)',
+    'gradient-blue': 'linear-gradient(135deg, #232933 100%)',
+    'gradient-dark': 'linear-gradient(135deg, #7e8083 100%)',
+    'gradient-sunset': 'linear-gradient(135deg, #242a99 100%)',
+    'gradient-aurora': 'linear-gradient(135deg, #58178d 100%)',
+    'gradient-cyber': 'linear-gradient(135deg, #0e3b2f 100%)',
+    'gradient-deepsea': 'linear-gradient(135deg, #57031f 100%)',
 };
 
-const unsplashImages = [
-    "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1600&q=80",
-    "https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?auto=format&fit=crop&w=1600&q=80",
-    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80",
-    "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?auto=format&fit=crop&w=1600&q=80"
-];
 
 const searchEngines = {
     google: {
@@ -199,7 +193,6 @@ export {
     themes,
     fontStyles,
     bgGradients,
-    unsplashImages,
     searchEngines,
     FIXED_BOOKMARKS,
     userConfig,

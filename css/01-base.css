@@ -4,9 +4,9 @@
     --bg-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     --text-color: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
-    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-bg: rgba(255, 255, 255, 0.15);
     --glass-border: rgba(255, 255, 255, 0.12);
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
     --clock-f: 'Outfit', sans-serif;
     --clock-c: #ffffff;
 }

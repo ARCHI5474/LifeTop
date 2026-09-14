@@ -1,10 +1,10 @@
 /* お知らせボード */
 .notice-board {
-    max-width: 700px;
+    max-width: 500px;
     margin: 0 auto 40px;
-    background: rgba(239, 68, 68, 0.15);
+    background: rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(239, 68, 68, 0.25);
+    border: 1px solid rgb(240, 236, 236);
     padding: 12px 20px;
     border-radius: 15px;
     font-size: 0.9rem;

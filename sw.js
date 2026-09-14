@@ -64,7 +64,6 @@ self.addEventListener("fetch", event => {
   // 外部APIや動的アセット（天気情報やUnsplash画像、Favicon）はキャッシュしない
   if (
     event.request.url.includes("api.open-meteo.com") || 
-    event.request.url.includes("images.unsplash.com") || 
     event.request.url.includes("a.favicon.im")
   ) {
     return;
