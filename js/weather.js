@@ -32,6 +32,7 @@ export async function getWeatherData(lat, lon) {
     
     try {
         const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,wind_speed_10m&timezone=auto`);
+        if (!res.ok) throw new Error(`Weather request failed: ${res.status}`);
         const data = await res.json();
         
         if (data && data.current_weather) {
@@ -69,15 +70,22 @@ export function showWeatherDetail() {
     
     const current = savedWeatherData.current_weather;
     const hourly = savedWeatherData.hourly;
-    
-    const humidity = hourly.relative_humidity_2m ? hourly.relative_humidity_2m[0] + "%" : "--";
+    if (!current || !hourly || !Array.isArray(hourly.time)) {
+        alert("お天気データの形式が正しくありません。再読み込みしてください。");
+        return;
+    }
+
+    const currentIndex = Math.max(0, hourly.time.indexOf(current.time));
+    const humidity = Array.isArray(hourly.relative_humidity_2m)
+        ? `${hourly.relative_humidity_2m[currentIndex] ?? '--'}%`
+        : "--";
     const wind = current.windspeed + " km/h";
     
     // 3時間おきの詳細データを作成
     let hourlyHtml = "";
     
     // 今後24時間の中から3時間おきに8点表示
-    for (let i = 0; i < 24; i += 3) {
+    for (let i = currentIndex; i < Math.min(currentIndex + 24, hourly.time.length); i += 3) {
         if (!hourly.time[i]) break;
         const time = new Date(hourly.time[i]);
         const hour = time.getHours();

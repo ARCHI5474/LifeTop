@@ -1,4 +1,4 @@
-const CACHE_NAME = "lifetop-v3.5.0-cache";
+const CACHE_NAME = "lifetop-v3.9.0-cache";
 const ASSETS = [
   "./",
   "./index.html",
@@ -61,10 +61,11 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // 外部APIや動的アセット（天気情報やUnsplash画像、Favicon）はキャッシュしない
+  // 外部APIや動的アセットはキャッシュしない
   if (
     event.request.url.includes("api.open-meteo.com") || 
-    event.request.url.includes("a.favicon.im")
+    event.request.url.includes("a.favicon.im") ||
+    event.request.url.includes("suggestqueries.google.com")
   ) {
     return;
   }
@@ -84,7 +85,10 @@ self.addEventListener("fetch", event => {
         });
         return response;
       }).catch(() => {
-        // オフライン時のエラーハンドリング
+        if (event.request.mode === 'navigate') {
+          return caches.match('./index.html');
+        }
+        return Response.error();
       });
     })
   );

@@ -2,6 +2,7 @@
     --p: #2196F3; /* アクセントカラー */
     --p-rgb: 33, 150, 243;
     --bg-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    --bg-size: 400% 400%;
     --text-color: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
     --glass-bg: rgba(255, 255, 255, 0.15);
@@ -33,7 +34,6 @@ body {
 .tab-btn,
 .add-bookmark-btn,
 .search-button,
-.search-engine-selector,
 .todo-item-left,
 .todo-delete,
 .font-btn,
@@ -55,7 +55,6 @@ body {
 .tab-btn:active,
 .add-bookmark-btn:active,
 .search-button:active,
-.search-engine-selector:active,
 .todo-item-left:active,
 .todo-delete:active,
 .font-btn:active,
@@ -65,4 +64,3 @@ body {
     transform: scale(0.96);
     transition: transform 0.08s cubic-bezier(0.2, 0, 0, 1);
 }
-

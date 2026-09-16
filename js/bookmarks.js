@@ -1,10 +1,34 @@
 /* LifeTop - bookmarks */
-const FAVICON_CACHE_KEY = 'favicon_cache'; 
 import { FIXED_BOOKMARKS, userConfig } from "./config.js";
 import { save } from "./storage.js";
 
 let bookmarkEditMode = false;
 let currentBookmarkTab = "ブックマーク";
+const FAVICON_CACHE_KEY = "lifetop_favicon_cache";
+const FAVICON_CACHE_DAYS = 30;
+
+let faviconCache = {};
+
+try {
+    faviconCache = JSON.parse(localStorage.getItem(FAVICON_CACHE_KEY) || "{}");
+} catch {
+    faviconCache = {};
+}
+
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>'"]/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#x27;', '"': '&quot;'
+    })[char]);
+}
+
+function getSafeUrl(value) {
+    try {
+        const url = new URL(String(value));
+        return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+    } catch {
+        return '';
+    }
+}
 
 // ブックマーク編集モード切り替え
 export function toggleBookmarkEditMode() {
@@ -28,14 +52,12 @@ export function renderBookmarks() {
     const addBtn = document.querySelector('.add-bookmark-btn');
     const editBtn = document.getElementById('edit-bookmarks-btn');
     
-    // --- 1. カテゴリタブのレンダリング ---
     const allCategories = ["ブックマーク", ...Object.keys(FIXED_BOOKMARKS)];
     tabsContainer.innerHTML = allCategories.map(cat => {
         const activeClass = (cat === currentBookmarkTab) ? 'active' : '';
         return `<span class="bookmark-tab-item ${activeClass}" onclick="switchBookmarkTab('${cat}')">${cat}</span>`;
     }).join('');
 
-    // 「お気に入り」フォルダ以外のときは、追加/編集ボタンを非表示にする
     if (currentBookmarkTab !== "ブックマーク") {
         bookmarkEditMode = false;
         const card = document.querySelector('.bookmark-card');
@@ -49,7 +71,6 @@ export function renderBookmarks() {
         editBtn.style.display = 'grid';
     }
 
-    // --- 2. ブックマークリストの取得 ---
     let bookmarksToRender = [];
     let isFixed = false;
 
@@ -57,7 +78,7 @@ export function renderBookmarks() {
         bookmarksToRender = userConfig.bookmarks || [];
     } else {
         bookmarksToRender = FIXED_BOOKMARKS[currentBookmarkTab] || [];
-        isFixed = true; // 固定フォルダのブックマークは削除不可
+        isFixed = true;
     }
 
     if (bookmarksToRender.length === 0) {
@@ -65,23 +86,12 @@ export function renderBookmarks() {
         return;
     }
     
-const FAVICON_CACHE_KEY = "lifetop_favicon_cache";
-const FAVICON_CACHE_DAYS = 30;
-
-let faviconCache = {};
-
-try {
-    faviconCache = JSON.parse(
-        localStorage.getItem(FAVICON_CACHE_KEY) || "{}"
-    );
-} catch (e) {
-    faviconCache = {};
-}
-
     grid.innerHTML = bookmarksToRender.map((b, index) => {
+        const title = String(b.title || 'ブックマーク');
+        const url = getSafeUrl(b.url);
         let domain = "";
         try {
-            domain = new URL(b.url).hostname;
+            domain = url ? new URL(url).hostname : "";
         } catch (e) {
             domain = "";
         }
@@ -99,18 +109,17 @@ const faviconUrl = domain
         : `https://a.favicon.im/${domain}?larger=true&throw-error-on-404=true`)
     : "";
 
-const iconHtml = faviconUrl
-    ? `<span class="icon-letter">${b.title[0]}</span>
+    const iconHtml = faviconUrl
+    ? `<span class="icon-letter">${escapeHtml(title[0])}</span>
        <img
            src="${faviconUrl}"
-           alt="${b.title}"
+           alt="${escapeHtml(title)}"
            style="display:none"
            onload="handleFaviconLoad(this, '${domain}', '${faviconUrl}')"
            onerror="handleFaviconError(this, '${domain}')"
        >`
-    : `<span class="icon-letter">${b.title[0]}</span>`;
+    : `<span class="icon-letter">${escapeHtml(title[0])}</span>`;
             
-        // プリセットブックマークの場合は削除ボタンを非表示にする
         const deleteBtnHtml = isFixed ? "" : `
             <button class="bookmark-delete-btn" onclick="deleteBookmark(${index}, event)">
                 <span class="material-symbols-outlined" style="font-size:12px">close</span>
@@ -119,11 +128,11 @@ const iconHtml = faviconUrl
 
         return `
             <div class="bookmark-item-wrapper" style="position: relative;">
-                <a href="${b.url}" class="bookmark-item" target="_blank" title="${b.title}">
+                <a href="${escapeHtml(url)}" class="bookmark-item" target="_blank" rel="noopener noreferrer" title="${escapeHtml(title)}">
                     <div class="icon-wrapper">
                         ${iconHtml}
                     </div>
-                    <span class="bookmark-title">${b.title}</span>
+                    <span class="bookmark-title">${escapeHtml(title)}</span>
                 </a>
                 ${deleteBtnHtml}
             </div>
@@ -149,16 +158,23 @@ export function scrollTabs(distance) {
 }
 
 export function addBookmark() {
-    const title = prompt("ブックマーク名を入力してください:");
+    const title = prompt("ブックマーク名を入力してください:")?.trim();
     if (!title) return;
     let url = prompt("URLを入力してください:", "https://");
     if (!url) return;
+    url = url.trim();
     
     if (!/^https?:\/\//i.test(url)) {
         url = "https://" + url;
     }
     
-    userConfig.bookmarks.push({ title, url });
+    const safeUrl = getSafeUrl(url);
+    if (!safeUrl) {
+        alert("http:// または https:// で始まる有効なURLを入力してください。");
+        return;
+    }
+
+    userConfig.bookmarks.push({ title, url: safeUrl });
     save();
     renderBookmarks();
 }
@@ -179,12 +195,11 @@ export function handleFaviconLoad(imgEl, domain, faviconUrl) {
         imgEl.previousElementSibling.style.display = 'none';
     }
     try {
-        const cache = JSON.parse(localStorage.getItem(FAVICON_CACHE_KEY) || '{}');
-        cache[domain] = {
+        faviconCache[domain] = {
             url: faviconUrl,
             timestamp: Date.now()
         };
-        localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify(cache));
+        localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify(faviconCache));
     } catch (e) {
         console.error("Failed to save favicon cache", e);
     }
@@ -196,12 +211,9 @@ export function handleFaviconError(imgEl, domain) {
         imgEl.previousElementSibling.style.display = 'block';
     }
     try {
-        const cache = JSON.parse(localStorage.getItem(FAVICON_CACHE_KEY) || '{}');
-        delete cache[domain];
-        localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify(cache));
+        delete faviconCache[domain];
+        localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify(faviconCache));
     } catch (e) {
         console.error("Failed to clear favicon cache", e);
     }
 }
-
-

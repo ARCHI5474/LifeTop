@@ -30,24 +30,6 @@ const bgGradients = {
 };
 
 
-const searchEngines = {
-    google: {
-        action: "https://www.google.com/search",
-        placeholder: "Google で検索",
-        icon: "search"
-    },
-    bing: {
-        action: "https://www.bing.com/search",
-        placeholder: "Bing で検索",
-        icon: "travel_explore"
-    },
-    duckduckgo: {
-        action: "https://duckduckgo.com/",
-        placeholder: "DuckDuckGo で検索",
-        icon: "shield_with_heart"
-    }
-};
-
 // --- 固定ブックマーク（削除不可・フォルダ分け）の定義 ---
 const FIXED_BOOKMARKS = {
     "検索関連": [
@@ -135,55 +117,43 @@ let userConfig = {
     theme: themes[0],
     fontFamily: fontStyles[0].family,
     bgType: "gradient-blue",
+    bgImage: "",
     clock12h: false,
-    clockShowSec: false,
-    searchEngine: "google",
-    // 新機能用データ構造
-    calendarEvents: {}, // key: "YYYY-MM-DD", value: [{ id, text }]
-    healthLog: {
-        medications: [
-            { id: 1, name: "朝の薬", taken: false },
-            { id: 2, name: "昼の薬", taken: false },
-            { id: 3, name: "夜の薬", taken: false }
-        ],
-        waterMl: 0,
-        waterTarget: 2000,
-        meals: { morning: "", lunch: "", dinner: "", snack: "" },
-        lastUpdatedDate: "" // 日付比較用 (YYYY-MM-DD)
-    }
+    clockShowSec: false
 };
 
 function mergeUserConfig(parsed) {
-    if (!parsed) return;
-    
-    // healthLog の安全なディープマージ
-    const defaultHealthLog = userConfig.healthLog;
-    const parsedHealthLog = parsed.healthLog || {};
-    
-    const mergedHealthLog = {
-        ...defaultHealthLog,
-        ...parsedHealthLog,
-        meals: {
-            ...defaultHealthLog.meals,
-            ...(parsedHealthLog.meals || {})
-        }
-    };
-    
-    if (parsedHealthLog.medications) {
-        // 保存された服薬状況がある場合は、マージ
-        mergedHealthLog.medications = defaultHealthLog.medications.map(defMed => {
-            const savedMed = parsedHealthLog.medications.find(m => m.id === defMed.id);
-            return savedMed ? { ...defMed, ...savedMed } : defMed;
-        });
-    } else {
-        mergedHealthLog.medications = [...defaultHealthLog.medications];
-    }
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return;
+
+    const safeBookmarks = Array.isArray(parsed.bookmarks)
+        ? parsed.bookmarks
+            .filter(bookmark => bookmark && typeof bookmark === 'object' && typeof bookmark.title === 'string' && typeof bookmark.url === 'string')
+            .map(bookmark => ({ title: bookmark.title, url: bookmark.url }))
+        : userConfig.bookmarks;
+    const safeTodos = Array.isArray(parsed.todoList)
+        ? parsed.todoList
+            .filter(todo => todo && typeof todo === 'object' && Number.isSafeInteger(todo.id) && typeof todo.text === 'string')
+            .map(todo => ({ id: todo.id, text: todo.text, completed: Boolean(todo.completed) }))
+        : userConfig.todoList;
+    const safeBackgroundImage = typeof parsed.bgImage === 'string' && (
+        /^https:\/\/.+/i.test(parsed.bgImage) ||
+        /^data:image\/(?:png|jpe?g|webp|gif);base64,/i.test(parsed.bgImage)
+    ) ? parsed.bgImage : '';
 
     userConfig = {
         ...userConfig,
-        ...parsed,
-        calendarEvents: parsed.calendarEvents || {},
-        healthLog: mergedHealthLog
+        username: typeof parsed.username === 'string' ? parsed.username : userConfig.username,
+        memo: typeof parsed.memo === 'string' ? parsed.memo : userConfig.memo,
+        bookmarks: safeBookmarks,
+        todoList: safeTodos,
+        theme: themes.includes(parsed.theme) ? parsed.theme : userConfig.theme,
+        fontFamily: fontStyles.some(font => font.family === parsed.fontFamily)
+            ? parsed.fontFamily
+            : userConfig.fontFamily,
+        bgType: Object.hasOwn(bgGradients, parsed.bgType) ? parsed.bgType : userConfig.bgType,
+        bgImage: safeBackgroundImage,
+        clock12h: typeof parsed.clock12h === 'boolean' ? parsed.clock12h : userConfig.clock12h,
+        clockShowSec: typeof parsed.clockShowSec === 'boolean' ? parsed.clockShowSec : userConfig.clockShowSec
     };
 }
 
@@ -193,7 +163,6 @@ export {
     themes,
     fontStyles,
     bgGradients,
-    searchEngines,
     FIXED_BOOKMARKS,
     userConfig,
     mergeUserConfig

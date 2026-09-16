@@ -52,19 +52,11 @@
         
         <div class="search-container animate-fade-in" style="animation-delay: 0.3s;">
             <form action="https://www.google.com/search" method="get" class="search-form" id="search-form">
-                <button type="button" class="search-engine-selector" onclick="toggleSearchEngines(event)">
-                    <span id="current-engine-icon" class="material-symbols-outlined">search</span>
-                </button>
-                <input type="text" name="q" class="search-bar" placeholder="Googleで検索" autocomplete="off">
-                <button type="submit" class="search-button"><span class="material-symbols-outlined">arrow_forward</span></button>
-                
-                <!-- 検索エンジン選択ドロップダウン -->
-                <div class="search-engines-dropdown" id="engines-dropdown">
-                    <div class="engine-option" onclick="selectEngine('google')">Google</div>
-                    <div class="engine-option" onclick="selectEngine('bing')">Bing</div>
-                    <div class="engine-option" onclick="selectEngine('duckduckgo')">DuckDuckGo</div>
-                </div>
+                <span class="material-symbols-outlined search-icon" aria-hidden="true">search</span>
+                <input id="search-input" type="search" name="q" class="search-bar" placeholder="Googleで検索" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions">
+                <button type="submit" class="search-button" aria-label="Googleで検索"><span class="material-symbols-outlined">arrow_forward</span></button>
             </form>
+            <div id="search-suggestions" class="search-suggestions" role="listbox" aria-label="検索候補"></div>
         </div>
     </section>
 
@@ -150,7 +142,18 @@
             <div class="bg-selector-grid" id="bg-selector-grid">
                 <!-- JSで動的に出力 -->
             </div>
-            <p class="settings-help">「image」アイコンを選択すると、Unsplashから美しい自然の壁紙をランダムに読み込みます。</p>
+            <div class="background-image-controls">
+                <label class="background-upload-btn" for="background-image-upload">
+                    <span class="material-symbols-outlined">upload</span> 画像をアップロード
+                </label>
+                <input id="background-image-upload" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+                <div class="background-url-row">
+                    <input id="background-image-url" class="settings-input" type="url" placeholder="画像URL（https://）">
+                    <button id="background-image-url-apply" type="button">設定</button>
+                </div>
+                <button id="background-image-clear" class="background-clear-btn" type="button">画像の壁紙を解除</button>
+            </div>
+            <p class="settings-help">画像ファイル（2MBまで）またはHTTPSの画像URLを設定できます。</p>
         </div>
 
         <!-- 時計表示設定 -->

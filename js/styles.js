@@ -1,7 +1,6 @@
 /* LifeTop - visual style application */
+import { bgGradients, userConfig } from "./config.js";
 
-
-// スタイルの適用
 export function applyStyles() {
     document.documentElement.style.setProperty('--p', userConfig.theme);
     const rgb = hexToRgb(userConfig.theme);
@@ -9,8 +8,14 @@ export function applyStyles() {
         document.documentElement.style.setProperty('--p-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
     }
     document.documentElement.style.setProperty('--clock-f', userConfig.fontFamily);
-    
 
+    const gradient = bgGradients[userConfig.bgType] || bgGradients['gradient-blue'];
+    const background = userConfig.bgImage
+        ? `linear-gradient(rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.35)), url("${userConfig.bgImage.replace(/["\\\\]/g, '\\$&')}") center / cover no-repeat`
+        : gradient;
+    document.documentElement.style.setProperty('--bg-gradient', background);
+    document.documentElement.style.setProperty('--bg-size', userConfig.bgImage ? 'cover' : '400% 400%');
+    document.getElementById('bg-overlay')?.classList.toggle('has-background-image', Boolean(userConfig.bgImage));
 }
 
 export function hexToRgb(hex) {
@@ -21,19 +26,14 @@ export function hexToRgb(hex) {
         b: parseInt(result[3], 16)
     } : null;
 }
-// 背景デザイン選択ボタンの動的レンダリング
 export function renderBgSelector() {
     const container = document.getElementById('bg-selector-grid');
     if (!container) return;
     
-    let html = "";
-    Object.keys(bgGradients).forEach(key => {
-        const activeClass = (userConfig.bgType === key) ? 'active' : '';
-        html += `<div class="bg-option ${activeClass}" style="background: ${bgGradients[key]}" onclick="setBg('${key}', this)"></div>`;
-    });
-    
+    const html = Object.keys(bgGradients).map(key => {
+        const activeClass = (!userConfig.bgImage && userConfig.bgType === key) ? 'active' : '';
+        return `<div class="bg-option ${activeClass}" style="background: ${bgGradients[key]}" onclick="setBg('${key}', this)"></div>`;
+    }).join('');
 
-    
     container.innerHTML = html;
 }
-

@@ -174,16 +174,37 @@
     transform: scale(1.1);
 }
 
-.bg-img-option {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--glass-border);
+.background-image-controls {
     display: grid;
-    place-items: center;
+    gap: 8px;
+    margin-top: 14px;
 }
 
-.bg-img-option span {
-    font-size: 20px;
+.background-upload-btn,
+.background-clear-btn,
+.background-url-row button {
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
 }
+
+.background-upload-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 12px;
+    background: rgba(255,255,255,0.08);
+}
+
+.background-upload-btn span { font-size: 18px; }
+
+.background-url-row { display: flex; gap: 8px; }
+.background-url-row .settings-input { min-width: 0; }
+.background-url-row button { padding: 0 12px; background: var(--p); }
+.background-clear-btn { padding: 8px 12px; background: transparent; color: var(--text-secondary); }
 
 .settings-help {
     font-size: 0.75rem;

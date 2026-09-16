@@ -14,7 +14,7 @@ import {
     toggleSettings
 } from "./settings.js";
 import { updateClock, updateGreeting } from "./clock.js";
-import { toggleSearchEngines, selectEngine } from "./search.js";
+import { initSearchSuggestions } from "./search.js";
 import {
     toggleBookmarkEditMode,
     renderBookmarks,
@@ -30,32 +30,20 @@ import {
     addTodo,
     toggleTodo,
     deleteTodo,
-    escapeHtml,
     switchUtilityTab
 } from "./todo.js";
-import { fetchWeather, getWeatherData, parseWeatherCode, showWeatherDetail, closeWeatherDetail } from "./weather.js";
+import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js";
 
-
-/*
- * The original HTML uses inline onclick handlers.
- * Keep those handlers available on window so the HTML does not need
- * to change its behavior.
- */
+// HTMLのイベントハンドラーから呼び出す関数
 Object.assign(window, {
     toggleSettings,
-    initPickers,
     setTheme,
     setFontFamily,
     saveUsername,
     toggleClock12h,
     toggleClockSec,
     setBg,
-    updateClock,
-    updateGreeting,
-    toggleSearchEngines,
-    selectEngine,
     toggleBookmarkEditMode,
-    renderBookmarks,
     switchBookmarkTab,
     scrollTabs,
     addBookmark,
@@ -63,15 +51,9 @@ Object.assign(window, {
     handleFaviconLoad,
     handleFaviconError,
     switchUtilityTab,
-    renderTodoList,
     addTodo,
     toggleTodo,
     deleteTodo,
-    escapeHtml,
-    fetchWeather,
-    getWeatherData,
-    parseWeatherCode,
-    // 天気詳細
     showWeatherDetail,
     closeWeatherDetail,
 });
@@ -87,7 +69,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
     }
 });
 
-window.addEventListener('appinstalled', (evt) => {
+window.addEventListener('appinstalled', () => {
     console.log('LifeTop was installed.');
     const installBtn = document.getElementById('pwa-install-btn');
     if (installBtn) {
@@ -103,7 +85,7 @@ window.addEventListener('load', () => {
     renderTodoList();
     renderBgSelector();
     initPickers();
-    selectEngine(userConfig.searchEngine, false);
+    initSearchSuggestions();
 
     updateClock();
     updateGreeting();
@@ -114,7 +96,6 @@ window.addEventListener('load', () => {
     fetchWeather();
     setInterval(fetchWeather, 3600000);
 
-    // PWA インストールボタンのクリックイベントを設定
     const installBtn = document.getElementById('pwa-install-btn');
     if (installBtn) {
         installBtn.addEventListener('click', async () => {
@@ -132,4 +113,3 @@ document.getElementById('memo-area').addEventListener('input', () => {
     userConfig.memo = document.getElementById('memo-area').value;
     save();
 });
-

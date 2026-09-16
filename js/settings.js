@@ -18,6 +18,23 @@ export function initPickers() {
         const activeClass = (f.family === userConfig.fontFamily) ? 'active' : '';
   return `<button class="font-btn ${activeClass}" style="font-family:${f.family}" onclick="setFontFamily(${JSON.stringify(f.family).replace(/"/g, '&quot;')}, this)">${f.name}</button>`;
     }).join('');
+
+    const imageUrlInput = document.getElementById('background-image-url');
+    const imageUpload = document.getElementById('background-image-upload');
+    const applyImageUrl = document.getElementById('background-image-url-apply');
+    const clearImage = document.getElementById('background-image-clear');
+    if (!imageUrlInput || !imageUpload || !applyImageUrl || !clearImage) return;
+
+    imageUrlInput.value = userConfig.bgImage.startsWith('https://') ? userConfig.bgImage : '';
+    applyImageUrl.onclick = () => setBackgroundImageUrl(imageUrlInput.value);
+    imageUrlInput.onkeydown = event => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            setBackgroundImageUrl(imageUrlInput.value);
+        }
+    };
+    imageUpload.onchange = event => setBackgroundImageFile(event.target.files?.[0]);
+    clearImage.onclick = clearBackgroundImage;
 }
 
 // 設定変更
@@ -63,6 +80,7 @@ export function toggleClockSec(checked) {
 // 背景の選択
 export function setBg(type, element) {
     userConfig.bgType = type;
+    userConfig.bgImage = '';
     applyStyles();
     save();
     
@@ -72,6 +90,44 @@ export function setBg(type, element) {
     } else {
         renderBgSelector();
     }
+}
+
+function setBackgroundImageUrl(value) {
+    const url = value.trim();
+    if (!/^https:\/\/.+/i.test(url)) {
+        alert('HTTPSで始まる画像URLを入力してください。');
+        return;
+    }
+    userConfig.bgImage = url;
+    applyStyles();
+    save();
+    renderBgSelector();
+}
+
+function setBackgroundImageFile(file) {
+    if (!file) return;
+    if (!file.type.startsWith('image/') || file.size > 2 * 1024 * 1024) {
+        alert('PNG、JPEG、WebP、GIF形式の2MB以下の画像を選択してください。');
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+        userConfig.bgImage = String(reader.result);
+        applyStyles();
+        save();
+        renderBgSelector();
+        document.getElementById('background-image-url').value = '';
+    };
+    reader.readAsDataURL(file);
+}
+
+function clearBackgroundImage() {
+    userConfig.bgImage = '';
+    applyStyles();
+    save();
+    renderBgSelector();
+    document.getElementById('background-image-url').value = '';
+    document.getElementById('background-image-upload').value = '';
 }
 
 // 設定パネルトグル
