@@ -1,22 +1,25 @@
 /* LifeTop - settings panel controls */
-import { themes, fontStyles, userConfig } from "./config.js";
-import { applyStyles, renderBgSelector } from "./styles.js";
+import { colorCombos, fontStyles, userConfig } from "./config.js?v=3.9.18";
+import { applyStyles, renderColorCombos, renderBgSelector } from "./styles.js";
 import { save } from "./storage.js";
 import { updateClock, updateGreeting } from "./clock.js";
+
+export function toggleHelp() {
+    const modal = document.getElementById('help-modal');
+    const overlay = document.getElementById('help-overlay');
+    const isOpen = modal.classList.toggle('active');
+    overlay?.classList.toggle('active', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+}
+
 // ピッカーの初期化
 export function initPickers() {
-    // アクセントカラーピッカー
-    const colorsContainer = document.getElementById('theme-colors');
-    colorsContainer.innerHTML = themes.map(c => {
-        const activeClass = (c.toLowerCase() === userConfig.theme.toLowerCase()) ? 'active' : '';
-        return `<div class="color-dot ${activeClass}" style="background:${c}" onclick="setTheme('${c}', this)"></div>`;
-    }).join('');
+    renderColorCombos();
 
-    // フォントピッカー
     const fontsContainer = document.getElementById('font-styles');
     fontsContainer.innerHTML = fontStyles.map(f => {
         const activeClass = (f.family === userConfig.fontFamily) ? 'active' : '';
-  return `<button class="font-btn ${activeClass}" style="font-family:${f.family}" onclick="setFontFamily(${JSON.stringify(f.family).replace(/"/g, '&quot;')}, this)">${f.name}</button>`;
+        return `<button class="font-btn ${activeClass}" style="font-family:${f.family}" onclick="setFontFamily(${JSON.stringify(f.family).replace(/"/g, '&quot;')}, this)">${f.name}</button>`;
     }).join('');
 
     const imageUrlInput = document.getElementById('background-image-url');
@@ -35,6 +38,17 @@ export function initPickers() {
     };
     imageUpload.onchange = event => setBackgroundImageFile(event.target.files?.[0]);
     clearImage.onclick = clearBackgroundImage;
+}
+
+export function setColorCombo(index) {
+    const combo = colorCombos[index];
+    if (!combo) return;
+    userConfig.bgType = combo.bgType;
+    userConfig.theme = combo.theme;
+    userConfig.bgImage = '';
+    applyStyles();
+    save();
+    renderColorCombos();
 }
 
 // 設定変更
@@ -57,7 +71,12 @@ export function setFontFamily(f, element) {
 }
 
 export function saveUsername(val) {
-    userConfig.username = val || "ゲスト";
+    const nextName = String(val ?? "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 20) || "ゲスト";
+
+    userConfig.username = nextName;
     save();
     updateGreeting();
 }
@@ -133,5 +152,8 @@ function clearBackgroundImage() {
 // 設定パネルトグル
 export function toggleSettings() {
     const panel = document.getElementById('settings-panel');
-    panel.classList.toggle('active');
+    const overlay = document.getElementById('settings-overlay');
+    const isOpen = panel.classList.toggle('active');
+    overlay?.classList.toggle('active', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
 }

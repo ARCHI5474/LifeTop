@@ -1,4 +1,4 @@
-/* 背景画像とゆらぎグラデーション */
+/* 背景画像とテーマ */
 .bg-overlay {
     position: fixed;
     top: 0;
@@ -9,8 +9,7 @@
     background: var(--bg-gradient);
     background-size: var(--bg-size) !important;
     background-position: center;
-    transition: background 1.5s ease, filter 0.5s ease;
-    animation: bgShift 20s ease infinite;
+    transition: background-color 0.45s ease, filter 0.5s ease;
 }
 
 .bg-overlay.has-background-image {

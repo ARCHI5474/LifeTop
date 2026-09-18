@@ -1,5 +1,5 @@
 /* LifeTop - clock and greeting */
-import { userConfig } from "./config.js";
+import { userConfig } from "./config.js?v=3.9.18";
 
 // 挨拶と時計の更新
 export function updateClock() {
@@ -40,7 +40,10 @@ export function updateGreeting() {
         greetingText = "お疲れ様です";
     }
     
-    const name = userConfig.username || "ゲスト";
-    document.getElementById('greeting').innerText = `${greetingText}、${name}さん！`;
+    const rawName = String(userConfig.username || "ゲスト").slice(0, 20).trim() || "ゲスト";
+    const displayName = rawName.length > 12 ? `${rawName.slice(0, 12)}…` : rawName;
+    document.getElementById('greeting').innerText = greetingText;
+    const headerName = document.getElementById('header-user-name');
+    if (headerName) headerName.innerText = displayName;
 }
 

@@ -1,19 +1,22 @@
-import { applyStyles, renderBgSelector } from "./styles.js";
+import { applyStyles, renderBgSelector } from "./styles.js?v=3.9.17";
 
 /* LifeTop - application entry point */
-import { userConfig } from "./config.js";
+import { userConfig } from "./config.js?v=3.9.18";
 import { loadData, save } from "./storage.js";
 import {
     initPickers,
     setTheme,
+    setColorCombo,
     setFontFamily,
     saveUsername,
     toggleClock12h,
     toggleClockSec,
     setBg,
-    toggleSettings
-} from "./settings.js";
-import { updateClock, updateGreeting } from "./clock.js";
+    toggleSettings,
+    toggleHelp,
+    
+} from "./settings.js?v=3.9.19";
+import { updateClock, updateGreeting } from "./clock.js?v=3.9.1";
 import { initSearchSuggestions } from "./search.js";
 import {
     toggleBookmarkEditMode,
@@ -21,6 +24,8 @@ import {
     switchBookmarkTab,
     scrollTabs,
     addBookmark,
+    openBookmarkDialog,
+    closeBookmarkDialog,
     deleteBookmark,
     handleFaviconLoad,
     handleFaviconError
@@ -37,7 +42,9 @@ import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.j
 // HTMLのイベントハンドラーから呼び出す関数
 Object.assign(window, {
     toggleSettings,
+    toggleHelp,
     setTheme,
+    setColorCombo,
     setFontFamily,
     saveUsername,
     toggleClock12h,
@@ -47,6 +54,8 @@ Object.assign(window, {
     switchBookmarkTab,
     scrollTabs,
     addBookmark,
+    openBookmarkDialog,
+    closeBookmarkDialog,
     deleteBookmark,
     handleFaviconLoad,
     handleFaviconError,
@@ -58,26 +67,19 @@ Object.assign(window, {
     closeWeatherDetail,
 });
 
-let deferredPrompt;
-
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    const installBtn = document.getElementById('pwa-install-btn');
-    if (installBtn) {
-        installBtn.style.display = 'flex';
-    }
-});
-
-window.addEventListener('appinstalled', () => {
-    console.log('LifeTop was installed.');
-    const installBtn = document.getElementById('pwa-install-btn');
-    if (installBtn) {
-        installBtn.style.display = 'none';
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && document.getElementById('help-modal')?.classList.contains('active')) {
+        toggleHelp();
     }
 });
 
 window.addEventListener('load', () => {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations()
+            .then(registrations => registrations.forEach(registration => registration.unregister()))
+            .catch(() => {});
+    }
+
     loadData();
 
     applyStyles();
@@ -87,8 +89,23 @@ window.addEventListener('load', () => {
     initPickers();
     initSearchSuggestions();
 
+    const bookmarkForm = document.getElementById('bookmark-dialog-form');
+    bookmarkForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const title = document.getElementById('bookmark-title-input').value.trim();
+        const url = document.getElementById('bookmark-url-input').value.trim();
+        if (!title || !url) return;
+        addBookmark(title, url);
+    });
+
     updateClock();
     updateGreeting();
+
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        window.setTimeout(() => loadingScreen.classList.add('is-hidden'), 5000);
+        window.setTimeout(() => loadingScreen.remove(), 5500);
+    }
 
     setInterval(updateClock, 1000);
     setInterval(updateGreeting, 1800000);
@@ -96,17 +113,6 @@ window.addEventListener('load', () => {
     fetchWeather();
     setInterval(fetchWeather, 3600000);
 
-    const installBtn = document.getElementById('pwa-install-btn');
-    if (installBtn) {
-        installBtn.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User choice outcome: ${outcome}`);
-            deferredPrompt = null;
-            installBtn.style.display = 'none';
-        });
-    }
 });
 
 document.getElementById('memo-area').addEventListener('input', () => {

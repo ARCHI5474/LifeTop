@@ -3,7 +3,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 40px;
+    padding: 20px 40px 12px;
     position: relative;
     z-index: 10;
 }
@@ -12,28 +12,53 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: var(--control-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--glass-border);
-    padding: 10px 18px;
-    border-radius: 30px;
+    padding: 10px 16px 10px 12px;
+    border-radius: 999px;
     font-size: 0.9rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.header-user-name {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-color);
+    font-size: 1rem;
+    font-weight: 600;
 }
 .weather-widget:hover {
-    transform: scale(1.03);
+    transform: translateY(-1px);
+    border-color: rgba(124, 156, 255, 0.38);
 }
 
 .weather-widget #weather-icon {
     font-size: 28px;
-    color: var(--p);
+    color: var(--p-strong);
+    background: rgba(124, 156, 255, 0.12);
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
 }
 
 .weather-info {
     display: flex;
     flex-direction: column;
+    line-height: 1.2;
 }
 
 #weather-temp {
@@ -46,28 +71,29 @@
 }
 
 .icon-btn {
-    background: var(--glass-bg);
+    background: var(--control-bg);
     border: 1px solid var(--glass-border);
-    color: #fff;
+    color: var(--text-color);
     width: 44px;
     height: 44px;
     border-radius: 50%;
     display: grid;
     place-items: center;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.2s ease;
     backdrop-filter: blur(10px);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
 }
 
 .icon-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.1) rotate(45deg);
+    background: rgba(124, 156, 255, 0.18);
+    transform: translateY(-1px);
 }
 
 .icon-btn-small {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--control-bg);
     border: 1px solid var(--glass-border);
-    color: #fff;
+    color: var(--text-color);
     width: 32px;
     height: 32px;
     border-radius: 8px;
@@ -106,22 +132,42 @@
     transform: scale(0.97); /* 押した瞬間の心地よい沈み込み */
 }
 
-/* 設定ボタン・インストールボタンの回転・バウンド演出は全廃 */
-.icon-btn[onclick*="toggleSettings"]:hover,
-#pwa-install-btn:hover {
-    /* 個別の過剰な変形（rotate/scale(1.15)）は削除し、上記の共通スタイルに統一 */
+/* 設定ボタンのホバー挙動 */
+.icon-btn[onclick*="toggleSettings"]:hover {
     transform: scale(1.03);
-}
-
-#pwa-install-btn:hover span {
-    /* バウンドアニメーション（bounceIcon）を削除 */
-    animation: none;
 }
 
 @media (max-width: 600px) {
     .dashboard-header {
         padding: 15px 16px;
     }
+
+    .header-left {
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .weather-widget {
+        gap: 7px;
+        padding: 7px 10px 7px 8px;
+    }
+
+    .weather-widget #weather-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 23px;
+    }
+
+    .header-user-name {
+        max-width: 100px;
+        font-size: 0.88rem;
+    }
+
+    .icon-btn {
+        width: 40px;
+        height: 40px;
+    }
+
     .header-right {
         gap: 8px;
     }

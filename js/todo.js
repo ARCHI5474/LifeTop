@@ -1,5 +1,5 @@
 /* LifeTop - todo list */
-import { userConfig } from "./config.js";
+import { userConfig } from "./config.js?v=3.9.18";
 import { save } from "./storage.js";
 
 export function switchUtilityTab(tabName) {

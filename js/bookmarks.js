@@ -1,5 +1,5 @@
 /* LifeTop - bookmarks */
-import { FIXED_BOOKMARKS, userConfig } from "./config.js";
+import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=3.9.18";
 import { save } from "./storage.js";
 
 let bookmarkEditMode = false;
@@ -157,17 +157,35 @@ export function scrollTabs(distance) {
     }
 }
 
-export function addBookmark() {
-    const title = prompt("ブックマーク名を入力してください:")?.trim();
+export function openBookmarkDialog() {
+    const overlay = document.getElementById('bookmark-dialog-overlay');
+    const dialog = document.getElementById('bookmark-dialog');
+    if (!overlay || !dialog) return;
+    overlay.classList.add('active');
+    dialog.classList.add('active');
+    setTimeout(() => {
+        document.getElementById('bookmark-title-input')?.focus();
+    }, 50);
+}
+
+export function closeBookmarkDialog() {
+    const overlay = document.getElementById('bookmark-dialog-overlay');
+    const dialog = document.getElementById('bookmark-dialog');
+    if (!overlay || !dialog) return;
+    overlay.classList.remove('active');
+    dialog.classList.remove('active');
+    const form = document.getElementById('bookmark-dialog-form');
+    form?.reset();
+}
+
+export function addBookmark(titleInput, urlInput) {
+    const title = (titleInput ?? '').trim() || (document.getElementById('bookmark-title-input')?.value ?? '').trim();
+    let url = (urlInput ?? '').trim() || (document.getElementById('bookmark-url-input')?.value ?? '').trim();
     if (!title) return;
-    let url = prompt("URLを入力してください:", "https://");
     if (!url) return;
-    url = url.trim();
-    
     if (!/^https?:\/\//i.test(url)) {
         url = "https://" + url;
     }
-    
     const safeUrl = getSafeUrl(url);
     if (!safeUrl) {
         alert("http:// または https:// で始まる有効なURLを入力してください。");
@@ -177,6 +195,7 @@ export function addBookmark() {
     userConfig.bookmarks.push({ title, url: safeUrl });
     save();
     renderBookmarks();
+    closeBookmarkDialog();
 }
 
 export function deleteBookmark(index, event) {

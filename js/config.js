@@ -21,14 +21,59 @@ const fontStyles = [
 ];
 
 const bgGradients = {
-    'gradient-blue': 'linear-gradient(135deg, #232933 100%)',
-    'gradient-dark': 'linear-gradient(135deg, #7e8083 100%)',
-    'gradient-sunset': 'linear-gradient(135deg, #242a99 100%)',
-    'gradient-aurora': 'linear-gradient(135deg, #58178d 100%)',
-    'gradient-cyber': 'linear-gradient(135deg, #0e3b2f 100%)',
-    'gradient-deepsea': 'linear-gradient(135deg, #57031f 100%)',
+    'gradient-blue': '#203A52',
+    'gradient-dark': '#292F3A',
+    'gradient-sunset': '#4A2930',
+    'gradient-aurora': '#23483F',
+    'gradient-cyber': '#183D3A',
+    'gradient-deepsea': '#263C58',
+    'gradient-berry': '#42243B',
+    'gradient-citrus': '#4A3B1D',
+    'gradient-leaf': '#2B4630',
+    'gradient-lavender': '#342A50',
+    'gradient-cocoa': '#4A3028',
+    'gradient-teal': '#1D4448',
+    'gradient-rose': '#4A2737',
+    'gradient-indigo': '#2D3159',
+    'gradient-plum': '#40253F',
 };
 
+const colorCombos = [
+    { name: 'ブルーベリー', bgType: 'gradient-blue', theme: '#2F75A8' },
+    { name: 'オリーブ', bgType: 'gradient-dark', theme: '#6C7A3D' },
+    { name: 'アプリコット', bgType: 'gradient-sunset', theme: '#A94F45' },
+    { name: 'ミント', bgType: 'gradient-aurora', theme: '#2E8B72' },
+    { name: 'レモン', bgType: 'gradient-cyber', theme: '#927C2F' },
+    { name: 'サクラ', bgType: 'gradient-deepsea', theme: '#A94D68' },
+    { name: 'カモミール', bgType: 'gradient-berry', theme: '#A76A3E' },
+    { name: 'ラベンダー', bgType: 'gradient-lavender', theme: '#7054A0' },
+    { name: 'カカオ', bgType: 'gradient-cocoa', theme: '#936044' },
+    { name: 'ユーカリ', bgType: 'gradient-teal', theme: '#327D80' },
+    { name: 'ザクロ', bgType: 'gradient-rose', theme: '#A13E5D' },
+    { name: 'アイリス', bgType: 'gradient-indigo', theme: '#5C63A8' },
+    { name: 'プラム', bgType: 'gradient-plum', theme: '#914D86' },
+    { name: 'ローズマリー', bgType: 'gradient-leaf', theme: '#56804A' },
+    { name: 'マンダリン', bgType: 'gradient-citrus', theme: '#B66A2C' }
+];
+
+
+const searchEngines = {
+    google: {
+        action: "https://www.google.com/search",
+        placeholder: "Google で検索",
+        icon: "search"
+    },
+    bing: {
+        action: "https://www.bing.com/search",
+        placeholder: "Bing で検索",
+        icon: "travel_explore"
+    },
+    duckduckgo: {
+        action: "https://duckduckgo.com/",
+        placeholder: "DuckDuckGo で検索",
+        icon: "shield_with_heart"
+    }
+};
 
 // --- 固定ブックマーク（削除不可・フォルダ分け）の定義 ---
 const FIXED_BOOKMARKS = {
@@ -119,11 +164,40 @@ let userConfig = {
     bgType: "gradient-blue",
     bgImage: "",
     clock12h: false,
-    clockShowSec: false
+    clockShowSec: false,
+    searchEngine: "google",
+    healthLog: {
+        meals: {},
+        medications: []
+    }
 };
 
 function mergeUserConfig(parsed) {
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return;
+    
+    const defaultHealthLog = userConfig.healthLog || { meals: {}, medications: [] };
+    const parsedHealthLog = parsed.healthLog && typeof parsed.healthLog === 'object'
+        ? parsed.healthLog
+        : {};
+    
+    const mergedHealthLog = {
+        ...defaultHealthLog,
+        ...parsedHealthLog,
+        meals: {
+            ...(defaultHealthLog.meals || {}),
+            ...(parsedHealthLog.meals || {})
+        }
+    };
+    
+    if (Array.isArray(parsedHealthLog.medications)) {
+        // 保存された服薬状況がある場合は、マージ
+        mergedHealthLog.medications = defaultHealthLog.medications.map(defMed => {
+            const savedMed = parsedHealthLog.medications.find(m => m && m.id === defMed.id);
+            return savedMed ? { ...defMed, taken: Boolean(savedMed.taken) } : defMed;
+        });
+    } else {
+        mergedHealthLog.medications = [...defaultHealthLog.medications];
+    }
 
     const safeBookmarks = Array.isArray(parsed.bookmarks)
         ? parsed.bookmarks
@@ -142,19 +216,29 @@ function mergeUserConfig(parsed) {
 
     userConfig = {
         ...userConfig,
-        username: typeof parsed.username === 'string' ? parsed.username : userConfig.username,
-        memo: typeof parsed.memo === 'string' ? parsed.memo : userConfig.memo,
+        ...parsed,
         bookmarks: safeBookmarks,
         todoList: safeTodos,
-        theme: themes.includes(parsed.theme) ? parsed.theme : userConfig.theme,
+        theme: themes.includes(parsed.theme) || colorCombos.some(combo => combo.theme === parsed.theme)
+            ? parsed.theme
+            : userConfig.theme,
         fontFamily: fontStyles.some(font => font.family === parsed.fontFamily)
             ? parsed.fontFamily
             : userConfig.fontFamily,
         bgType: Object.hasOwn(bgGradients, parsed.bgType) ? parsed.bgType : userConfig.bgType,
         bgImage: safeBackgroundImage,
         clock12h: typeof parsed.clock12h === 'boolean' ? parsed.clock12h : userConfig.clock12h,
-        clockShowSec: typeof parsed.clockShowSec === 'boolean' ? parsed.clockShowSec : userConfig.clockShowSec
+        clockShowSec: typeof parsed.clockShowSec === 'boolean' ? parsed.clockShowSec : userConfig.clockShowSec,
+        searchEngine: Object.hasOwn(searchEngines, parsed.searchEngine)
+            ? parsed.searchEngine
+            : userConfig.searchEngine,
+        calendarEvents: parsed.calendarEvents && typeof parsed.calendarEvents === 'object'
+            ? parsed.calendarEvents
+            : {},
+        healthLog: mergedHealthLog
     };
+
+    delete userConfig.mode;
 }
 
 export {
@@ -163,6 +247,8 @@ export {
     themes,
     fontStyles,
     bgGradients,
+    colorCombos,
+    searchEngines,
     FIXED_BOOKMARKS,
     userConfig,
     mergeUserConfig
