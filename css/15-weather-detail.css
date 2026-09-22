@@ -2,82 +2,182 @@
 
 .weather-modal {
     position: fixed !important;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 99999;
-    background: rgba(0, 0, 0, 0.5);
+    z-index: 100000;
+    background: rgba(15, 23, 42, 0.45);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    
-    /* 初期状態は非表示（これがないと画面に出っぱなしになる） */
-    display: none;
+    cursor: pointer;
+    display: grid !important;
     place-items: center;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.22s ease, visibility 0.22s ease;
 }
 
-/* active クラスがついたらモーダル表示 */
 .weather-modal.active {
-    display: grid !important;
     opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
 .weather-modal-content {
-    background: rgba(30, 41, 59, 0.9);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    border-radius: 24px;
-    width: 90%;
-    max-width: 500px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+    border-radius: 26px;
+    width: min(92vw, 560px);
+    max-height: 86vh;
+    overflow-y: auto;
     padding: 24px;
     position: relative;
-    transform: translateY(20px);
-    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    cursor: default;
+    transform: scale(0.93) translateY(14px);
+    opacity: 0;
+    transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease;
 }
 
 .weather-modal.active .weather-modal-content {
-    transform: translateY(0);
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
 }
 
 .weather-modal-close {
     position: absolute;
     top: 16px;
     right: 16px;
+    z-index: 2;
 }
 
-/* モーダル内部のレイアウト */
+/* メインヘッダー */
 .weather-detail-main {
     display: flex;
     align-items: center;
-    gap: 20px;
-    padding-bottom: 20px;
+    gap: 18px;
+    padding-bottom: 18px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    margin-bottom: 20px;
+    margin-bottom: 18px;
+}
+
+.weather-detail-icon-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    background: rgba(var(--p-rgb), 0.14);
+    border: 1px solid rgba(var(--p-rgb), 0.28);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+}
+
+.weather-detail-icon-wrap .material-symbols-outlined {
+    font-size: 38px;
+    color: var(--p-strong);
+}
+
+.detail-main-text {
+    flex: 1;
+    min-width: 0;
 }
 
 .detail-main-text h2 {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
     font-weight: 700;
     color: #fff;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .detail-temp-row {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .detail-temp {
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     font-weight: 800;
-    color: var(--p);
+    color: var(--p-strong);
+    line-height: 1;
 }
 
-.detail-meta {
-    font-size: 0.8rem;
+.detail-high-low {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.detail-apparent {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* 4つの気象指標カード (2x2) */
+.weather-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.weather-metric-card {
+    background: var(--control-bg);
+    border: 1px solid var(--control-border);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.metric-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    display: grid;
+    place-items: center;
+    color: var(--p-strong);
+    flex-shrink: 0;
+}
+
+.metric-icon .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.metric-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.metric-label {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.metric-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.metric-sub {
+    font-size: 0.7rem;
     color: var(--text-secondary);
 }
 
@@ -86,49 +186,117 @@
     font-size: 0.9rem;
     font-weight: 700;
     color: #fff;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.weather-hourly-section h4 .material-symbols-outlined {
+    font-size: 18px;
+    color: var(--p-strong);
 }
 
 .weather-hourly-grid {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 7px;
     max-height: 240px;
     overflow-y: auto;
+    padding-right: 4px;
+}
+
+.weather-hourly-grid::-webkit-scrollbar {
+    width: 4px;
+}
+
+.weather-hourly-grid::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 2px;
 }
 
 .weather-hourly-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(255, 255, 255, 0.025);
     border: 1px solid rgba(255, 255, 255, 0.04);
-    padding: 10px 16px;
+    padding: 9px 14px;
     border-radius: 12px;
-    font-size: 0.85rem;
+    font-size: 0.84rem;
+    transition: background-color 0.18s ease;
+}
+
+.weather-hourly-item:hover {
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .hourly-time {
     font-weight: 700;
     color: var(--text-secondary);
-    min-width: 50px;
+    min-width: 68px;
+    font-size: 0.8rem;
+}
+
+.hourly-weather {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    color: #fff;
+}
+
+.hourly-weather .material-symbols-outlined {
+    font-size: 18px;
+    color: var(--p-strong);
+}
+
+.hourly-weather-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .hourly-temp {
     font-weight: 700;
     color: #fff;
-    min-width: 50px;
-    text-align: center;
+    min-width: 46px;
+    text-align: right;
+    font-size: 0.9rem;
 }
 
 .hourly-prec {
-    color: var(--p);
-    min-width: 70px;
+    color: var(--p-strong);
+    min-width: 58px;
     text-align: right;
+    font-size: 0.78rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
 }
 
 .hourly-hum {
     color: var(--text-secondary);
-    min-width: 70px;
+    min-width: 52px;
     text-align: right;
+    font-size: 0.78rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
+}
+
+@media (max-width: 480px) {
+    .weather-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    .weather-modal-content {
+        padding: 18px;
+    }
+    .hourly-weather-text {
+        display: none;
+    }
 }

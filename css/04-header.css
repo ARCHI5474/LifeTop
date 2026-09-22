@@ -172,3 +172,41 @@
         gap: 8px;
     }
 }
+/* Glass user badge */
+.user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    padding: 7px 15px 7px 7px;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    background: var(--control-bg);
+    color: var(--text-color);
+    font: inherit;
+    cursor: pointer;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .14);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.user-avatar {
+    display: grid;
+    place-items: center;
+    flex: 0 0 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(var(--p-rgb), .18);
+    color: var(--p-strong);
+}
+.user-badge:hover {
+    transform: translateY(-2px);
+    border-color: var(--p);
+    box-shadow: 0 8px 25px rgba(var(--p-rgb), .22);
+}
+.user-badge:focus-visible { outline: 2px solid var(--p); outline-offset: 4px; }
+@media (max-width: 600px) {
+    .dashboard-header { flex-wrap: wrap; gap: 10px; }
+    .header-left { flex: 1; }
+    .user-badge { padding-right: 10px; gap: 6px; }
+    .user-avatar { flex-basis: 28px; height: 28px; }
+}

@@ -1,8 +1,8 @@
-import { applyStyles, renderBgSelector } from "./styles.js?v=3.9.17";
+import { applyStyles, renderBgSelector } from "./styles.js?v=3.9.24";
 
 /* LifeTop - application entry point */
-import { userConfig } from "./config.js?v=3.9.18";
-import { loadData, save } from "./storage.js";
+import { userConfig } from "./config.js?v=3.9.24";
+import { loadData, save } from "./storage.js?v=3.9.24";
 import {
     initPickers,
     setTheme,
@@ -15,8 +15,8 @@ import {
     toggleSettings,
     toggleHelp,
     
-} from "./settings.js?v=3.9.19";
-import { updateClock, updateGreeting } from "./clock.js?v=3.9.1";
+} from "./settings.js?v=3.9.24";
+import { updateClock, updateGreeting } from "./clock.js?v=3.9.24";
 import { initSearchSuggestions } from "./search.js";
 import {
     toggleBookmarkEditMode,
@@ -36,11 +36,18 @@ import {
     toggleTodo,
     deleteTodo,
     switchUtilityTab
-} from "./todo.js";
+} from "./todo.js?v=3.9.25";
 import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js";
+import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=3.9.25";
 
 // HTMLのイベントハンドラーから呼び出す関数
 Object.assign(window, {
+    switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer,
+    stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap,
+    openUsernameSettings() {
+        if (!document.getElementById('settings-panel').classList.contains('active')) toggleSettings();
+        document.getElementById('username-input').focus();
+    },
     toggleSettings,
     toggleHelp,
     setTheme,
@@ -68,8 +75,16 @@ Object.assign(window, {
 });
 
 document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && document.getElementById('help-modal')?.classList.contains('active')) {
-        toggleHelp();
+    if (event.key === 'Escape') {
+        if (document.getElementById('weather-detail-modal')?.classList.contains('active')) {
+            closeWeatherDetail();
+        } else if (document.getElementById('bookmark-dialog')?.classList.contains('active')) {
+            closeBookmarkDialog();
+        } else if (document.getElementById('settings-panel')?.classList.contains('active')) {
+            toggleSettings();
+        } else if (document.getElementById('help-modal')?.classList.contains('active')) {
+            toggleHelp();
+        }
     }
 });
 
@@ -85,6 +100,7 @@ window.addEventListener('load', () => {
     applyStyles();
     renderBookmarks();
     renderTodoList();
+    initClockTools();
     renderBgSelector();
     initPickers();
     initSearchSuggestions();
@@ -103,8 +119,8 @@ window.addEventListener('load', () => {
 
     const loadingScreen = document.getElementById('loading-screen');
     if (loadingScreen) {
-        window.setTimeout(() => loadingScreen.classList.add('is-hidden'), 5000);
-        window.setTimeout(() => loadingScreen.remove(), 5500);
+        window.setTimeout(() => loadingScreen.classList.add('is-hidden'), 400);
+        window.setTimeout(() => loadingScreen.remove(), 950);
     }
 
     setInterval(updateClock, 1000);

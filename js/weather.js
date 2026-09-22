@@ -31,7 +31,8 @@ export async function getWeatherData(lat, lon) {
     const iconEl = document.getElementById('weather-icon');
     
     try {
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,wind_speed_10m&timezone=auto`);
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,weathercode,wind_speed_10m&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&timezone=auto`;
+        const res = await fetch(url);
         if (!res.ok) throw new Error(`Weather request failed: ${res.status}`);
         const data = await res.json();
         
@@ -59,6 +60,13 @@ export async function getWeatherData(lat, lon) {
 export function showWeatherDetail() {
     const modal = document.getElementById('weather-detail-modal');
     if (!modal) return;
+
+    if (!modal.dataset.listenerAttached) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeWeatherDetail();
+        });
+        modal.dataset.listenerAttached = 'true';
+    }
     
     if (!savedWeatherData) {
         alert("お天気データを読み込めませんでした。時間をおいて再度お試しください。");
@@ -70,56 +78,143 @@ export function showWeatherDetail() {
     
     const current = savedWeatherData.current_weather;
     const hourly = savedWeatherData.hourly;
+    const daily = savedWeatherData.daily || {};
     if (!current || !hourly || !Array.isArray(hourly.time)) {
         alert("お天気データの形式が正しくありません。再読み込みしてください。");
         return;
     }
 
-    const currentIndex = Math.max(0, hourly.time.indexOf(current.time));
+    let currentIndex = hourly.time.indexOf(current.time);
+    if (currentIndex === -1) {
+        const nowMs = Date.now();
+        let closestDiff = Infinity;
+        hourly.time.forEach((t, idx) => {
+            const diff = Math.abs(new Date(t).getTime() - nowMs);
+            if (diff < closestDiff) {
+                closestDiff = diff;
+                currentIndex = idx;
+            }
+        });
+        if (currentIndex === -1) currentIndex = 0;
+    }
+
     const humidity = Array.isArray(hourly.relative_humidity_2m)
         ? `${hourly.relative_humidity_2m[currentIndex] ?? '--'}%`
         : "--";
-    const wind = current.windspeed + " km/h";
-    
+    const apparentTemp = Array.isArray(hourly.apparent_temperature) && hourly.apparent_temperature[currentIndex] != null
+        ? `${Math.round(hourly.apparent_temperature[currentIndex])}°C`
+        : `${Math.round(current.temperature)}°C`;
+    const wind = `${Math.round(current.windspeed)} km/h`;
+
+    const maxTemp = Array.isArray(daily.temperature_2m_max) && daily.temperature_2m_max[0] != null
+        ? `${Math.round(daily.temperature_2m_max[0])}°C`
+        : "--";
+    const minTemp = Array.isArray(daily.temperature_2m_min) && daily.temperature_2m_min[0] != null
+        ? `${Math.round(daily.temperature_2m_min[0])}°C`
+        : "--";
+    const uvMax = Array.isArray(daily.uv_index_max) && daily.uv_index_max[0] != null
+        ? Math.round(daily.uv_index_max[0])
+        : "--";
+    const sunrise = formatTimeStr(daily.sunrise?.[0]);
+    const sunset = formatTimeStr(daily.sunset?.[0]);
+    const uvLevel = getUvLevel(uvMax);
+
     // 3時間おきの詳細データを作成
     let hourlyHtml = "";
+    const todayDate = new Date().getDate();
     
     // 今後24時間の中から3時間おきに8点表示
     for (let i = currentIndex; i < Math.min(currentIndex + 24, hourly.time.length); i += 3) {
         if (!hourly.time[i]) break;
         const time = new Date(hourly.time[i]);
         const hour = time.getHours();
+        const timeDate = time.getDate();
+        const dayLabel = (timeDate !== todayDate) ? "明日 " : "";
         const temp = Math.round(hourly.temperature_2m[i]);
         const hum = hourly.relative_humidity_2m ? hourly.relative_humidity_2m[i] : "--";
         const prec = hourly.precipitation_probability ? hourly.precipitation_probability[i] : "--";
+        const code = hourly.weathercode ? hourly.weathercode[i] : current.weathercode;
+        const wInfo = parseWeatherCode(code);
         
         hourlyHtml += `
             <div class="weather-hourly-item">
-                <span class="hourly-time">${hour}:00</span>
+                <span class="hourly-time">${dayLabel}${hour}:00</span>
+                <div class="hourly-weather">
+                    <span class="material-symbols-outlined">${wInfo.icon}</span>
+                    <span class="hourly-weather-text">${wInfo.text}</span>
+                </div>
                 <span class="hourly-temp">${temp}°C</span>
-                <span class="hourly-prec">
-                    <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">umbrella</span> ${prec}%
+                <span class="hourly-prec" title="降水確率">
+                    <span class="material-symbols-outlined" style="font-size: 14px;">umbrella</span> ${prec}%
                 </span>
-                <span class="hourly-hum">
-                    <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">water_drop</span> ${hum}%
+                <span class="hourly-hum" title="湿度">
+                    <span class="material-symbols-outlined" style="font-size: 14px;">water_drop</span> ${hum}%
                 </span>
             </div>
         `;
     }
+
+    const currentWeatherInfo = parseWeatherCode(current.weathercode);
     
     container.innerHTML = `
         <div class="weather-detail-main">
-            <span class="material-symbols-outlined" style="font-size: 52px; color: var(--p);">${parseWeatherCode(current.weathercode).icon}</span>
+            <div class="weather-detail-icon-wrap">
+                <span class="material-symbols-outlined">${currentWeatherInfo.icon}</span>
+            </div>
             <div class="detail-main-text">
-                <h2>${parseWeatherCode(current.weathercode).text}</h2>
+                <h2>${currentWeatherInfo.text}</h2>
                 <div class="detail-temp-row">
                     <span class="detail-temp">${Math.round(current.temperature)}°C</span>
-                    <span class="detail-meta">湿度: ${humidity} | 風速: ${wind}</span>
+                    <div class="detail-high-low">
+                        <span>↑ ${maxTemp}</span>
+                        <span>↓ ${minTemp}</span>
+                    </div>
+                </div>
+                <div class="detail-apparent">体感温度: ${apparentTemp}</div>
+            </div>
+        </div>
+
+        <div class="weather-metrics-grid">
+            <div class="weather-metric-card">
+                <div class="metric-icon">
+                    <span class="material-symbols-outlined">water_drop</span>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-label">湿度</span>
+                    <span class="metric-value">${humidity}</span>
+                </div>
+            </div>
+            <div class="weather-metric-card">
+                <div class="metric-icon">
+                    <span class="material-symbols-outlined">air</span>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-label">風速</span>
+                    <span class="metric-value">${wind}</span>
+                </div>
+            </div>
+            <div class="weather-metric-card">
+                <div class="metric-icon">
+                    <span class="material-symbols-outlined">sunny</span>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-label">UV指数</span>
+                    <span class="metric-value">${uvMax} <span class="metric-sub">${uvLevel}</span></span>
+                </div>
+            </div>
+            <div class="weather-metric-card">
+                <div class="metric-icon">
+                    <span class="material-symbols-outlined">wb_twilight</span>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-label">日の出 / 日の入り</span>
+                    <span class="metric-value">${sunrise} / ${sunset}</span>
                 </div>
             </div>
         </div>
+
         <div class="weather-hourly-section">
-            <h4>3時間ごとの予報</h4>
+            <h4><span class="material-symbols-outlined">schedule</span> 3時間ごとの予報</h4>
             <div class="weather-hourly-grid">
                 ${hourlyHtml}
             </div>
@@ -127,6 +222,24 @@ export function showWeatherDetail() {
     `;
     
     modal.classList.add('active');
+}
+
+function formatTimeStr(isoStr) {
+    if (!isoStr) return "--:--";
+    try {
+        const d = new Date(isoStr);
+        return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+    } catch {
+        return "--:--";
+    }
+}
+
+function getUvLevel(uv) {
+    if (uv == null || uv === "--" || isNaN(uv)) return "";
+    if (uv < 3) return "弱";
+    if (uv < 6) return "中";
+    if (uv < 8) return "強";
+    return "極強";
 }
 
 export function closeWeatherDetail() {

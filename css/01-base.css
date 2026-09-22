@@ -81,7 +81,7 @@
     height: 100%;
     background: var(--p-strong);
     border-radius: inherit;
-    animation: loadingProgress 5s linear forwards;
+    animation: loadingProgress 0.4s linear forwards;
 }
 
 @keyframes loadingBounce {
@@ -143,4 +143,21 @@ body {
 .bg-option:active {
     transform: scale(0.96);
     transition: transform 0.08s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Ambient startup */
+.loading-screen { overflow: hidden; }
+.loading-glow { position: absolute; width: min(85vw, 540px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(var(--p-rgb), .22), transparent 68%); animation: loadingPulse 3s ease-in-out infinite; pointer-events: none; }
+.loading-spinner-wrap { position: relative; width: 64px; height: 64px; }
+.loading-ring { position: absolute; inset: 0; border: 2px solid rgba(var(--p-rgb), .16); border-top-color: var(--p-strong); border-right-color: var(--p); border-radius: 50%; box-shadow: 0 0 24px rgba(var(--p-rgb), .2); animation: loadingSpin 1.2s linear infinite; }
+.loading-dot { position: absolute; width: 8px; height: 8px; top: 28px; left: 28px; border-radius: 50%; background: var(--p-strong); box-shadow: 0 0 18px var(--p); }
+.loading-brand { position: relative; text-align: center; }
+.loading-logo { font-size: 2.4rem; font-weight: 700; letter-spacing: -.04em; background: linear-gradient(120deg, #fff, var(--p-strong), var(--p)); background-clip: text; -webkit-background-clip: text; color: transparent; }
+.loading-sub { display: block; margin-top: 6px; font-size: .6rem; letter-spacing: .3em; color: #b4c5de; }
+.loading-progress span { animation: loadingProgress 1.2s ease-in-out infinite; }
+@keyframes loadingSpin { to { transform: rotate(360deg); } }
+@keyframes loadingPulse { 50% { opacity: .55; transform: scale(.9); } }
+@media (prefers-reduced-motion: reduce) {
+    .loading-glow, .loading-ring, .loading-progress span { animation: none; }
+    .loading-screen { transition: none; }
 }

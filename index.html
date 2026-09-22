@@ -4,18 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LifeTop│いつものネットを、ここから。</title>
-    <!-- Google Fonts: Outfit (Main), and other classic styles as options -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Courier+Prime&family=DotGothic16&family=M+PLUS+1+Code&family=Oswald:wght@300&family=Roboto+Mono:wght@200&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@500;700&family=Comfortaa:wght@400;700&family=Courier+Prime&family=DotGothic16&family=M+PLUS+1+Code&family=Oswald:wght@300;400;700&family=Outfit:wght@300;400;500;700;900&family=Righteous&family=Roboto+Mono:wght@200;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <!-- Material Symbols Outlined -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="css/style.css?v=3.9.22">
+    <link rel="stylesheet" href="css/style.css?v=3.9.25">
 </head>
 <body>
 
 <!-- 起動時のローディング演出 -->
 <div class="loading-screen" id="loading-screen" aria-live="polite">
-    <div class="loading-mark" aria-hidden="true"><span></span><span></span><span></span></div>
-    <p>LifeTop</p>
+    <div class="loading-glow" aria-hidden="true"></div>
+    <div class="loading-spinner-wrap" aria-hidden="true">
+        <div class="loading-ring"></div>
+        <span class="loading-dot"></span>
+    </div>
+    <div class="loading-brand">
+        <h1 class="loading-logo">LifeTop</h1>
+        <span class="loading-sub">PLEASANTLY QUICK</span>
+    </div>
     <div class="loading-progress" aria-hidden="true"><span></span></div>
 </div>
 
@@ -33,7 +39,13 @@
                 <span id="weather-desc">読込中...</span>
             </div>
         </div>
-        <div class="header-user-name animate-fade-in" id="header-user-name">ゲスト</div>
+        <!-- ユーザー名バッジ（設定へのショートカット付き） -->
+        <button type="button" class="user-badge animate-fade-in" id="user-badge" onclick="openUsernameSettings()" title="ユーザー名設定を開く">
+            <span class="user-avatar">
+                <span class="material-symbols-outlined">person</span>
+            </span>
+            <span class="header-user-name" id="header-user-name">ゲスト</span>
+        </button>
     </div>
     <div class="header-right">
         <!-- ヘルプトリガー -->
@@ -48,7 +60,7 @@
 <div class="modal-overlay" id="help-overlay" onclick="toggleHelp()"></div>
 
 <div class="help-modal" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
-    <div class="help-modal-card animate-pop-in">
+    <div class="help-modal-card">
         <div class="popup-modal-header">
             <div>
                 <p class="help-kicker">LIFETOP GUIDE</p>
@@ -73,7 +85,7 @@
             </section>
             <section class="help-item">
                 <span class="material-symbols-outlined">dashboard_customize</span>
-                <div><h3>Quickライフ</h3><p>Quickタスクではやることを管理し、Quickメモではメモを自動保存できます。タブで切り替えて使います。</p></div>
+                <div><h3>Quickライフ</h3><p>Quickタスクではやることを管理し、Quickメモではメモを自動保存できます。Quickクロックではタイマーとラップ付きストップウォッチを使えます。タブで切り替えて使います。</p></div>
             </section>
             <section class="help-item">
                 <span class="material-symbols-outlined">palette</span>
@@ -97,7 +109,7 @@
         </div>
         <div id="date-display" class="animate-fade-in" style="animation-delay: 0.1s;">2026年7月10日 (金)</div>
         <div id="greeting" class="animate-fade-in" style="animation-delay: 0.2s;">ようこそ</div>
-        
+
         <div class="search-container animate-fade-in" style="animation-delay: 0.3s;">
             <form action="https://www.google.com/search" method="get" class="search-form" id="search-form">
                 <span class="material-symbols-outlined search-icon" aria-hidden="true">search</span>
@@ -111,7 +123,7 @@
     <!-- コンテンツグリッド -->
     <div class="container">
         <div class="dashboard-grid animate-fade-in" style="animation-delay: 0.4s;">
-            
+
             <!-- ブックマーク -->
             <div class="card glass-card bookmark-card">
                 <div class="card-header">
@@ -125,9 +137,9 @@
                     <button class="tab-scroll-btn prev" onclick="scrollTabs(-150)">
                         <span class="material-symbols-outlined">chevron_left</span>
                     </button>
-                    
+
                     <div class="bookmark-tabs" id="bookmark-tabs"></div>
-                    
+
                     <button class="tab-scroll-btn next" onclick="scrollTabs(150)">
                         <span class="material-symbols-outlined">chevron_right</span>
                     </button>
@@ -135,17 +147,18 @@
                 <div class="bookmark-grid" id="bookmark-grid"></div>
                 <button class="add-bookmark-btn" onclick="openBookmarkDialog()"><span class="material-symbols-outlined">add</span> 追加</button>
             </div>
-            
+
             <!-- Quickライフ (タスクとメモのタブ切り替え) -->
             <div class="card glass-card utility-card">
                 <div class="card-header utility-card-header">
                     <h3><span class="material-symbols-outlined">dashboard_customize</span> Quickライフ</h3>
                 </div>
                 <div class="utility-tabs" role="tablist" aria-label="Quickライフ">
-                    <button class="tab-btn active" type="button" role="tab" aria-selected="true" onclick="switchUtilityTab('todo')">Quickタスク</button>
-                    <button class="tab-btn" type="button" role="tab" aria-selected="false" onclick="switchUtilityTab('memo')">Quickメモ</button>
+                    <button class="tab-btn active" data-tab="todo" type="button" role="tab" aria-selected="true" onclick="switchUtilityTab('todo')">Quickタスク</button>
+                    <button class="tab-btn" data-tab="memo" type="button" role="tab" aria-selected="false" onclick="switchUtilityTab('memo')">Quickメモ</button>
+                    <button class="tab-btn" data-tab="clock" type="button" role="tab" aria-selected="false" onclick="switchUtilityTab('clock')">Quickクロック</button>
                 </div>
-                
+
                 <!-- ToDoタブ -->
                 <div id="todo-tab-content" class="tab-content active">
                     <div class="todo-input-wrapper">
@@ -156,10 +169,74 @@
                         <!-- 動的に挿入 -->
                     </ul>
                 </div>
-                
+
                 <!-- メモタブ -->
                 <div id="memo-tab-content" class="tab-content">
                     <textarea id="memo-area" placeholder="メモは自動保存されます。"></textarea>
+                </div>
+
+                <!-- クロックタブ (タイマー & ストップウォッチ) -->
+                <div id="clock-tab-content" class="tab-content">
+                    <div class="clock-tool-switch">
+                        <button type="button" class="tool-tab-btn active" id="tool-tab-timer" onclick="switchClockToolTab('timer')">
+                            <span class="material-symbols-outlined">timer</span> タイマー
+                        </button>
+                        <button type="button" class="tool-tab-btn" id="tool-tab-sw" onclick="switchClockToolTab('stopwatch')">
+                            <span class="material-symbols-outlined">pace</span> ストップウォッチ
+                        </button>
+                    </div>
+
+                    <!-- タイマーアラーム鳴動時バナー -->
+                    <div class="timer-alarm-banner" id="timer-alarm-banner" role="status" aria-live="polite">
+                        <div class="alarm-banner-content">
+                            <span class="material-symbols-outlined alarm-icon">notifications_active</span>
+                            <span>時間になりました！</span>
+                            <button type="button" class="alarm-stop-btn" onclick="stopAlarmSound()">アラーム停止</button>
+                        </div>
+                    </div>
+
+                    <!-- タイマーパネル -->
+                    <div class="clock-tool-pane active" id="clock-timer-pane">
+                        <div class="clock-time-display" id="timer-display">05:00</div>
+
+                        <div class="timer-presets">
+                            <button type="button" class="timer-preset-btn" onclick="setTimerPreset(1)">1分</button>
+                            <button type="button" class="timer-preset-btn" onclick="setTimerPreset(3)">3分</button>
+                            <button type="button" class="timer-preset-btn" onclick="setTimerPreset(5)">5分</button>
+                            <button type="button" class="timer-preset-btn" onclick="setTimerPreset(10)">10分</button>
+                            <button type="button" class="timer-preset-btn pomodoro" onclick="setTimerPreset(25)">25分</button>
+                        </div>
+
+                        <div class="clock-ctrl-row">
+                            <button type="button" class="ctrl-btn secondary-ctrl" onclick="adjustTimer(-60)" title="1分減らす">-1分</button>
+                            <button type="button" class="ctrl-btn primary-ctrl" id="timer-start-btn" onclick="toggleTimer()">
+                                <span class="material-symbols-outlined">play_arrow</span> スタート
+                            </button>
+                            <button type="button" class="ctrl-btn secondary-ctrl" onclick="adjustTimer(60)" title="1分増やす">+1分</button>
+                            <button type="button" class="ctrl-btn text-ctrl" onclick="resetTimer()" title="リセット">
+                                <span class="material-symbols-outlined">replay</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ストップウォッチパネル -->
+                    <div class="clock-tool-pane" id="clock-stopwatch-pane">
+                        <div class="clock-time-display" id="stopwatch-display">00:00.00</div>
+
+                        <div class="clock-ctrl-row">
+                            <button type="button" class="ctrl-btn secondary-ctrl" onclick="recordLap()">
+                                <span class="material-symbols-outlined">flag</span> ラップ
+                            </button>
+                            <button type="button" class="ctrl-btn primary-ctrl" id="sw-start-btn" onclick="toggleStopwatch()">
+                                <span class="material-symbols-outlined">play_arrow</span> スタート
+                            </button>
+                            <button type="button" class="ctrl-btn text-ctrl" onclick="resetStopwatch()" title="リセット">
+                                <span class="material-symbols-outlined">replay</span>
+                            </button>
+                        </div>
+
+                        <div class="stopwatch-laps-wrapper" id="stopwatch-laps"></div>
+                    </div>
                 </div>
             </div>
 
@@ -173,7 +250,7 @@
         <h2>Quickパネル</h2>
         <button class="icon-btn" onclick="toggleSettings()"><span class="material-symbols-outlined">close</span></button>
     </div>
-    
+
     <div class="settings-body">
         <!-- お知らせ -->
         <div class="notice-board" id="notice-area">
@@ -209,12 +286,12 @@
         <div class="settings-section">
             <label class="settings-label">時計の設定</label>
             <div class="toggle-wrapper">
-                <span>12時間表記</span>
-                <input type="checkbox" id="clock-12h-toggle" onchange="toggleClock12h(this.checked)">
+                <label for="clock-12h-toggle">12時間表記</label>
+                <label class="switch"><input type="checkbox" id="clock-12h-toggle" onchange="toggleClock12h(this.checked)"><span class="slider" aria-hidden="true"></span></label>
             </div>
             <div class="toggle-wrapper">
-                <span>秒数を表示</span>
-                <input type="checkbox" id="clock-show-sec-toggle" onchange="toggleClockSec(this.checked)">
+                <label for="clock-show-sec-toggle">秒数を表示</label>
+                <label class="switch"><input type="checkbox" id="clock-show-sec-toggle" onchange="toggleClockSec(this.checked)"><span class="slider" aria-hidden="true"></span></label>
             </div>
         </div>
 
@@ -228,7 +305,7 @@
 
 <!-- 天気拡張表示 -->
 <div class="weather-modal" id="weather-detail-modal">
-    <div class="weather-modal-content animate-pop-in">
+    <div class="weather-modal-content">
         <button class="icon-btn weather-modal-close" onclick="closeWeatherDetail()" title="閉じる">
             <span class="material-symbols-outlined">close</span>
         </button>
@@ -240,7 +317,7 @@
 
 <div class="modal-overlay" id="bookmark-dialog-overlay" onclick="closeBookmarkDialog()"></div>
 <div class="popup-modal" id="bookmark-dialog">
-    <div class="popup-modal-card animate-pop-in">
+    <div class="popup-modal-card">
         <div class="popup-modal-header">
             <h3>Quickアクセスを追加</h3>
             <button type="button" class="icon-btn" onclick="closeBookmarkDialog()" aria-label="閉じる">
@@ -264,7 +341,7 @@
     </div>
 </div>
 
-<script type="module" src="./js/main.js?v=3.9.20"></script>
+<script type="module" src="./js/main.js?v=3.9.25"></script>
 
 </body>
 </html>

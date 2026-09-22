@@ -65,6 +65,7 @@ function renderSuggestions(input, list) {
 }
 
 function handleKeyboard(event, input, list) {
+    if (event.isComposing) return;
     if (!suggestions.length) return;
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
         event.preventDefault();
@@ -75,8 +76,10 @@ function handleKeyboard(event, input, list) {
     } else if (event.key === 'Escape') {
         clearSuggestions(input, list);
     } else if (event.key === 'Enter' && activeIndex >= 0) {
+        event.preventDefault();
         input.value = suggestions[activeIndex];
         clearSuggestions(input, list);
+        input.form?.requestSubmit();
     }
 }
 

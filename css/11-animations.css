@@ -2,32 +2,30 @@
     LifeTop - Bounce-focused animations
     =================================================== */
 
-/* 1. 基本パーツのホバー／タップフィードバック */
+/* 1. 基本パーツのホバー／タップフィードバック（各コンポーネントの変形と滑らかに連携） */
 a, button, .bookmark-item, .icon-btn, .icon-btn-small {
-    transition: background-color 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+                background-color 0.18s ease,
+                border-color 0.18s ease,
+                opacity 0.18s ease,
+                box-shadow 0.18s ease;
 }
 
-/* ホバー時：一度だけ軽く弾ませる */
-a:hover, button:hover, .bookmark-item:hover, .icon-btn:hover {
-    animation: softBounce 0.32s cubic-bezier(0.22, 1.2, 0.36, 1) both;
-}
-
-/* クリック時：短く押し戻す */
-a:active, button:active, .bookmark-item:active, .icon-btn:active {
-    animation: pressBounce 0.14s ease-out both;
+/* アニメーション用ヘルパークラス（必要時に適用可能） */
+.animate-bounce-hover:hover {
+    animation: softBounce 0.32s cubic-bezier(0.22, 1.2, 0.36, 1);
 }
 
 @keyframes softBounce {
     0% { transform: translateY(0) scale(1); }
-    45% { transform: translateY(-2px) scale(1.01); }
-    72% { transform: translateY(1px) scale(0.998); }
-    100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-3px) scale(1.02); }
+    100% { transform: translateY(-2px) scale(1.01); }
 }
 
 @keyframes pressBounce {
     0% { transform: scale(1); }
-    55% { transform: scale(0.97); }
-    100% { transform: scale(0.99); }
+    60% { transform: scale(0.96); }
+    100% { transform: scale(0.98); }
 }
 
 /* 2. ページ読み込み時のバウンスイン */

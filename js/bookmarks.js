@@ -1,5 +1,5 @@
 /* LifeTop - bookmarks */
-import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=3.9.18";
+import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=3.9.24";
 import { save } from "./storage.js";
 
 let bookmarkEditMode = false;
@@ -126,9 +126,13 @@ const faviconUrl = domain
             </button>
         `;
 
+        const linkAttrs = url
+            ? `href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"`
+            : `href="javascript:void(0)" onclick="event.preventDefault();" style="opacity: 0.6; cursor: not-allowed;"`;
+
         return `
-            <div class="bookmark-item-wrapper" style="position: relative;">
-                <a href="${escapeHtml(url)}" class="bookmark-item" target="_blank" rel="noopener noreferrer" title="${escapeHtml(title)}">
+            <div class="bookmark-item-wrapper" style="position: relative; --item-idx: ${index};">
+                <a ${linkAttrs} class="bookmark-item" title="${escapeHtml(title)}">
                     <div class="icon-wrapper">
                         ${iconHtml}
                     </div>
@@ -142,8 +146,15 @@ const faviconUrl = domain
 
 // フォルダ切り替え
 export function switchBookmarkTab(cat) {
+    if (currentBookmarkTab === cat) return;
     currentBookmarkTab = cat;
     renderBookmarks();
+    const grid = document.getElementById('bookmark-grid');
+    if (grid) {
+        grid.classList.remove('tab-switching');
+        void grid.offsetWidth;
+        grid.classList.add('tab-switching');
+    }
 }
 
 // タブを矢印ボタンで左右にスムーズスクロールさせる
@@ -201,7 +212,9 @@ export function addBookmark(titleInput, urlInput) {
 export function deleteBookmark(index, event) {
     event.preventDefault();
     event.stopPropagation();
-    if (confirm(`「${userConfig.bookmarks[index].title}」を削除しますか？`)) {
+    const item = userConfig.bookmarks?.[index];
+    if (!item) return;
+    if (confirm(`「${item.title}」を削除しますか？`)) {
         userConfig.bookmarks.splice(index, 1);
         save();
         renderBookmarks();

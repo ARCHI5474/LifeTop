@@ -4,7 +4,7 @@ import {
     STORAGE_KEY,
     userConfig,
     mergeUserConfig
-} from "./config.js?v=3.9.18";
+} from "./config.js?v=3.9.24";
 
 export function loadData() {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -21,6 +21,10 @@ export function loadData() {
     document.getElementById('username-input').value = userConfig.username || "";
     document.getElementById('clock-12h-toggle').checked = userConfig.clock12h;
     document.getElementById('clock-show-sec-toggle').checked = userConfig.clockShowSec;
+    const secEl = document.getElementById('clock-sec');
+    if (secEl) {
+        secEl.style.display = userConfig.clockShowSec ? 'block' : 'none';
+    }
     document.getElementById('notice-text').innerText = UPDATE_CONFIG.notice;
     document.querySelector('.notice-tag').innerText = UPDATE_CONFIG.tag;
 }

@@ -3,8 +3,8 @@
 LifeTop v3.1 Codename: "Pleasantly quick"
    ======================== */
 const UPDATE_CONFIG = {
-    notice: "LifeTop v3.5 一部不具合修正とテーマ追加",
-    tag: "LifeTop v3.5" 
+    notice: "LifeTop v3.7 UI改善と操作性の向上",
+    tag: "LifeTop v3.7" 
 };
 /* ========================================= */
 
@@ -17,7 +17,12 @@ const fontStyles = [
     { name: 'Digital', family: "'DotGothic16', sans-serif" },
     { name: 'Modern', family: "'Oswald', sans-serif" },
     { name: 'Mono', family: "'Roboto Mono', monospace" },
-    { name: 'Classic', family: "'Courier Prime', monospace" }
+    { name: 'Classic', family: "'Courier Prime', monospace" },
+    { name: 'Retro', family: "'Righteous', sans-serif" },
+    { name: 'Elegant', family: "'Cinzel', serif" },
+    { name: 'Bold', family: "'Bebas Neue', sans-serif" },
+    { name: 'Cyber', family: "'Space Mono', monospace" },
+    { name: 'Round', family: "'Comfortaa', sans-serif" }
 ];
 
 const bgGradients = {
@@ -36,6 +41,11 @@ const bgGradients = {
     'gradient-rose': '#4A2737',
     'gradient-indigo': '#2D3159',
     'gradient-plum': '#40253F',
+    'gradient-matcha': '#1F3324',
+    'gradient-neon': '#112936',
+    'gradient-midnight': '#181E38',
+    'gradient-sunrise': '#482D20',
+    'gradient-cherry': '#441B26'
 };
 
 const colorCombos = [
@@ -53,7 +63,12 @@ const colorCombos = [
     { name: 'アイリス', bgType: 'gradient-indigo', theme: '#5C63A8' },
     { name: 'プラム', bgType: 'gradient-plum', theme: '#914D86' },
     { name: 'ローズマリー', bgType: 'gradient-leaf', theme: '#56804A' },
-    { name: 'マンダリン', bgType: 'gradient-citrus', theme: '#B66A2C' }
+    { name: 'マンダリン', bgType: 'gradient-citrus', theme: '#B66A2C' },
+    { name: 'マッチャ', bgType: 'gradient-matcha', theme: '#4E8A56' },
+    { name: 'サイバー', bgType: 'gradient-neon', theme: '#22B4BA' },
+    { name: 'ミッドナイト', bgType: 'gradient-midnight', theme: '#4962A8' },
+    { name: 'サンライズ', bgType: 'gradient-sunrise', theme: '#C27339' },
+    { name: 'チェリー', bgType: 'gradient-cherry', theme: '#B53957' }
 ];
 
 

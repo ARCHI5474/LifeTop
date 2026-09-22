@@ -1,56 +1,53 @@
-/* 設定サイドパネル */
+/* 設定サイドパネル（縦長カードデザイン） */
 .settings-panel {
     position: fixed !important;
     top: 50%;
     left: 50%;
-    width: min(92vw, 920px);
+    width: min(92vw, 480px);
     height: auto;
-    max-height: 84vh;
+    max-height: 86vh;
     z-index: 100000;
     background: var(--panel-bg);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
     border: 1px solid var(--panel-border);
     border-radius: 28px;
-    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
     display: flex;
     flex-direction: column;
-    transform: translate(-50%, calc(-50% + 18px)) scale(0.96) !important;
+    transform: translate(-50%, calc(-50% + 16px)) scale(0.93) !important;
     opacity: 0;
     pointer-events: none;
-    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease !important;
+    transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease !important;
 }
 
 .settings-panel.active {
     transform: translate(-50%, -50%) scale(1) !important;
     opacity: 1;
     pointer-events: auto;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease !important;
 }
 
 .settings-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px;
+    padding: 22px 24px 18px;
     border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 .settings-header h2 {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     font-weight: 700;
 }
 
 .settings-body {
-    padding: 24px;
+    padding: 22px 24px 28px;
     overflow-y: auto;
     flex: 1;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
-}
-
-.settings-body > .notice-board {
-    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
 }
 
 .modal-overlay {
@@ -95,6 +92,15 @@
     border: 1px solid var(--panel-border);
     border-radius: 24px;
     box-shadow: var(--glass-shadow);
+    transform: scale(0.93) translateY(14px);
+    opacity: 0;
+    transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease;
+}
+
+.help-modal.active .help-modal-card {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
 }
 
 .help-kicker {
@@ -164,6 +170,15 @@
     border-radius: 22px;
     box-shadow: var(--glass-shadow);
     padding: 20px;
+    transform: scale(0.93) translateY(14px);
+    opacity: 0;
+    transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease;
+}
+
+.popup-modal.active .popup-modal-card {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
 }
 
 .popup-modal-header {
@@ -495,3 +510,15 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Keyboard-accessible animated switches */
+.switch { position: relative; display: inline-block; flex: 0 0 48px; width: 48px; height: 28px; }
+.switch input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; z-index: 1; cursor: pointer; margin: 0; }
+.slider { position: absolute; inset: 0; border-radius: 999px; background: var(--input-bg); border: 1px solid var(--control-border); transition: background .25s ease, border-color .25s ease; }
+.slider::before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; border-radius: 50%; background: var(--text-color); box-shadow: 0 2px 5px rgba(0,0,0,.2); transition: transform .3s cubic-bezier(.34,1.56,.64,1), width .15s ease; }
+.switch input:checked + .slider { background: var(--p); border-color: var(--p); }
+.switch input:checked + .slider::before { transform: translateX(20px); background: #fff; }
+.switch input:active + .slider::before { width: 24px; }
+.switch input:checked:active + .slider::before { transform: translateX(16px); }
+.switch input:focus-visible + .slider { outline: 2px solid var(--p-strong); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .slider, .slider::before { transition: none; } }

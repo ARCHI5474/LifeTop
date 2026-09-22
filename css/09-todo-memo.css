@@ -192,12 +192,18 @@
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    opacity: 1;
-    transition: opacity 0.2s, color 0.2s;
+    opacity: 0.8;
+    padding: 4px;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    transition: opacity 0.2s, color 0.2s, background-color 0.2s;
 }
 
 .todo-delete:hover {
     color: #ef4444;
+    opacity: 1;
+    background: rgba(239, 68, 68, 0.12);
 }
 
 /* クイックメモ */
@@ -214,9 +220,18 @@ textarea {
     font-family: inherit;
     font-size: 0.95rem;
     box-sizing: border-box;
-    line-height: 1.5;
+    line-height: 1.6;
     transition: all 0.2s ease;
 }
+
+textarea::-webkit-scrollbar {
+    width: 4px;
+}
+textarea::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
 textarea:focus {
     background: rgba(255,255,255,0.08);
     border-color: rgba(124, 156, 255, 0.6);
@@ -227,3 +242,40 @@ textarea::placeholder {
     color: rgba(255,255,255,0.4);
 }
 
+
+/* Quick clock */
+.utility-tabs { gap: 12px; flex-wrap: wrap; }
+.utility-tabs .tab-btn { font-size: .9rem; }
+.clock-tool-switch { display: flex; padding: 4px; gap: 4px; border-radius: 999px; background: var(--input-bg); }
+.tool-tab-btn, .timer-preset-btn, .ctrl-btn, .alarm-stop-btn {
+    font: inherit; color: var(--text-color); border: 1px solid var(--control-border);
+    background: var(--control-bg); cursor: pointer;
+    transition: background .2s ease, transform .2s ease, border-color .2s ease;
+}
+.tool-tab-btn { display: flex; align-items: center; justify-content: center; gap: 5px; flex: 1; padding: 9px 6px; border-radius: 999px; font-size: .8rem; border-color: transparent; background: transparent; }
+.tool-tab-btn .material-symbols-outlined { font-size: 18px; }
+.tool-tab-btn.active { background: rgba(var(--p-rgb), .2); border-color: var(--p); }
+.clock-tool-pane { display: none; }
+.clock-tool-pane.active { display: block; }
+.clock-time-display { font-family: 'Roboto Mono', monospace; font-variant-numeric: tabular-nums; font-size: clamp(2rem, 5vw, 3.4rem); text-align: center; padding: 22px 0 18px; letter-spacing: -.04em; }
+.timer-presets { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 18px; }
+.timer-preset-btn { padding: 7px 11px; border-radius: 10px; font-size: .8rem; }
+.timer-preset-btn.pomodoro { border-color: var(--p); }
+.clock-ctrl-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
+.ctrl-btn { display: inline-flex; align-items: center; justify-content: center; gap: 4px; border-radius: 12px; padding: 10px; min-height: 42px; font-size: .8rem; }
+.primary-ctrl { background: rgba(var(--p-rgb), .25); border-color: var(--p); font-weight: 700; }
+.text-ctrl { background: transparent; }
+.tool-tab-btn:hover, .timer-preset-btn:hover, .ctrl-btn:hover { border-color: var(--p); transform: translateY(-1px); }
+.tool-tab-btn:focus-visible, .timer-preset-btn:focus-visible, .ctrl-btn:focus-visible, .alarm-stop-btn:focus-visible { outline: 2px solid var(--p); outline-offset: 3px; }
+.timer-alarm-banner { display: none; margin-top: 14px; padding: 12px; border: 1px solid var(--p); border-radius: 14px; background: rgba(var(--p-rgb), .18); }
+.timer-alarm-banner.active { display: block; }
+.alarm-banner-content { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; font-size: .85rem; }
+.alarm-icon { color: var(--p-strong); }
+.alarm-stop-btn { border-radius: 8px; padding: 7px 10px; }
+.stopwatch-laps-wrapper { max-height: 180px; overflow-y: auto; margin-top: 16px; }
+.sw-lap-item { display: flex; justify-content: space-between; gap: 8px; padding: 10px 4px; border-bottom: 1px solid var(--control-border); font-size: .8rem; font-variant-numeric: tabular-nums; }
+.lap-num, .lap-total { color: var(--text-secondary); }
+@media (prefers-reduced-motion: reduce) {
+    .tab-content.active { animation: none; }
+    .user-badge, .tool-tab-btn, .timer-preset-btn, .ctrl-btn { transition: none; }
+}

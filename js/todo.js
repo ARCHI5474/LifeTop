@@ -1,23 +1,26 @@
 /* LifeTop - todo list */
-import { userConfig } from "./config.js?v=3.9.18";
+import { userConfig } from "./config.js?v=3.9.24";
 import { save } from "./storage.js";
 
 export function switchUtilityTab(tabName) {
+    if (!['todo', 'memo', 'clock'].includes(tabName)) return;
     document.querySelectorAll('.utility-tabs .tab-btn').forEach(btn => {
         btn.classList.remove('active');
+        btn.setAttribute('aria-selected', String(btn.dataset.tab === tabName));
     });
-    
+
     document.querySelectorAll('.utility-card .tab-content').forEach(content => {
         content.classList.remove('active');
     });
-    
-    if (tabName === 'todo') {
-        document.querySelector(".utility-tabs button:nth-child(1)").classList.add('active');
-        document.getElementById('todo-tab-content').classList.add('active');
-    } else {
-        document.querySelector(".utility-tabs button:nth-child(2)").classList.add('active');
-        document.getElementById('memo-tab-content').classList.add('active');
-    }
+
+    const targetBtn = document.querySelector(`.utility-tabs button[data-tab="${tabName}"]`) ||
+        (tabName === 'todo' ? document.querySelector(".utility-tabs button:nth-child(1)") :
+         tabName === 'memo' ? document.querySelector(".utility-tabs button:nth-child(2)") :
+         document.querySelector(".utility-tabs button:nth-child(3)"));
+
+    targetBtn?.classList.add('active');
+    const content = document.getElementById(`${tabName}-tab-content`);
+    content?.classList.add('active');
 }
 
 // ToDo操作
@@ -27,7 +30,7 @@ export function renderTodoList() {
         list.innerHTML = `<li style="text-align: center; color: var(--text-secondary); font-size: 0.85rem; padding: 20px 0;">タスクはありません。</li>`;
         return;
     }
-    
+
     list.innerHTML = userConfig.todoList.map(t => {
         const completedClass = t.completed ? 'completed' : '';
         return `
@@ -50,13 +53,13 @@ export function addTodo() {
     const input = document.getElementById('todo-input');
     const text = input.value.trim();
     if (!text) return;
-    
+
     const newTodo = {
         id: Date.now(),
         text: text,
         completed: false
     };
-    
+
     if (!userConfig.todoList) userConfig.todoList = [];
     userConfig.todoList.push(newTodo);
     save();

@@ -1,5 +1,5 @@
 /* LifeTop - settings panel controls */
-import { colorCombos, fontStyles, userConfig } from "./config.js?v=3.9.18";
+import { colorCombos, fontStyles, userConfig } from "./config.js?v=3.9.24";
 import { applyStyles, renderColorCombos, renderBgSelector } from "./styles.js";
 import { save } from "./storage.js";
 import { updateClock, updateGreeting } from "./clock.js";
@@ -120,6 +120,7 @@ function setBackgroundImageUrl(value) {
     userConfig.bgImage = url;
     applyStyles();
     save();
+    renderColorCombos();
     renderBgSelector();
 }
 
@@ -134,6 +135,7 @@ function setBackgroundImageFile(file) {
         userConfig.bgImage = String(reader.result);
         applyStyles();
         save();
+        renderColorCombos();
         renderBgSelector();
         document.getElementById('background-image-url').value = '';
     };
@@ -144,6 +146,7 @@ function clearBackgroundImage() {
     userConfig.bgImage = '';
     applyStyles();
     save();
+    renderColorCombos();
     renderBgSelector();
     document.getElementById('background-image-url').value = '';
     document.getElementById('background-image-upload').value = '';
