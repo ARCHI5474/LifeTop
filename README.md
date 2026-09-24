@@ -29,15 +29,15 @@ LifeTopは「多機能であること」ではなく、
 ## 更新履歴
 現在：3.9
 [LifeTopを開く](https://lifetop.pasidea.space/)
-2026/9/21リリース│　3.9
-2026/9/15リリース│　3.8
-2026/9/2リリース│　3.7
-2026/9/2リリース│　3.6
-2026/8/29リリース│　3.5
-2026/8/20リリース│　3.2
-2026/8/16リリース│　3.1
-[2026/8/12リリース│　3.0](https://pasidea-s.blogspot.com/2026/08/lifetop2.html)
-[2026/8/6リリース│　2.0](https://pasidea-s.blogspot.com/2026/08/lifetop2.html)
+2026/9/21リリース│　3.9<br>
+2026/9/15リリース│　3.8<br>
+2026/9/2リリース│　3.7<br>
+2026/9/2リリース│　3.6<br>
+2026/8/29リリース│　3.5<br>
+2026/8/20リリース│　3.2<br>
+2026/8/16リリース│　3.1<br>
+[2026/8/12リリース│　3.0](https://pasidea-s.blogspot.com/2026/08/lifetop2.html)<br>
+[2026/8/6リリース│　2.0](https://pasidea-s.blogspot.com/2026/08/lifetop2.html)<br>
 
 
 ## PasideaSpace
