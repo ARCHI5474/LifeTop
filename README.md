@@ -35,7 +35,7 @@ LifeTopは「多機能であること」ではなく、
 2026/8/29リリース│　3.5<br>
 2026/8/20リリース│　3.2<br>
 2026/8/16リリース│　3.1<br>
-[2026/8/12リリース│　3.0](https://pasidea-s.blogspot.com/2026/08/lifetop2.html)<br>
+[2026/8/12リリース│　3.0](https://pasidea-s.blogspot.com/2026/08/lifetop30-2026812.html)<br>
 [2026/8/6リリース│　2.0](https://pasidea-s.blogspot.com/2026/08/lifetop2.html)<br>
 
 
