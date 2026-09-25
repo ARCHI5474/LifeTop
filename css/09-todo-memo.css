@@ -279,3 +279,5 @@ textarea::placeholder {
     .tab-content.active { animation: none; }
     .user-badge, .tool-tab-btn, .timer-preset-btn, .ctrl-btn { transition: none; }
 }
+
+.utility-card > .timer-alarm-banner { margin: 0 0 14px; }

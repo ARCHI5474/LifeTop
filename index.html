@@ -7,22 +7,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@500;700&family=Comfortaa:wght@400;700&family=Courier+Prime&family=DotGothic16&family=M+PLUS+1+Code&family=Oswald:wght@300;400;700&family=Outfit:wght@300;400;500;700;900&family=Righteous&family=Roboto+Mono:wght@200;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <!-- Material Symbols Outlined -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="css/style.css?v=3.9.25">
+    <link rel="stylesheet" href="css/style.css?v=4.0.1">
 </head>
 <body>
 
-<!-- 起動時のローディング演出 -->
-<div class="loading-screen" id="loading-screen" aria-live="polite">
-    <div class="loading-glow" aria-hidden="true"></div>
-    <div class="loading-spinner-wrap" aria-hidden="true">
-        <div class="loading-ring"></div>
-        <span class="loading-dot"></span>
-    </div>
-    <div class="loading-brand">
-        <h1 class="loading-logo">LifeTop</h1>
-        <span class="loading-sub">PLEASANTLY QUICK</span>
-    </div>
-    <div class="loading-progress" aria-hidden="true"><span></span></div>
+<!-- 起動中のシンプルな表示 -->
+<div class="loading-screen" id="loading-screen" role="status">
+    <span class="loading-logo">LifeTop</span>
+    <span class="loading-label">読み込み中…</span>
 </div>
 
 <!-- 背景のオーバーレイ -->
@@ -77,7 +69,7 @@
             </section>
             <section class="help-item">
                 <span class="material-symbols-outlined">search</span>
-                <div><h3>検索</h3><p>検索欄にキーワードを入力して、Enterキーまたは矢印ボタンで検索します。入力中は候補も表示されます。</p></div>
+                <div><h3>検索</h3><p>「/」キーで検索欄へ移動できます。Enterキーまたは矢印ボタンでGoogle検索します。検索候補は上下キーで選択できます。</p></div>
             </section>
             <section class="help-item">
                 <span class="material-symbols-outlined">bookmarks</span>
@@ -85,7 +77,7 @@
             </section>
             <section class="help-item">
                 <span class="material-symbols-outlined">dashboard_customize</span>
-                <div><h3>Quickライフ</h3><p>Quickタスクではやることを管理し、Quickメモではメモを自動保存できます。Quickクロックではタイマーとラップ付きストップウォッチを使えます。タブで切り替えて使います。</p></div>
+                <div><h3>Quickライフ</h3><p>タスクの完了率を確認し、未完了・完了で絞り込めます。直前に削除したタスクは「元に戻す」で復元できます（再読み込みまで）。メモはこのブラウザに自動保存され、文字数と保存状態を表示します。クロックではタイマーとラップ付きストップウォッチを使えます。タブは左右キーでも切り替えられます。</p></div>
             </section>
             <section class="help-item">
                 <span class="material-symbols-outlined">palette</span>
@@ -113,10 +105,11 @@
         <div class="search-container animate-fade-in" style="animation-delay: 0.3s;">
             <form action="https://www.google.com/search" method="get" class="search-form" id="search-form">
                 <span class="material-symbols-outlined search-icon" aria-hidden="true">search</span>
-                <input id="search-input" type="search" name="q" class="search-bar" placeholder="Googleで検索" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions">
+                <input id="search-input" type="search" name="q" class="search-bar" placeholder="Googleで検索" aria-label="検索キーワード" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions">
                 <button type="submit" class="search-button" aria-label="Googleで検索"><span class="material-symbols-outlined">arrow_forward</span></button>
             </form>
             <div id="search-suggestions" class="search-suggestions" role="listbox" aria-label="検索候補"></div>
+            <p class="search-hint"><kbd>/</kbd> で検索欄へ · <kbd>↑</kbd><kbd>↓</kbd> で候補を選択</p>
         </div>
     </section>
 
@@ -159,20 +152,38 @@
                     <button class="tab-btn" data-tab="clock" type="button" role="tab" aria-selected="false" onclick="switchUtilityTab('clock')">Quickクロック</button>
                 </div>
 
+                <!-- 全ユーティリティタブ共通の終了通知 -->
+                <div class="timer-alarm-banner" id="timer-alarm-banner" role="status" aria-live="polite">
+                    <div class="alarm-banner-content">
+                        <span class="material-symbols-outlined alarm-icon">notifications_active</span>
+                        <span>時間になりました！</span>
+                        <button type="button" class="alarm-stop-btn" onclick="stopAlarmSound()">アラーム停止</button>
+                    </div>
+                </div>
+
                 <!-- ToDoタブ -->
                 <div id="todo-tab-content" class="tab-content active">
                     <div class="todo-input-wrapper">
-                        <input type="text" id="todo-input" placeholder="新しいタスクを追加。" onkeydown="if(event.key==='Enter') addTodo()">
-                        <button onclick="addTodo()"><span class="material-symbols-outlined">add</span></button>
+                        <input type="text" id="todo-input" placeholder="次にやることを追加" aria-label="新しいタスク" maxlength="500" onkeydown="if(event.key==='Enter' &amp;&amp; !event.isComposing &amp;&amp; event.keyCode!==229) addTodo()">
+                        <button type="button" onclick="addTodo()" aria-label="タスクを追加"><span class="material-symbols-outlined">add</span></button>
+                    </div>
+                    <div class="todo-summary"><span id="todo-summary" role="status"></span><span id="todo-progress-label"></span></div>
+                    <progress id="todo-progress" max="1" value="0" aria-label="タスクの完了率"></progress>
+                    <div class="todo-filters" role="group" aria-label="タスクの絞り込み">
+                        <button type="button" data-filter="all" aria-pressed="true" onclick="setTodoFilter('all')">すべて</button>
+                        <button type="button" data-filter="active" aria-pressed="false" onclick="setTodoFilter('active')">未完了</button>
+                        <button type="button" data-filter="completed" aria-pressed="false" onclick="setTodoFilter('completed')">完了</button>
                     </div>
                     <ul id="todo-list" class="todo-list">
                         <!-- 動的に挿入 -->
                     </ul>
+                    <div id="todo-undo" class="todo-undo" hidden><span role="status">タスクを削除しました</span><button type="button" onclick="undoDeleteTodo()">元に戻す</button></div>
                 </div>
 
                 <!-- メモタブ -->
                 <div id="memo-tab-content" class="tab-content">
-                    <textarea id="memo-area" placeholder="メモは自動保存されます。"></textarea>
+                    <textarea id="memo-area" aria-label="Quickメモ" placeholder="思いついたことを、ここに。メモは自動保存されます。"></textarea>
+                    <div class="memo-footer"><span id="memo-save-status" role="status">このブラウザに自動保存</span><span id="memo-count">0文字</span></div>
                 </div>
 
                 <!-- クロックタブ (タイマー & ストップウォッチ) -->
@@ -184,15 +195,6 @@
                         <button type="button" class="tool-tab-btn" id="tool-tab-sw" onclick="switchClockToolTab('stopwatch')">
                             <span class="material-symbols-outlined">pace</span> ストップウォッチ
                         </button>
-                    </div>
-
-                    <!-- タイマーアラーム鳴動時バナー -->
-                    <div class="timer-alarm-banner" id="timer-alarm-banner" role="status" aria-live="polite">
-                        <div class="alarm-banner-content">
-                            <span class="material-symbols-outlined alarm-icon">notifications_active</span>
-                            <span>時間になりました！</span>
-                            <button type="button" class="alarm-stop-btn" onclick="stopAlarmSound()">アラーム停止</button>
-                        </div>
                     </div>
 
                     <!-- タイマーパネル -->
@@ -245,10 +247,10 @@
 </div>
 
 <!-- 設定サイドパネル -->
-<div class="settings-panel" id="settings-panel">
+<div class="settings-panel" id="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title" inert>
     <div class="settings-header">
-        <h2>Quickパネル</h2>
-        <button class="icon-btn" onclick="toggleSettings()"><span class="material-symbols-outlined">close</span></button>
+        <h2 id="settings-title">Quickパネル</h2>
+        <button class="icon-btn" aria-label="設定を閉じる" onclick="toggleSettings()"><span class="material-symbols-outlined">close</span></button>
     </div>
 
     <div class="settings-body">
@@ -303,6 +305,9 @@
     </div>
 </div>
 
+<footer class="app-footer"><span>LifeTop <span class="version-badge">ver4.0</span></span><span>いつものネットを、ここから。</span></footer>
+<div id="storage-status" class="storage-status" role="status" hidden></div>
+
 <!-- 天気拡張表示 -->
 <div class="weather-modal" id="weather-detail-modal">
     <div class="weather-modal-content">
@@ -341,7 +346,7 @@
     </div>
 </div>
 
-<script type="module" src="./js/main.js?v=3.9.25"></script>
+<script type="module" src="./js/main.js?v=4.0.1"></script>
 
 </body>
 </html>

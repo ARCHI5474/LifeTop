@@ -1,6 +1,6 @@
 /* LifeTop - bookmarks */
-import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=3.9.24";
-import { save } from "./storage.js";
+import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=4.0.1";
+import { save } from "./storage.js?v=4.0.1";
 
 let bookmarkEditMode = false;
 let currentBookmarkTab = "ブックマーク";
@@ -51,6 +51,7 @@ export function renderBookmarks() {
     const tabsContainer = document.getElementById('bookmark-tabs');
     const addBtn = document.querySelector('.add-bookmark-btn');
     const editBtn = document.getElementById('edit-bookmarks-btn');
+    grid.classList.toggle('fixed-links', currentBookmarkTab !== 'ブックマーク');
     
     const allCategories = ["ブックマーク", ...Object.keys(FIXED_BOOKMARKS)];
     tabsContainer.innerHTML = allCategories.map(cat => {

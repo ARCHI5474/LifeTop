@@ -121,6 +121,15 @@
     white-space: nowrap;
 }
 
+/* 固定リンクは日本語の長いサービス名も読みやすく表示する。 */
+.bookmark-grid.fixed-links { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 12px; }
+.fixed-links .bookmark-item { height: 100%; }
+.fixed-links .bookmark-title { white-space: normal; overflow-wrap: anywhere; min-height: 2.8em; line-height: 1.4; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+@media (max-width: 480px) {
+    .bookmark-grid.fixed-links { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .fixed-links .bookmark-item { padding-inline: 4px; }
+}
+
 /* タブを囲むラッパーコンテナ */
 .bookmark-tabs-container {
     display: flex;
@@ -269,5 +278,4 @@
     border-color: rgba(124, 156, 255, 0.45);
     color: #fff;
 }
-
 

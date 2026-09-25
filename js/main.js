@@ -1,8 +1,8 @@
-import { applyStyles, renderBgSelector } from "./styles.js?v=3.9.24";
+import { applyStyles, renderBgSelector } from "./styles.js?v=4.0.1";
 
 /* LifeTop - application entry point */
-import { userConfig } from "./config.js?v=3.9.24";
-import { loadData, save } from "./storage.js?v=3.9.24";
+import { userConfig } from "./config.js?v=4.0.1";
+import { loadData, save } from "./storage.js?v=4.0.1";
 import {
     initPickers,
     setTheme,
@@ -15,9 +15,9 @@ import {
     toggleSettings,
     toggleHelp,
     
-} from "./settings.js?v=3.9.24";
-import { updateClock, updateGreeting } from "./clock.js?v=3.9.24";
-import { initSearchSuggestions } from "./search.js";
+} from "./settings.js?v=4.0.1";
+import { updateClock, updateGreeting } from "./clock.js?v=4.0.1";
+import { initSearchSuggestions } from "./search.js?v=4.0.1";
 import {
     toggleBookmarkEditMode,
     renderBookmarks,
@@ -29,16 +29,19 @@ import {
     deleteBookmark,
     handleFaviconLoad,
     handleFaviconError
-} from "./bookmarks.js";
+} from "./bookmarks.js?v=4.0.1";
 import {
     renderTodoList,
     addTodo,
     toggleTodo,
     deleteTodo,
+    setTodoFilter,
+    undoDeleteTodo,
+    initUtilityTabs,
     switchUtilityTab
-} from "./todo.js?v=3.9.25";
-import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js";
-import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=3.9.25";
+} from "./todo.js?v=4.0.1";
+import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=4.0.1";
+import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=4.0.1";
 
 // HTMLのイベントハンドラーから呼び出す関数
 Object.assign(window, {
@@ -70,6 +73,8 @@ Object.assign(window, {
     addTodo,
     toggleTodo,
     deleteTodo,
+    setTodoFilter,
+    undoDeleteTodo,
     showWeatherDetail,
     closeWeatherDetail,
 });
@@ -88,7 +93,7 @@ document.addEventListener('keydown', event => {
     }
 });
 
-window.addEventListener('load', () => {
+window.addEventListener('DOMContentLoaded', () => {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations()
             .then(registrations => registrations.forEach(registration => registration.unregister()))
@@ -100,6 +105,8 @@ window.addEventListener('load', () => {
     applyStyles();
     renderBookmarks();
     renderTodoList();
+    initUtilityTabs();
+    updateMemoStatus();
     initClockTools();
     renderBgSelector();
     initPickers();
@@ -119,8 +126,8 @@ window.addEventListener('load', () => {
 
     const loadingScreen = document.getElementById('loading-screen');
     if (loadingScreen) {
-        window.setTimeout(() => loadingScreen.classList.add('is-hidden'), 400);
-        window.setTimeout(() => loadingScreen.remove(), 950);
+        loadingScreen.classList.add('is-hidden');
+        window.setTimeout(() => loadingScreen.remove(), 200);
     }
 
     setInterval(updateClock, 1000);
@@ -133,5 +140,10 @@ window.addEventListener('load', () => {
 
 document.getElementById('memo-area').addEventListener('input', () => {
     userConfig.memo = document.getElementById('memo-area').value;
-    save();
+    updateMemoStatus(save());
 });
+
+function updateMemoStatus(saved) {
+    document.getElementById('memo-count').textContent = `${Array.from(document.getElementById('memo-area').value).length.toLocaleString('ja-JP')}文字`;
+    if (saved !== undefined) document.getElementById('memo-save-status').textContent = saved ? '保存しました' : '未保存 — 保存設定を確認してください';
+}

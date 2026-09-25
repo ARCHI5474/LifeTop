@@ -522,3 +522,7 @@
 .switch input:checked:active + .slider::before { transform: translateX(16px); }
 .switch input:focus-visible + .slider { outline: 2px solid var(--p-strong); outline-offset: 4px; }
 @media (prefers-reduced-motion: reduce) { .slider, .slider::before { transition: none; } }
+
+/* Closed dialogs must not remain in the keyboard or accessibility tree. */
+.settings-panel, .help-modal, .popup-modal { visibility: hidden; }
+.settings-panel.active, .help-modal.active, .popup-modal.active { visibility: visible; }

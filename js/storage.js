@@ -4,17 +4,18 @@ import {
     STORAGE_KEY,
     userConfig,
     mergeUserConfig
-} from "./config.js?v=3.9.24";
+} from "./config.js?v=4.0.1";
 
 export function loadData() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if(saved) {
-        try {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
             const parsed = JSON.parse(saved);
             mergeUserConfig(parsed);
-        } catch (e) {
-            console.error("Failed to parse settings", e);
         }
+    } catch (e) {
+        console.error("Failed to load settings", e);
+        showStorageStatus('保存データを読み込めませんでした。ブラウザの保存設定を確認してください。');
     }
     
     document.getElementById('memo-area').value = userConfig.memo || "";
@@ -30,5 +31,20 @@ export function loadData() {
 }
 
 export function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(userConfig));
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(userConfig));
+        showStorageStatus('');
+        return true;
+    } catch (error) {
+        console.error('Failed to save settings', error);
+        showStorageStatus('変更を保存できませんでした。保存容量やブラウザの設定を確認してください。');
+        return false;
+    }
+}
+
+function showStorageStatus(message) {
+    const status = document.getElementById('storage-status');
+    if (!status) return;
+    status.textContent = message;
+    status.hidden = !message;
 }

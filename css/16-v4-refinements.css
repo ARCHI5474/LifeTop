@@ -1,0 +1,51 @@
+/* LifeTop 4.0: clearer hierarchy, accessible controls and compact screens. */
+.hero-section { max-width: 1440px; margin-inline: auto; padding-inline: 40px; }
+.dashboard-content { min-height: auto; padding-bottom: 0; }
+.dashboard-grid > .card { min-width: 0; }
+.utility-tabs { gap: 4px; flex-wrap: nowrap; padding: 4px; border: 1px solid var(--control-border); border-radius: 14px; background: var(--input-bg); }
+.utility-tabs .tab-btn { flex: 1; padding: 10px 4px; border-radius: 10px; font-size: .8rem; white-space: nowrap; }
+.utility-tabs .tab-btn.active { background: var(--p-soft); box-shadow: inset 0 0 0 1px var(--glass-border); }
+.utility-tabs .tab-btn.active::after { display: none; }
+.todo-input-wrapper input { min-width: 0; }
+.todo-input-wrapper > button { flex-shrink: 0; }
+.todo-summary, .memo-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; color: var(--text-secondary); font-size: .76rem; }
+.todo-summary { margin-bottom: 8px; }
+#todo-summary { color: var(--text-color); font-weight: 500; }
+#todo-progress { appearance: none; display: block; width: 100%; height: 4px; margin-bottom: 16px; border: 0; border-radius: 99px; overflow: hidden; background: var(--input-bg); accent-color: var(--p-strong); }
+#todo-progress::-webkit-progress-bar { background: var(--input-bg); border-radius: 99px; }
+#todo-progress::-webkit-progress-value { background: var(--p-strong); border-radius: 99px; }
+#todo-progress::-moz-progress-bar { background: var(--p-strong); border-radius: 99px; }
+.todo-filters { display: flex; gap: 6px; margin-bottom: 12px; }
+.todo-filters button, .todo-undo button { font: inherit; font-size: .76rem; color: var(--text-secondary); background: transparent; border: 1px solid var(--control-border); border-radius: 99px; padding: 7px 13px; cursor: pointer; }
+.todo-filters button[aria-pressed="true"] { color: var(--text-color); background: var(--p-soft); border-color: var(--p-strong); }
+.todo-item-left { min-width: 0; min-height: 28px; }
+.todo-text { overflow-wrap: anywhere; }
+input.todo-checkbox { display: block; flex: 0 0 18px; accent-color: var(--p); color-scheme: dark; cursor: pointer; }
+.todo-delete { min-width: 36px; min-height: 36px; flex-shrink: 0; }
+.todo-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding: 24px 10px; font-size: .82rem; color: var(--text-secondary); }
+.todo-empty .material-symbols-outlined { font-size: 30px; color: var(--p-strong); }
+.todo-undo { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-top: 12px; padding: 10px; border-radius: 12px; background: var(--p-soft); font-size: .76rem; }
+.todo-undo button { color: var(--text-color); }
+.memo-footer { margin-top: 10px; }
+.search-hint { margin: 10px 0 0; text-align: center; font-size: .7rem; color: var(--text-secondary); }
+kbd { font: inherit; padding: 1px 4px; border: 1px solid var(--control-border); border-radius: 4px; }
+.app-footer { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; padding: 0 20px 24px; color: var(--text-secondary); font-size: .72rem; }
+.version-badge { margin-left: 5px; padding: 3px 7px; border: 1px solid var(--control-border); border-radius: 6px; font-size: .64rem; }
+.storage-status { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); width: min(90vw, 560px); padding: 14px 18px; background: #472b20; color: #fff; border: 1px solid #d69d75; border-radius: 12px; z-index: 1000001; font-size: .85rem; }
+[hidden] { display: none !important; }
+:where(button, a, input, textarea, select, [tabindex]):focus-visible { outline: 2px solid var(--p-strong); outline-offset: 3px; }
+@media (max-width: 1024px) {
+    .hero-section { padding-inline: 24px; }
+}
+@media (max-width: 720px) {
+    .hero-section { padding-inline: 16px; }
+}
+@media (max-width: 480px) {
+    .search-hint { display: none; }
+    .utility-tabs .tab-btn { font-size: .75rem; }
+    .todo-input-wrapper input, #memo-area, .settings-input { font-size: 16px; }
+    .todo-filters button, .todo-undo button { min-height: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

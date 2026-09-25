@@ -1,8 +1,10 @@
 /* LifeTop - settings panel controls */
-import { colorCombos, fontStyles, userConfig } from "./config.js?v=3.9.24";
-import { applyStyles, renderColorCombos, renderBgSelector } from "./styles.js";
-import { save } from "./storage.js";
-import { updateClock, updateGreeting } from "./clock.js";
+import { colorCombos, fontStyles, userConfig } from "./config.js?v=4.0.1";
+import { applyStyles, renderColorCombos, renderBgSelector } from "./styles.js?v=4.0.1";
+import { save } from "./storage.js?v=4.0.1";
+import { updateClock, updateGreeting } from "./clock.js?v=4.0.1";
+
+let settingsTrigger;
 
 export function toggleHelp() {
     const modal = document.getElementById('help-modal');
@@ -15,6 +17,20 @@ export function toggleHelp() {
 // ピッカーの初期化
 export function initPickers() {
     renderColorCombos();
+    document.getElementById('settings-panel').addEventListener('keydown', event => {
+        if (event.key !== 'Tab') return;
+        const controls = [...event.currentTarget.querySelectorAll('button, input, select, textarea, a[href]')]
+            .filter(control => !control.disabled && control.getClientRects().length && control.tabIndex >= 0);
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first?.focus();
+        }
+    });
 
     const fontsContainer = document.getElementById('font-styles');
     fontsContainer.innerHTML = fontStyles.map(f => {
@@ -157,6 +173,13 @@ export function toggleSettings() {
     const panel = document.getElementById('settings-panel');
     const overlay = document.getElementById('settings-overlay');
     const isOpen = panel.classList.toggle('active');
+    panel.inert = !isOpen;
     overlay?.classList.toggle('active', isOpen);
     document.body.style.overflow = isOpen ? 'hidden' : '';
+    if (isOpen) {
+        settingsTrigger = document.activeElement;
+        panel.querySelector('button')?.focus();
+    } else {
+        settingsTrigger?.focus();
+    }
 }
