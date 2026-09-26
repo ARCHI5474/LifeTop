@@ -195,6 +195,8 @@
 }
 
 .bookmark-tab-item {
+    font-family: inherit;
+    line-height: 1.5;
     display: inline-block;
     flex-shrink: 0;
     font-size: 0.8rem;
@@ -278,4 +280,3 @@
     border-color: rgba(124, 156, 255, 0.45);
     color: #fff;
 }
-

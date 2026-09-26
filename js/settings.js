@@ -1,8 +1,8 @@
 /* LifeTop - settings panel controls */
-import { colorCombos, fontStyles, userConfig } from "./config.js?v=4.0.1";
-import { applyStyles, renderColorCombos, renderBgSelector } from "./styles.js?v=4.0.1";
-import { save } from "./storage.js?v=4.0.1";
-import { updateClock, updateGreeting } from "./clock.js?v=4.0.1";
+import { colorCombos, fontStyles, userConfig } from "./config.js?v=4.0-final";
+import { applyStyles, renderColorCombos, renderBgSelector } from "./styles.js?v=4.0-final";
+import { save } from "./storage.js?v=4.0-final";
+import { updateClock, updateGreeting } from "./clock.js?v=4.0-final";
 
 let settingsTrigger;
 
@@ -47,7 +47,7 @@ export function initPickers() {
     imageUrlInput.value = userConfig.bgImage.startsWith('https://') ? userConfig.bgImage : '';
     applyImageUrl.onclick = () => setBackgroundImageUrl(imageUrlInput.value);
     imageUrlInput.onkeydown = event => {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && !event.isComposing && event.keyCode !== 229) {
             event.preventDefault();
             setBackgroundImageUrl(imageUrlInput.value);
         }
@@ -65,6 +65,8 @@ export function setColorCombo(index) {
     applyStyles();
     save();
     renderColorCombos();
+    document.getElementById('background-image-url').value = '';
+    document.getElementById('background-image-upload').value = '';
 }
 
 // 設定変更
@@ -142,11 +144,12 @@ function setBackgroundImageUrl(value) {
 
 function setBackgroundImageFile(file) {
     if (!file) return;
-    if (!file.type.startsWith('image/') || file.size > 2 * 1024 * 1024) {
+    if (!['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(file.type) || file.size > 2 * 1024 * 1024) {
         alert('PNG、JPEG、WebP、GIF形式の2MB以下の画像を選択してください。');
         return;
     }
     const reader = new FileReader();
+    reader.onerror = () => alert('画像を読み込めませんでした。別の画像でお試しください。');
     reader.onload = () => {
         userConfig.bgImage = String(reader.result);
         applyStyles();

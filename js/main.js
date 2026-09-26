@@ -1,8 +1,8 @@
-import { applyStyles, renderBgSelector } from "./styles.js?v=4.0.1";
+import { applyStyles, renderBgSelector } from "./styles.js?v=4.0-final";
 
 /* LifeTop - application entry point */
-import { userConfig } from "./config.js?v=4.0.1";
-import { loadData, save } from "./storage.js?v=4.0.1";
+import { userConfig } from "./config.js?v=4.0-final";
+import { loadData, save } from "./storage.js?v=4.0-final";
 import {
     initPickers,
     setTheme,
@@ -15,9 +15,9 @@ import {
     toggleSettings,
     toggleHelp,
     
-} from "./settings.js?v=4.0.1";
-import { updateClock, updateGreeting } from "./clock.js?v=4.0.1";
-import { initSearchSuggestions } from "./search.js?v=4.0.1";
+} from "./settings.js?v=4.0-final";
+import { updateClock, updateGreeting } from "./clock.js?v=4.0-final";
+import { initSearchSuggestions } from "./search.js?v=4.0-final";
 import {
     toggleBookmarkEditMode,
     renderBookmarks,
@@ -29,7 +29,7 @@ import {
     deleteBookmark,
     handleFaviconLoad,
     handleFaviconError
-} from "./bookmarks.js?v=4.0.1";
+} from "./bookmarks.js?v=4.0-final";
 import {
     renderTodoList,
     addTodo,
@@ -39,9 +39,9 @@ import {
     undoDeleteTodo,
     initUtilityTabs,
     switchUtilityTab
-} from "./todo.js?v=4.0.1";
-import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=4.0.1";
-import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=4.0.1";
+} from "./todo.js?v=4.0-final";
+import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=4.0-final";
+import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=4.0-final";
 
 // HTMLのイベントハンドラーから呼び出す関数
 Object.assign(window, {

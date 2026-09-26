@@ -1,5 +1,5 @@
 /* LifeTop - clock and greeting */
-import { userConfig } from "./config.js?v=4.0.1";
+import { userConfig } from "./config.js?v=4.0-final";
 
 // 挨拶と時計の更新
 export function updateClock() {

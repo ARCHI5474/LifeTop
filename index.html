@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LifeTop│いつものネットを、ここから。</title>
+    <meta name="description" content="Google検索、よく使うサイト、タスク、メモ、時計をひとつに。毎日に役立つスタートページ、LifeTop。">
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@500;700&family=Comfortaa:wght@400;700&family=Courier+Prime&family=DotGothic16&family=M+PLUS+1+Code&family=Oswald:wght@300;400;700&family=Outfit:wght@300;400;500;700;900&family=Righteous&family=Roboto+Mono:wght@200;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <!-- Material Symbols Outlined -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="css/style.css?v=4.0.1">
+    <link rel="stylesheet" href="css/style.css?v=4.0-final">
 </head>
 <body>
 
@@ -41,9 +43,9 @@
     </div>
     <div class="header-right">
         <!-- ヘルプトリガー -->
-        <button class="icon-btn animate-fade-in" onclick="toggleHelp()" title="使い方"><span class="material-symbols-outlined">help</span></button>
+        <button class="icon-btn animate-fade-in" onclick="toggleHelp()" title="使い方" aria-label="使い方"><span class="material-symbols-outlined">help</span></button>
         <!-- 設定トリガー -->
-        <button class="icon-btn animate-fade-in" onclick="toggleSettings()" title="設定"><span class="material-symbols-outlined">settings</span></button>
+        <button class="icon-btn animate-fade-in" onclick="toggleSettings()" title="設定" aria-label="設定"><span class="material-symbols-outlined">settings</span></button>
     </div>
 </header>
 
@@ -121,19 +123,19 @@
             <div class="card glass-card bookmark-card">
                 <div class="card-header">
                     <h3><span class="material-symbols-outlined">bookmarks</span> Quickアクセス</h3>
-                    <button class="icon-btn-small" id="edit-bookmarks-btn" onclick="toggleBookmarkEditMode()" title="ブックマークを編集">
+                    <button class="icon-btn-small" id="edit-bookmarks-btn" onclick="toggleBookmarkEditMode()" title="ブックマークを編集" aria-label="ブックマークを編集">
                         <span class="material-symbols-outlined">edit</span>
                     </button>
                 </div>
                 <!-- 左右スクロール矢印ボタン付きのタブコンテナ -->
                 <div class="bookmark-tabs-container">
-                    <button class="tab-scroll-btn prev" onclick="scrollTabs(-150)">
+                    <button class="tab-scroll-btn prev" onclick="scrollTabs(-150)" aria-label="カテゴリを左にスクロール">
                         <span class="material-symbols-outlined">chevron_left</span>
                     </button>
 
                     <div class="bookmark-tabs" id="bookmark-tabs"></div>
 
-                    <button class="tab-scroll-btn next" onclick="scrollTabs(150)">
+                    <button class="tab-scroll-btn next" onclick="scrollTabs(150)" aria-label="カテゴリを右にスクロール">
                         <span class="material-symbols-outlined">chevron_right</span>
                     </button>
                 </div>
@@ -321,10 +323,10 @@
 </div>
 
 <div class="modal-overlay" id="bookmark-dialog-overlay" onclick="closeBookmarkDialog()"></div>
-<div class="popup-modal" id="bookmark-dialog">
+<div class="popup-modal" id="bookmark-dialog" role="dialog" aria-modal="true" aria-labelledby="bookmark-dialog-title">
     <div class="popup-modal-card">
         <div class="popup-modal-header">
-            <h3>Quickアクセスを追加</h3>
+            <h3 id="bookmark-dialog-title">Quickアクセスを追加</h3>
             <button type="button" class="icon-btn" onclick="closeBookmarkDialog()" aria-label="閉じる">
                 <span class="material-symbols-outlined">close</span>
             </button>
@@ -346,7 +348,7 @@
     </div>
 </div>
 
-<script type="module" src="./js/main.js?v=4.0.1"></script>
+<script type="module" src="./js/main.js?v=4.0-final"></script>
 
 </body>
 </html>

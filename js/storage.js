@@ -4,7 +4,7 @@ import {
     STORAGE_KEY,
     userConfig,
     mergeUserConfig
-} from "./config.js?v=4.0.1";
+} from "./config.js?v=4.0-final";
 
 export function loadData() {
     try {

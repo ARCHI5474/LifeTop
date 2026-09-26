@@ -1,6 +1,6 @@
 /* LifeTop - bookmarks */
-import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=4.0.1";
-import { save } from "./storage.js?v=4.0.1";
+import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=4.0-final";
+import { save } from "./storage.js?v=4.0-final";
 
 let bookmarkEditMode = false;
 let currentBookmarkTab = "ブックマーク";
@@ -10,7 +10,8 @@ const FAVICON_CACHE_DAYS = 30;
 let faviconCache = {};
 
 try {
-    faviconCache = JSON.parse(localStorage.getItem(FAVICON_CACHE_KEY) || "{}");
+    const parsed = JSON.parse(localStorage.getItem(FAVICON_CACHE_KEY) || "{}");
+    faviconCache = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
 } catch {
     faviconCache = {};
 }
@@ -56,7 +57,7 @@ export function renderBookmarks() {
     const allCategories = ["ブックマーク", ...Object.keys(FIXED_BOOKMARKS)];
     tabsContainer.innerHTML = allCategories.map(cat => {
         const activeClass = (cat === currentBookmarkTab) ? 'active' : '';
-        return `<span class="bookmark-tab-item ${activeClass}" onclick="switchBookmarkTab('${cat}')">${cat}</span>`;
+        return `<button type="button" class="bookmark-tab-item ${activeClass}" aria-pressed="${cat === currentBookmarkTab}" onclick="switchBookmarkTab('${cat}')">${cat}</button>`;
     }).join('');
 
     if (currentBookmarkTab !== "ブックマーク") {
@@ -83,7 +84,7 @@ export function renderBookmarks() {
     }
 
     if (bookmarksToRender.length === 0) {
-        grid.innerHTML = `<div style="grid-column: span 4; text-align: center; color: var(--text-secondary); font-size: 0.85rem; padding: 20px 0;">ブックマークがありません</div>`;
+        grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-secondary); font-size: 0.85rem; padding: 20px 0;">「追加」から、よく使うサイトを登録できます。</div>`;
         return;
     }
     
@@ -97,32 +98,24 @@ export function renderBookmarks() {
             domain = "";
         }
 
-    const cached = domain ? faviconCache[domain] : null;
-
-const cacheValid =
-    cached &&
-    cached.url &&
-    (Date.now() - cached.timestamp) < 1000 * 60 * 60 * 24 * FAVICON_CACHE_DAYS;
-
-const faviconUrl = domain
-    ? (cacheValid
-        ? cached.url
-        : `https://a.favicon.im/${domain}?larger=true&throw-error-on-404=true`)
-    : "";
+    // Never interpolate arbitrary persisted URLs into HTML or event handlers.
+    const faviconUrl = domain
+        ? `https://a.favicon.im/${encodeURIComponent(domain)}?larger=true&throw-error-on-404=true`
+        : "";
 
     const iconHtml = faviconUrl
     ? `<span class="icon-letter">${escapeHtml(title[0])}</span>
        <img
-           src="${faviconUrl}"
-           alt="${escapeHtml(title)}"
+           src="${escapeHtml(faviconUrl)}"
+           alt="" aria-hidden="true" decoding="async"
            style="display:none"
-           onload="handleFaviconLoad(this, '${domain}', '${faviconUrl}')"
-           onerror="handleFaviconError(this, '${domain}')"
+           onload="handleFaviconLoad(this, ${escapeHtml(JSON.stringify(domain))}, ${escapeHtml(JSON.stringify(faviconUrl))})"
+           onerror="handleFaviconError(this, ${escapeHtml(JSON.stringify(domain))})"
        >`
     : `<span class="icon-letter">${escapeHtml(title[0])}</span>`;
             
         const deleteBtnHtml = isFixed ? "" : `
-            <button class="bookmark-delete-btn" onclick="deleteBookmark(${index}, event)">
+            <button type="button" class="bookmark-delete-btn" aria-label="${escapeHtml(title)}を削除" onclick="deleteBookmark(${index}, event)">
                 <span class="material-symbols-outlined" style="font-size:12px">close</span>
             </button>
         `;
@@ -134,7 +127,7 @@ const faviconUrl = domain
         return `
             <div class="bookmark-item-wrapper" style="position: relative; --item-idx: ${index};">
                 <a ${linkAttrs} class="bookmark-item" title="${escapeHtml(title)}">
-                    <div class="icon-wrapper">
+                    <div class="icon-wrapper" aria-hidden="true">
                         ${iconHtml}
                     </div>
                     <span class="bookmark-title">${escapeHtml(title)}</span>
@@ -147,9 +140,20 @@ const faviconUrl = domain
 
 // フォルダ切り替え
 export function switchBookmarkTab(cat) {
+    if (cat !== 'ブックマーク' && !Object.hasOwn(FIXED_BOOKMARKS, cat)) return;
     if (currentBookmarkTab === cat) return;
     currentBookmarkTab = cat;
     renderBookmarks();
+    const activeTab = document.querySelector('.bookmark-tab-item.active');
+    activeTab?.focus({ preventScroll: true });
+    const tabs = document.getElementById('bookmark-tabs');
+    if (activeTab && tabs) {
+        const left = activeTab.offsetLeft - tabs.offsetLeft;
+        if (left < tabs.scrollLeft) tabs.scrollLeft = left;
+        else if (left + activeTab.offsetWidth > tabs.scrollLeft + tabs.clientWidth) {
+            tabs.scrollLeft = left + activeTab.offsetWidth - tabs.clientWidth;
+        }
+    }
     const grid = document.getElementById('bookmark-grid');
     if (grid) {
         grid.classList.remove('tab-switching');
@@ -228,6 +232,8 @@ export function handleFaviconLoad(imgEl, domain, faviconUrl) {
         imgEl.previousElementSibling.style.display = 'none';
     }
     try {
+        const cached = faviconCache[domain];
+        if (cached?.url === faviconUrl && Date.now() - cached.timestamp < 1000 * 60 * 60 * 24 * FAVICON_CACHE_DAYS) return;
         faviconCache[domain] = {
             url: faviconUrl,
             timestamp: Date.now()

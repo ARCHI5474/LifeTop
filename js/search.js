@@ -60,6 +60,7 @@ async function fetchSuggestions(query, input, list) {
 
 function renderSuggestions(input, list) {
     activeIndex = -1;
+    input.removeAttribute('aria-activedescendant');
     list.replaceChildren(...suggestions.map((suggestion, index) => {
         const item = document.createElement('button');
         item.type = 'button';
