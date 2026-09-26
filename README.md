@@ -7,6 +7,8 @@ PasideaSpaceのWebサービスです。
 
 [LifeTopを開く](https://lifetop.pasidea.space/)
 
+Development: Built with AI-assisted coding
+
 ## できること
 
 - ブックマーク、リンク集機能「Quickアクセス」
