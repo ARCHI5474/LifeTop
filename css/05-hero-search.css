@@ -11,6 +11,7 @@
 
 .hero-section {
     position: relative;
+    z-index: 40;
     display: grid;
     grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
     align-items: end;
@@ -30,6 +31,10 @@
     backdrop-filter: blur(26px) saturate(140%);
     -webkit-backdrop-filter: blur(26px) saturate(140%);
     text-align: left;
+}
+
+.hero-section:focus-within {
+    z-index: 60;
 }
 
 .hero-section::before {
@@ -129,7 +134,8 @@
     width: 100%;
     max-width: 470px;
     margin: 0 0 6px auto;
-    z-index: 50;
+    scroll-margin-top: 16px;
+    z-index: 200;
 }
 
 .search-form {
@@ -252,6 +258,10 @@
     top: calc(100% + 10px);
     left: 0;
     right: 0;
+    max-height: min(320px, 46vh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     background: var(--panel-bg);
     backdrop-filter: blur(26px) saturate(150%);
     -webkit-backdrop-filter: blur(26px) saturate(150%);
@@ -259,7 +269,7 @@
     border-radius: 20px;
     padding: 8px;
     box-shadow: var(--dialog-shadow), var(--inner-highlight);
-    z-index: 100;
+    z-index: 300;
 }
 
 .search-suggestions.active {

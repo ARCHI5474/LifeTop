@@ -1,5 +1,7 @@
 /* コンテナとメイングリッドレイアウト */
 .container {
+    position: relative;
+    z-index: 1;
     width: min(100%, 1320px);
     max-width: 1320px;
     margin: 0 auto;

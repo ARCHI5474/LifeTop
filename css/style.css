@@ -2,9 +2,9 @@
 @import url("./02-background.css?v=4.0-final");
 @import url("./03-glass.css?v=4.0-final");
 @import url("./04-header.css?v=4.0-final");
-@import url("./05-hero-search.css?v=4.0-final");
+@import url("./05-hero-search.css?v=4.1.7-redesign");
 @import url("./06-notice.css?v=4.0-final");
-@import url("./07-layout.css?v=4.0-final");
+@import url("./07-layout.css?v=4.1.7-redesign");
 @import url("./08-bookmark.css?v=4.0-final");
 @import url("./09-todo-memo.css?v=4.0-final");
 @import url("./10-settings.css?v=4.0-final");
@@ -12,4 +12,4 @@
 @import url("./15-weather-detail.css?v=4.0-final");
 @import url("./16-v4-refinements.css?v=4.0-final");
 @import url("./17-pasidea-polish.css?v=4.0-final");
-@import url("./18-dashboard-redesign.css?v=4.1.5-redesign");
+@import url("./18-dashboard-redesign.css?v=4.1.7-redesign");
