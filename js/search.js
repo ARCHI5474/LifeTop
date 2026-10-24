@@ -2,6 +2,71 @@ let activeIndex = -1;
 let suggestions = [];
 let searchTimer;
 let requestController;
+const suggestionCache = new Map();
+let jsonpCounter = 0;
+
+function fetchGoogleSuggestJsonp(query, signal) {
+    return new Promise((resolve, reject) => {
+        if (typeof document === 'undefined' || !document.head) {
+            reject(new Error('No DOM'));
+            return;
+        }
+        const cbName = `__lifetopSuggestCb_${++jsonpCounter}_${Date.now()}`;
+        const script = document.createElement('script');
+        let settled = false;
+
+        const cleanup = () => {
+            settled = true;
+            try { delete window[cbName]; } catch { window[cbName] = undefined; }
+            script.remove();
+        };
+
+        const timer = setTimeout(() => {
+            if (!settled) {
+                cleanup();
+                reject(new Error('JSONP timeout'));
+            }
+        }, 1200);
+
+        signal?.addEventListener?.('abort', () => {
+            clearTimeout(timer);
+            if (!settled) {
+                cleanup();
+                reject(new DOMException('Aborted', 'AbortError'));
+            }
+        }, { once: true });
+
+        window[cbName] = (data) => {
+            clearTimeout(timer);
+            if (settled) return;
+            cleanup();
+            const list = Array.isArray(data?.[1]) ? data[1].filter(item => typeof item === 'string').slice(0, 6) : [];
+            if (list.length) resolve(list);
+            else reject(new Error('Empty suggestions'));
+        };
+
+        script.onerror = () => {
+            clearTimeout(timer);
+            if (!settled) {
+                cleanup();
+                reject(new Error('JSONP error'));
+            }
+        };
+
+        script.src = `https://suggestqueries.google.com/complete/search?client=firefox&hl=ja&q=${encodeURIComponent(query)}&callback=${cbName}`;
+        document.head.appendChild(script);
+    });
+}
+
+async function fetchWikiOpenSearch(query, signal) {
+    const url = `https://ja.wikipedia.org/w/api.php?action=opensearch&format=json&origin=*&limit=6&search=${encodeURIComponent(query)}`;
+    const response = await fetch(url, { signal });
+    if (!response.ok) throw new Error('Wiki suggest failed');
+    const data = await response.json();
+    const list = Array.isArray(data?.[1]) ? data[1].filter(item => typeof item === 'string').slice(0, 6) : [];
+    if (!list.length) throw new Error('Empty wiki suggestions');
+    return list;
+}
 
 export function initSearchSuggestions() {
     const input = document.getElementById('search-input');
@@ -59,20 +124,35 @@ export function initSearchSuggestions() {
 }
 
 async function fetchSuggestions(query, input, list) {
+    const cacheKey = query.toLowerCase();
+    if (suggestionCache.has(cacheKey)) {
+        suggestions = suggestionCache.get(cacheKey);
+        renderSuggestions(input, list);
+        return;
+    }
+
     requestController?.abort();
     requestController = new AbortController();
     const controller = requestController;
+    const timeoutId = window.setTimeout(() => controller.abort(), 1600);
 
     try {
-        const url = `https://suggestqueries.google.com/complete/search?client=firefox&hl=ja&q=${encodeURIComponent(query)}`;
-        const response = await fetch(url, { signal: controller.signal });
-        if (!response.ok) throw new Error('Suggestion request failed');
-        const data = await response.json();
+        const result = await Promise.any([
+            fetchGoogleSuggestJsonp(query, controller.signal),
+            fetchWikiOpenSearch(query, controller.signal)
+        ]);
         if (controller.signal.aborted || input.value.trim() !== query) return;
-        suggestions = Array.isArray(data?.[1]) ? data[1].filter(item => typeof item === 'string').slice(0, 6) : [];
+        suggestions = result;
+        if (suggestionCache.size > 60) {
+            const firstKey = suggestionCache.keys().next().value;
+            suggestionCache.delete(firstKey);
+        }
+        suggestionCache.set(cacheKey, result);
         renderSuggestions(input, list);
     } catch (error) {
         if (!controller.signal.aborted && error.name !== 'AbortError') clearSuggestions(input, list);
+    } finally {
+        window.clearTimeout(timeoutId);
     }
 }
 

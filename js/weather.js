@@ -1,59 +1,140 @@
-/* LifeTop - weather widget and extended detailed modal */
+/* LifeTop - weather widget and extended detailed modal (with instant cache & non-blocking geolocation) */
+
+const WEATHER_CACHE_KEY = 'lifetop_weather_cache_v1';
+const WEATHER_COORDS_KEY = 'lifetop_weather_coords_v1';
+const WEATHER_FRESH_TTL_MS = 30 * 60 * 1000;      // 30分間はキャッシュを即時表示（通信ゼロ）
+const WEATHER_STALE_MAX_MS = 24 * 60 * 60 * 1000; // 最大24時間はStale-While-Revalidateとして即時表示
+const WEATHER_TIMEOUT_MS = 3500;                  // 通信タイムアウト（3.5秒）
+const DEFAULT_COORDS = { lat: 35.6785, lon: 139.6823 }; // 東京
 
 let savedWeatherData = null;
 let weatherTrigger = null;
 
-// 天気ウィジェット (位置情報 or デフォルト東京)
+function readWeatherCache() {
+    try {
+        const raw = localStorage.getItem(WEATHER_CACHE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed?.data?.current_weather || typeof parsed.timestamp !== 'number') return null;
+        if (Date.now() - parsed.timestamp > WEATHER_STALE_MAX_MS) return null;
+        return parsed;
+    } catch {
+        return null;
+    }
+}
+
+function writeWeatherCache(data, lat, lon) {
+    try {
+        localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({
+            data,
+            lat,
+            lon,
+            timestamp: Date.now()
+        }));
+    } catch {
+        // ignore storage quota errors
+    }
+}
+
+function readSavedCoords() {
+    try {
+        const raw = localStorage.getItem(WEATHER_COORDS_KEY);
+        if (!raw) return DEFAULT_COORDS;
+        const parsed = JSON.parse(raw);
+        if (typeof parsed?.lat === 'number' && typeof parsed?.lon === 'number') {
+            return { lat: parsed.lat, lon: parsed.lon };
+        }
+    } catch {
+        // ignore
+    }
+    return DEFAULT_COORDS;
+}
+
+function writeSavedCoords(lat, lon) {
+    try {
+        localStorage.setItem(WEATHER_COORDS_KEY, JSON.stringify({ lat, lon }));
+    } catch {
+        // ignore
+    }
+}
+
+function applyWeatherWidgetUI(data) {
+    if (!data?.current_weather) return;
+    const tempEl = document.getElementById('weather-temp');
+    const descEl = document.getElementById('weather-desc');
+    const iconEl = document.getElementById('weather-icon');
+    const temp = Math.round(data.current_weather.temperature);
+    const wInfo = parseWeatherCode(data.current_weather.weathercode);
+    if (tempEl) tempEl.innerText = `${temp}°C`;
+    if (descEl) descEl.innerText = wInfo.text;
+    if (iconEl) iconEl.innerText = wInfo.icon;
+}
+
+// 天気ウィジェット (キャッシュ即時表示 + 非ブロッキング位置情報取得)
 export async function fetchWeather() {
-    let lat = 35.6785;
-    let lon = 139.6823;
-    
-    if (navigator.geolocation) {
+    const cached = readWeatherCache();
+    if (cached) {
+        savedWeatherData = cached.data;
+        applyWeatherWidgetUI(cached.data);
+        if (Date.now() - cached.timestamp < WEATHER_FRESH_TTL_MS) {
+            return;
+        }
+    }
+
+    // 位置情報の応答（最大数秒）を待たず、前回座標または東京の天気を即座に取得開始
+    const initialCoords = readSavedCoords();
+    const initialFetchPromise = getWeatherData(initialCoords.lat, initialCoords.lon);
+
+    if (typeof navigator !== 'undefined' && navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                lat = position.coords.latitude;
-                lon = position.coords.longitude;
-                getWeatherData(lat, lon);
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                writeSavedCoords(lat, lon);
+                const moved = Math.abs(lat - initialCoords.lat) > 0.03 || Math.abs(lon - initialCoords.lon) > 0.03;
+                if (moved) {
+                    getWeatherData(lat, lon);
+                }
             },
-            (error) => {
-                console.log("位置情報の取得失敗。東京の天気を表示します。");
-                getWeatherData(lat, lon);
+            () => {
+                // 位置情報拒否・タイムアウト時は既にinitialCoordsで取得済みのため待機不要
             },
-            { timeout: 5000 }
+            { timeout: 2500, maximumAge: 3600000, enableHighAccuracy: false }
         );
-    } else {
-        getWeatherData(lat, lon);
     }
+
+    await initialFetchPromise;
 }
 
 export async function getWeatherData(lat, lon) {
     const tempEl = document.getElementById('weather-temp');
     const descEl = document.getElementById('weather-desc');
     const iconEl = document.getElementById('weather-icon');
-    
+
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), WEATHER_TIMEOUT_MS) : null;
+
     try {
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,weathercode,wind_speed_10m&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&timezone=auto`;
-        const res = await fetch(url);
+        const res = await fetch(url, controller ? { signal: controller.signal } : undefined);
         if (!res.ok) throw new Error(`Weather request failed: ${res.status}`);
         const data = await res.json();
-        
+
         if (data && data.current_weather) {
-            savedWeatherData = data; // キャッシュに保存
-            const temp = Math.round(data.current_weather.temperature);
-            const code = data.current_weather.weathercode;
-            
-            tempEl.innerText = `${temp}°C`;
-            const wInfo = parseWeatherCode(code);
-            descEl.innerText = wInfo.text;
-            iconEl.innerText = wInfo.icon;
+            savedWeatherData = data;
+            writeWeatherCache(data, lat, lon);
+            applyWeatherWidgetUI(data);
         } else {
             throw new Error("Invalid weather response");
         }
-    } catch (e) {
-        tempEl.innerText = "--°C";
-        descEl.innerText = "エラー";
-        iconEl.innerText = "cloud_off";
-        savedWeatherData = null;
+    } catch {
+        if (!savedWeatherData) {
+            if (tempEl) tempEl.innerText = "--°C";
+            if (descEl) descEl.innerText = "エラー";
+            if (iconEl) iconEl.innerText = "cloud_off";
+        }
+    } finally {
+        if (timer) clearTimeout(timer);
     }
 }
 

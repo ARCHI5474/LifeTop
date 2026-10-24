@@ -1,54 +1,64 @@
 /* LifeTop - External Feeds Engine (News, Realtime Trends, YouTube Recommendations)
    with 6-Layer Rate-Limit Protection, Cross-Tab Sync & Multi-Provider Fallback */
 
-const NEWS_CACHE_KEY = 'lifetop_news_cache_v1';
+const NEWS_CACHE_KEY = 'lifetop_news_cache_v2';
 const TRENDS_CACHE_KEY = 'lifetop_trends_cache_v1';
 const YT_CACHE_KEY = 'lifetop_youtube_cache_v1';
-const RATELIMIT_KEY = 'lifetop_feeds_ratelimit_v1';
-const LOCK_KEY = 'lifetop_feeds_lock_v1';
+const RATELIMIT_KEY = 'lifetop_feeds_ratelimit_v3';
+const LOCK_KEY = 'lifetop_feeds_lock_v3';
 
-// --- API制限対策パラメータ（ガッチガチ保護設定） ---
+// --- API制限対策 & 高速取得パラメータ ---
 const NEWS_FRESH_TTL_MS = 30 * 60 * 1000;      // ニュース: 30分間は完全キャッシュ利用（API通信ゼロ）
 const TRENDS_FRESH_TTL_MS = 30 * 60 * 1000;    // トレンドワード: 30分間は完全キャッシュ利用（API通信ゼロ）
 const YT_FRESH_TTL_MS = 45 * 60 * 1000;        // YouTube動画: 45分間は完全キャッシュ利用（API通信ゼロ）
 const MANUAL_COOLDOWN_MS = 3 * 60 * 1000;      // 手動更新ボタンの最短クールダウン（3分）
-const FEATURE_MIN_INTERVAL_MS = 8 * 1000;      // 同一機能内の最小リクエスト間隔（8秒）
-const MAX_REQUESTS_PER_HOUR = 30;              // 全フィード合算の1時間あたり最大外部リクエスト数上限
+const FEATURE_MIN_INTERVAL_MS = 1000;          // 同一カテゴリ内の最小リクエスト間隔（1秒）
+const MAX_REQUESTS_PER_HOUR = 80;              // 全フィード合算の1時間あたり最大外部リクエスト数上限
 const STALE_MAX_AGE_MS = 24 * 60 * 60 * 1000;  // オフライン・制限時のキャッシュ保持上限（24時間）
-const LOCK_LEASE_MS = 12 * 1000;               // 複数タブ同時リクエスト防止ロック（12秒）
-const FETCH_TIMEOUT_MS = 8000;                 // 1プロバイダあたりのタイムアウト（8秒）
+const LOCK_LEASE_MS = 3500;                    // 複数タブ同時リクエスト防止ロック（3.5秒）
+const FETCH_TIMEOUT_MS = 5500;                 // 1リクエストあたりのタイムアウト（5.5秒：海外プロキシのコールドキャッシュ許容）
+const HEDGED_DELAY_MS = 320;                   // 第1候補が320ms以内に応答しない場合は即第2候補を並列起動
 
 const MAX_NEWS_ITEMS = 6;
 const MAX_TREND_ITEMS = 6;
 const MAX_YT_ITEMS = 4;
 
+// 海外プロキシからのジオブロックを受けないNHK・Googleニュースを最優先に配置し、Yahoo!ニュースを併用
 export const NEWS_CATEGORIES = {
     top: {
         label: '主要',
+        wikiQuery: 'ニュース OR 日本 OR 政治 OR 社会',
         feeds: [
-            { url: 'https://news.yahoo.co.jp/rss/topics/top-picks.xml', source: 'Yahoo!ニュース' },
-            { url: 'https://www.nhk.or.jp/rss/news/cat0.xml', source: 'NHKニュース' }
+            { url: 'https://www.nhk.or.jp/rss/news/cat0.xml', source: 'NHKニュース' },
+            { url: 'https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja', source: 'Google ニュース' },
+            { url: 'https://news.yahoo.co.jp/rss/topics/top-picks.xml', source: 'Yahoo!ニュース' }
         ]
     },
     it: {
         label: 'IT・科学',
+        wikiQuery: '人工知能 OR 半導体 OR 宇宙開発 OR 情報技術',
         feeds: [
-            { url: 'https://news.yahoo.co.jp/rss/topics/it.xml', source: 'Yahoo!ニュース (IT)' },
-            { url: 'https://www.nhk.or.jp/rss/news/cat3.xml', source: 'NHKニュース (科学・文化)' }
+            { url: 'https://www.nhk.or.jp/rss/news/cat3.xml', source: 'NHKニュース (科学・文化)' },
+            { url: 'https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=ja&gl=JP&ceid=JP:ja', source: 'Google ニュース (IT)' },
+            { url: 'https://news.yahoo.co.jp/rss/topics/it.xml', source: 'Yahoo!ニュース (IT)' }
         ]
     },
     business: {
         label: '経済',
+        wikiQuery: '日本銀行 OR 日経平均株価 OR 経済 OR 為替',
         feeds: [
-            { url: 'https://news.yahoo.co.jp/rss/topics/business.xml', source: 'Yahoo!ニュース (経済)' },
-            { url: 'https://www.nhk.or.jp/rss/news/cat5.xml', source: 'NHKニュース (経済)' }
+            { url: 'https://www.nhk.or.jp/rss/news/cat5.xml', source: 'NHKニュース (経済)' },
+            { url: 'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=ja&gl=JP&ceid=JP:ja', source: 'Google ニュース (経済)' },
+            { url: 'https://news.yahoo.co.jp/rss/topics/business.xml', source: 'Yahoo!ニュース (経済)' }
         ]
     },
     world: {
         label: '国際・社会',
+        wikiQuery: '国際連合 OR 外交 OR 国際情勢 OR 世界遺産',
         feeds: [
-            { url: 'https://news.yahoo.co.jp/rss/topics/world.xml', source: 'Yahoo!ニュース (国際)' },
-            { url: 'https://www.nhk.or.jp/rss/news/cat6.xml', source: 'NHKニュース (国際)' }
+            { url: 'https://www.nhk.or.jp/rss/news/cat6.xml', source: 'NHKニュース (国際)' },
+            { url: 'https://www.nhk.or.jp/rss/news/cat1.xml', source: 'NHKニュース (社会)' },
+            { url: 'https://news.yahoo.co.jp/rss/topics/world.xml', source: 'Yahoo!ニュース (国際)' }
         ]
     }
 };
@@ -168,15 +178,17 @@ function getRateLimitState() {
     return state;
 }
 
-function canMakeExternalRequest(featureKey) {
+function canMakeExternalRequest(featureKey, hasCache = false) {
     if (typeof navigator !== 'undefined' && navigator.onLine === false) {
         return { allowed: false, reason: 'オフライン' };
     }
     const state = getRateLimitState();
     const now = Date.now();
-    const lastFeatureTs = state.lastByFeature[featureKey] || 0;
-    if (now - lastFeatureTs < FEATURE_MIN_INTERVAL_MS) {
-        return { allowed: false, reason: '連続アクセス防止中' };
+    if (hasCache) {
+        const lastFeatureTs = state.lastByFeature[featureKey] || 0;
+        if (now - lastFeatureTs < FEATURE_MIN_INTERVAL_MS) {
+            return { allowed: false, reason: '連続アクセス防止中' };
+        }
     }
     if (state.history.length >= MAX_REQUESTS_PER_HOUR) {
         return { allowed: false, reason: 'API保護モード（キャッシュ表示）' };
@@ -205,9 +217,9 @@ function markProviderResult(providerKey, ok, retryAfterSec = 0) {
     if (ok) {
         state.providers[providerKey] = { failures: 0, backoffUntil: 0 };
     } else {
-        const failures = Math.min(6, (current.failures || 0) + 1);
-        const exponentialMs = Math.min(60 * 60 * 1000, 4 * 60 * 1000 * (2 ** (failures - 1)));
-        const backoffMs = retryAfterSec > 0 ? Math.max(retryAfterSec * 1000, exponentialMs) : exponentialMs;
+        const failures = Math.min(5, (current.failures || 0) + 1);
+        const baseMs = retryAfterSec > 0 ? retryAfterSec * 1000 : 20 * 1000 * failures;
+        const backoffMs = Math.min(15 * 60 * 1000, baseMs);
         state.providers[providerKey] = {
             failures,
             backoffUntil: Date.now() + backoffMs
@@ -216,12 +228,12 @@ function markProviderResult(providerKey, ok, retryAfterSec = 0) {
     writeJsonStorage(RATELIMIT_KEY, state);
 }
 
-// --- クロスタブロック（複数タブ同時起動時の重複リクエスト防止） ---
-function acquireCrossTabLock(lockName) {
+// --- クロスタブロック（複数タブ同時起動時の重複リクエスト防止 & リロード時デッドロック防止） ---
+function acquireCrossTabLock(lockName, forceAcquire = false) {
     const locks = readJsonStorage(LOCK_KEY, {});
     const now = Date.now();
     const existing = locks[lockName];
-    if (existing && existing.owner !== tabInstanceId && now - existing.timestamp < LOCK_LEASE_MS) {
+    if (!forceAcquire && existing && existing.owner !== tabInstanceId && now - existing.timestamp < LOCK_LEASE_MS) {
         return false;
     }
     locks[lockName] = { owner: tabInstanceId, timestamp: now };
@@ -237,127 +249,320 @@ function releaseCrossTabLock(lockName) {
     }
 }
 
-async function fetchWithTimeout(url, options = {}) {
+function releaseAllOwnLocks() {
+    const locks = readJsonStorage(LOCK_KEY, {});
+    let changed = false;
+    for (const key of Object.keys(locks)) {
+        if (locks[key]?.owner === tabInstanceId) {
+            delete locks[key];
+            changed = true;
+        }
+    }
+    if (changed) writeJsonStorage(LOCK_KEY, locks);
+}
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = FETCH_TIMEOUT_MS, externalSignal = null) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const onExternalAbort = () => controller.abort();
+    externalSignal?.addEventListener?.('abort', onExternalAbort, { once: true });
     try {
         return await fetch(url, { ...options, signal: controller.signal });
     } finally {
         clearTimeout(timer);
+        externalSignal?.removeEventListener?.('abort', onExternalAbort);
     }
 }
 
-// --- 汎用CORSプロキシ経由でのXML取得 ---
-async function fetchXmlWithProxyFallback(targetUrl) {
+// --- Hedged Race（段階的並列レース：第1候補が速ければ1リクエストで完結、遅ければ即第2候補を並列起動し勝者確定時に残りをAbort） ---
+async function runHedgedRace(taskBuilders, hedgeDelayMs = HEDGED_DELAY_MS) {
+    const validBuilders = taskBuilders.filter(Boolean);
+    if (!validBuilders.length) throw new Error('No tasks available');
+
+    const sharedController = new AbortController();
+    const timers = [];
+
+    const wrappedPromises = validBuilders.map((builder, index) => new Promise((resolve, reject) => {
+        const startTask = () => {
+            if (sharedController.signal.aborted) {
+                reject(new Error('Aborted'));
+                return;
+            }
+            Promise.resolve()
+                .then(() => builder(sharedController.signal))
+                .then(resolve, reject);
+        };
+
+        if (index === 0 || hedgeDelayMs <= 0) {
+            startTask();
+        } else {
+            const t = setTimeout(startTask, index * hedgeDelayMs);
+            timers.push(t);
+        }
+    }));
+
+    try {
+        const winner = await Promise.any(wrappedPromises);
+        sharedController.abort();
+        return winner;
+    } finally {
+        timers.forEach(clearTimeout);
+        sharedController.abort();
+    }
+}
+
+// --- Base64 Data URL デコーダ（allorigins等が `data:application/rss+xml;base64,...` を返した場合に確実に対処） ---
+function decodeProxyPayload(raw) {
+    if (!raw || typeof raw !== 'string') return '';
+    const trimmed = raw.trim();
+    if (trimmed.startsWith('data:') && trimmed.includes(';base64,')) {
+        try {
+            const b64 = trimmed.slice(trimmed.indexOf(';base64,') + 8).trim();
+            const binaryStr = atob(b64);
+            const bytes = Uint8Array.from(binaryStr, c => c.charCodeAt(0));
+            return new TextDecoder('utf-8').decode(bytes);
+        } catch {
+            return '';
+        }
+    }
+    return trimmed;
+}
+
+// --- 汎用CORSプロキシ経由での高速XML取得（4系統フォールバック + Base64対応） ---
+async function fetchXmlWithProxyFallback(targetUrl, externalSignal = null) {
     const proxyProviders = [
         {
-            key: 'allorigins',
-            fetchFn: async () => {
-                const res = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`);
-                if (res.status === 429) { markProviderResult('allorigins', false, 900); throw new Error('429'); }
-                if (!res.ok) { markProviderResult('allorigins', false); throw new Error(`HTTP ${res.status}`); }
+            key: 'allorigins-get',
+            run: async (sig) => {
+                const res = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`, {}, FETCH_TIMEOUT_MS, sig);
+                if (res.status === 429) { markProviderResult('allorigins-get', false, 600); throw new Error('429'); }
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
-                if (!data?.contents) throw new Error('Empty contents');
-                markProviderResult('allorigins', true);
-                return { xml: data.contents, provider: 'allorigins' };
+                const xml = decodeProxyPayload(data?.contents);
+                if (!xml || xml.length < 40 || (!xml.includes('<item') && !xml.includes('<entry'))) {
+                    throw new Error('Invalid XML in allorigins-get');
+                }
+                markProviderResult('allorigins-get', true);
+                return { xml, provider: 'allorigins' };
             }
         },
         {
             key: 'codetabs',
-            fetchFn: async () => {
-                const res = await fetchWithTimeout(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`);
-                if (res.status === 429) { markProviderResult('codetabs', false, 900); throw new Error('429'); }
-                if (!res.ok) { markProviderResult('codetabs', false); throw new Error(`HTTP ${res.status}`); }
-                const xml = await res.text();
-                if (!xml) throw new Error('Empty xml');
+            run: async (sig) => {
+                const res = await fetchWithTimeout(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`, {}, FETCH_TIMEOUT_MS, sig);
+                if (res.status === 429) { markProviderResult('codetabs', false, 600); throw new Error('429'); }
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const xml = decodeProxyPayload(await res.text());
+                if (!xml || xml.length < 40 || (!xml.includes('<item') && !xml.includes('<entry'))) {
+                    throw new Error('Invalid XML in codetabs');
+                }
                 markProviderResult('codetabs', true);
                 return { xml, provider: 'codetabs' };
+            }
+        },
+        {
+            key: 'corsproxy',
+            run: async (sig) => {
+                const res = await fetchWithTimeout(`https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`, {}, FETCH_TIMEOUT_MS, sig);
+                if (res.status === 429) { markProviderResult('corsproxy', false, 600); throw new Error('429'); }
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const xml = decodeProxyPayload(await res.text());
+                if (!xml || xml.length < 40 || (!xml.includes('<item') && !xml.includes('<entry'))) {
+                    throw new Error('Invalid XML in corsproxy');
+                }
+                markProviderResult('corsproxy', true);
+                return { xml, provider: 'corsproxy' };
+            }
+        },
+        {
+            key: 'allorigins-raw',
+            run: async (sig) => {
+                const res = await fetchWithTimeout(`https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`, {}, FETCH_TIMEOUT_MS, sig);
+                if (res.status === 429) { markProviderResult('allorigins-raw', false, 600); throw new Error('429'); }
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const xml = decodeProxyPayload(await res.text());
+                if (!xml || xml.length < 40 || (!xml.includes('<item') && !xml.includes('<entry'))) {
+                    throw new Error('Invalid XML in allorigins-raw');
+                }
+                markProviderResult('allorigins-raw', true);
+                return { xml, provider: 'allorigins-raw' };
             }
         }
     ];
 
-    for (const p of proxyProviders) {
-        if (!isProviderHealthy(p.key)) continue;
-        try {
-            return await p.fetchFn();
-        } catch {
-            // 次のプロキシへ
+    const combineSignals = (sigA, sigB) => {
+        if (!sigA) return sigB;
+        if (!sigB) return sigA;
+        const ctrl = new AbortController();
+        const abort = () => ctrl.abort();
+        if (sigA.aborted || sigB.aborted) { ctrl.abort(); return ctrl.signal; }
+        sigA.addEventListener?.('abort', abort, { once: true });
+        sigB.addEventListener?.('abort', abort, { once: true });
+        return ctrl.signal;
+    };
+
+    const healthyTasks = proxyProviders
+        .filter(p => isProviderHealthy(p.key))
+        .map(p => (sig) => p.run(combineSignals(sig, externalSignal)));
+
+    const tasksToRun = healthyTasks.length ? healthyTasks : proxyProviders.map(p => (sig) => p.run(combineSignals(sig, externalSignal)));
+    return await runHedgedRace(tasksToRun, 280);
+}
+
+// ====================================================
+// 1. Quickニュース取得ロジック（DOMParser + 正規表現フォールバック + 直接CORS保護）
+// ====================================================
+function stripCdataAndTags(raw) {
+    if (!raw) return '';
+    return String(raw)
+        .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/gi, '$1')
+        .replace(/<[^>]+>/g, '')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;|&#x27;/g, "'")
+        .trim();
+}
+
+function parseRssXmlFallbackRegex(xmlText, defaultSource) {
+    const items = [];
+    const blockRegex = /<(?:item|entry)\b[^>]*>([\s\S]*?)<\/(?:item|entry)>/gi;
+    let match;
+    while ((match = blockRegex.exec(xmlText)) !== null && items.length < MAX_NEWS_ITEMS) {
+        const block = match[1];
+        const titleMatch = block.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i);
+        const linkMatch = block.match(/<link\b[^>]*>([\s\S]*?)<\/link>/i) || block.match(/<link\b[^>]*href=["']([^"']+)["']/i);
+        const dateMatch = block.match(/<(?:pubDate|dc:date|published|updated)\b[^>]*>([\s\S]*?)<\/(?:pubDate|dc:date|published|updated)>/i);
+        const sourceMatch = block.match(/<source\b[^>]*>([\s\S]*?)<\/source>/i);
+
+        const title = stripCdataAndTags(titleMatch?.[1] || '');
+        const url = getSafeUrl(stripCdataAndTags(linkMatch?.[1] || ''));
+        const pubDate = stripCdataAndTags(dateMatch?.[1] || '');
+        const source = stripCdataAndTags(sourceMatch?.[1] || '') || defaultSource;
+        if (title && url) {
+            items.push({ title, url, pubDate, source });
         }
     }
-    throw new Error('XML proxies unavailable');
+    return items;
 }
 
-// ====================================================
-// 1. Quickニュース取得ロジック
-// ====================================================
 function parseRssXml(xmlText, defaultSource) {
-    if (typeof DOMParser === 'undefined') return [];
-    const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-    if (doc.querySelector('parsererror')) return [];
-    const channelTitle = doc.querySelector('channel > title')?.textContent?.trim() || defaultSource;
-    const itemNodes = [...doc.querySelectorAll('item')];
-    return itemNodes.map(node => {
-        const title = node.querySelector('title')?.textContent?.trim() || '';
-        const link = getSafeUrl(node.querySelector('link')?.textContent?.trim() || '');
-        const pubDate = node.querySelector('pubDate, dc\\:date, date')?.textContent?.trim() || '';
-        const source = node.querySelector('source')?.textContent?.trim() || channelTitle?.split(/[｜|-]/)[0]?.trim() || defaultSource;
-        return { title, url: link, pubDate, source };
-    }).filter(item => item.title && item.url).slice(0, MAX_NEWS_ITEMS);
+    const cleaned = decodeProxyPayload(xmlText).replace(/^[\uFEFF\s]+/, '');
+    if (!cleaned) return [];
+
+    if (typeof DOMParser !== 'undefined') {
+        try {
+            const doc = new DOMParser().parseFromString(cleaned, 'text/xml');
+            if (!doc.querySelector('parsererror')) {
+                const channelTitle = doc.querySelector('channel > title, feed > title')?.textContent?.trim() || defaultSource;
+                const itemNodes = [...doc.querySelectorAll('item, entry')];
+                const parsed = itemNodes.map(node => {
+                    const rawTitle = node.querySelector('title')?.textContent?.trim() || '';
+                    const linkText = node.querySelector('link')?.textContent?.trim() || node.querySelector('link')?.getAttribute('href') || '';
+                    const link = getSafeUrl(linkText);
+                    const pubDate = node.querySelector('pubDate, dc\\:date, date, published, updated')?.textContent?.trim() || '';
+                    const sourceNode = node.querySelector('source')?.textContent?.trim();
+                    const source = sourceNode || channelTitle?.split(/[｜|-]/)[0]?.trim() || defaultSource;
+                    const cleanTitle = sourceNode && rawTitle.endsWith(` - ${sourceNode}`)
+                        ? rawTitle.slice(0, -(` - ${sourceNode}`).length).trim()
+                        : rawTitle;
+                    return { title: cleanTitle, url: link, pubDate, source };
+                }).filter(item => item.title && item.url).slice(0, MAX_NEWS_ITEMS);
+                if (parsed.length > 0) return parsed;
+            }
+        } catch {
+            // 正規表現パーサーへフォールバック
+        }
+    }
+
+    return parseRssXmlFallbackRegex(cleaned, defaultSource);
 }
 
-async function fetchViaRss2Json(feedUrl, defaultSource) {
+async function fetchViaRss2Json(feedUrl, defaultSource, externalSignal = null) {
     const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`;
-    const res = await fetchWithTimeout(apiUrl);
+    const res = await fetchWithTimeout(apiUrl, {}, FETCH_TIMEOUT_MS, externalSignal);
     if (res.status === 429) {
-        const retryAfter = Number(res.headers?.get?.('Retry-After')) || 900;
+        const retryAfter = Number(res.headers?.get?.('Retry-After')) || 600;
         markProviderResult('rss2json', false, retryAfter);
         throw new Error('Rate limited (429)');
     }
+    // 個別フィードの422/500エラーではrss2json全体を停止させない（Yahoo等のジオブロック巻き添え防止）
     if (!res.ok) {
-        markProviderResult('rss2json', false);
         throw new Error(`HTTP ${res.status}`);
     }
     const data = await res.json();
-    if (data?.status !== 'ok' || !Array.isArray(data.items)) {
-        markProviderResult('rss2json', false);
+    if (data?.status !== 'ok' || !Array.isArray(data.items) || !data.items.length) {
         throw new Error('Invalid rss2json payload');
     }
     markProviderResult('rss2json', true);
     return data;
 }
 
+async function fetchSingleNewsFeedFast(feed, externalSignal = null) {
+    const candidates = [];
+    if (isProviderHealthy('rss2json')) {
+        candidates.push(async (sig) => {
+            const data = await fetchViaRss2Json(feed.url, feed.source, sig || externalSignal);
+            const items = data.items.map(item => ({
+                title: String(item.title || '').trim(),
+                url: getSafeUrl(item.link || item.url),
+                pubDate: item.pubDate || '',
+                source: data.feed?.title?.split(/[｜|-]/)[0]?.trim() || feed.source
+            })).filter(item => item.title && item.url).slice(0, MAX_NEWS_ITEMS);
+            if (!items.length) throw new Error('Empty rss2json items');
+            return { items, provider: 'rss2json' };
+        });
+    }
+    candidates.push(async (sig) => {
+        const { xml, provider } = await fetchXmlWithProxyFallback(feed.url, sig || externalSignal);
+        const items = parseRssXml(xml, feed.source);
+        if (!items.length) throw new Error('Empty parsed XML items');
+        return { items, provider };
+    });
+
+    return await runHedgedRace(candidates, 250);
+}
+
+// プロキシが全滅した環境向けの直接CORS対応（プロキシ不要 `origin=*`）ニューストピック取得
+async function fetchDirectCorsNewsFallback(category) {
+    const catConfig = NEWS_CATEGORIES[category] || NEWS_CATEGORIES.top;
+    const query = catConfig.wikiQuery || '日本 ニュース';
+    const url = `https://ja.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&srlimit=${MAX_NEWS_ITEMS}&utf8=1&format=json&origin=*`;
+    const res = await fetchWithTimeout(url, {}, 3500);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const list = data?.query?.search;
+    if (!Array.isArray(list) || !list.length) throw new Error('Empty direct fallback');
+    const items = list.slice(0, MAX_NEWS_ITEMS).map(entry => {
+        const title = String(entry.title || '').trim();
+        const snippet = stripCdataAndTags(entry.snippet || '');
+        return {
+            title: snippet ? `${title} — ${snippet.slice(0, 46)}…` : title,
+            url: `https://news.google.com/search?q=${encodeURIComponent(title)}&hl=ja&gl=JP&ceid=JP%3Aja`,
+            pubDate: entry.timestamp || '',
+            source: `注目トピック (${catConfig.label})`
+        };
+    }).filter(item => item.title && item.url);
+    if (!items.length) throw new Error('No valid fallback items');
+    return { items, provider: 'direct-cors' };
+}
+
 async function fetchNewsCategoryFromNetwork(category) {
     const catConfig = NEWS_CATEGORIES[category] || NEWS_CATEGORIES.top;
-    recordExternalRequest('news');
+    recordExternalRequest(`news:${category}`);
 
-    for (const feed of catConfig.feeds) {
-        if (isProviderHealthy('rss2json')) {
-            try {
-                const data = await fetchViaRss2Json(feed.url, feed.source);
-                const items = data.items.map(item => ({
-                    title: String(item.title || '').trim(),
-                    url: getSafeUrl(item.link || item.url),
-                    pubDate: item.pubDate || '',
-                    source: data.feed?.title?.split(/[｜|-]/)[0]?.trim() || feed.source
-                })).filter(item => item.title && item.url).slice(0, MAX_NEWS_ITEMS);
-                if (items.length) return { items, provider: 'rss2json' };
-            } catch {
-                // フォールバック
-            }
-        }
-        try {
-            const { xml, provider } = await fetchXmlWithProxyFallback(feed.url);
-            const items = parseRssXml(xml, feed.source);
-            if (items.length) return { items, provider };
-        } catch {
-            // 次のフィードへ
-        }
+    try {
+        const feedTasks = catConfig.feeds.map(feed => (sig) => fetchSingleNewsFeedFast(feed, sig));
+        return await runHedgedRace(feedTasks, 350);
+    } catch {
+        // 万一すべての外部RSSプロキシが遮断・タイムアウトした場合でも直接CORS APIで確実に表示
+        return await fetchDirectCorsNewsFallback(category);
     }
-    throw new Error('All news providers unavailable');
 }
 
 // ====================================================
-// 2. リアルタイム話題のワード取得ロジック
+// 2. リアルタイム話題のワード取得ロジック（直接CORS API最優先 + 並列レース）
 // ====================================================
 function parseGoogleTrendsXml(xmlText) {
     if (typeof DOMParser === 'undefined') return [];
@@ -379,96 +584,53 @@ function parseGoogleTrendsXml(xmlText) {
     }).filter(item => item.keyword).slice(0, MAX_TREND_ITEMS);
 }
 
-async function fetchWikimediaMostReadJapan() {
-    if (!isProviderHealthy('wikimedia')) throw new Error('Wikimedia in backoff');
-    // Wikimedia Featured Feed API (CORS完全対応・公式REST API)
-    const datesToTry = [0, 1].map(daysAgo => {
-        const d = new Date(Date.now() - daysAgo * 86400000);
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        return `${yyyy}/${mm}/${dd}`;
-    });
+// MediaWiki公式 MostViewed API（プロキシ不要・直接CORS `origin=*`・PC時計の年月に非依存・応答100〜250ms）
+async function fetchWikimediaMostViewedDirect(externalSignal = null) {
+    const url = 'https://ja.wikipedia.org/w/api.php?action=query&list=mostviewed&pvimlimit=18&format=json&origin=*';
+    const res = await fetchWithTimeout(url, {}, 2400, externalSignal);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const list = data?.query?.mostviewed;
+    if (!Array.isArray(list)) throw new Error('Invalid mostviewed response');
 
-    for (const datePath of datesToTry) {
-        try {
-            const res = await fetchWithTimeout(`https://ja.wikipedia.org/api/rest_v1/feed/featured/${datePath}`);
-            if (res.status === 429) {
-                markProviderResult('wikimedia', false, 900);
-                throw new Error('429');
-            }
-            if (!res.ok) continue;
-            const data = await res.json();
-            const articles = data?.mostread?.articles;
-            if (!Array.isArray(articles)) continue;
-            const filtered = articles
-                .filter(a => a && a.titles?.normalized && !/^(メインページ|特別:|Wikipedia:|Portal:|ファイル:)/.test(a.titles.normalized))
-                .slice(0, MAX_TREND_ITEMS)
-                .map(a => {
-                    const keyword = a.titles.normalized;
-                    const views = typeof a.views === 'number' ? `${a.views.toLocaleString('ja-JP')} 閲覧` : '注目ワード';
-                    return {
-                        keyword,
-                        badge: views,
-                        context: a.description || a.extract?.slice(0, 48) || 'リアルタイム注目トピック',
-                        url: `https://www.google.com/search?q=${encodeURIComponent(keyword)}`
-                    };
-                });
-            if (filtered.length >= 4) {
-                markProviderResult('wikimedia', true);
-                return { items: filtered, provider: 'wikimedia' };
-            }
-        } catch {
-            // 次の日付へ
-        }
-    }
-    markProviderResult('wikimedia', false);
-    throw new Error('Wikimedia mostread unavailable');
+    const filtered = list
+        .filter(item => item && item.ns === 0 && item.title && !/^(メインページ|特別:|Wikipedia:|Portal:|ファイル:|一覧)/.test(item.title))
+        .slice(0, MAX_TREND_ITEMS)
+        .map(item => {
+            const keyword = String(item.title).trim();
+            const count = typeof item.count === 'number' ? `${item.count.toLocaleString('ja-JP')} 注目` : '急上昇ワード';
+            return {
+                keyword,
+                badge: count,
+                context: 'いま検索・閲覧が急増している注目ワード',
+                url: `https://www.google.com/search?q=${encodeURIComponent(keyword)}`
+            };
+        });
+
+    if (filtered.length < 4) throw new Error('Insufficient mostviewed items');
+    markProviderResult('wikimedia', true);
+    return { items: filtered, provider: 'wikimedia-direct' };
+}
+
+async function fetchGoogleTrendsRssFast(externalSignal = null) {
+    const rssUrl = 'https://trends.google.co.jp/trending/rss?geo=JP';
+    const { xml, provider } = await fetchXmlWithProxyFallback(rssUrl, externalSignal);
+    const items = parseGoogleTrendsXml(xml);
+    if (items.length < 3) throw new Error('Insufficient Google Trends items');
+    return { items, provider };
 }
 
 async function fetchTrendsFromNetwork() {
     recordExternalRequest('trends');
-    const trendRssUrls = [
-        'https://trends.google.co.jp/trending/rss?geo=JP',
-        'https://trends.google.com/trending/rss?geo=JP'
-    ];
-
-    // 1. Google Trends RSS (XMLプロキシ経由でネイティブ解析)
-    for (const rssUrl of trendRssUrls) {
-        try {
-            const { xml, provider } = await fetchXmlWithProxyFallback(rssUrl);
-            const items = parseGoogleTrendsXml(xml);
-            if (items.length >= 3) {
-                return { items, provider };
-            }
-        } catch {
-            // 次へ
-        }
-        if (isProviderHealthy('rss2json')) {
-            try {
-                const data = await fetchViaRss2Json(rssUrl, 'Google Trends');
-                const items = (data.items || []).map(item => {
-                    const keyword = String(item.title || '').trim();
-                    return {
-                        keyword,
-                        badge: '急上昇ワード',
-                        context: String(item.description || '').replace(/<[^>]*>/g, '').trim() || 'Google 検索トレンド',
-                        url: `https://www.google.com/search?q=${encodeURIComponent(keyword)}`
-                    };
-                }).filter(item => item.keyword).slice(0, MAX_TREND_ITEMS);
-                if (items.length >= 3) return { items, provider: 'rss2json' };
-            } catch {
-                // 次へ
-            }
-        }
-    }
-
-    // 2. フォールバック: Wikimedia日本語版 公式トレンドAPI（プロキシ不要・直接CORS対応）
-    return await fetchWikimediaMostReadJapan();
+    // 直接CORS対応で超高速（〜200ms）なWikimedia公式APIとGoogle Trends RSSを並列レース
+    return await runHedgedRace([
+        (sig) => fetchWikimediaMostViewedDirect(sig),
+        (sig) => fetchGoogleTrendsRssFast(sig)
+    ], 150);
 }
 
 // ====================================================
-// 3. YouTubeおすすめ動画取得ロジック
+// 3. YouTubeおすすめ動画取得ロジック（並列チャンネル取得 & 高速タイムアウト）
 // ====================================================
 function extractYoutubeVideoId(inputStr) {
     if (!inputStr) return '';
@@ -509,51 +671,13 @@ function parseYoutubeAtomXml(xmlText, fallbackChannelName) {
     }).filter(Boolean);
 }
 
-async function fetchPipedTrendingJapan() {
-    if (!isProviderHealthy('piped')) throw new Error('Piped in backoff');
-    const pipedEndpoints = [
-        'https://pipedapi.kavin.rocks/trending?region=JP',
-        'https://api.piped.private.coffee/trending?region=JP'
-    ];
-    for (const endpoint of pipedEndpoints) {
-        try {
-            const res = await fetchWithTimeout(endpoint);
-            if (res.status === 429) {
-                markProviderResult('piped', false, 900);
-                throw new Error('429');
-            }
-            if (!res.ok) continue;
-            const list = await res.json();
-            if (!Array.isArray(list)) continue;
-            const items = list.map(v => {
-                const videoId = extractYoutubeVideoId(v.url ? `https://www.youtube.com${v.url}` : '');
-                if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) return null;
-                return {
-                    videoId,
-                    title: String(v.title || '').trim(),
-                    channel: String(v.uploaderName || 'YouTube').trim(),
-                    pubDate: v.uploaded ? new Date(v.uploaded).toISOString() : '',
-                    thumbnail: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
-                    url: `https://www.youtube.com/watch?v=${videoId}`
-                };
-            }).filter(item => item && item.title).slice(0, MAX_YT_ITEMS);
-            if (items.length >= 2) {
-                markProviderResult('piped', true);
-                return { items, provider: 'piped' };
-            }
-        } catch {
-            // 次のエンドポイントへ
-        }
-    }
-    markProviderResult('piped', false);
-    throw new Error('Piped trending unavailable');
-}
-
 async function fetchChannelVideos(channel) {
     const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(channel.id)}`;
+    const candidates = [];
+
     if (isProviderHealthy('rss2json')) {
-        try {
-            const data = await fetchViaRss2Json(feedUrl, channel.name);
+        candidates.push(async (sig) => {
+            const data = await fetchViaRss2Json(feedUrl, channel.name, sig);
             const items = (data.items || []).map(item => {
                 const videoId = extractYoutubeVideoId(item.link || item.guid);
                 if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) return null;
@@ -566,48 +690,42 @@ async function fetchChannelVideos(channel) {
                     url: `https://www.youtube.com/watch?v=${videoId}`
                 };
             }).filter(Boolean);
-            if (items.length) return { items, provider: 'rss2json' };
-        } catch {
-            // XMLプロキシへフォールバック
-        }
+            if (!items.length) throw new Error('Empty rss2json channel videos');
+            return { items, provider: 'rss2json' };
+        });
     }
-    const { xml, provider } = await fetchXmlWithProxyFallback(feedUrl);
-    const items = parseYoutubeAtomXml(xml, channel.name);
-    if (!items.length) throw new Error('Empty channel videos');
-    return { items, provider };
+
+    candidates.push(async (sig) => {
+        const { xml, provider } = await fetchXmlWithProxyFallback(feedUrl, sig);
+        const items = parseYoutubeAtomXml(xml, channel.name);
+        if (!items.length) throw new Error('Empty channel videos');
+        return { items, provider };
+    });
+
+    return await runHedgedRace(candidates, 400);
 }
 
 async function fetchYoutubeCategoryFromNetwork(ytCategory) {
     const config = YT_CATEGORIES[ytCategory] || YT_CATEGORIES.trending;
-    recordExternalRequest('youtube');
+    recordExternalRequest(`yt:${ytCategory}`);
 
-    // 1. 「話題・注目」カテゴリで Piped トレンドAPIが利用可能なら最優先で試行
-    if (config.usePipedTrending && isProviderHealthy('piped')) {
-        try {
-            return await fetchPipedTrendingJapan();
-        } catch {
-            // 公式チャンネルRSSへフォールバック
-        }
-    }
+    // 複数チャンネルを直列で待たず並列に取得し、最初に応答したチャンネル群から即座に構築
+    const targetChannels = config.channels.slice(0, 2);
+    const results = await Promise.allSettled(targetChannels.map(ch => fetchChannelVideos(ch)));
 
-    // 2. YouTube公式Atomフィードから取得してマージ
     const collected = [];
     const seenIds = new Set();
     let usedProvider = 'youtube-rss';
 
-    for (const ch of config.channels) {
-        try {
-            const { items, provider } = await fetchChannelVideos(ch);
-            usedProvider = provider;
-            for (const video of items.slice(0, 3)) {
+    for (const res of results) {
+        if (res.status === 'fulfilled' && res.value?.items?.length) {
+            usedProvider = res.value.provider || usedProvider;
+            for (const video of res.value.items.slice(0, 3)) {
                 if (!seenIds.has(video.videoId)) {
                     seenIds.add(video.videoId);
                     collected.push(video);
                 }
             }
-            if (collected.length >= MAX_YT_ITEMS) break;
-        } catch {
-            // 次のチャンネルへ
         }
     }
 
@@ -835,23 +953,26 @@ export async function loadNews(category = currentCategory, forceManual = false) 
     if (cached) renderNewsItems(cached.items);
     else renderNewsSkeleton();
 
-    const rateCheck = canMakeExternalRequest('news');
+    const reqKey = `news:${category}`;
+    const rateCheck = canMakeExternalRequest(reqKey, Boolean(cached));
     if (!rateCheck.allowed) {
         if (cached) updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (${rateCheck.reason})`);
         else { renderNewsItems([]); updateFeedStatusUI('news-status-text', 'news-refresh-btn', rateCheck.reason); }
         return;
     }
 
-    const reqKey = `news:${category}`;
     if (inFlightRequests.has(reqKey)) {
         updateFeedStatusUI('news-status-text', 'news-refresh-btn', '更新中...', true);
         await inFlightRequests.get(reqKey);
         return;
     }
 
-    if (!acquireCrossTabLock(reqKey)) {
-        if (cached) updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(cached.timestamp)} 取得`);
-        return;
+    // キャッシュが既に存在する時のみ他タブのロックを尊重し、未キャッシュ時はデッドロックを防いで即取得
+    if (!acquireCrossTabLock(reqKey, !cached)) {
+        if (cached) {
+            updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(cached.timestamp)} 取得`);
+            return;
+        }
     }
 
     updateFeedStatusUI('news-status-text', 'news-refresh-btn', '最新ニュースを取得中...', true);
@@ -906,7 +1027,7 @@ export async function loadTrends(forceManual = false) {
     if (cached) renderTrendItems(cached.items);
     else renderTrendsSkeleton();
 
-    const rateCheck = canMakeExternalRequest('trends');
+    const rateCheck = canMakeExternalRequest('trends:jp', Boolean(cached));
     if (!rateCheck.allowed) {
         if (cached) updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (${rateCheck.reason})`);
         else { renderTrendItems([]); updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', rateCheck.reason); }
@@ -920,9 +1041,11 @@ export async function loadTrends(forceManual = false) {
         return;
     }
 
-    if (!acquireCrossTabLock(reqKey)) {
-        if (cached) updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(cached.timestamp)} 取得`);
-        return;
+    if (!acquireCrossTabLock(reqKey, !cached)) {
+        if (cached) {
+            updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(cached.timestamp)} 取得`);
+            return;
+        }
     }
 
     updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', 'トレンドを取得中...', true);
@@ -977,23 +1100,25 @@ export async function loadYoutube(ytCategory = currentYtCategory, forceManual = 
     if (cached) renderYoutubeItems(cached.items);
     else renderYoutubeSkeleton();
 
-    const rateCheck = canMakeExternalRequest('youtube');
+    const reqKey = `yt:${ytCategory}`;
+    const rateCheck = canMakeExternalRequest(reqKey, Boolean(cached));
     if (!rateCheck.allowed) {
         if (cached) updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (${rateCheck.reason})`);
         else { renderYoutubeItems([]); updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', rateCheck.reason); }
         return;
     }
 
-    const reqKey = `yt:${ytCategory}`;
     if (inFlightRequests.has(reqKey)) {
         updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', '更新中...', true);
         await inFlightRequests.get(reqKey);
         return;
     }
 
-    if (!acquireCrossTabLock(reqKey)) {
-        if (cached) updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(cached.timestamp)} 取得`);
-        return;
+    if (!acquireCrossTabLock(reqKey, !cached)) {
+        if (cached) {
+            updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(cached.timestamp)} 取得`);
+            return;
+        }
     }
 
     updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', 'おすすめ動画を取得中...', true);
@@ -1108,12 +1233,14 @@ export function initNews() {
                 }
             }
         });
+        window.addEventListener?.('pagehide', releaseAllOwnLocks);
+        window.addEventListener?.('beforeunload', releaseAllOwnLocks);
     }
 
-    // 初回ロード時はプロキシへの同時バーストアクセスを避けるため段階的に実行（キャッシュヒット時は即時描画）
+    // 初回ロード時は3フィードを並列で即時開始（キャッシュヒット時は0ms描画、通信時も並列レースで高速完了）
     loadNews('top', false);
-    setTimeout(() => loadTrends(false), 250);
-    setTimeout(() => loadYoutube('trending', false), 500);
+    loadTrends(false);
+    loadYoutube('trending', false);
 
     // 30分ごとに、タブがアクティブかつオンラインの時のみバックグラウンド更新チェック
     setInterval(() => {
