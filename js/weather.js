@@ -1,6 +1,7 @@
 /* LifeTop - weather widget and extended detailed modal */
 
 let savedWeatherData = null;
+let weatherTrigger = null;
 
 // 天気ウィジェット (位置情報 or デフォルト東京)
 export async function fetchWeather() {
@@ -68,19 +69,43 @@ export function showWeatherDetail() {
         modal.dataset.listenerAttached = 'true';
     }
     
-    if (!savedWeatherData) {
-        alert("お天気データを読み込めませんでした。時間をおいて再度お試しください。");
-        return;
-    }
-    
     const container = document.getElementById('weather-detail-content');
     if (!container) return;
+
+    if (!modal.classList.contains('active')) {
+        weatherTrigger = document.activeElement;
+    }
+
+    if (!savedWeatherData) {
+        container.innerHTML = `
+            <div class="weather-empty-state">
+                <span class="material-symbols-outlined" aria-hidden="true">cloud_sync</span>
+                <p>お天気データを取得しています。少し待ってから再度お試しください。</p>
+                <button type="button" class="primary-btn" onclick="closeWeatherDetail()">閉じる</button>
+            </div>
+        `;
+        modal.inert = false;
+        modal.classList.add('active');
+        if (document.body?.style) document.body.style.overflow = 'hidden';
+        modal.querySelector('.weather-modal-close')?.focus();
+        fetchWeather();
+        return;
+    }
     
     const current = savedWeatherData.current_weather;
     const hourly = savedWeatherData.hourly;
     const daily = savedWeatherData.daily || {};
     if (!current || !hourly || !Array.isArray(hourly.time)) {
-        alert("お天気データの形式が正しくありません。再読み込みしてください。");
+        container.innerHTML = `
+            <div class="weather-empty-state">
+                <span class="material-symbols-outlined" aria-hidden="true">cloud_off</span>
+                <p>お天気データの形式が正しくありません。時間をおいて再度お試しください。</p>
+            </div>
+        `;
+        modal.inert = false;
+        modal.classList.add('active');
+        if (document.body?.style) document.body.style.overflow = 'hidden';
+        modal.querySelector('.weather-modal-close')?.focus();
         return;
     }
 
@@ -221,7 +246,10 @@ export function showWeatherDetail() {
         </div>
     `;
     
+    modal.inert = false;
     modal.classList.add('active');
+    if (document.body?.style) document.body.style.overflow = 'hidden';
+    modal.querySelector('.weather-modal-close')?.focus();
 }
 
 function formatTimeStr(isoStr) {
@@ -246,6 +274,10 @@ export function closeWeatherDetail() {
     const modal = document.getElementById('weather-detail-modal');
     if (modal) {
         modal.classList.remove('active');
+        modal.inert = true;
+        if (document.body?.style) document.body.style.overflow = '';
+        if (weatherTrigger?.isConnected) weatherTrigger.focus();
+        weatherTrigger = null;
     }
 }
 

@@ -7,11 +7,25 @@ export function initSearchSuggestions() {
     const input = document.getElementById('search-input');
     const list = document.getElementById('search-suggestions');
     const form = document.getElementById('search-form');
+    const clearBtn = document.getElementById('search-clear-btn');
     if (!input || !list || !form) return;
 
     form.action = 'https://www.google.com/search';
     input.placeholder = 'Googleで検索';
     form.querySelector('.search-button').setAttribute('aria-label', 'Googleで検索');
+
+    const syncClearButton = () => {
+        if (clearBtn) clearBtn.hidden = input.value.length === 0;
+    };
+    syncClearButton();
+
+    clearBtn?.addEventListener('click', () => {
+        input.value = '';
+        syncClearButton();
+        clearSuggestions(input, list);
+        input.focus();
+    });
+
     document.addEventListener('keydown', event => {
         if (event.key !== '/' || event.isComposing || event.ctrlKey || event.metaKey || event.altKey) return;
         if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
@@ -21,12 +35,16 @@ export function initSearchSuggestions() {
     });
 
     const scheduleSuggestions = () => {
+        syncClearButton();
         clearSuggestions(input, list);
         const query = input.value.trim();
         if (!query) return;
         searchTimer = window.setTimeout(() => fetchSuggestions(query, input, list), 180);
     };
-    input.addEventListener('input', event => { if (!event.isComposing) scheduleSuggestions(); });
+    input.addEventListener('input', event => {
+        syncClearButton();
+        if (!event.isComposing) scheduleSuggestions();
+    });
     input.addEventListener('compositionstart', () => clearSuggestions(input, list));
     input.addEventListener('compositionend', scheduleSuggestions);
 

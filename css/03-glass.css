@@ -1,18 +1,30 @@
-/* ガラスモーフィズムカードの共通設定 */
+/* PasideaDesign: ガラスモーフィズムカードの共通設定 */
 .glass-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px);
-    -webkit-backdrop-filter: blur(22px);
-    border: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    background: var(--surface-raised);
+    backdrop-filter: blur(24px) saturate(135%);
+    -webkit-backdrop-filter: blur(24px) saturate(135%);
+    border: 1px solid var(--line-soft);
     color: var(--text-color);
-    box-shadow: var(--glass-shadow);
-    border-radius: 24px;
-    padding: 24px;
-    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--glass-shadow), var(--inner-highlight);
+    border-radius: var(--radius-card);
+    padding: clamp(20px, 2.5vw, 30px);
+    transition:
+        background-color var(--duration-normal) ease,
+        border-color var(--duration-normal) ease,
+        box-shadow var(--duration-normal) ease,
+        transform var(--duration-normal) var(--ease-smooth);
 }
 
 .glass-card:hover {
-    border-color: rgba(255, 255, 255, 0.22);
-    box-shadow: 0 18px 35px rgba(15, 23, 42, 0.23);
+    background: var(--surface-card-hover);
+    border-color: rgba(var(--p-rgb), 0.28);
+    box-shadow: 0 26px 64px rgba(3, 10, 22, 0.32), var(--inner-highlight);
+    transform: translateY(-2px);
 }
-

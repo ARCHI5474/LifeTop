@@ -1,26 +1,70 @@
 :root {
-    --p: #7c9cff;
-    --p-rgb: 124, 156, 255;
-    --p-strong: #9ae6ff;
-    --p-soft: rgba(124, 156, 255, 0.18);
-    --bg-gradient: #27434a;
+    /* Theme & Accent Tokens (dynamically updated by styles.js) */
+    --p: #2F75A8;
+    --p-rgb: 47, 117, 168;
+    --p-strong: #6BB8F0;
+    --p-deep: #1B4F76;
+    --p-soft: rgba(47, 117, 168, 0.18);
+    --p-glow: rgba(47, 117, 168, 0.32);
+
+    /* Background & Typography Tokens */
+    --bg-gradient: #203A52;
     --bg-size: cover;
-    --text-color: #edf6ff;
-    --text-secondary: rgba(237, 246, 255, 0.74);
-    --glass-bg: rgba(15, 23, 42, 0.46);
-    --glass-border: rgba(124, 156, 255, 0.28);
-    --glass-shadow: 0 18px 45px rgba(15, 23, 42, 0.26);
-    --panel-bg: rgba(15, 23, 42, 0.7);
-    --panel-border: rgba(148, 163, 184, 0.18);
-    --bg-overlay-soft: rgba(15, 23, 42, 0.32);
+    --text-color: #f0f6ff;
+    --text-secondary: rgba(226, 238, 255, 0.74);
+    --text-muted: rgba(214, 228, 248, 0.62);
     --clock-f: 'Outfit', sans-serif;
     --clock-c: #ffffff;
+
+    /* PasideaDesign Spatial Layering Tokens (空間は穏やかに重なる) */
+    --glass-bg: rgba(14, 24, 44, 0.62);
+    --surface-raised: rgba(16, 28, 50, 0.72);
+    --surface-card-hover: rgba(19, 33, 58, 0.76);
+    --surface-soft: rgba(255, 255, 255, 0.045);
+    --control-bg: rgba(15, 26, 46, 0.48);
+    --input-bg: rgba(7, 14, 28, 0.46);
+    --panel-bg: rgba(12, 21, 39, 0.88);
+    --bg-overlay-soft: rgba(10, 18, 34, 0.34);
+
+    /* Borders & Shadows */
+    --glass-border: rgba(47, 117, 168, 0.28);
+    --line-soft: rgba(220, 235, 255, 0.12);
+    --control-border: rgba(216, 232, 255, 0.14);
+    --panel-border: rgba(216, 232, 255, 0.16);
+    --inner-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 22px 54px rgba(3, 9, 20, 0.28);
+    --dialog-shadow: 0 28px 72px rgba(2, 8, 18, 0.45);
+
+    /* Shape Scale */
+    --radius-hero: 32px;
+    --radius-card: 26px;
+    --radius-dialog: 26px;
+    --radius-lg: 18px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+    --radius-pill: 999px;
+
+    /* PasideaDesign Motion Tokens (触れたことが伝わる・動きには役割がある) */
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-out-soft: cubic-bezier(0.22, 1.2, 0.36, 1);
+    --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-press: cubic-bezier(0.2, 0, 0, 1);
+    --duration-press: 80ms;
+    --duration-fast: 180ms;
+    --duration-normal: 220ms;
+    --duration-switch: 300ms;
+    --duration-open: 340ms;
+    --duration-close: 200ms;
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+[hidden] {
+    display: none !important;
 }
 
 .loading-screen {
@@ -31,9 +75,9 @@
     place-content: center;
     justify-items: center;
     gap: 10px;
-    background: #0b1120;
-    color: #edf6ff;
-    transition: opacity .18s ease, visibility .18s ease;
+    background: #0b1324;
+    color: var(--text-color);
+    transition: opacity var(--duration-fast) ease, visibility var(--duration-fast) ease;
 }
 
 .loading-screen.is-hidden {
@@ -42,59 +86,148 @@
     pointer-events: none;
 }
 
-.loading-logo { font-size: 2rem; font-weight: 700; letter-spacing: -.04em; }
-.loading-label { font-size: .8rem; color: #b4c5de; }
+.loading-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
+}
+
+.loading-logo {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.045em;
+}
+
+.loading-label {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: 24px;
+    scrollbar-gutter: stable;
 }
 
 body {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", "Segoe UI", Roboto, sans-serif;
     color: var(--text-color);
     min-height: 100vh;
+    min-height: 100svh;
     overflow-x: hidden;
-    background: transparent;
+    background:
+        radial-gradient(ellipse at 50% -20%, rgba(var(--p-rgb), 0.16), transparent 58%),
+        transparent;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
 }
 
-/* タップ・クリック時のインタラクティブ・弾力フィードバック (M3風) */
-.icon-btn,
-.icon-btn-small,
-.bookmark-item,
-.tab-btn,
-.add-bookmark-btn,
-.search-button,
-.todo-item-left,
-.todo-delete,
-.font-btn,
-.color-dot,
-.bg-option {
-    transition: transform 0.25s cubic-bezier(0.34, 1.75, 0.64, 1), 
-                background-color 0.2s ease, 
-                box-shadow 0.2s ease,
-                border-color 0.2s ease;
-    user-select: none;
-    -webkit-user-select: none;
+/* PasideaDesign: 触れたことが伝わる (Tactile Press & Spring Release - PC & Smartphone) */
+button,
+a,
+input,
+textarea,
+select,
+label {
+    touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
 }
 
+.weather-widget,
+.user-badge,
+.icon-btn,
+.icon-btn-small,
+.bookmark-item,
+.bookmark-tab-item,
+.news-item,
+.trend-item,
+.yt-card-item,
+.news-tab-btn,
+.tab-scroll-btn,
+.tab-btn,
+.add-bookmark-btn,
+.search-button,
+.search-clear-btn,
+.todo-input-wrapper > button,
+.todo-filters button,
+.todo-undo button,
+.todo-item-left,
+.todo-delete,
+.tool-tab-btn,
+.timer-preset-btn,
+.ctrl-btn,
+.alarm-stop-btn,
+.primary-btn,
+.secondary-btn,
+.font-btn,
+.color-combo,
+.bg-preset-card,
+.color-dot,
+.bg-option,
+.background-upload-btn,
+.background-clear-btn,
+.background-url-row button {
+    transition:
+        transform var(--duration-normal) var(--ease-spring),
+        background-color var(--duration-fast) ease,
+        box-shadow var(--duration-fast) ease,
+        border-color var(--duration-fast) ease,
+        color var(--duration-fast) ease,
+        opacity var(--duration-fast) ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    will-change: transform;
+}
+
+.weather-widget:active,
+.user-badge:active,
 .icon-btn:active,
 .icon-btn-small:active,
 .bookmark-item:active,
+.bookmark-tab-item:active,
+.news-item:active,
+.trend-item:active,
+.yt-card-item:active,
+.news-tab-btn:active,
+.tab-scroll-btn:not(:disabled):active,
 .tab-btn:active,
 .add-bookmark-btn:active,
 .search-button:active,
+.search-clear-btn:active,
+.todo-input-wrapper > button:active,
+.todo-filters button:active,
+.todo-undo button:active,
 .todo-item-left:active,
 .todo-delete:active,
+.tool-tab-btn:active,
+.timer-preset-btn:active,
+.ctrl-btn:active,
+.alarm-stop-btn:active,
+.primary-btn:active,
+.secondary-btn:active,
 .font-btn:active,
+.color-combo:active,
+.bg-preset-card:active,
 .color-dot:active,
-.bg-option:active {
+.bg-option:active,
+.background-upload-btn:active,
+.background-clear-btn:not(:disabled):active,
+.background-url-row button:active {
     transform: scale(0.96);
-    transition: transform 0.08s cubic-bezier(0.2, 0, 0, 1);
+    transition: transform var(--duration-press) var(--ease-press);
+}
+
+:where(button, a, input, textarea, select, [tabindex]):focus-visible {
+    outline: 2px solid var(--p-strong);
+    outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .loading-screen { transition: none; }
+    .loading-screen {
+        transition: none;
+    }
 }

@@ -1,12 +1,11 @@
-/* Weather Detail Modal styles */
-
+/* Weather Detail Modal (PasideaDesign Unified Dialog) */
 .weather-modal {
     position: fixed !important;
     inset: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     z-index: 100000;
-    background: rgba(15, 23, 42, 0.45);
+    background: rgba(6, 12, 24, 0.52);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     cursor: pointer;
@@ -15,7 +14,7 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.22s ease, visibility 0.22s ease;
+    transition: opacity var(--duration-normal) ease, visibility var(--duration-normal) ease;
 }
 
 .weather-modal.active {
@@ -26,11 +25,11 @@
 
 .weather-modal-content {
     background: var(--panel-bg);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(28px) saturate(150%);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
     border: 1px solid var(--panel-border);
-    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
-    border-radius: 26px;
+    box-shadow: var(--dialog-shadow), var(--inner-highlight);
+    border-radius: var(--radius-dialog);
     width: min(92vw, 560px);
     max-height: 86vh;
     overflow-y: auto;
@@ -39,45 +38,69 @@
     cursor: default;
     transform: scale(0.93) translateY(14px);
     opacity: 0;
-    transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease;
+    transition:
+        transform var(--duration-close) cubic-bezier(0.25, 1, 0.5, 1),
+        opacity var(--duration-close) ease;
 }
 
 .weather-modal.active .weather-modal-content {
     transform: scale(1) translateY(0);
     opacity: 1;
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+    transition:
+        transform var(--duration-open) var(--ease-spring),
+        opacity 0.25s ease;
 }
 
-.weather-modal-close {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    z-index: 2;
+.weather-modal-header {
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: 18px;
 }
 
-/* メインヘッダー */
+/* 天気未取得・読み込み中の表示 */
+.weather-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    padding: 28px 16px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.weather-empty-state .material-symbols-outlined {
+    font-size: 40px;
+    color: var(--p-strong);
+}
+
+/* メイン天気サマリー */
 .weather-detail-main {
     display: flex;
     align-items: center;
     gap: 18px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 18px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(var(--p-rgb), 0.16), rgba(255, 255, 255, 0.03));
+    border: 1px solid rgba(var(--p-rgb), 0.28);
     margin-bottom: 18px;
 }
 
 .weather-detail-icon-wrap {
     width: 64px;
     height: 64px;
-    border-radius: 20px;
-    background: rgba(var(--p-rgb), 0.14);
-    border: 1px solid rgba(var(--p-rgb), 0.28);
+    border-radius: 18px;
+    background: rgba(var(--p-rgb), 0.2);
+    border: 1px solid rgba(var(--p-rgb), 0.35);
     display: grid;
     place-items: center;
     flex-shrink: 0;
 }
 
 .weather-detail-icon-wrap .material-symbols-outlined {
-    font-size: 38px;
+    font-size: 36px;
     color: var(--p-strong);
 }
 
@@ -87,10 +110,10 @@
 }
 
 .detail-main-text h2 {
-    font-size: 1.35rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    color: #fff;
-    margin-bottom: 2px;
+    color: var(--text-color);
+    margin-bottom: 4px;
 }
 
 .detail-temp-row {
@@ -103,12 +126,14 @@
 .detail-temp {
     font-size: 2.2rem;
     font-weight: 800;
+    font-variant-numeric: tabular-nums;
     color: var(--p-strong);
     line-height: 1;
 }
 
 .detail-high-low {
-    font-size: 0.88rem;
+    font-size: 0.86rem;
+    font-variant-numeric: tabular-nums;
     color: var(--text-secondary);
     display: flex;
     gap: 8px;
@@ -116,7 +141,7 @@
 }
 
 .detail-apparent {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
     margin-top: 4px;
 }
@@ -130,20 +155,21 @@
 }
 
 .weather-metric-card {
-    background: var(--control-bg);
-    border: 1px solid var(--control-border);
-    border-radius: 14px;
-    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--line-soft);
+    border-radius: 15px;
+    padding: 13px 14px;
     display: flex;
     align-items: center;
     gap: 12px;
+    box-shadow: var(--inner-highlight);
 }
 
 .metric-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.05);
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: var(--p-soft);
     display: grid;
     place-items: center;
     color: var(--p-strong);
@@ -162,30 +188,32 @@
 
 .metric-label {
     font-size: 0.72rem;
-    color: var(--text-secondary);
-    font-weight: 600;
-    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 700;
+    letter-spacing: 0.04em;
 }
 
 .metric-value {
-    font-size: 1rem;
+    font-size: 0.98rem;
     font-weight: 700;
-    color: #fff;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-color);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .metric-sub {
-    font-size: 0.7rem;
-    color: var(--text-secondary);
+    font-size: 0.72rem;
+    color: var(--p-strong);
+    margin-left: 4px;
 }
 
 /* 3時間ごとの時間予報 */
 .weather-hourly-section h4 {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-color);
     margin-bottom: 10px;
     display: flex;
     align-items: center;
@@ -200,7 +228,7 @@
 .weather-hourly-grid {
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 6px;
     max-height: 240px;
     overflow-y: auto;
     padding-right: 4px;
@@ -211,29 +239,31 @@
 }
 
 .weather-hourly-grid::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.14);
     border-radius: 2px;
 }
 
 .weather-hourly-item {
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    padding: 9px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(220, 235, 255, 0.06);
+    padding: 10px 14px;
     border-radius: 12px;
     font-size: 0.84rem;
-    transition: background-color 0.18s ease;
+    font-variant-numeric: tabular-nums;
+    transition: background-color var(--duration-fast) ease, border-color var(--duration-fast) ease;
 }
 
 .weather-hourly-item:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--p-rgb), 0.1);
+    border-color: rgba(var(--p-rgb), 0.25);
 }
 
 .hourly-time {
     font-weight: 700;
     color: var(--text-secondary);
-    min-width: 68px;
+    min-width: 72px;
     font-size: 0.8rem;
 }
 
@@ -243,7 +273,7 @@
     gap: 6px;
     flex: 1;
     min-width: 0;
-    color: #fff;
+    color: var(--text-color);
 }
 
 .hourly-weather .material-symbols-outlined {
@@ -261,7 +291,7 @@
 
 .hourly-temp {
     font-weight: 700;
-    color: #fff;
+    color: var(--text-color);
     min-width: 46px;
     text-align: right;
     font-size: 0.9rem;
@@ -287,16 +317,4 @@
     align-items: center;
     justify-content: flex-end;
     gap: 3px;
-}
-
-@media (max-width: 480px) {
-    .weather-metrics-grid {
-        grid-template-columns: 1fr;
-    }
-    .weather-modal-content {
-        padding: 18px;
-    }
-    .hourly-weather-text {
-        display: none;
-    }
 }

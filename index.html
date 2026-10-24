@@ -6,55 +6,17 @@
     <title>LifeTop│いつものネットを、ここから。</title>
     <meta name="description" content="Google検索、よく使うサイト、タスク、メモ、時計をひとつに。毎日に役立つスタートページ、LifeTop。">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@500;700&family=Comfortaa:wght@400;700&family=Courier+Prime&family=DotGothic16&family=M+PLUS+1+Code&family=Oswald:wght@300;400;700&family=Outfit:wght@300;400;500;700;900&family=Righteous&family=Roboto+Mono:wght@200;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <!-- Material Symbols Outlined -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="css/style.css?v=4.0-final">
+    <link rel="stylesheet" href="css/style.css?v=4.1.5-redesign">
 </head>
-<body>
-
-    
-
-<!-- Pasidea Lab / PasideaSpace 共通告知 -->
-<div style="
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 18px 20px;
-  background: #eff6ff;
-  color: #1e3a5f;
-  border: 1px solid #bfdbfe;
-  border-left: 4px solid #3b82f6;
-  border-radius: 10px;
-  font-family: sans-serif;
-  line-height: 1.7;
-  box-sizing: border-box;
-">
-  <div style="font-weight: 700; margin-bottom: 8px;">
-    &#128737; PHPの脆弱性に関するお知らせ
-  </div>
-
-  <div style="font-size: 14px;">
-    Pasidea Lab / PasideaSpaceでは、
-    現在公開・運用しているすべてのWebサイトにおいて
-    PHPを使用していないことを確認しています。
-    そのため、今回公表されたPHPの脆弱性による
-    直接的な影響はありません。
-  </div>
-
-  <div style="
-    margin-top: 10px;
-    font-size: 12px;
-    opacity: 0.8;
-  ">
-    2026年10月23日｜
-    Pasidea Lab / PasideaSpace
-  </div>
-</div>
-<!-- 共通告知ここまで -->
-
+<body id="top">
 
 <!-- 起動中のシンプルな表示 -->
 <div class="loading-screen" id="loading-screen" role="status">
+    <img class="loading-icon" src="icons/icon-192.png" alt="" width="56" height="56" decoding="async">
     <span class="loading-logo">LifeTop</span>
     <span class="loading-label">読み込み中…</span>
 </div>
@@ -64,18 +26,22 @@
 
 <!-- ヘッダーエリア：天気とコントロール -->
 <header class="dashboard-header">
+    <a class="brand-mark" href="#top" aria-label="LifeTop ホーム">
+        <img class="brand-symbol" src="icons/icon-192.png" alt="" width="38" height="38" decoding="async">
+        <span class="brand-name">LifeTop</span>
+    </a>
     <div class="header-left">
         <!-- 天気ウィジェット -->
-        <div id="weather-widget" class="weather-widget animate-fade-in" onclick="showWeatherDetail()" style="cursor: pointer;" title="天気の詳細を表示">
-            <span class="material-symbols-outlined" id="weather-icon">filter_drama</span>
+        <button type="button" id="weather-widget" class="weather-widget animate-fade-in" onclick="showWeatherDetail()" title="天気の詳細を表示" aria-label="天気の詳細を表示">
+            <span class="material-symbols-outlined" id="weather-icon" aria-hidden="true">filter_drama</span>
             <div class="weather-info">
                 <span id="weather-temp">0°C</span>
                 <span id="weather-desc">読込中...</span>
             </div>
-        </div>
+        </button>
         <!-- ユーザー名バッジ（設定へのショートカット付き） -->
-        <button type="button" class="user-badge animate-fade-in" id="user-badge" onclick="openUsernameSettings()" title="ユーザー名設定を開く">
-            <span class="user-avatar">
+        <button type="button" class="user-badge animate-fade-in" id="user-badge" onclick="openUsernameSettings()" title="ユーザー名設定を開く" aria-label="ユーザー名設定を開く">
+            <span class="user-avatar" aria-hidden="true">
                 <span class="material-symbols-outlined">person</span>
             </span>
             <span class="header-user-name" id="header-user-name">ゲスト</span>
@@ -83,9 +49,9 @@
     </div>
     <div class="header-right">
         <!-- ヘルプトリガー -->
-        <button class="icon-btn animate-fade-in" onclick="toggleHelp()" title="使い方" aria-label="使い方"><span class="material-symbols-outlined">help</span></button>
+        <button type="button" class="icon-btn animate-fade-in" onclick="toggleHelp()" title="使い方" aria-label="使い方"><span class="material-symbols-outlined" aria-hidden="true">help</span></button>
         <!-- 設定トリガー -->
-        <button class="icon-btn animate-fade-in" onclick="toggleSettings()" title="設定" aria-label="設定"><span class="material-symbols-outlined">settings</span></button>
+        <button type="button" class="icon-btn animate-fade-in" onclick="toggleSettings()" title="設定" aria-label="設定"><span class="material-symbols-outlined" aria-hidden="true">settings</span></button>
     </div>
 </header>
 
@@ -93,7 +59,7 @@
 
 <div class="modal-overlay" id="help-overlay" onclick="toggleHelp()"></div>
 
-<div class="help-modal" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
+<div class="help-modal" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-modal-title" inert>
     <div class="help-modal-card">
         <div class="popup-modal-header">
             <div>
@@ -101,7 +67,7 @@
                 <h2 id="help-modal-title">LifeTopの使い方</h2>
             </div>
             <button class="icon-btn" type="button" onclick="toggleHelp()" title="閉じる" aria-label="ヘルプを閉じる">
-                <span class="material-symbols-outlined">close</span>
+                <span class="material-symbols-outlined" aria-hidden="true">close</span>
             </button>
         </div>
         <div class="help-content">
@@ -123,11 +89,15 @@
             </section>
             <section class="help-item">
                 <span class="material-symbols-outlined">palette</span>
-                <div><h3>テーマ</h3><p>設定を開くと、カラーコンビ・背景画像・時計フォントを変更できます。カラーコンビは背景とアクセント色をまとめて適用します。</p></div>
+                <div><h3>テーマ・高画質壁紙</h3><p>設定からカラーコンビ・用意された高画質壁紙プリセット・カスタム背景画像・時計フォントを自由に変更できます。</p></div>
             </section>
             <section class="help-item">
                 <span class="material-symbols-outlined">cloud</span>
                 <div><h3>天気</h3><p>左上の天気をクリックすると、今日の天気の詳しい情報を確認できます。</p></div>
+            </section>
+            <section class="help-item">
+                <span class="material-symbols-outlined">newspaper</span>
+                <div><h3>ニュース・トレンド・YouTube</h3><p>最新ニュース、リアルタイムで検索されている話題のトレンドワード、YouTubeのおすすめ動画を表示します。すべてAPI制限対策のスマートキャッシュで保護され、高速かつ安全に自動更新されます。</p></div>
             </section>
         </div>
     </div>
@@ -137,21 +107,24 @@
 <div class="dashboard-content">
     <!-- ヒーローエリア（時計と検索） -->
     <section class="hero-section">
-        <div id="clock-container" class="animate-clock">
-            <div id="clock">00:00</div>
-            <div id="clock-sec">00</div>
+        <div class="hero-copy">
+            <p class="hero-eyebrow"><span></span> YOUR DAY, IN ONE PLACE</p>
+            <div id="date-display" class="animate-fade-in" style="animation-delay: 0.1s;">2026年7月10日 (金)</div>
+            <div id="greeting" class="animate-fade-in" style="animation-delay: 0.2s;">ようこそ</div>
+            <div id="clock-container" class="animate-clock">
+                <div id="clock">00:00</div>
+                <div id="clock-sec">00</div>
+            </div>
         </div>
-        <div id="date-display" class="animate-fade-in" style="animation-delay: 0.1s;">2026年7月10日 (金)</div>
-        <div id="greeting" class="animate-fade-in" style="animation-delay: 0.2s;">ようこそ</div>
 
         <div class="search-container animate-fade-in" style="animation-delay: 0.3s;">
             <form action="https://www.google.com/search" method="get" class="search-form" id="search-form">
                 <span class="material-symbols-outlined search-icon" aria-hidden="true">search</span>
                 <input id="search-input" type="search" name="q" class="search-bar" placeholder="Googleで検索" aria-label="検索キーワード" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions">
-                <button type="submit" class="search-button" aria-label="Googleで検索"><span class="material-symbols-outlined">arrow_forward</span></button>
+                <button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="検索キーワードをクリア" title="クリア" hidden><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+                <button type="submit" class="search-button" aria-label="Googleで検索"><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></button>
             </form>
             <div id="search-suggestions" class="search-suggestions" role="listbox" aria-label="検索候補"></div>
-            <p class="search-hint"><kbd>/</kbd> で検索欄へ · <kbd>↑</kbd><kbd>↓</kbd> で候補を選択</p>
         </div>
     </section>
 
@@ -162,36 +135,45 @@
             <!-- ブックマーク -->
             <div class="card glass-card bookmark-card">
                 <div class="card-header">
-                    <h3><span class="material-symbols-outlined">bookmarks</span> Quickアクセス</h3>
-                    <button class="icon-btn-small" id="edit-bookmarks-btn" onclick="toggleBookmarkEditMode()" title="ブックマークを編集" aria-label="ブックマークを編集">
-                        <span class="material-symbols-outlined">edit</span>
+                    <h3><span class="material-symbols-outlined" aria-hidden="true">bookmarks</span> Quickアクセス</h3>
+                    <button type="button" class="icon-btn-small" id="edit-bookmarks-btn" aria-pressed="false" onclick="toggleBookmarkEditMode()" title="ブックマークを編集" aria-label="ブックマークを編集">
+                        <span class="material-symbols-outlined" aria-hidden="true">edit</span>
                     </button>
                 </div>
                 <!-- 左右スクロール矢印ボタン付きのタブコンテナ -->
                 <div class="bookmark-tabs-container">
-                    <button class="tab-scroll-btn prev" onclick="scrollTabs(-150)" aria-label="カテゴリを左にスクロール">
-                        <span class="material-symbols-outlined">chevron_left</span>
+                    <button type="button" class="tab-scroll-btn prev" onclick="scrollTabs(-180)" aria-label="カテゴリを左にスクロール">
+                        <span class="material-symbols-outlined" aria-hidden="true">chevron_left</span>
                     </button>
 
-                    <div class="bookmark-tabs" id="bookmark-tabs"></div>
+                    <div class="bookmark-tabs" id="bookmark-tabs" role="toolbar" aria-label="ブックマークのカテゴリ"></div>
 
-                    <button class="tab-scroll-btn next" onclick="scrollTabs(150)" aria-label="カテゴリを右にスクロール">
-                        <span class="material-symbols-outlined">chevron_right</span>
+                    <button type="button" class="tab-scroll-btn next" onclick="scrollTabs(180)" aria-label="カテゴリを右にスクロール">
+                        <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
                     </button>
                 </div>
                 <div class="bookmark-grid" id="bookmark-grid"></div>
-                <button class="add-bookmark-btn" onclick="openBookmarkDialog()"><span class="material-symbols-outlined">add</span> 追加</button>
+                <button type="button" class="add-bookmark-btn" onclick="openBookmarkDialog()"><span class="material-symbols-outlined" aria-hidden="true">add</span> サイトを追加</button>
             </div>
 
             <!-- Quickライフ (タスクとメモのタブ切り替え) -->
             <div class="card glass-card utility-card">
                 <div class="card-header utility-card-header">
-                    <h3><span class="material-symbols-outlined">dashboard_customize</span> Quickライフ</h3>
+                    <h3><span class="material-symbols-outlined" aria-hidden="true">dashboard_customize</span> Quickライフ</h3>
                 </div>
                 <div class="utility-tabs" role="tablist" aria-label="Quickライフ">
-                    <button class="tab-btn active" data-tab="todo" type="button" role="tab" aria-selected="true" onclick="switchUtilityTab('todo')">Quickタスク</button>
-                    <button class="tab-btn" data-tab="memo" type="button" role="tab" aria-selected="false" onclick="switchUtilityTab('memo')">Quickメモ</button>
-                    <button class="tab-btn" data-tab="clock" type="button" role="tab" aria-selected="false" onclick="switchUtilityTab('clock')">Quickクロック</button>
+                    <button class="tab-btn active" data-tab="todo" type="button" role="tab" aria-selected="true" onclick="switchUtilityTab('todo')">
+                        <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                        <span>タスク</span>
+                    </button>
+                    <button class="tab-btn" data-tab="memo" type="button" role="tab" aria-selected="false" onclick="switchUtilityTab('memo')">
+                        <span class="material-symbols-outlined" aria-hidden="true">edit_note</span>
+                        <span>メモ</span>
+                    </button>
+                    <button class="tab-btn" data-tab="clock" type="button" role="tab" aria-selected="false" onclick="switchUtilityTab('clock')">
+                        <span class="material-symbols-outlined" aria-hidden="true">timer</span>
+                        <span>クロック</span>
+                    </button>
                 </div>
 
                 <!-- 全ユーティリティタブ共通の終了通知 -->
@@ -230,51 +212,51 @@
 
                 <!-- クロックタブ (タイマー & ストップウォッチ) -->
                 <div id="clock-tab-content" class="tab-content">
-                    <div class="clock-tool-switch">
-                        <button type="button" class="tool-tab-btn active" id="tool-tab-timer" onclick="switchClockToolTab('timer')">
+                    <div class="clock-tool-switch" role="tablist" aria-label="クロック機能">
+                        <button type="button" class="tool-tab-btn active" id="tool-tab-timer" role="tab" aria-selected="true" aria-controls="clock-timer-pane" onclick="switchClockToolTab('timer')">
                             <span class="material-symbols-outlined">timer</span> タイマー
                         </button>
-                        <button type="button" class="tool-tab-btn" id="tool-tab-sw" onclick="switchClockToolTab('stopwatch')">
+                        <button type="button" class="tool-tab-btn" id="tool-tab-sw" role="tab" aria-selected="false" aria-controls="clock-stopwatch-pane" tabindex="-1" onclick="switchClockToolTab('stopwatch')">
                             <span class="material-symbols-outlined">pace</span> ストップウォッチ
                         </button>
                     </div>
 
                     <!-- タイマーパネル -->
-                    <div class="clock-tool-pane active" id="clock-timer-pane">
-                        <div class="clock-time-display" id="timer-display">05:00</div>
+                    <div class="clock-tool-pane active" id="clock-timer-pane" role="tabpanel" aria-labelledby="tool-tab-timer">
+                        <div class="clock-time-display" id="timer-display" role="timer" aria-label="タイマーの残り時間" aria-live="off">05:00</div>
 
                         <div class="timer-presets">
-                            <button type="button" class="timer-preset-btn" onclick="setTimerPreset(1)">1分</button>
-                            <button type="button" class="timer-preset-btn" onclick="setTimerPreset(3)">3分</button>
-                            <button type="button" class="timer-preset-btn" onclick="setTimerPreset(5)">5分</button>
-                            <button type="button" class="timer-preset-btn" onclick="setTimerPreset(10)">10分</button>
-                            <button type="button" class="timer-preset-btn pomodoro" onclick="setTimerPreset(25)">25分</button>
+                            <button type="button" class="timer-preset-btn" data-duration="60" aria-pressed="false" onclick="setTimerPreset(1)">1分</button>
+                            <button type="button" class="timer-preset-btn" data-duration="180" aria-pressed="false" onclick="setTimerPreset(3)">3分</button>
+                            <button type="button" class="timer-preset-btn" data-duration="300" aria-pressed="true" onclick="setTimerPreset(5)">5分</button>
+                            <button type="button" class="timer-preset-btn" data-duration="600" aria-pressed="false" onclick="setTimerPreset(10)">10分</button>
+                            <button type="button" class="timer-preset-btn pomodoro" data-duration="1500" aria-pressed="false" onclick="setTimerPreset(25)">25分</button>
                         </div>
 
                         <div class="clock-ctrl-row">
-                            <button type="button" class="ctrl-btn secondary-ctrl" onclick="adjustTimer(-60)" title="1分減らす">-1分</button>
-                            <button type="button" class="ctrl-btn primary-ctrl" id="timer-start-btn" onclick="toggleTimer()">
+                            <button type="button" class="ctrl-btn secondary-ctrl" onclick="adjustTimer(-60)" aria-label="タイマーを1分減らす">-1分</button>
+                            <button type="button" class="ctrl-btn primary-ctrl" id="timer-start-btn" aria-pressed="false" onclick="toggleTimer()">
                                 <span class="material-symbols-outlined">play_arrow</span> スタート
                             </button>
-                            <button type="button" class="ctrl-btn secondary-ctrl" onclick="adjustTimer(60)" title="1分増やす">+1分</button>
-                            <button type="button" class="ctrl-btn text-ctrl" onclick="resetTimer()" title="リセット">
+                            <button type="button" class="ctrl-btn secondary-ctrl" onclick="adjustTimer(60)" aria-label="タイマーを1分増やす">+1分</button>
+                            <button type="button" class="ctrl-btn text-ctrl" onclick="resetTimer()" aria-label="タイマーをリセット">
                                 <span class="material-symbols-outlined">replay</span>
                             </button>
                         </div>
                     </div>
 
                     <!-- ストップウォッチパネル -->
-                    <div class="clock-tool-pane" id="clock-stopwatch-pane">
-                        <div class="clock-time-display" id="stopwatch-display">00:00.00</div>
+                    <div class="clock-tool-pane" id="clock-stopwatch-pane" role="tabpanel" aria-labelledby="tool-tab-sw">
+                        <div class="clock-time-display" id="stopwatch-display" role="timer" aria-label="ストップウォッチの経過時間" aria-live="off">00:00.00</div>
 
                         <div class="clock-ctrl-row">
-                            <button type="button" class="ctrl-btn secondary-ctrl" onclick="recordLap()">
+                            <button type="button" class="ctrl-btn secondary-ctrl" onclick="recordLap()" aria-label="ラップを記録">
                                 <span class="material-symbols-outlined">flag</span> ラップ
                             </button>
-                            <button type="button" class="ctrl-btn primary-ctrl" id="sw-start-btn" onclick="toggleStopwatch()">
+                            <button type="button" class="ctrl-btn primary-ctrl" id="sw-start-btn" aria-pressed="false" onclick="toggleStopwatch()">
                                 <span class="material-symbols-outlined">play_arrow</span> スタート
                             </button>
-                            <button type="button" class="ctrl-btn text-ctrl" onclick="resetStopwatch()" title="リセット">
+                            <button type="button" class="ctrl-btn text-ctrl" onclick="resetStopwatch()" aria-label="ストップウォッチをリセット">
                                 <span class="material-symbols-outlined">replay</span>
                             </button>
                         </div>
@@ -284,15 +266,73 @@
                 </div>
             </div>
 
+            <!-- Quickニュース (外部API + 多重キャッシュ・レート制限対策) -->
+            <div class="card glass-card news-card">
+                <div class="card-header news-card-header">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true">newspaper</span> Quickニュース</h3>
+                    <div class="news-header-meta">
+                        <span id="news-status-text" class="news-status-text" role="status" aria-live="polite">準備中...</span>
+                        <button type="button" class="icon-btn-small" id="news-refresh-btn" onclick="refreshNews(true)" title="ニュースを更新" aria-label="ニュースを更新">
+                            <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="news-tabs" id="news-tabs" role="tablist" aria-label="ニュースカテゴリ">
+                    <button type="button" class="news-tab-btn active" data-news-cat="top" role="tab" aria-selected="true" onclick="switchNewsCategory('top')">主要</button>
+                    <button type="button" class="news-tab-btn" data-news-cat="it" role="tab" aria-selected="false" tabindex="-1" onclick="switchNewsCategory('it')">IT・科学</button>
+                    <button type="button" class="news-tab-btn" data-news-cat="business" role="tab" aria-selected="false" tabindex="-1" onclick="switchNewsCategory('business')">経済</button>
+                    <button type="button" class="news-tab-btn" data-news-cat="world" role="tab" aria-selected="false" tabindex="-1" onclick="switchNewsCategory('world')">国際・社会</button>
+                </div>
+                <div class="news-grid" id="news-grid" role="tabpanel" aria-live="polite"></div>
+            </div>
+
+            <!-- トレンドワード (リアルタイム検索トレンド + 多重キャッシュ・レート制限対策) -->
+            <div class="card glass-card trends-card">
+                <div class="card-header news-card-header">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true">trending_up</span> 話題のワード</h3>
+                    <div class="news-header-meta">
+                        <span id="trends-status-text" class="news-status-text" role="status" aria-live="polite">準備中...</span>
+                        <button type="button" class="icon-btn-small" id="trends-refresh-btn" onclick="refreshTrends(true)" title="話題のワードを更新" aria-label="話題のワードを更新">
+                            <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+                        </button>
+                    </div>
+                </div>
+                <p class="trends-subtitle">いまリアルタイムで検索されている急上昇キーワード（タップで検索）</p>
+                <div class="trends-list" id="trends-list" aria-live="polite"></div>
+            </div>
+
+            <!-- YouTubeおすすめ動画 (外部API + 多重キャッシュ・レート制限対策) -->
+            <div class="card glass-card youtube-card">
+                <div class="card-header news-card-header">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true">smart_display</span> YouTubeおすすめ</h3>
+                    <div class="news-header-meta">
+                        <span id="yt-status-text" class="news-status-text" role="status" aria-live="polite">準備中...</span>
+                        <button type="button" class="icon-btn-small" id="yt-refresh-btn" onclick="refreshYoutube(true)" title="おすすめ動画を更新" aria-label="おすすめ動画を更新">
+                            <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="news-tabs yt-tabs" id="yt-tabs" role="tablist" aria-label="YouTubeカテゴリ">
+                    <button type="button" class="news-tab-btn active" data-yt-cat="trending" role="tab" aria-selected="true" onclick="switchYoutubeCategory('trending')">話題・注目</button>
+                    <button type="button" class="news-tab-btn" data-yt-cat="music" role="tab" aria-selected="false" tabindex="-1" onclick="switchYoutubeCategory('music')">音楽・ライブ</button>
+                    <button type="button" class="news-tab-btn" data-yt-cat="gaming" role="tab" aria-selected="false" tabindex="-1" onclick="switchYoutubeCategory('gaming')">ゲーム・エンタメ</button>
+                    <button type="button" class="news-tab-btn" data-yt-cat="news" role="tab" aria-selected="false" tabindex="-1" onclick="switchYoutubeCategory('news')">ニュース・解説</button>
+                </div>
+                <div class="yt-grid" id="yt-grid" role="tabpanel" aria-live="polite"></div>
+            </div>
+
         </div>
     </div>
 </div>
 
 <!-- 設定サイドパネル -->
 <div class="settings-panel" id="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title" inert>
-    <div class="settings-header">
-        <h2 id="settings-title">Quickパネル</h2>
-        <button class="icon-btn" aria-label="設定を閉じる" onclick="toggleSettings()"><span class="material-symbols-outlined">close</span></button>
+    <div class="settings-header popup-modal-header">
+        <div>
+            <p class="help-kicker">CUSTOMIZE</p>
+            <h2 id="settings-title">Quickパネル</h2>
+        </div>
+        <button type="button" class="icon-btn" aria-label="設定を閉じる" title="閉じる" onclick="toggleSettings()"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
     </div>
 
     <div class="settings-body">
@@ -312,9 +352,15 @@
         <div class="settings-section">
             <label class="settings-label">カラーコンビ</label>
             <div class="color-combo-grid" id="color-combos"></div>
+        </div>
+
+        <!-- 高画質壁紙（プリセット＆カスタム画像） -->
+        <div class="settings-section">
+            <label class="settings-label">高画質な壁紙</label>
+            <div class="bg-preset-grid" id="bg-presets"></div>
             <div class="background-image-controls">
                 <label class="background-upload-btn" for="background-image-upload">
-                    <span class="material-symbols-outlined">upload</span> 画像をアップロード
+                    <span class="material-symbols-outlined" aria-hidden="true">upload</span> 画像をアップロード
                 </label>
                 <input id="background-image-upload" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
                 <div class="background-url-row">
@@ -323,7 +369,7 @@
                 </div>
                 <button id="background-image-clear" class="background-clear-btn" type="button">画像の壁紙を解除</button>
             </div>
-            <p class="settings-help">画像ファイル（2MBまで）またはHTTPSの画像URLを設定できます。</p>
+            <p class="settings-help">用意された高画質プリセットのほか、画像ファイル（2MBまで）やHTTPSの画像URLも設定できます。</p>
         </div>
 
         <!-- 時計表示設定 -->
@@ -347,15 +393,21 @@
     </div>
 </div>
 
-<footer class="app-footer"><span>LifeTop <span class="version-badge">ver4.0</span></span><span>いつものネットを、ここから。</span></footer>
+<footer class="app-footer"><span class="footer-brand"><img class="footer-brand-icon" src="icons/icon-192.png" alt="" width="20" height="20" decoding="async">LifeTop <span class="version-badge">ver4.0</span></span><span>いつものネットを、ここから。</span></footer>
 <div id="storage-status" class="storage-status" role="status" hidden></div>
 
 <!-- 天気拡張表示 -->
-<div class="weather-modal" id="weather-detail-modal">
+<div class="weather-modal" id="weather-detail-modal" role="dialog" aria-modal="true" aria-labelledby="weather-modal-title" inert>
     <div class="weather-modal-content">
-        <button class="icon-btn weather-modal-close" onclick="closeWeatherDetail()" title="閉じる">
-            <span class="material-symbols-outlined">close</span>
-        </button>
+        <div class="popup-modal-header weather-modal-header">
+            <div>
+                <p class="help-kicker">TODAY'S WEATHER</p>
+                <h2 id="weather-modal-title">天気の詳細</h2>
+            </div>
+            <button type="button" class="icon-btn weather-modal-close" onclick="closeWeatherDetail()" title="閉じる" aria-label="天気の詳細を閉じる">
+                <span class="material-symbols-outlined" aria-hidden="true">close</span>
+            </button>
+        </div>
         <div id="weather-detail-content">
             <!-- 天気詳細が動的に出力される -->
         </div>
@@ -363,12 +415,15 @@
 </div>
 
 <div class="modal-overlay" id="bookmark-dialog-overlay" onclick="closeBookmarkDialog()"></div>
-<div class="popup-modal" id="bookmark-dialog" role="dialog" aria-modal="true" aria-labelledby="bookmark-dialog-title">
+<div class="popup-modal" id="bookmark-dialog" role="dialog" aria-modal="true" aria-labelledby="bookmark-dialog-title" inert>
     <div class="popup-modal-card">
         <div class="popup-modal-header">
-            <h3 id="bookmark-dialog-title">Quickアクセスを追加</h3>
-            <button type="button" class="icon-btn" onclick="closeBookmarkDialog()" aria-label="閉じる">
-                <span class="material-symbols-outlined">close</span>
+            <div>
+                <p class="help-kicker">QUICK ACCESS</p>
+                <h3 id="bookmark-dialog-title">Quickアクセスを追加</h3>
+            </div>
+            <button type="button" class="icon-btn" onclick="closeBookmarkDialog()" title="閉じる" aria-label="閉じる">
+                <span class="material-symbols-outlined" aria-hidden="true">close</span>
             </button>
         </div>
         <form id="bookmark-dialog-form" class="bookmark-dialog-form">

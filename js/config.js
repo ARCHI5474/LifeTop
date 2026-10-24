@@ -71,6 +71,73 @@ const colorCombos = [
     { name: 'チェリー', bgType: 'gradient-cherry', theme: '#B53957' }
 ];
 
+const bgPresets = [
+    {
+        id: 'starry-alps',
+        name: 'アルプスの星空',
+        url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2400&q=85',
+        thumb: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=360&q=75',
+        bgType: 'gradient-midnight',
+        theme: '#4962A8'
+    },
+    {
+        id: 'northern-lights',
+        name: 'オーロラの夜空',
+        url: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&w=2400&q=85',
+        thumb: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&w=360&q=75',
+        bgType: 'gradient-aurora',
+        theme: '#2E8B72'
+    },
+    {
+        id: 'mirror-lake',
+        name: '静かな湖畔',
+        url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2400&q=85',
+        thumb: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=360&q=75',
+        bgType: 'gradient-blue',
+        theme: '#2F75A8'
+    },
+    {
+        id: 'misty-forest',
+        name: '朝霧の針葉樹林',
+        url: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=2400&q=85',
+        thumb: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=360&q=75',
+        bgType: 'gradient-matcha',
+        theme: '#4E8A56'
+    },
+    {
+        id: 'sunset-ridge',
+        name: '夕暮れの稜線',
+        url: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=2400&q=85',
+        thumb: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=360&q=75',
+        bgType: 'gradient-sunrise',
+        theme: '#C27339'
+    },
+    {
+        id: 'twilight-coast',
+        name: 'トワイライトの海',
+        url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2400&q=85',
+        thumb: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=360&q=75',
+        bgType: 'gradient-teal',
+        theme: '#327D80'
+    },
+    {
+        id: 'night-cityscape',
+        name: '夜の摩天楼',
+        url: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=2400&q=85',
+        thumb: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=360&q=75',
+        bgType: 'gradient-neon',
+        theme: '#22B4BA'
+    },
+    {
+        id: 'spring-blossom',
+        name: '桜と春の霞',
+        url: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?auto=format&fit=crop&w=2400&q=85',
+        thumb: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?auto=format&fit=crop&w=360&q=75',
+        bgType: 'gradient-deepsea',
+        theme: '#A94D68'
+    }
+];
+
 
 // --- 固定ブックマーク（削除不可・フォルダ分け）の定義 ---
 const FIXED_BOOKMARKS = {
@@ -270,7 +337,7 @@ let userConfig = {
     todoList: [
         { id: 1, text: "LifeTopを自分好みに設定する", completed: false }
     ],
-    theme: themes[0],
+    theme: colorCombos[0].theme,
     fontFamily: fontStyles[0].family,
     bgType: "gradient-blue",
     bgImage: "",
@@ -357,6 +424,7 @@ export {
     fontStyles,
     bgGradients,
     colorCombos,
+    bgPresets,
     FIXED_BOOKMARKS,
     userConfig,
     mergeUserConfig

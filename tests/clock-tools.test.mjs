@@ -30,6 +30,9 @@ clock.startTimer(); tick(59600);
 assert.equal(element('timer-display').innerText, '00:00');
 assert(element('timer-alarm-banner').classList.contains('active'));
 assert.equal(created, 1); assert.equal(sounded, 2);
+clock.pauseTimer();
+assert.equal(sounded, 2);
+assert(element('timer-alarm-banner').classList.contains('active'));
 clock.stopAlarmSound();
 assert(!element('timer-alarm-banner').classList.contains('active'));
 assert(stopped >= 4); assert.equal(callbacks.size, 0);
@@ -47,5 +50,4 @@ clock.setTimerPreset(1); clock.startTimer(); tick(65000);
 assert.equal(element('timer-display').innerText, '00:00');
 clock.stopAlarmSound();
 console.log('PASS: timer pause/resume, delayed tick, alarm initialization/stop, presets, stopwatch accuracy, laps, reset');
-
 

@@ -27,9 +27,10 @@ export function switchClockToolTab(tool) {
     const swPane = document.getElementById('clock-stopwatch-pane');
     const timerBtn = document.getElementById('tool-tab-timer');
     const swBtn = document.getElementById('tool-tab-sw');
-    timerBtn?.setAttribute('aria-pressed', String(tool === 'timer'));
-    swBtn?.setAttribute('aria-pressed', String(tool === 'stopwatch'));
-
+    timerBtn?.setAttribute('aria-selected', String(tool === 'timer'));
+    swBtn?.setAttribute('aria-selected', String(tool === 'stopwatch'));
+    if (timerBtn) timerBtn.tabIndex = tool === 'timer' ? 0 : -1;
+    if (swBtn) swBtn.tabIndex = tool === 'stopwatch' ? 0 : -1;
     if (tool === 'timer') {
         timerPane?.classList.add('active');
         swPane?.classList.remove('active');
@@ -53,6 +54,7 @@ export function setTimerPreset(minutes) {
     timerDuration = Math.max(10, Math.min(10800, Math.round(minutes * 60)));
     timerRemaining = timerDuration;
     updateTimerDisplay();
+    updateTimerPresets();
 }
 
 export function adjustTimer(seconds) {
@@ -62,6 +64,7 @@ export function adjustTimer(seconds) {
     timerDuration = Math.max(10, Math.min(3600 * 3, timerDuration + seconds));
     timerRemaining = timerDuration;
     updateTimerDisplay();
+    updateTimerPresets();
 }
 
 export function toggleTimer() {
@@ -99,12 +102,13 @@ export function startTimer() {
 }
 
 export function pauseTimer() {
-    if (timerRunning) timerRemaining = Math.max(0, (timerDeadline - Date.now()) / 1000);
+    const wasRunning = timerRunning;
+    if (wasRunning) timerRemaining = Math.max(0, (timerDeadline - Date.now()) / 1000);
     timerRunning = false;
     clearInterval(timerInterval);
     updateTimerDisplay();
     updateTimerButtons();
-    if (timerRemaining === 0) onTimerComplete();
+    if (wasRunning && timerRemaining === 0) onTimerComplete();
 }
 
 export function resetTimer() {
@@ -123,9 +127,16 @@ function updateTimerDisplay() {
     el.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
+function updateTimerPresets() {
+    document.querySelectorAll?.('.timer-preset-btn[data-duration]').forEach(button => {
+        button.setAttribute('aria-pressed', String(Number(button.dataset.duration) === timerDuration));
+    });
+}
+
 function updateTimerButtons() {
     const btn = document.getElementById('timer-start-btn');
     if (!btn) return;
+    btn.setAttribute('aria-pressed', String(timerRunning));
     btn.innerHTML = timerRunning
         ? '<span class="material-symbols-outlined">pause</span> 一時停止'
         : '<span class="material-symbols-outlined">play_arrow</span> スタート';
@@ -281,6 +292,7 @@ function updateSwDisplay() {
 function updateSwButtons() {
     const btn = document.getElementById('sw-start-btn');
     if (!btn) return;
+    btn.setAttribute('aria-pressed', String(swRunning));
     btn.innerHTML = swRunning
         ? '<span class="material-symbols-outlined">pause</span> 一時停止'
         : '<span class="material-symbols-outlined">play_arrow</span> スタート';
@@ -312,7 +324,22 @@ function renderLapList() {
 
 // 初期化
 export function initClockTools() {
+    const tabs = [
+        document.getElementById('tool-tab-timer'),
+        document.getElementById('tool-tab-sw')
+    ];
+    tabs.forEach((tab, index) => {
+        tab?.addEventListener?.('keydown', event => {
+            if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+            event.preventDefault();
+            const next = event.key === 'Home' ? 0 : event.key === 'End' ? 1
+                : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+            switchClockToolTab(next === 0 ? 'timer' : 'stopwatch');
+            tabs[next]?.focus?.();
+        });
+    });
     switchClockToolTab(activeTool);
     updateTimerDisplay();
+    updateTimerPresets();
     updateSwDisplay();
 }

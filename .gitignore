@@ -1,0 +1,8 @@
+# APIキー・機密設定ファイル（Git追跡・公開から除外）
+manabi-kokokara/js/config.js
+**/config.js
+**/config.local.js
+.env
+.env.*
+*.pem
+*.key

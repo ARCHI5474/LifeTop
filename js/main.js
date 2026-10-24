@@ -7,6 +7,7 @@ import {
     initPickers,
     setTheme,
     setColorCombo,
+    setPresetWallpaper,
     setFontFamily,
     saveUsername,
     toggleClock12h,
@@ -42,6 +43,7 @@ import {
 } from "./todo.js?v=4.0-final";
 import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=4.0-final";
 import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=4.0-final";
+import { initNews, switchNewsCategory, refreshNews, refreshTrends, switchYoutubeCategory, refreshYoutube } from "./news.js?v=4.0-final";
 
 // HTMLのイベントハンドラーから呼び出す関数
 Object.assign(window, {
@@ -55,6 +57,7 @@ Object.assign(window, {
     toggleHelp,
     setTheme,
     setColorCombo,
+    setPresetWallpaper,
     setFontFamily,
     saveUsername,
     toggleClock12h,
@@ -77,6 +80,11 @@ Object.assign(window, {
     undoDeleteTodo,
     showWeatherDetail,
     closeWeatherDetail,
+    switchNewsCategory,
+    refreshNews,
+    refreshTrends,
+    switchYoutubeCategory,
+    refreshYoutube,
 });
 
 document.addEventListener('keydown', event => {
@@ -135,6 +143,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     fetchWeather();
     setInterval(fetchWeather, 3600000);
+    initNews();
 
 });
 

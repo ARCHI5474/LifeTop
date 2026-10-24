@@ -4,6 +4,7 @@ import { save } from "./storage.js?v=4.0-final";
 
 let bookmarkEditMode = false;
 let currentBookmarkTab = "ブックマーク";
+let bookmarkDialogTrigger = null;
 const FAVICON_CACHE_KEY = "lifetop_favicon_cache";
 const FAVICON_CACHE_DAYS = 30;
 
@@ -31,6 +32,17 @@ function getSafeUrl(value) {
     }
 }
 
+function syncEditButtonState(btn, isEditing) {
+    if (!btn) return;
+    btn.classList?.toggle?.('active', isEditing);
+    btn.setAttribute?.('aria-pressed', String(isEditing));
+    btn.title = isEditing ? '編集を完了' : 'ブックマークを編集';
+    btn.setAttribute?.('aria-label', isEditing ? 'ブックマークの編集を完了' : 'ブックマークを編集');
+    btn.innerHTML = isEditing
+        ? '<span class="material-symbols-outlined" aria-hidden="true">check</span>'
+        : '<span class="material-symbols-outlined" aria-hidden="true">edit</span>';
+}
+
 // ブックマーク編集モード切り替え
 export function toggleBookmarkEditMode() {
     bookmarkEditMode = !bookmarkEditMode;
@@ -39,11 +51,19 @@ export function toggleBookmarkEditMode() {
     
     if (bookmarkEditMode) {
         card.classList.add('edit-mode');
-        btn.classList.add('active');
     } else {
         card.classList.remove('edit-mode');
-        btn.classList.remove('active');
     }
+    syncEditButtonState(btn, bookmarkEditMode);
+}
+
+function syncTabScrollButtons(tabsContainer) {
+    if (!tabsContainer || typeof tabsContainer.scrollLeft !== 'number') return;
+    const prevBtn = document.querySelector?.('.tab-scroll-btn.prev');
+    const nextBtn = document.querySelector?.('.tab-scroll-btn.next');
+    const maxScroll = Math.max(0, (tabsContainer.scrollWidth || 0) - (tabsContainer.clientWidth || 0));
+    if (prevBtn && 'disabled' in prevBtn) prevBtn.disabled = tabsContainer.scrollLeft <= 2;
+    if (nextBtn && 'disabled' in nextBtn) nextBtn.disabled = tabsContainer.scrollLeft >= maxScroll - 2;
 }
 
 // ブックマークのレンダリング
@@ -60,17 +80,45 @@ export function renderBookmarks() {
         return `<button type="button" class="bookmark-tab-item ${activeClass}" aria-pressed="${cat === currentBookmarkTab}" onclick="switchBookmarkTab('${cat}')">${cat}</button>`;
     }).join('');
 
+    if (tabsContainer && !tabsContainer.dataset?.wheelBound) {
+        if (tabsContainer.dataset) tabsContainer.dataset.wheelBound = 'true';
+        tabsContainer.addEventListener?.('wheel', (event) => {
+            if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+                event.preventDefault();
+                tabsContainer.scrollLeft += event.deltaY;
+            }
+        }, { passive: false });
+        tabsContainer.addEventListener?.('scroll', () => syncTabScrollButtons(tabsContainer), { passive: true });
+        if (typeof window !== 'undefined') {
+            window.addEventListener?.('resize', () => syncTabScrollButtons(tabsContainer), { passive: true });
+        }
+    }
+    syncTabScrollButtons(tabsContainer);
+
+    if (grid && !grid.dataset?.editGuardBound) {
+        if (grid.dataset) grid.dataset.editGuardBound = 'true';
+        grid.addEventListener?.('click', (event) => {
+            if (!bookmarkEditMode) return;
+            if (event.target?.closest?.('.bookmark-delete-btn')) return;
+            const link = event.target?.closest?.('.bookmark-item');
+            if (link) {
+                event.preventDefault();
+            }
+        });
+    }
+
     if (currentBookmarkTab !== "ブックマーク") {
         bookmarkEditMode = false;
         const card = document.querySelector('.bookmark-card');
         card.classList.remove('edit-mode');
-        editBtn.classList.remove('active');
+        syncEditButtonState(editBtn, false);
         
         addBtn.style.display = 'none';
         editBtn.style.display = 'none';
     } else {
         addBtn.style.display = 'flex';
         editBtn.style.display = 'grid';
+        syncEditButtonState(editBtn, bookmarkEditMode);
     }
 
     let bookmarksToRender = [];
@@ -84,7 +132,7 @@ export function renderBookmarks() {
     }
 
     if (bookmarksToRender.length === 0) {
-        grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-secondary); font-size: 0.85rem; padding: 20px 0;">「追加」から、よく使うサイトを登録できます。</div>`;
+        grid.innerHTML = `<div class="bookmark-empty"><span class="material-symbols-outlined" aria-hidden="true">bookmark_add</span><span>「サイトを追加」から、よく使うサイトを登録できます。</span></div>`;
         return;
     }
     
@@ -116,7 +164,7 @@ export function renderBookmarks() {
             
         const deleteBtnHtml = isFixed ? "" : `
             <button type="button" class="bookmark-delete-btn" aria-label="${escapeHtml(title)}を削除" onclick="deleteBookmark(${index}, event)">
-                <span class="material-symbols-outlined" style="font-size:12px">close</span>
+                <span class="material-symbols-outlined" aria-hidden="true" style="font-size:14px">close</span>
             </button>
         `;
 
@@ -124,8 +172,10 @@ export function renderBookmarks() {
             ? `href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"`
             : `href="javascript:void(0)" onclick="event.preventDefault();" style="opacity: 0.6; cursor: not-allowed;"`;
 
+        const staggerIdx = Math.min(index, 12);
+
         return `
-            <div class="bookmark-item-wrapper" style="position: relative; --item-idx: ${index};">
+            <div class="bookmark-item-wrapper" style="position: relative; --item-idx: ${staggerIdx};">
                 <a ${linkAttrs} class="bookmark-item" title="${escapeHtml(title)}">
                     <div class="icon-wrapper" aria-hidden="true">
                         ${iconHtml}
@@ -149,10 +199,19 @@ export function switchBookmarkTab(cat) {
     const tabs = document.getElementById('bookmark-tabs');
     if (activeTab && tabs) {
         const left = activeTab.offsetLeft - tabs.offsetLeft;
-        if (left < tabs.scrollLeft) tabs.scrollLeft = left;
+        let nextScroll = null;
+        if (left < tabs.scrollLeft) nextScroll = Math.max(0, left - 12);
         else if (left + activeTab.offsetWidth > tabs.scrollLeft + tabs.clientWidth) {
-            tabs.scrollLeft = left + activeTab.offsetWidth - tabs.clientWidth;
+            nextScroll = left + activeTab.offsetWidth - tabs.clientWidth + 12;
         }
+        if (nextScroll !== null) {
+            if (typeof tabs.scrollTo === 'function') {
+                tabs.scrollTo({ left: nextScroll, behavior: 'smooth' });
+            } else {
+                tabs.scrollLeft = nextScroll;
+            }
+        }
+        syncTabScrollButtons(tabs);
     }
     const grid = document.getElementById('bookmark-grid');
     if (grid) {
@@ -177,10 +236,13 @@ export function openBookmarkDialog() {
     const overlay = document.getElementById('bookmark-dialog-overlay');
     const dialog = document.getElementById('bookmark-dialog');
     if (!overlay || !dialog) return;
+    if (!dialog.classList.contains('active')) bookmarkDialogTrigger = document.activeElement;
+    dialog.inert = false;
     overlay.classList.add('active');
     dialog.classList.add('active');
+    if (document.body?.style) document.body.style.overflow = 'hidden';
     setTimeout(() => {
-        document.getElementById('bookmark-title-input')?.focus();
+        if (dialog.classList.contains('active')) document.getElementById('bookmark-title-input')?.focus();
     }, 50);
 }
 
@@ -190,8 +252,13 @@ export function closeBookmarkDialog() {
     if (!overlay || !dialog) return;
     overlay.classList.remove('active');
     dialog.classList.remove('active');
+    dialog.inert = true;
+    if (document.body?.style) document.body.style.overflow = '';
     const form = document.getElementById('bookmark-dialog-form');
     form?.reset();
+    const trigger = bookmarkDialogTrigger;
+    bookmarkDialogTrigger = null;
+    if (trigger?.isConnected) trigger.focus();
 }
 
 export function addBookmark(titleInput, urlInput) {

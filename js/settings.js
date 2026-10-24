@@ -1,23 +1,30 @@
 /* LifeTop - settings panel controls */
-import { colorCombos, fontStyles, userConfig } from "./config.js?v=4.0-final";
-import { applyStyles, renderColorCombos, renderBgSelector } from "./styles.js?v=4.0-final";
+import { colorCombos, bgPresets, fontStyles, userConfig } from "./config.js?v=4.0-final";
+import { applyStyles, renderColorCombos, renderBgPresets, renderBgSelector } from "./styles.js?v=4.0-final";
 import { save } from "./storage.js?v=4.0-final";
 import { updateClock, updateGreeting } from "./clock.js?v=4.0-final";
 
 let settingsTrigger;
+let helpTrigger;
 
 export function toggleHelp() {
     const modal = document.getElementById('help-modal');
     const overlay = document.getElementById('help-overlay');
     const isOpen = modal.classList.toggle('active');
+    modal.inert = !isOpen;
     overlay?.classList.toggle('active', isOpen);
     document.body.style.overflow = isOpen ? 'hidden' : '';
+    if (isOpen) {
+        helpTrigger = document.activeElement;
+        modal.querySelector('button')?.focus();
+    } else {
+        helpTrigger?.focus();
+    }
 }
 
-// ピッカーの初期化
-export function initPickers() {
-    renderColorCombos();
-    document.getElementById('settings-panel').addEventListener('keydown', event => {
+function bindDialogFocusTrap(dialogEl) {
+    if (!dialogEl) return;
+    dialogEl.addEventListener('keydown', event => {
         if (event.key !== 'Tab') return;
         const controls = [...event.currentTarget.querySelectorAll('button, input, select, textarea, a[href]')]
             .filter(control => !control.disabled && control.getClientRects().length && control.tabIndex >= 0);
@@ -30,6 +37,15 @@ export function initPickers() {
             event.preventDefault();
             first?.focus();
         }
+    });
+}
+
+// ピッカーの初期化
+export function initPickers() {
+    renderColorCombos();
+    renderBgPresets();
+    ['settings-panel', 'help-modal', 'weather-detail-modal', 'bookmark-dialog'].forEach(id => {
+        bindDialogFocusTrap(document.getElementById(id));
     });
 
     const fontsContainer = document.getElementById('font-styles');
@@ -44,7 +60,8 @@ export function initPickers() {
     const clearImage = document.getElementById('background-image-clear');
     if (!imageUrlInput || !imageUpload || !applyImageUrl || !clearImage) return;
 
-    imageUrlInput.value = userConfig.bgImage.startsWith('https://') ? userConfig.bgImage : '';
+    const isPresetImage = bgPresets.some(preset => preset.url === userConfig.bgImage);
+    imageUrlInput.value = userConfig.bgImage.startsWith('https://') && !isPresetImage ? userConfig.bgImage : '';
     applyImageUrl.onclick = () => setBackgroundImageUrl(imageUrlInput.value);
     imageUrlInput.onkeydown = event => {
         if (event.key === 'Enter' && !event.isComposing && event.keyCode !== 229) {
@@ -65,8 +82,26 @@ export function setColorCombo(index) {
     applyStyles();
     save();
     renderColorCombos();
+    renderBgPresets();
     document.getElementById('background-image-url').value = '';
     document.getElementById('background-image-upload').value = '';
+}
+
+export function setPresetWallpaper(index) {
+    const preset = bgPresets[index];
+    if (!preset) return;
+    userConfig.bgType = preset.bgType;
+    userConfig.theme = preset.theme;
+    userConfig.bgImage = preset.url;
+    applyStyles();
+    save();
+    renderColorCombos();
+    renderBgPresets();
+    renderBgSelector();
+    const urlInput = document.getElementById('background-image-url');
+    const uploadInput = document.getElementById('background-image-upload');
+    if (urlInput) urlInput.value = '';
+    if (uploadInput) uploadInput.value = '';
 }
 
 // 設定変更
@@ -139,6 +174,7 @@ function setBackgroundImageUrl(value) {
     applyStyles();
     save();
     renderColorCombos();
+    renderBgPresets();
     renderBgSelector();
 }
 
@@ -155,6 +191,7 @@ function setBackgroundImageFile(file) {
         applyStyles();
         save();
         renderColorCombos();
+        renderBgPresets();
         renderBgSelector();
         document.getElementById('background-image-url').value = '';
     };
@@ -166,6 +203,7 @@ function clearBackgroundImage() {
     applyStyles();
     save();
     renderColorCombos();
+    renderBgPresets();
     renderBgSelector();
     document.getElementById('background-image-url').value = '';
     document.getElementById('background-image-upload').value = '';

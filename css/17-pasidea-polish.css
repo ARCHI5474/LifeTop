@@ -1,0 +1,33 @@
+/* PasideaDesign: 共通余白・透明感の階層・Quickクロックの視認性強化 */
+.dashboard-header,
+.container,
+.app-footer {
+    width: min(100%, 1320px);
+    margin-inline: auto;
+}
+
+.hero-section {
+    width: min(calc(100% - 80px), 1240px);
+    margin-inline: auto;
+}
+
+.tool-tab-btn {
+    min-height: 42px;
+    font-size: 0.84rem;
+}
+
+.timer-preset-btn {
+    min-height: 42px;
+    border-radius: 12px;
+    font-size: 0.84rem;
+}
+
+.clock-ctrl-row {
+    gap: 10px;
+}
+
+.ctrl-btn,
+.alarm-stop-btn {
+    min-height: 44px;
+    padding-inline: 16px;
+}

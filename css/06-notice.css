@@ -2,32 +2,35 @@
 .notice-board {
     width: 100%;
     margin: 0;
-    background: var(--p-soft);
+    background: linear-gradient(135deg, rgba(var(--p-rgb), 0.2), rgba(var(--p-rgb), 0.08));
     backdrop-filter: blur(14px);
-    border: 1px solid var(--glass-border);
-    padding: 11px 14px;
-    border-radius: 14px;
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(var(--p-rgb), 0.34);
+    padding: 12px 15px;
+    border-radius: 16px;
     font-size: 0.84rem;
     display: flex;
     align-items: center;
     gap: 12px;
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+    box-shadow: 0 8px 20px rgba(4, 12, 25, 0.14), var(--inner-highlight);
 }
 
 .notice-tag {
     font-weight: 700;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     background: var(--p);
     color: #ffffff;
-    padding: 5px 10px;
-    border-radius: 999px;
-    letter-spacing: 0.08em;
-    border: 1px solid var(--p);
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    letter-spacing: 0.06em;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 #notice-text {
     flex: 1;
     text-align: left;
-    color: var(--text-secondary);
+    color: var(--text-color);
+    line-height: 1.5;
 }
-
