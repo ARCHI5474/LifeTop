@@ -6,6 +6,8 @@ import { loadData, save } from "./storage.js?v=4.0-final";
 import {
     initPickers,
     setTheme,
+    setColorMode,
+    toggleColorMode,
     setColorCombo,
     setPresetWallpaper,
     setFontFamily,
@@ -25,9 +27,22 @@ import {
     switchBookmarkTab,
     scrollTabs,
     addBookmark,
+    createBookmarkFolder,
     openBookmarkDialog,
+    openFolderDialog,
+    switchBookmarkDialogMode,
     closeBookmarkDialog,
+    openBookmarkFolder,
+    closeBookmarkFolder,
+    renameBookmarkFolder,
+    moveBookmark,
+    reorderBookmark,
+    promptMoveToFolder,
+    removeBookmarkFromFolder,
+    filterBookmarks,
+    clearBookmarkFilter,
     deleteBookmark,
+    undoDeleteBookmark,
     handleFaviconLoad,
     handleFaviconError
 } from "./bookmarks.js?v=4.0-final";
@@ -35,12 +50,39 @@ import {
     renderTodoList,
     addTodo,
     toggleTodo,
+    toggleTodoPriority,
+    clearCompletedTodos,
     deleteTodo,
     setTodoFilter,
     undoDeleteTodo,
     initUtilityTabs,
     switchUtilityTab
 } from "./todo.js?v=4.0-final";
+import {
+    initMemoEditor,
+    formatMemo,
+    copyMemoContent,
+    updateMemoStatus
+} from "./memo.js?v=4.0-final";
+import {
+    initGames,
+    toggleGameModal,
+    switchGameTab,
+    setSnakeMode,
+    startOrToggleSnake,
+    pauseSnakeGame,
+    restartSnakeGame,
+    setSnakeDirection,
+    setPuzzleSize,
+    initPuzzleBoard,
+    clickPuzzleTile,
+    showPuzzleHint,
+    setOthelloMode,
+    setOthelloPlayerColor,
+    initOthelloGame,
+    playOthelloMove,
+    undoOthelloMove
+} from "./games.js?v=4.0-final";
 import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=4.0-final";
 import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=4.0-final";
 import { initNews, switchNewsCategory, refreshNews, refreshTrends, switchYoutubeCategory, refreshYoutube } from "./news.js?v=4.0-final";
@@ -55,7 +97,25 @@ Object.assign(window, {
     },
     toggleSettings,
     toggleHelp,
+    toggleGameModal,
+    switchGameTab,
+    setSnakeMode,
+    startOrToggleSnake,
+    pauseSnakeGame,
+    restartSnakeGame,
+    setSnakeDirection,
+    setPuzzleSize,
+    initPuzzleBoard,
+    clickPuzzleTile,
+    showPuzzleHint,
+    setOthelloMode,
+    setOthelloPlayerColor,
+    initOthelloGame,
+    playOthelloMove,
+    undoOthelloMove,
     setTheme,
+    setColorMode,
+    toggleColorMode,
     setColorCombo,
     setPresetWallpaper,
     setFontFamily,
@@ -67,17 +127,34 @@ Object.assign(window, {
     switchBookmarkTab,
     scrollTabs,
     addBookmark,
+    createBookmarkFolder,
     openBookmarkDialog,
+    openFolderDialog,
+    switchBookmarkDialogMode,
     closeBookmarkDialog,
+    openBookmarkFolder,
+    closeBookmarkFolder,
+    renameBookmarkFolder,
+    moveBookmark,
+    reorderBookmark,
+    promptMoveToFolder,
+    removeBookmarkFromFolder,
+    filterBookmarks,
+    clearBookmarkFilter,
     deleteBookmark,
+    undoDeleteBookmark,
     handleFaviconLoad,
     handleFaviconError,
     switchUtilityTab,
     addTodo,
     toggleTodo,
+    toggleTodoPriority,
+    clearCompletedTodos,
     deleteTodo,
     setTodoFilter,
     undoDeleteTodo,
+    formatMemo,
+    copyMemoContent,
     showWeatherDetail,
     closeWeatherDetail,
     switchNewsCategory,
@@ -93,6 +170,8 @@ document.addEventListener('keydown', event => {
             closeWeatherDetail();
         } else if (document.getElementById('bookmark-dialog')?.classList.contains('active')) {
             closeBookmarkDialog();
+        } else if (document.getElementById('game-modal')?.classList.contains('active')) {
+            toggleGameModal(false);
         } else if (document.getElementById('settings-panel')?.classList.contains('active')) {
             toggleSettings();
         } else if (document.getElementById('help-modal')?.classList.contains('active')) {
@@ -114,8 +193,9 @@ window.addEventListener('DOMContentLoaded', () => {
     renderBookmarks();
     renderTodoList();
     initUtilityTabs();
-    updateMemoStatus();
+    initMemoEditor();
     initClockTools();
+    initGames();
     renderBgSelector();
     initPickers();
     initSearchSuggestions();
@@ -123,10 +203,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const bookmarkForm = document.getElementById('bookmark-dialog-form');
     bookmarkForm?.addEventListener('submit', (event) => {
         event.preventDefault();
-        const title = document.getElementById('bookmark-title-input').value.trim();
-        const url = document.getElementById('bookmark-url-input').value.trim();
-        if (!title || !url) return;
-        addBookmark(title, url);
+        addBookmark();
     });
 
     updateClock();
@@ -146,13 +223,3 @@ window.addEventListener('DOMContentLoaded', () => {
     initNews();
 
 });
-
-document.getElementById('memo-area').addEventListener('input', () => {
-    userConfig.memo = document.getElementById('memo-area').value;
-    updateMemoStatus(save());
-});
-
-function updateMemoStatus(saved) {
-    document.getElementById('memo-count').textContent = `${Array.from(document.getElementById('memo-area').value).length.toLocaleString('ja-JP')}文字`;
-    if (saved !== undefined) document.getElementById('memo-save-status').textContent = saved ? '保存しました' : '未保存 — 保存設定を確認してください';
-}

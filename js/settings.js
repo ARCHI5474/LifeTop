@@ -8,8 +8,9 @@ let settingsTrigger;
 let helpTrigger;
 
 export function toggleHelp() {
-    const modal = document.getElementById('help-modal');
-    const overlay = document.getElementById('help-overlay');
+    const modal = document.getElementById('help-modal') || document.getElementById('game-modal');
+    const overlay = document.getElementById('help-overlay') || document.getElementById('game-overlay');
+    if (!modal) return;
     const isOpen = modal.classList.toggle('active');
     modal.inert = !isOpen;
     overlay?.classList.toggle('active', isOpen);
@@ -44,7 +45,7 @@ function bindDialogFocusTrap(dialogEl) {
 export function initPickers() {
     renderColorCombos();
     renderBgPresets();
-    ['settings-panel', 'help-modal', 'weather-detail-modal', 'bookmark-dialog'].forEach(id => {
+    ['settings-panel', 'game-modal', 'help-modal', 'weather-detail-modal', 'bookmark-dialog'].forEach(id => {
         bindDialogFocusTrap(document.getElementById(id));
     });
 
@@ -71,6 +72,16 @@ export function initPickers() {
     };
     imageUpload.onchange = event => setBackgroundImageFile(event.target.files?.[0]);
     clearImage.onclick = clearBackgroundImage;
+}
+
+export function setColorMode(mode) {
+    userConfig.colorMode = mode === 'light' ? 'light' : 'dark';
+    applyStyles();
+    save();
+}
+
+export function toggleColorMode() {
+    setColorMode(userConfig.colorMode === 'light' ? 'dark' : 'light');
 }
 
 export function setColorCombo(index) {

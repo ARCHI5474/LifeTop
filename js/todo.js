@@ -63,7 +63,11 @@ export function renderTodoList() {
     const progress = document.getElementById('todo-progress');
     progress.max = todos.length || 1;
     progress.value = completed;
-    document.querySelectorAll('.todo-filters button').forEach(button => {
+    const clearCompletedBtn = document.getElementById('todo-clear-completed-btn');
+    if (clearCompletedBtn) {
+        clearCompletedBtn.hidden = completed === 0;
+    }
+    document.querySelectorAll('.todo-filters button[data-filter]').forEach(button => {
         button.setAttribute('aria-pressed', String(button.dataset.filter === todoFilter));
     });
     const visibleTodos = todos.filter(todo => todoFilter === 'all' || todo.completed === (todoFilter === 'completed'));
@@ -76,15 +80,21 @@ export function renderTodoList() {
 
     list.innerHTML = visibleTodos.map(t => {
         const completedClass = t.completed ? 'completed' : '';
+        const priorityClass = t.priority ? 'is-priority' : '';
         return `
-            <li class="todo-item ${completedClass}" id="todo-item-${t.id}">
+            <li class="todo-item ${completedClass} ${priorityClass}" id="todo-item-${t.id}">
                 <label class="todo-item-left">
                     <input type="checkbox" class="todo-checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTodo(${t.id})">
                     <span class="todo-text">${escapeHtml(t.text)}</span>
                 </label>
-                <button type="button" class="todo-delete" aria-label="${escapeHtml(t.text)}を削除" onclick="deleteTodo(${t.id})">
-                    <span class="material-symbols-outlined" style="font-size: 18px">delete</span>
-                </button>
+                <div class="todo-item-actions">
+                    <button type="button" class="todo-priority-btn ${t.priority ? 'active' : ''}" aria-pressed="${Boolean(t.priority)}" aria-label="${escapeHtml(t.text)}を優先マーク" title="優先マーク" onclick="toggleTodoPriority(${t.id})">
+                        <span class="material-symbols-outlined" style="font-size: 17px">${t.priority ? 'star' : 'star_outline'}</span>
+                    </button>
+                    <button type="button" class="todo-delete" aria-label="${escapeHtml(t.text)}を削除" onclick="deleteTodo(${t.id})">
+                        <span class="material-symbols-outlined" style="font-size: 18px">delete</span>
+                    </button>
+                </div>
             </li>
         `;
     }).join('');
@@ -120,6 +130,34 @@ export function toggleTodo(id) {
     }
 }
 
+export function toggleTodoPriority(id) {
+    const todo = userConfig.todoList?.find(t => t.id === id);
+    if (!todo) return;
+    if (todo.priority) {
+        delete todo.priority;
+    } else {
+        todo.priority = true;
+    }
+    save();
+    renderTodoList();
+}
+
+export function clearCompletedTodos() {
+    const todos = userConfig.todoList || [];
+    const completedItems = todos
+        .map((todo, index) => ({ todo, index }))
+        .filter(entry => entry.todo.completed);
+    if (completedItems.length === 0) return;
+
+    deletedTodo = { batch: completedItems };
+    userConfig.todoList = todos.filter(t => !t.completed);
+    save();
+    renderTodoList();
+    const undoEl = document.getElementById('todo-undo');
+    if (undoEl) undoEl.hidden = false;
+    document.querySelector('#todo-undo button')?.focus();
+}
+
 export function deleteTodo(id) {
     const index = userConfig.todoList.findIndex(todo => todo.id === id);
     if (index < 0) return;
@@ -133,13 +171,22 @@ export function deleteTodo(id) {
 
 export function undoDeleteTodo() {
     if (!deletedTodo) return;
-    userConfig.todoList.splice(deletedTodo.index, 0, deletedTodo.todo);
-    const id = deletedTodo.todo.id;
+    let focusId = null;
+    if (Array.isArray(deletedTodo.batch)) {
+        for (const entry of deletedTodo.batch) {
+            const insertAt = Math.min(entry.index, userConfig.todoList.length);
+            userConfig.todoList.splice(insertAt, 0, entry.todo);
+            focusId = entry.todo.id;
+        }
+    } else if (deletedTodo.todo) {
+        userConfig.todoList.splice(deletedTodo.index, 0, deletedTodo.todo);
+        focusId = deletedTodo.todo.id;
+    }
     deletedTodo = null;
     document.getElementById('todo-undo').hidden = true;
     save();
     renderTodoList();
-    (document.querySelector(`#todo-item-${id} input`) || document.getElementById('todo-input')).focus();
+    (document.querySelector(`#todo-item-${focusId} input`) || document.getElementById('todo-input')).focus();
 }
 
 export function escapeHtml(string) {

@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@500;700&family=Comfortaa:wght@400;700&family=Courier+Prime&family=DotGothic16&family=M+PLUS+1+Code&family=Oswald:wght@300;400;700&family=Outfit:wght@300;400;500;700;900&family=Righteous&family=Roboto+Mono:wght@200;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <!-- Material Symbols Outlined -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="css/style.css?v=4.1.7-redesign">
+    <link rel="stylesheet" href="css/style.css?v=4.1.9-redesign">
 </head>
 <body id="top">
 
@@ -48,57 +48,211 @@
         </button>
     </div>
     <div class="header-right">
-        <!-- ヘルプトリガー -->
-        <button type="button" class="icon-btn animate-fade-in" onclick="toggleHelp()" title="使い方" aria-label="使い方"><span class="material-symbols-outlined" aria-hidden="true">help</span></button>
+        <!-- ミニゲームトリガー（旧ヘルプボタン位置） -->
+        <button type="button" class="icon-btn game-trigger-btn animate-fade-in" id="game-open-btn" onclick="toggleGameModal()" title="ミニゲーム" aria-label="ミニゲームを開く"><span class="material-symbols-outlined" aria-hidden="true">sports_esports</span></button>
         <!-- 設定トリガー -->
-        <button type="button" class="icon-btn animate-fade-in" onclick="toggleSettings()" title="設定" aria-label="設定"><span class="material-symbols-outlined" aria-hidden="true">settings</span></button>
+        <button type="button" class="icon-btn animate-fade-in" onclick="toggleSettings()" title="Quickパネル" aria-label="Quickパネル"><span class="material-symbols-outlined" aria-hidden="true">settings</span></button>
     </div>
 </header>
 
 <div class="modal-overlay" id="settings-overlay" onclick="toggleSettings()"></div>
 
-<div class="modal-overlay" id="help-overlay" onclick="toggleHelp()"></div>
+<div class="modal-overlay" id="game-overlay" onclick="toggleGameModal(false)"></div>
 
-<div class="help-modal" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-modal-title" inert>
-    <div class="help-modal-card">
-        <div class="popup-modal-header">
-            <div>
-                <p class="help-kicker">LIFETOP GUIDE</p>
-                <h2 id="help-modal-title">LifeTopの使い方</h2>
+<!-- 大画面ミニゲームセンター (ヘビゲーム / パズル / オセロ) -->
+<div class="game-modal" id="game-modal" role="dialog" aria-modal="true" aria-labelledby="game-modal-title" inert>
+    <div class="game-modal-card">
+        <div class="popup-modal-header game-modal-header">
+            <div class="game-header-title-wrap">
+                <p class="help-kicker">LIFETOP ARCADE</p>
+                <h2 id="game-modal-title"><span class="material-symbols-outlined" aria-hidden="true">sports_esports</span> ミニゲームセンター</h2>
             </div>
-            <button class="icon-btn" type="button" onclick="toggleHelp()" title="閉じる" aria-label="ヘルプを閉じる">
+            <div class="game-selector-tabs" role="tablist" aria-label="ミニゲーム選択">
+                <button type="button" class="game-tab-btn active" data-game-tab="snake" role="tab" aria-selected="true" onclick="switchGameTab('snake')">
+                    <span class="material-symbols-outlined" aria-hidden="true">conversion_path</span>
+                    <span>ヘビゲーム</span>
+                </button>
+                <button type="button" class="game-tab-btn" data-game-tab="puzzle" role="tab" aria-selected="false" onclick="switchGameTab('puzzle')">
+                    <span class="material-symbols-outlined" aria-hidden="true">grid_view</span>
+                    <span>パズル</span>
+                </button>
+                <button type="button" class="game-tab-btn" data-game-tab="othello" role="tab" aria-selected="false" onclick="switchGameTab('othello')">
+                    <span class="material-symbols-outlined" aria-hidden="true">contrast</span>
+                    <span>オセロ</span>
+                </button>
+            </div>
+            <button class="icon-btn" type="button" onclick="toggleGameModal(false)" title="ゲームを閉じる" aria-label="ゲームを閉じる">
                 <span class="material-symbols-outlined" aria-hidden="true">close</span>
             </button>
         </div>
-        <div class="help-content">
-            <section class="help-item">
-                <span class="material-symbols-outlined">schedule</span>
-                <div><h3>時計・日付</h3><p>現在時刻と日付を表示します。設定から12時間表記や秒数の表示を切り替えられます。</p></div>
-            </section>
-            <section class="help-item">
-                <span class="material-symbols-outlined">search</span>
-                <div><h3>検索</h3><p>「/」キーで検索欄へ移動できます。Enterキーまたは矢印ボタンでGoogle検索します。検索候補は上下キーで選択できます。</p></div>
-            </section>
-            <section class="help-item">
-                <span class="material-symbols-outlined">bookmarks</span>
-                <div><h3>Quickアクセス</h3><p>よく使うサイトを登録できます。「追加」でサイト名とURLを入力し、編集ボタンから削除や整理を行えます。</p></div>
-            </section>
-            <section class="help-item">
-                <span class="material-symbols-outlined">dashboard_customize</span>
-                <div><h3>Quickライフ</h3><p>タスクの完了率を確認し、未完了・完了で絞り込めます。直前に削除したタスクは「元に戻す」で復元できます（再読み込みまで）。メモはこのブラウザに自動保存され、文字数と保存状態を表示します。クロックではタイマーとラップ付きストップウォッチを使えます。タブは左右キーでも切り替えられます。</p></div>
-            </section>
-            <section class="help-item">
-                <span class="material-symbols-outlined">palette</span>
-                <div><h3>テーマ・高画質壁紙</h3><p>設定からカラーコンビ・用意された高画質壁紙プリセット・カスタム背景画像・時計フォントを自由に変更できます。</p></div>
-            </section>
-            <section class="help-item">
-                <span class="material-symbols-outlined">cloud</span>
-                <div><h3>天気</h3><p>左上の天気をクリックすると、今日の天気の詳しい情報を確認できます。</p></div>
-            </section>
-            <section class="help-item">
-                <span class="material-symbols-outlined">newspaper</span>
-                <div><h3>ニュース・トレンド・YouTube</h3><p>最新ニュース、リアルタイムで検索されている話題のトレンドワード、YouTubeのおすすめ動画を表示します。すべてAPI制限対策のスマートキャッシュで保護され、高速かつ安全に自動更新されます。</p></div>
-            </section>
+
+        <div class="game-modal-body">
+            <!-- 1. ヘビゲーム (Snake) -->
+            <div class="game-pane active" data-game-pane="snake" role="tabpanel">
+                <div class="game-layout">
+                    <div class="game-stage-wrap snake-stage-wrap">
+                        <canvas id="snake-canvas" width="520" height="520" aria-label="ヘビゲーム画面"></canvas>
+                    </div>
+                    <div class="game-sidebar">
+                        <div class="game-stats-grid">
+                            <div class="game-stat-box">
+                                <span class="game-stat-label">SCORE</span>
+                                <strong class="game-stat-val" id="snake-score">0</strong>
+                            </div>
+                            <div class="game-stat-box">
+                                <span class="game-stat-label">BEST</span>
+                                <strong class="game-stat-val" id="snake-best">0</strong>
+                            </div>
+                            <div class="game-stat-box">
+                                <span class="game-stat-label">LENGTH</span>
+                                <strong class="game-stat-val" id="snake-length">3</strong>
+                            </div>
+                        </div>
+
+                        <div class="game-option-group">
+                            <span class="game-option-label">モード選択</span>
+                            <div class="game-segmented">
+                                <button type="button" class="game-seg-btn active" data-snake-mode="normal" aria-pressed="true" onclick="setSnakeMode('normal')">ノーマル</button>
+                                <button type="button" class="game-seg-btn" data-snake-mode="fast" aria-pressed="false" onclick="setSnakeMode('fast')">高速</button>
+                                <button type="button" class="game-seg-btn" data-snake-mode="portal" aria-pressed="false" onclick="setSnakeMode('portal')">壁ワープ</button>
+                            </div>
+                        </div>
+
+                        <div class="game-action-row">
+                            <button type="button" class="primary-btn game-main-btn" id="snake-start-btn" onclick="startOrToggleSnake()">
+                                <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span> スタート
+                            </button>
+                            <button type="button" class="secondary-btn game-sub-btn" onclick="restartSnakeGame()" title="最初からやり直す">
+                                <span class="material-symbols-outlined" aria-hidden="true">refresh</span> リセット
+                            </button>
+                        </div>
+
+                        <!-- タッチ＆マウス用十字コントローラー -->
+                        <div class="snake-dpad" aria-label="方向コントローラー">
+                            <button type="button" class="dpad-btn up" onclick="setSnakeDirection('up')" aria-label="上へ"><span class="material-symbols-outlined">keyboard_arrow_up</span></button>
+                            <button type="button" class="dpad-btn left" onclick="setSnakeDirection('left')" aria-label="左へ"><span class="material-symbols-outlined">keyboard_arrow_left</span></button>
+                            <button type="button" class="dpad-btn right" onclick="setSnakeDirection('right')" aria-label="右へ"><span class="material-symbols-outlined">keyboard_arrow_right</span></button>
+                            <button type="button" class="dpad-btn down" onclick="setSnakeDirection('down')" aria-label="下へ"><span class="material-symbols-outlined">keyboard_arrow_down</span></button>
+                        </div>
+
+                        <p class="game-status-banner" id="snake-status-msg" role="status">スタートまたは方向キーを押して開始</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. スライドパズル (Sliding Puzzle) -->
+            <div class="game-pane" data-game-pane="puzzle" role="tabpanel" hidden>
+                <div class="game-layout">
+                    <div class="game-stage-wrap puzzle-stage-wrap">
+                        <div class="puzzle-board" id="puzzle-board" aria-label="スライドパズル盤面"></div>
+                    </div>
+                    <div class="game-sidebar">
+                        <div class="game-stats-grid">
+                            <div class="game-stat-box">
+                                <span class="game-stat-label">MOVES</span>
+                                <strong class="game-stat-val" id="puzzle-moves">0手</strong>
+                            </div>
+                            <div class="game-stat-box">
+                                <span class="game-stat-label">TIME</span>
+                                <strong class="game-stat-val" id="puzzle-time">00:00</strong>
+                            </div>
+                            <div class="game-stat-box">
+                                <span class="game-stat-label">BEST</span>
+                                <strong class="game-stat-val" id="puzzle-best">未記録</strong>
+                            </div>
+                        </div>
+
+                        <div class="game-option-group">
+                            <span class="game-option-label">難易度（盤面サイズ）</span>
+                            <div class="game-segmented">
+                                <button type="button" class="game-seg-btn" data-puzzle-size="3" aria-pressed="false" onclick="setPuzzleSize(3)">3×3 (8)</button>
+                                <button type="button" class="game-seg-btn active" data-puzzle-size="4" aria-pressed="true" onclick="setPuzzleSize(4)">4×4 (15)</button>
+                                <button type="button" class="game-seg-btn" data-puzzle-size="5" aria-pressed="false" onclick="setPuzzleSize(5)">5×5 (24)</button>
+                            </div>
+                        </div>
+
+                        <div class="game-action-row">
+                            <button type="button" class="primary-btn game-main-btn" onclick="initPuzzleBoard()">
+                                <span class="material-symbols-outlined" aria-hidden="true">shuffle</span> シャッフル
+                            </button>
+                            <button type="button" class="secondary-btn game-sub-btn" onclick="showPuzzleHint()">
+                                <span class="material-symbols-outlined" aria-hidden="true">lightbulb</span> ヒント
+                            </button>
+                        </div>
+
+                        <div class="game-guide-card">
+                            <h4>遊び方</h4>
+                            <p>数字を左上から「1, 2, 3…」の順に並べて右下が空欄になればクリア！空白と同じ行・列のタイルをタップすると複数枚まとめてスライドできます。</p>
+                        </div>
+
+                        <p class="game-status-banner" id="puzzle-status-msg" role="status">タイルをクリックまたは矢印キーでスライド</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. オセロ (Othello / Reversi) -->
+            <div class="game-pane" data-game-pane="othello" role="tabpanel" hidden>
+                <div class="game-layout">
+                    <div class="game-stage-wrap othello-stage-wrap">
+                        <div class="othello-board" id="othello-board" aria-label="オセロ盤面"></div>
+                    </div>
+                    <div class="game-sidebar">
+                        <div class="othello-score-card">
+                            <div class="othello-score-side">
+                                <span class="othello-disc-icon disc-black"></span>
+                                <div>
+                                    <span class="game-stat-label">BLACK (先手)</span>
+                                    <strong class="game-stat-val" id="othello-black-count">2</strong>
+                                </div>
+                            </div>
+                            <div class="othello-score-side">
+                                <span class="othello-disc-icon disc-white"></span>
+                                <div>
+                                    <span class="game-stat-label">WHITE (後手)</span>
+                                    <strong class="game-stat-val" id="othello-white-count">2</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="othello-ratio-bar" aria-hidden="true">
+                            <div class="othello-ratio-fill" id="othello-ratio-fill" style="width: 50%;"></div>
+                        </div>
+
+                        <div class="game-option-group">
+                            <span class="game-option-label">対戦モード・AI強さ</span>
+                            <div class="game-segmented">
+                                <button type="button" class="game-seg-btn" data-othello-mode="easy" aria-pressed="false" onclick="setOthelloMode('easy')">よわい</button>
+                                <button type="button" class="game-seg-btn active" data-othello-mode="normal" aria-pressed="true" onclick="setOthelloMode('normal')">ふつう</button>
+                                <button type="button" class="game-seg-btn" data-othello-mode="hard" aria-pressed="false" onclick="setOthelloMode('hard')">つよい</button>
+                                <button type="button" class="game-seg-btn" data-othello-mode="2p" aria-pressed="false" onclick="setOthelloMode('2p')">2人対戦</button>
+                            </div>
+                        </div>
+
+                        <div class="game-option-group">
+                            <span class="game-option-label">あなたの手番（AI対戦時）</span>
+                            <div class="game-segmented">
+                                <button type="button" class="game-seg-btn active" data-othello-color="1" aria-pressed="true" onclick="setOthelloPlayerColor(1)">⚫ 黒（先手）</button>
+                                <button type="button" class="game-seg-btn" data-othello-color="-1" aria-pressed="false" onclick="setOthelloPlayerColor(-1)">⚪ 白（後手）</button>
+                            </div>
+                        </div>
+
+                        <div class="game-action-row">
+                            <button type="button" class="primary-btn game-main-btn" onclick="initOthelloGame()">
+                                <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span> 新規対局
+                            </button>
+                            <button type="button" class="secondary-btn game-sub-btn" id="othello-undo-btn" onclick="undoOthelloMove()" disabled>
+                                <span class="material-symbols-outlined" aria-hidden="true">undo</span> 待った
+                            </button>
+                        </div>
+
+                        <div class="game-record-line">
+                            <span>AI通算戦績:</span>
+                            <strong id="othello-record">0勝 0敗 0分</strong>
+                        </div>
+
+                        <p class="game-status-banner" id="othello-status-msg" role="status">⚫ 黒の番 — 置ける場所に裏返せる枚数が表示されます</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -134,11 +288,20 @@
 
             <!-- ブックマーク -->
             <div class="card glass-card bookmark-card">
-                <div class="card-header">
+                <div class="card-header bookmark-card-header">
                     <h3><span class="material-symbols-outlined" aria-hidden="true">bookmarks</span> Quickアクセス</h3>
-                    <button type="button" class="icon-btn-small" id="edit-bookmarks-btn" aria-pressed="false" onclick="toggleBookmarkEditMode()" title="ブックマークを編集" aria-label="ブックマークを編集">
-                        <span class="material-symbols-outlined" aria-hidden="true">edit</span>
-                    </button>
+                    <div class="bookmark-header-controls">
+                        <div class="bookmark-filter-wrap">
+                            <span class="material-symbols-outlined bookmark-filter-icon" aria-hidden="true">filter_list</span>
+                            <input type="search" id="bookmark-filter-input" class="bookmark-filter-input" placeholder="サイトを絞り込み" aria-label="ブックマークを絞り込み" oninput="filterBookmarks(this.value)">
+                            <button type="button" id="bookmark-filter-clear" class="bookmark-filter-clear" onclick="clearBookmarkFilter()" aria-label="絞り込みをクリア" hidden>
+                                <span class="material-symbols-outlined" aria-hidden="true">close</span>
+                            </button>
+                        </div>
+                        <button type="button" class="icon-btn-small" id="edit-bookmarks-btn" aria-pressed="false" onclick="toggleBookmarkEditMode()" title="ブックマークを編集" aria-label="ブックマークを編集">
+                            <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+                        </button>
+                    </div>
                 </div>
                 <!-- 左右スクロール矢印ボタン付きのタブコンテナ -->
                 <div class="bookmark-tabs-container">
@@ -152,8 +315,18 @@
                         <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
                     </button>
                 </div>
+                <div class="bookmark-folder-bar" id="bookmark-folder-bar" hidden></div>
                 <div class="bookmark-grid" id="bookmark-grid"></div>
-                <button type="button" class="add-bookmark-btn" onclick="openBookmarkDialog()"><span class="material-symbols-outlined" aria-hidden="true">add</span> サイトを追加</button>
+                <div id="bookmark-undo" class="bookmark-undo" hidden>
+                    <span id="bookmark-undo-text" role="status">ブックマークを削除しました</span>
+                    <button type="button" onclick="undoDeleteBookmark()">
+                        <span class="material-symbols-outlined" aria-hidden="true">undo</span> 元に戻す
+                    </button>
+                </div>
+                <div class="bookmark-actions-row" id="bookmark-actions-row">
+                    <button type="button" class="add-bookmark-btn" onclick="openBookmarkDialog('link')"><span class="material-symbols-outlined" aria-hidden="true">add</span> サイトを追加</button>
+                    <button type="button" class="add-folder-btn" id="add-folder-btn" onclick="openFolderDialog()"><span class="material-symbols-outlined" aria-hidden="true">create_new_folder</span> フォルダを作成</button>
+                </div>
             </div>
 
             <!-- Quickライフ (タスクとメモのタブ切り替え) -->
@@ -197,6 +370,7 @@
                         <button type="button" data-filter="all" aria-pressed="true" onclick="setTodoFilter('all')">すべて</button>
                         <button type="button" data-filter="active" aria-pressed="false" onclick="setTodoFilter('active')">未完了</button>
                         <button type="button" data-filter="completed" aria-pressed="false" onclick="setTodoFilter('completed')">完了</button>
+                        <button type="button" id="todo-clear-completed-btn" class="todo-clear-completed-btn" onclick="clearCompletedTodos()" hidden>完了済みを削除</button>
                     </div>
                     <ul id="todo-list" class="todo-list">
                         <!-- 動的に挿入 -->
@@ -204,10 +378,59 @@
                     <div id="todo-undo" class="todo-undo" hidden><span role="status">タスクを削除しました</span><button type="button" onclick="undoDeleteTodo()">元に戻す</button></div>
                 </div>
 
-                <!-- メモタブ -->
+                <!-- メモタブ（文字装飾ツールバー付きリッチメモ） -->
                 <div id="memo-tab-content" class="tab-content">
-                    <textarea id="memo-area" aria-label="Quickメモ" placeholder="思いついたことを、ここに。メモは自動保存されます。"></textarea>
-                    <div class="memo-footer"><span id="memo-save-status" role="status">このブラウザに自動保存</span><span id="memo-count">0文字</span></div>
+                    <div class="memo-toolbar" id="memo-toolbar" role="toolbar" aria-label="メモの文字装飾">
+                        <button type="button" class="memo-tool-btn" data-memo-cmd="bold" onclick="formatMemo('bold')" title="太字 (Ctrl+B)" aria-label="太字" aria-pressed="false">
+                            <span class="material-symbols-outlined" aria-hidden="true">format_bold</span>
+                        </button>
+                        <button type="button" class="memo-tool-btn" data-memo-cmd="italic" onclick="formatMemo('italic')" title="斜体 (Ctrl+I)" aria-label="斜体" aria-pressed="false">
+                            <span class="material-symbols-outlined" aria-hidden="true">format_italic</span>
+                        </button>
+                        <button type="button" class="memo-tool-btn" data-memo-cmd="underline" onclick="formatMemo('underline')" title="アンダーライン (Ctrl+U)" aria-label="アンダーライン" aria-pressed="false">
+                            <span class="material-symbols-outlined" aria-hidden="true">format_underlined</span>
+                        </button>
+                        <button type="button" class="memo-tool-btn" data-memo-cmd="strikeThrough" onclick="formatMemo('strikeThrough')" title="取り消し線" aria-label="取り消し線" aria-pressed="false">
+                            <span class="material-symbols-outlined" aria-hidden="true">strikethrough_s</span>
+                        </button>
+                        <span class="memo-tool-divider" aria-hidden="true"></span>
+                        <button type="button" class="memo-tool-btn" data-memo-cmd="heading" onclick="formatMemo('heading')" title="見出し切り替え" aria-label="見出し" aria-pressed="false">
+                            <span class="material-symbols-outlined" aria-hidden="true">title</span>
+                        </button>
+                        <button type="button" class="memo-tool-btn" data-memo-cmd="highlight" onclick="formatMemo('highlight')" title="蛍光マーカー（タップで色切替）" aria-label="蛍光マーカー">
+                            <span class="material-symbols-outlined" aria-hidden="true">ink_highlighter</span>
+                        </button>
+                        <button type="button" class="memo-tool-btn" data-memo-cmd="foreColor" onclick="formatMemo('foreColor')" title="テーマカラー文字" aria-label="文字色変更">
+                            <span class="material-symbols-outlined" aria-hidden="true">format_color_text</span>
+                        </button>
+                        <span class="memo-tool-divider" aria-hidden="true"></span>
+                        <button type="button" class="memo-tool-btn" data-memo-cmd="insertUnorderedList" onclick="formatMemo('insertUnorderedList')" title="箇条書きリスト" aria-label="箇条書きリスト" aria-pressed="false">
+                            <span class="material-symbols-outlined" aria-hidden="true">format_list_bulleted</span>
+                        </button>
+                        <button type="button" class="memo-tool-btn" data-memo-cmd="insertOrderedList" onclick="formatMemo('insertOrderedList')" title="番号付きリスト" aria-label="番号付きリスト" aria-pressed="false">
+                            <span class="material-symbols-outlined" aria-hidden="true">format_list_numbered</span>
+                        </button>
+                        <button type="button" class="memo-tool-btn" data-memo-cmd="checklist" onclick="formatMemo('checklist')" title="チェック項目を挿入" aria-label="チェック項目">
+                            <span class="material-symbols-outlined" aria-hidden="true">check_box</span>
+                        </button>
+                        <button type="button" class="memo-tool-btn" data-memo-cmd="quote" onclick="formatMemo('quote')" title="引用ブロック" aria-label="引用ブロック" aria-pressed="false">
+                            <span class="material-symbols-outlined" aria-hidden="true">format_quote</span>
+                        </button>
+                        <button type="button" class="memo-tool-btn" data-memo-cmd="removeFormat" onclick="formatMemo('removeFormat')" title="装飾をクリア" aria-label="装飾をクリア">
+                            <span class="material-symbols-outlined" aria-hidden="true">format_clear</span>
+                        </button>
+                    </div>
+                    <div id="memo-editor" class="memo-editor is-empty" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Quickメモ" data-placeholder="思いついたことを、ここに。太字やマーカーなどの装飾も自動保存されます。"></div>
+                    <textarea id="memo-area" aria-label="Quickメモ（プレーンテキスト）" hidden></textarea>
+                    <div class="memo-footer">
+                        <span id="memo-save-status" role="status">このブラウザに自動保存</span>
+                        <div class="memo-footer-right">
+                            <span id="memo-count">0文字</span>
+                            <button type="button" class="memo-copy-btn" onclick="copyMemoContent()" title="メモをコピー" aria-label="メモをコピー">
+                                <span class="material-symbols-outlined" aria-hidden="true">content_copy</span> コピー
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- クロックタブ (タイマー & ストップウォッチ) -->
@@ -235,9 +458,11 @@
 
                         <div class="clock-ctrl-row">
                             <button type="button" class="ctrl-btn secondary-ctrl" onclick="adjustTimer(-60)" aria-label="タイマーを1分減らす">-1分</button>
+                            <button type="button" class="ctrl-btn secondary-ctrl" onclick="adjustTimer(-10)" aria-label="タイマーを10秒減らす">-10秒</button>
                             <button type="button" class="ctrl-btn primary-ctrl" id="timer-start-btn" aria-pressed="false" onclick="toggleTimer()">
                                 <span class="material-symbols-outlined">play_arrow</span> スタート
                             </button>
+                            <button type="button" class="ctrl-btn secondary-ctrl" onclick="adjustTimer(10)" aria-label="タイマーを10秒増やす">+10秒</button>
                             <button type="button" class="ctrl-btn secondary-ctrl" onclick="adjustTimer(60)" aria-label="タイマーを1分増やす">+1分</button>
                             <button type="button" class="ctrl-btn text-ctrl" onclick="resetTimer()" aria-label="タイマーをリセット">
                                 <span class="material-symbols-outlined">replay</span>
@@ -348,6 +573,21 @@
             <input type="text" id="username-input" class="settings-input" placeholder="ゲスト" maxlength="20" oninput="saveUsername(this.value)">
         </div>
 
+        <!-- 外観モード（ダーク / ライト） -->
+        <div class="settings-section">
+            <label class="settings-label">外観モード</label>
+            <div class="color-mode-switch" id="color-mode-switch" role="group" aria-label="外観モードの切り替え">
+                <button type="button" class="color-mode-btn active" data-color-mode-btn="dark" aria-pressed="true" onclick="setColorMode('dark')">
+                    <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+                    <span>ダーク</span>
+                </button>
+                <button type="button" class="color-mode-btn" data-color-mode-btn="light" aria-pressed="false" onclick="setColorMode('light')">
+                    <span class="material-symbols-outlined" aria-hidden="true">light_mode</span>
+                    <span>ライト</span>
+                </button>
+            </div>
+        </div>
+
         <!-- カラーコンビ -->
         <div class="settings-section">
             <label class="settings-label">カラーコンビ</label>
@@ -427,17 +667,31 @@
             </button>
         </div>
         <form id="bookmark-dialog-form" class="bookmark-dialog-form">
+            <div class="bm-dialog-mode-tabs" role="tablist" aria-label="追加する種類">
+                <button type="button" class="bm-dialog-mode-btn active" data-bm-dialog-mode="link" role="tab" aria-selected="true" onclick="switchBookmarkDialogMode('link')">
+                    <span class="material-symbols-outlined" aria-hidden="true">add_link</span> サイトを追加
+                </button>
+                <button type="button" class="bm-dialog-mode-btn" data-bm-dialog-mode="folder" role="tab" aria-selected="false" onclick="switchBookmarkDialogMode('folder')">
+                    <span class="material-symbols-outlined" aria-hidden="true">create_new_folder</span> フォルダを作成
+                </button>
+            </div>
             <label>
-                <span>サイト名</span>
+                <span id="bookmark-title-label">サイト名</span>
                 <input id="bookmark-title-input" type="text" maxlength="20" placeholder="例: Notion" required>
             </label>
-            <label>
+            <label id="bookmark-url-field-wrap">
                 <span>URL</span>
                 <input id="bookmark-url-input" type="url" placeholder="https://example.com" required>
             </label>
+            <label id="bookmark-folder-select-wrap" hidden>
+                <span>保存先フォルダ</span>
+                <select id="bookmark-folder-select" class="bookmark-folder-select">
+                    <option value="">なし（メイン一覧）</option>
+                </select>
+            </label>
             <div class="popup-modal-actions">
                 <button type="button" class="secondary-btn" onclick="closeBookmarkDialog()">キャンセル</button>
-                <button type="submit" class="primary-btn">追加する</button>
+                <button type="submit" class="primary-btn">保存する</button>
             </div>
         </form>
     </div>

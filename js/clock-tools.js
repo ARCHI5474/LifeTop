@@ -313,13 +313,26 @@ function renderLapList() {
         container.innerHTML = '';
         return;
     }
-    container.innerHTML = swLaps.map(lap => `
-        <div class="sw-lap-item">
-            <span class="lap-num">ラップ ${lap.num}</span>
+    let minLapMs = Infinity;
+    let maxLapMs = -Infinity;
+    if (swLaps.length >= 2) {
+        for (const l of swLaps) {
+            if (l.lapMs < minLapMs) minLapMs = l.lapMs;
+            if (l.lapMs > maxLapMs) maxLapMs = l.lapMs;
+        }
+    }
+    container.innerHTML = swLaps.map(lap => {
+        const isBest = swLaps.length >= 2 && lap.lapMs === minLapMs;
+        const isSlowest = swLaps.length >= 2 && lap.lapMs === maxLapMs && minLapMs !== maxLapMs;
+        const badge = isBest ? '<span class="lap-badge best">最速</span>' : isSlowest ? '<span class="lap-badge slow">最遅</span>' : '';
+        return `
+        <div class="sw-lap-item ${isBest ? 'is-best-lap' : ''} ${isSlowest ? 'is-slow-lap' : ''}">
+            <span class="lap-num">ラップ ${lap.num} ${badge}</span>
             <span class="lap-split">${formatStopwatchTime(lap.lapMs)}</span>
             <span class="lap-total">${formatStopwatchTime(lap.totalMs)}</span>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // 初期化

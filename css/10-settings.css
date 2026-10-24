@@ -214,7 +214,95 @@
     line-height: 1.62;
 }
 
-/* ブックマーク追加フォーム */
+/* ブックマーク追加・フォルダ作成フォーム */
+.bm-dialog-mode-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    border-radius: 14px;
+    background: var(--input-bg);
+    border: 1px solid var(--line-soft);
+}
+
+.bm-dialog-mode-btn {
+    flex: 1;
+    min-height: 38px;
+    padding: 7px 10px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.bm-dialog-mode-btn .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.bm-dialog-mode-btn.active {
+    background: rgba(var(--p-rgb), 0.22);
+    border-color: var(--p-strong);
+    color: var(--text-color);
+}
+
+.bookmark-folder-select {
+    width: 100%;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line-soft);
+    background: var(--input-bg);
+    color: var(--text-color);
+    padding: 11px 14px;
+    font: inherit;
+    font-size: 0.92rem;
+    outline: none;
+}
+
+/* 外観モード（ダーク / ライト）スイッチャー */
+.color-mode-switch {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 4px;
+    border-radius: 14px;
+    background: var(--input-bg);
+    border: 1px solid var(--line-soft);
+}
+
+.color-mode-btn {
+    min-height: 40px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 0.84rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    cursor: pointer;
+}
+
+.color-mode-btn .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.color-mode-btn.active {
+    background: rgba(var(--p-rgb), 0.22);
+    border-color: var(--p-strong);
+    color: var(--text-color);
+    box-shadow: 0 4px 12px rgba(var(--p-rgb), 0.16);
+}
+
 .bookmark-dialog-form {
     display: grid;
     gap: 15px;

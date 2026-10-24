@@ -48,6 +48,29 @@ const bgGradients = {
     'gradient-cherry': '#441B26'
 };
 
+const bgGradientsLight = {
+    'gradient-blue': 'linear-gradient(145deg, #dceaf8 0%, #eef5fc 55%, #d6e6f7 100%)',
+    'gradient-dark': 'linear-gradient(145deg, #e5e9df 0%, #f3f5f0 55%, #dde3d5 100%)',
+    'gradient-sunset': 'linear-gradient(145deg, #f7e1de 0%, #fcf0ee 55%, #f3d7d3 100%)',
+    'gradient-aurora': 'linear-gradient(145deg, #daf0e9 0%, #eef9f5 55%, #d1ebe2 100%)',
+    'gradient-cyber': 'linear-gradient(145deg, #d9efe9 0%, #eef9f6 55%, #d3e8df 100%)',
+    'gradient-deepsea': 'linear-gradient(145deg, #e1e8f6 0%, #f2f5fc 55%, #f3dfe7 100%)',
+    'gradient-berry': 'linear-gradient(145deg, #f2e3ec 0%, #faf1f6 55%, #f2e5d9 100%)',
+    'gradient-citrus': 'linear-gradient(145deg, #f6ecd7 0%, #fcf7ec 55%, #f1e3c6 100%)',
+    'gradient-leaf': 'linear-gradient(145deg, #dfefe1 0%, #f0f8f1 55%, #d6ead8 100%)',
+    'gradient-lavender': 'linear-gradient(145deg, #e8e2f6 0%, #f4f1fb 55%, #dfd8f2 100%)',
+    'gradient-cocoa': 'linear-gradient(145deg, #f1e3dc 0%, #faf2ee 55%, #ead8cf 100%)',
+    'gradient-teal': 'linear-gradient(145deg, #daeeef 0%, #eef8f8 55%, #d1e7e9 100%)',
+    'gradient-rose': 'linear-gradient(145deg, #f5e0e7 0%, #fbf0f4 55%, #efd4de 100%)',
+    'gradient-indigo': 'linear-gradient(145deg, #e1e4f6 0%, #f1f3fb 55%, #d8dcf2 100%)',
+    'gradient-plum': 'linear-gradient(145deg, #f0e0ef 0%, #faf0f9 55%, #e9d5e8 100%)',
+    'gradient-matcha': 'linear-gradient(145deg, #dfeee2 0%, #f0f7f1 55%, #d5e8d9 100%)',
+    'gradient-neon': 'linear-gradient(145deg, #d7eff2 0%, #edf9fa 55%, #cde8ec 100%)',
+    'gradient-midnight': 'linear-gradient(145deg, #dde3f4 0%, #eff2fa 55%, #d4dcf0 100%)',
+    'gradient-sunrise': 'linear-gradient(145deg, #f7e5d8 0%, #fcf3ec 55%, #f2dbca 100%)',
+    'gradient-cherry': 'linear-gradient(145deg, #f6dfe5 0%, #fcf0f3 55%, #f0d3db 100%)'
+};
+
 const colorCombos = [
     { name: 'ブルーベリー', bgType: 'gradient-blue', theme: '#2F75A8' },
     { name: 'オリーブ', bgType: 'gradient-dark', theme: '#6C7A3D' },
@@ -329,6 +352,7 @@ const FIXED_BOOKMARKS = {
 let userConfig = {
     username: "ゲスト",
     memo: "",
+    memoHtml: "",
     bookmarks: [
         { title: "Google", url: "https://www.google.com" },
         { title: "YouTube", url: "https://www.youtube.com" },
@@ -341,6 +365,7 @@ let userConfig = {
     fontFamily: fontStyles[0].family,
     bgType: "gradient-blue",
     bgImage: "",
+    colorMode: "dark",
     clock12h: false,
     clockShowSec: false,
     searchEngine: "google",
@@ -377,15 +402,43 @@ function mergeUserConfig(parsed) {
         mergedHealthLog.medications = [...defaultHealthLog.medications];
     }
 
+    const sanitizeBookmarkLink = (item) => {
+        if (!item || typeof item !== 'object') return null;
+        if (typeof item.title !== 'string' || typeof item.url !== 'string') return null;
+        return { title: item.title, url: item.url };
+    };
+
+    const sanitizeBookmarkEntry = (entry, idx) => {
+        if (!entry || typeof entry !== 'object' || typeof entry.title !== 'string') return null;
+        if (entry.type === 'folder') {
+            const children = Array.isArray(entry.children)
+                ? entry.children.map(sanitizeBookmarkLink).filter(Boolean)
+                : [];
+            const id = typeof entry.id === 'string' && entry.id.trim()
+                ? entry.id.trim()
+                : `folder_${idx}_${Date.now()}`;
+            return {
+                id,
+                type: 'folder',
+                title: entry.title.trim() || 'フォルダ',
+                children
+            };
+        }
+        return sanitizeBookmarkLink(entry);
+    };
+
     const safeBookmarks = Array.isArray(parsed.bookmarks)
-        ? parsed.bookmarks
-            .filter(bookmark => bookmark && typeof bookmark === 'object' && typeof bookmark.title === 'string' && typeof bookmark.url === 'string')
-            .map(bookmark => ({ title: bookmark.title, url: bookmark.url }))
+        ? parsed.bookmarks.map(sanitizeBookmarkEntry).filter(Boolean)
         : userConfig.bookmarks;
     const safeTodos = Array.isArray(parsed.todoList)
         ? parsed.todoList
             .filter(todo => todo && typeof todo === 'object' && Number.isSafeInteger(todo.id) && typeof todo.text === 'string')
-            .map(todo => ({ id: todo.id, text: todo.text, completed: Boolean(todo.completed) }))
+            .map(todo => ({
+                id: todo.id,
+                text: todo.text,
+                completed: Boolean(todo.completed),
+                ...(todo.priority ? { priority: true } : {})
+            }))
         : userConfig.todoList;
     const safeBackgroundImage = typeof parsed.bgImage === 'string' && (
         /^https:\/\/.+/i.test(parsed.bgImage) ||
@@ -395,6 +448,8 @@ function mergeUserConfig(parsed) {
     userConfig = {
         ...userConfig,
         ...parsed,
+        memo: typeof parsed.memo === 'string' ? parsed.memo : userConfig.memo,
+        memoHtml: typeof parsed.memoHtml === 'string' ? parsed.memoHtml : '',
         bookmarks: safeBookmarks,
         todoList: safeTodos,
         theme: themes.includes(parsed.theme) || colorCombos.some(combo => combo.theme === parsed.theme)
@@ -405,6 +460,7 @@ function mergeUserConfig(parsed) {
             : userConfig.fontFamily,
         bgType: Object.hasOwn(bgGradients, parsed.bgType) ? parsed.bgType : userConfig.bgType,
         bgImage: safeBackgroundImage,
+        colorMode: parsed.colorMode === 'light' ? 'light' : 'dark',
         clock12h: typeof parsed.clock12h === 'boolean' ? parsed.clock12h : userConfig.clock12h,
         clockShowSec: typeof parsed.clockShowSec === 'boolean' ? parsed.clockShowSec : userConfig.clockShowSec,
         searchEngine: "google",
@@ -423,6 +479,7 @@ export {
     themes,
     fontStyles,
     bgGradients,
+    bgGradientsLight,
     colorCombos,
     bgPresets,
     FIXED_BOOKMARKS,
