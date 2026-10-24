@@ -105,8 +105,14 @@ export function addTodo() {
     const text = input.value.trim();
     if (!text) return;
 
+    // Undo retains deleted tasks, so reserve their IDs until they can no longer
+    // be restored. Reduce also avoids argument limits for large task lists.
+    const pendingTodos = deletedTodo?.batch?.map(entry => entry.todo)
+        || (deletedTodo?.todo ? [deletedTodo.todo] : []);
+    const nextId = [...(userConfig.todoList || []), ...pendingTodos]
+        .reduce((next, todo) => Math.max(next, todo.id + 1), Date.now());
     const newTodo = {
-        id: Math.max(Date.now(), ...(userConfig.todoList || []).map(todo => todo.id + 1)),
+        id: nextId,
         text: text,
         completed: false
     };

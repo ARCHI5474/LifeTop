@@ -1,6 +1,6 @@
 /* LifeTop - settings panel controls */
 import { colorCombos, bgPresets, fontStyles, userConfig } from "./config.js?v=4.0-final";
-import { applyStyles, renderColorCombos, renderBgPresets, renderBgSelector } from "./styles.js?v=4.0-final";
+import { applyStyles, renderColorCombos, renderBgPresets, renderBgSelector } from "./styles.js?v=4.1.10-light";
 import { save } from "./storage.js?v=4.0-final";
 import { updateClock, updateGreeting } from "./clock.js?v=4.0-final";
 

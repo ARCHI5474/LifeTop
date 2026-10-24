@@ -1,4 +1,4 @@
-import { applyStyles, renderBgSelector } from "./styles.js?v=4.0-final";
+import { applyStyles, renderBgSelector } from "./styles.js?v=4.1.10-light";
 
 /* LifeTop - application entry point */
 import { userConfig } from "./config.js?v=4.0-final";
@@ -18,7 +18,7 @@ import {
     toggleSettings,
     toggleHelp,
     
-} from "./settings.js?v=4.0-final";
+} from "./settings.js?v=4.1.10-light";
 import { updateClock, updateGreeting } from "./clock.js?v=4.0-final";
 import { initSearchSuggestions } from "./search.js?v=4.0-final";
 import {

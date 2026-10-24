@@ -3,6 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        // Restore appearance before stylesheets paint; storage can be unavailable.
+        try {
+            const saved = JSON.parse(localStorage.getItem('lifetop_v1_0_data'));
+            document.documentElement.dataset.colorMode = saved?.colorMode === 'light' ? 'light' : 'dark';
+        } catch {
+            document.documentElement.dataset.colorMode = 'dark';
+        }
+    </script>
     <title>LifeTop│いつものネットを、ここから始めよう。</title>
     <meta name="description" content="Google検索、よく使うサイト、タスク、メモ、時計をひとつに。毎日に役立つスタートページ、LifeTop。">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
@@ -10,7 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@500;700&family=Comfortaa:wght@400;700&family=Courier+Prime&family=DotGothic16&family=M+PLUS+1+Code&family=Oswald:wght@300;400;700&family=Outfit:wght@300;400;500;700;900&family=Righteous&family=Roboto+Mono:wght@200;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <!-- Material Symbols Outlined -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="css/style.css?v=4.1.9-redesign">
+    <link rel="stylesheet" href="css/style.css?v=4.1.10-light">
 </head>
 <body id="top">
 
@@ -697,7 +706,7 @@
     </div>
 </div>
 
-<script type="module" src="./js/main.js?v=4.0-final"></script>
+<script type="module" src="./js/main.js?v=4.1.10-light"></script>
 
 
 </body>

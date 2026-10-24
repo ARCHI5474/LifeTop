@@ -33,6 +33,15 @@ LifeTopは「多機能であること」ではなく、
 LifeTopの操作感と視覚表現をもとにした設計思想「[PasideaDesign](PASIDEA_DESIGN.md)」。
 日常の操作にやわらかな手応えを与えるための原則と、アニメーションの基準をまとめています。
 
+## 開発時の動作確認
+
+既存テスト: `node --test tests/*.test.mjs`
+
+ブラウザテスト: Playwrightを利用できる環境で `node tests/browser-smoke.cjs`。
+必要に応じて `BROWSER_PATH` にChrome等の実行ファイル、`PLAYWRIGHT_MODULE_PATH` にPlaywrightの `index.js` の絶対パスを指定できます。
+外部通信を無効にし、起動、タスクの追加・削除・復元、メモの保存、タイマー、設定、モバイル幅のタブ操作を確認します。
+ライトモードは完了チェックの視認性、起動前の配色復元、連続切り替え、背景画像の読み込み失敗時も確認します。
+
 ## 更新履歴
 現在：3.9<br>
 2026/9/21リリース│　3.9<br>

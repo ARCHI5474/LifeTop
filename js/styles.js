@@ -1,9 +1,16 @@
 /* LifeTop - visual style application */
 import { bgGradients, bgGradientsLight, colorCombos, bgPresets, userConfig } from "./config.js?v=4.0-final";
 
+let colorModeFrame;
+
 export function applyStyles() {
     const root = document.documentElement;
     const isLight = userConfig.colorMode === 'light';
+    const modeChanged = root.dataset.colorMode !== (isLight ? 'light' : 'dark');
+    if (modeChanged) {
+        cancelAnimationFrame(colorModeFrame);
+        root.classList.add('theme-changing');
+    }
     if (root.dataset) {
         root.dataset.colorMode = isLight ? 'light' : 'dark';
     }
@@ -29,46 +36,8 @@ export function applyStyles() {
     const lightPalette = bgGradientsLight[userConfig.bgType] || bgGradientsLight['gradient-blue'];
     const paletteColor = isLight ? lightPalette : darkPalette;
 
-    if (isLight) {
-        root.style.setProperty('--text-color', '#0f1d33');
-        root.style.setProperty('--text-secondary', 'rgba(20, 39, 68, 0.78)');
-        root.style.setProperty('--text-muted', 'rgba(36, 59, 94, 0.64)');
-        root.style.setProperty('--surface-raised', 'rgba(255, 255, 255, 0.80)');
-        root.style.setProperty('--surface-card-hover', 'rgba(255, 255, 255, 0.90)');
-        root.style.setProperty('--surface-soft', 'rgba(15, 29, 51, 0.045)');
-        root.style.setProperty('--glass-bg', 'rgba(255, 255, 255, 0.75)');
-        root.style.setProperty('--input-bg', 'rgba(255, 255, 255, 0.86)');
-        root.style.setProperty('--control-bg', 'rgba(255, 255, 255, 0.78)');
-        root.style.setProperty('--control-border', 'rgba(15, 29, 51, 0.13)');
-        root.style.setProperty('--line-soft', 'rgba(15, 29, 51, 0.11)');
-        root.style.setProperty('--panel-bg', 'rgba(248, 251, 255, 0.95)');
-        root.style.setProperty('--panel-border', 'rgba(15, 29, 51, 0.14)');
-        root.style.setProperty('--glass-shadow', '0 18px 44px rgba(15, 32, 62, 0.10)');
-        root.style.setProperty('--dialog-shadow', '0 24px 60px rgba(15, 32, 62, 0.18)');
-        root.style.setProperty('--inner-highlight', 'inset 0 1px 0 rgba(255, 255, 255, 0.85)');
-        root.style.setProperty('--clock-c', '#0d1b30');
-    } else {
-        root.style.setProperty('--text-color', '#f0f6ff');
-        root.style.setProperty('--text-secondary', 'rgba(226, 238, 255, 0.74)');
-        root.style.setProperty('--text-muted', 'rgba(214, 228, 248, 0.62)');
-        root.style.setProperty('--surface-raised', 'rgba(16, 28, 50, 0.72)');
-        root.style.setProperty('--surface-card-hover', 'rgba(19, 33, 58, 0.76)');
-        root.style.setProperty('--surface-soft', 'rgba(255, 255, 255, 0.045)');
-        root.style.setProperty('--glass-bg', 'rgba(14, 24, 44, 0.62)');
-        root.style.setProperty('--input-bg', 'rgba(7, 14, 28, 0.46)');
-        root.style.setProperty('--control-bg', 'rgba(15, 26, 46, 0.48)');
-        root.style.setProperty('--control-border', 'rgba(216, 232, 255, 0.14)');
-        root.style.setProperty('--line-soft', 'rgba(220, 235, 255, 0.12)');
-        root.style.setProperty('--panel-bg', 'rgba(12, 21, 39, 0.88)');
-        root.style.setProperty('--panel-border', 'rgba(216, 232, 255, 0.16)');
-        root.style.setProperty('--glass-shadow', '0 22px 54px rgba(3, 9, 20, 0.28)');
-        root.style.setProperty('--dialog-shadow', '0 28px 72px rgba(2, 8, 18, 0.45)');
-        root.style.setProperty('--inner-highlight', 'inset 0 1px 0 rgba(255, 255, 255, 0.08)');
-        root.style.setProperty('--clock-c', '#ffffff');
-    }
-
     const background = userConfig.bgImage
-        ? `url("${userConfig.bgImage.replace(/["\\]/g, '\\$&')}") center / cover no-repeat, ${darkPalette}`
+        ? `url("${userConfig.bgImage.replace(/["\\]/g, '\\$&')}") center / cover no-repeat, ${paletteColor}`
         : paletteColor;
     root.style.setProperty('--bg-gradient', background);
     root.style.setProperty('--bg-size', 'cover');
@@ -76,6 +45,11 @@ export function applyStyles() {
     document.getElementById('bg-overlay')?.classList.toggle('has-background-image', hasBgImage);
     document.body?.classList?.toggle('has-background-image', hasBgImage);
     syncColorModeUI(isLight);
+    if (modeChanged) {
+        // Commit the whole palette together, before restoring hover transitions.
+        void root.offsetWidth;
+        colorModeFrame = requestAnimationFrame(() => root.classList.remove('theme-changing'));
+    }
 }
 
 export function syncColorModeUI(isLight = userConfig.colorMode === 'light') {
