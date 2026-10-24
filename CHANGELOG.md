@@ -1,4 +1,4 @@
-# LifeTop ver4.0
+# LifeTop ver5.3
 
 ## 2026-09-26 最終調整（Ver4.0）
 
