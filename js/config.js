@@ -48,28 +48,6 @@ const bgGradients = {
     'gradient-cherry': '#441B26'
 };
 
-const bgGradientsLight = {
-    'gradient-blue': 'linear-gradient(145deg, #dceaf8 0%, #eef5fc 55%, #d6e6f7 100%)',
-    'gradient-dark': 'linear-gradient(145deg, #e5e9df 0%, #f3f5f0 55%, #dde3d5 100%)',
-    'gradient-sunset': 'linear-gradient(145deg, #f7e1de 0%, #fcf0ee 55%, #f3d7d3 100%)',
-    'gradient-aurora': 'linear-gradient(145deg, #daf0e9 0%, #eef9f5 55%, #d1ebe2 100%)',
-    'gradient-cyber': 'linear-gradient(145deg, #d9efe9 0%, #eef9f6 55%, #d3e8df 100%)',
-    'gradient-deepsea': 'linear-gradient(145deg, #e1e8f6 0%, #f2f5fc 55%, #f3dfe7 100%)',
-    'gradient-berry': 'linear-gradient(145deg, #f2e3ec 0%, #faf1f6 55%, #f2e5d9 100%)',
-    'gradient-citrus': 'linear-gradient(145deg, #f6ecd7 0%, #fcf7ec 55%, #f1e3c6 100%)',
-    'gradient-leaf': 'linear-gradient(145deg, #dfefe1 0%, #f0f8f1 55%, #d6ead8 100%)',
-    'gradient-lavender': 'linear-gradient(145deg, #e8e2f6 0%, #f4f1fb 55%, #dfd8f2 100%)',
-    'gradient-cocoa': 'linear-gradient(145deg, #f1e3dc 0%, #faf2ee 55%, #ead8cf 100%)',
-    'gradient-teal': 'linear-gradient(145deg, #daeeef 0%, #eef8f8 55%, #d1e7e9 100%)',
-    'gradient-rose': 'linear-gradient(145deg, #f5e0e7 0%, #fbf0f4 55%, #efd4de 100%)',
-    'gradient-indigo': 'linear-gradient(145deg, #e1e4f6 0%, #f1f3fb 55%, #d8dcf2 100%)',
-    'gradient-plum': 'linear-gradient(145deg, #f0e0ef 0%, #faf0f9 55%, #e9d5e8 100%)',
-    'gradient-matcha': 'linear-gradient(145deg, #dfeee2 0%, #f0f7f1 55%, #d5e8d9 100%)',
-    'gradient-neon': 'linear-gradient(145deg, #d7eff2 0%, #edf9fa 55%, #cde8ec 100%)',
-    'gradient-midnight': 'linear-gradient(145deg, #dde3f4 0%, #eff2fa 55%, #d4dcf0 100%)',
-    'gradient-sunrise': 'linear-gradient(145deg, #f7e5d8 0%, #fcf3ec 55%, #f2dbca 100%)',
-    'gradient-cherry': 'linear-gradient(145deg, #f6dfe5 0%, #fcf0f3 55%, #f0d3db 100%)'
-};
 
 const colorCombos = [
     { name: 'ブルーベリー', bgType: 'gradient-blue', theme: '#2F75A8' },
@@ -368,6 +346,10 @@ let userConfig = {
     colorMode: "dark",
     clock12h: false,
     clockShowSec: false,
+    profileIcon: "person",
+    hideClockBackground: false,
+    searchShape: "pill",
+    reduceMotion: false,
     searchEngine: "google",
     healthLog: {
         meals: {},
@@ -460,10 +442,14 @@ function mergeUserConfig(parsed) {
             : userConfig.fontFamily,
         bgType: Object.hasOwn(bgGradients, parsed.bgType) ? parsed.bgType : userConfig.bgType,
         bgImage: safeBackgroundImage,
-        colorMode: parsed.colorMode === 'light' ? 'light' : 'dark',
+        colorMode: 'dark',
         clock12h: typeof parsed.clock12h === 'boolean' ? parsed.clock12h : userConfig.clock12h,
         clockShowSec: typeof parsed.clockShowSec === 'boolean' ? parsed.clockShowSec : userConfig.clockShowSec,
-        searchEngine: "google",
+        profileIcon: typeof parsed.profileIcon === 'string' && (/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(parsed.profileIcon) || ['person','face','pets','eco','rocket_launch','favorite','star','sports_esports'].includes(parsed.profileIcon)) && parsed.profileIcon.length < 3000000 ? parsed.profileIcon : 'person',
+        hideClockBackground: parsed.hideClockBackground === true,
+        searchShape: ["pill", "rounded", "square"].includes(parsed.searchShape) ? parsed.searchShape : "pill",
+        reduceMotion: parsed.reduceMotion === true,
+        searchEngine: ["google", "bing", "duckduckgo", "yahoo"].includes(parsed.searchEngine) ? parsed.searchEngine : "google",
         calendarEvents: parsed.calendarEvents && typeof parsed.calendarEvents === 'object'
             ? parsed.calendarEvents
             : {},
@@ -471,6 +457,8 @@ function mergeUserConfig(parsed) {
     };
 
     delete userConfig.mode;
+    delete userConfig.clockTransparency;
+    delete userConfig.cardTransparency;
 }
 
 export {
@@ -479,7 +467,6 @@ export {
     themes,
     fontStyles,
     bgGradients,
-    bgGradientsLight,
     colorCombos,
     bgPresets,
     FIXED_BOOKMARKS,

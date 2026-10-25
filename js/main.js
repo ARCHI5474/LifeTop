@@ -1,13 +1,15 @@
-import { applyStyles, renderBgSelector } from "./styles.js?v=4.1.10-light";
+import { initIcons } from './icons.js?v=4.2.6-official';
+import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=4.2.2-polish';
+import { initProfile } from './profile.js?v=4.2.6-official';
+import { initExtraGames } from './extra-games.js?v=4.2.6-official';
+import { applyStyles, renderBgSelector } from "./styles.js?v=4.2-expressive";
 
 /* LifeTop - application entry point */
-import { userConfig } from "./config.js?v=4.0-final";
+import { userConfig } from "./config.js?v=4.2-expressive";
 import { loadData, save } from "./storage.js?v=4.0-final";
 import {
     initPickers,
     setTheme,
-    setColorMode,
-    toggleColorMode,
     setColorCombo,
     setPresetWallpaper,
     setFontFamily,
@@ -18,9 +20,9 @@ import {
     toggleSettings,
     toggleHelp,
     
-} from "./settings.js?v=4.1.10-light";
+} from "./settings.js?v=4.2.5-audit";
 import { updateClock, updateGreeting } from "./clock.js?v=4.0-final";
-import { initSearchSuggestions } from "./search.js?v=4.0-final";
+import { initSearchSuggestions } from "./search.js?v=4.2.5-audit";
 import {
     toggleBookmarkEditMode,
     renderBookmarks,
@@ -39,13 +41,11 @@ import {
     reorderBookmark,
     promptMoveToFolder,
     removeBookmarkFromFolder,
-    filterBookmarks,
-    clearBookmarkFilter,
     deleteBookmark,
     undoDeleteBookmark,
     handleFaviconLoad,
     handleFaviconError
-} from "./bookmarks.js?v=4.0-final";
+} from "./bookmarks.js?v=4.2.6-official";
 import {
     renderTodoList,
     addTodo,
@@ -82,18 +82,23 @@ import {
     initOthelloGame,
     playOthelloMove,
     undoOthelloMove
-} from "./games.js?v=4.0-final";
-import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=4.0-final";
+} from "./games.js?v=4.2.6-official";
+import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=4.2.5-audit";
 import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=4.0-final";
 import { initNews, switchNewsCategory, refreshNews, refreshTrends, switchYoutubeCategory, refreshYoutube } from "./news.js?v=4.0-final";
 
 // HTMLのイベントハンドラーから呼び出す関数
 Object.assign(window, {
+    setAdvancedSetting,
+    resetAdvancedSettings,
     switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer,
     stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap,
     openUsernameSettings() {
         if (!document.getElementById('settings-panel').classList.contains('active')) toggleSettings();
-        document.getElementById('username-input').focus();
+        const body = document.querySelector('#settings-panel .settings-body');
+        const section = document.getElementById('profile-section');
+        body.scrollTop += section.getBoundingClientRect().top - body.getBoundingClientRect().top - 12;
+        document.getElementById('username-input').focus({ preventScroll: true });
     },
     toggleSettings,
     toggleHelp,
@@ -114,8 +119,6 @@ Object.assign(window, {
     playOthelloMove,
     undoOthelloMove,
     setTheme,
-    setColorMode,
-    toggleColorMode,
     setColorCombo,
     setPresetWallpaper,
     setFontFamily,
@@ -139,8 +142,6 @@ Object.assign(window, {
     reorderBookmark,
     promptMoveToFolder,
     removeBookmarkFromFolder,
-    filterBookmarks,
-    clearBookmarkFilter,
     deleteBookmark,
     undoDeleteBookmark,
     handleFaviconLoad,
@@ -165,7 +166,9 @@ Object.assign(window, {
 });
 
 document.addEventListener('keydown', event => {
+    if (event.isComposing || event.keyCode === 229) return;
     if (event.key === 'Escape') {
+        if (document.getElementById('game-rules')?.matches(':popover-open')) return;
         if (document.getElementById('weather-detail-modal')?.classList.contains('active')) {
             closeWeatherDetail();
         } else if (document.getElementById('bookmark-dialog')?.classList.contains('active')) {
@@ -187,6 +190,7 @@ window.addEventListener('DOMContentLoaded', () => {
             .catch(() => {});
     }
 
+    initIcons();
     loadData();
 
     applyStyles();
@@ -198,7 +202,10 @@ window.addEventListener('DOMContentLoaded', () => {
     initGames();
     renderBgSelector();
     initPickers();
+    initProfile();
     initSearchSuggestions();
+    applyAdvancedSettings();
+    initExtraGames();
 
     const bookmarkForm = document.getElementById('bookmark-dialog-form');
     bookmarkForm?.addEventListener('submit', (event) => {

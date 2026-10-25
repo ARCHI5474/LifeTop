@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import { goMove, goScore, initialShogi, shogiTargets, inCheck, hitResult } from '../js/extra-games.js?v=4.2.6-official';
+let b=Array(81).fill(0);b[10]=-1;for(const i of [1,9,11])b[i]=1;
+let next=goMove(b,19,1,null);assert.equal(next[10],0,'surrounded stone is captured');assert.equal(b[10],-1,'illegal-move analysis does not mutate original board');
+b=Array(81).fill(0);for(const i of [1,9,11,19])b[i]=-1;assert.equal(goMove(b,10,1,null),null,'suicide forbidden');
+b=Array(81).fill(0);b[10]=-1;for(const i of [1,9,19])b[i]=1;for(const i of [2,12,20])b[i]=-1;
+next=goMove(b,11,1,null);assert.ok(next);assert.equal(goMove(next,10,-1,b.join(',')),null,'immediate ko recapture forbidden');
+assert.deepEqual(goScore(Array(81).fill(0)),{1:0,'-1':6.5});
+const board=initialShogi();assert.equal(board.filter(Boolean).length,40);assert.deepEqual(shogiTargets(board,54),[45]);assert.equal(inCheck(board,1),false);assert.equal(inCheck(board,-1),false);
+b=Array(81).fill(null);b[76]={t:'K',c:1};b[4]={t:'K',c:-1};b[40]={t:'R',c:-1};assert.equal(inCheck(b,1),true);b[58]={t:'G',c:1};assert.equal(inCheck(b,1),false,'intervening piece blocks rook attack');
+assert.deepEqual(hitResult('0123','0132'),{hit:2,blow:2});assert.deepEqual(hitResult('0123','4567'),{hit:0,blow:0});assert.deepEqual(hitResult('0123','0123'),{hit:4,blow:0});
+console.log('PASS: Go captures, suicide, ko, scoring; shogi setup, moves, check; Hit and Blow scoring');

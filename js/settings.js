@@ -1,6 +1,6 @@
 /* LifeTop - settings panel controls */
-import { colorCombos, bgPresets, fontStyles, userConfig } from "./config.js?v=4.0-final";
-import { applyStyles, renderColorCombos, renderBgPresets, renderBgSelector } from "./styles.js?v=4.1.10-light";
+import { colorCombos, bgPresets, fontStyles, userConfig } from "./config.js?v=4.2-expressive";
+import { applyStyles, renderColorCombos, renderBgPresets, renderBgSelector } from "./styles.js?v=4.2-expressive";
 import { save } from "./storage.js?v=4.0-final";
 import { updateClock, updateGreeting } from "./clock.js?v=4.0-final";
 
@@ -27,7 +27,7 @@ function bindDialogFocusTrap(dialogEl) {
     if (!dialogEl) return;
     dialogEl.addEventListener('keydown', event => {
         if (event.key !== 'Tab') return;
-        const controls = [...event.currentTarget.querySelectorAll('button, input, select, textarea, a[href]')]
+        const controls = [...event.currentTarget.querySelectorAll('button, input, select, textarea, summary, a[href]')]
             .filter(control => !control.disabled && control.getClientRects().length && control.tabIndex >= 0);
         const first = controls[0];
         const last = controls[controls.length - 1];
@@ -72,16 +72,6 @@ export function initPickers() {
     };
     imageUpload.onchange = event => setBackgroundImageFile(event.target.files?.[0]);
     clearImage.onclick = clearBackgroundImage;
-}
-
-export function setColorMode(mode) {
-    userConfig.colorMode = mode === 'light' ? 'light' : 'dark';
-    applyStyles();
-    save();
-}
-
-export function toggleColorMode() {
-    setColorMode(userConfig.colorMode === 'light' ? 'dark' : 'light');
 }
 
 export function setColorCombo(index) {
@@ -226,12 +216,13 @@ export function toggleSettings() {
     const overlay = document.getElementById('settings-overlay');
     const isOpen = panel.classList.toggle('active');
     panel.inert = !isOpen;
+    document.querySelector('[aria-label="Quickパネル"]')?.setAttribute('aria-expanded', String(isOpen));
     overlay?.classList.toggle('active', isOpen);
     document.body.style.overflow = isOpen ? 'hidden' : '';
     if (isOpen) {
         settingsTrigger = document.activeElement;
-        panel.querySelector('button')?.focus();
+        panel.querySelector('button')?.focus({ preventScroll: true });
     } else {
-        settingsTrigger?.focus();
+        settingsTrigger?.focus({ preventScroll: true });
     }
 }

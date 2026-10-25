@@ -3,23 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script>
-        // Restore appearance before stylesheets paint; storage can be unavailable.
-        try {
-            const saved = JSON.parse(localStorage.getItem('lifetop_v1_0_data'));
-            document.documentElement.dataset.colorMode = saved?.colorMode === 'light' ? 'light' : 'dark';
-        } catch {
-            document.documentElement.dataset.colorMode = 'dark';
-        }
-    </script>
+    <script>document.documentElement.dataset.colorMode = 'dark';</script>
     <title>LifeTop│いつものネットを、ここから始めよう。</title>
     <meta name="description" content="Google検索、よく使うサイト、タスク、メモ、時計をひとつに。毎日に役立つスタートページ、LifeTop。">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@500;700&family=Comfortaa:wght@400;700&family=Courier+Prime&family=DotGothic16&family=M+PLUS+1+Code&family=Oswald:wght@300;400;700&family=Outfit:wght@300;400;500;700;900&family=Righteous&family=Roboto+Mono:wght@200;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Material Symbols Outlined -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="css/style.css?v=4.1.10-light">
+    <link rel="preload" href="icons/material/material-symbols-outlined.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="stylesheet" href="css/style.css?v=4.2.6-official">
 </head>
 <body id="top">
 
@@ -40,16 +31,8 @@
         <span class="brand-name">LifeTop</span>
     </a>
     <div class="header-left">
-        <!-- 天気ウィジェット -->
-        <button type="button" id="weather-widget" class="weather-widget animate-fade-in" onclick="showWeatherDetail()" title="天気の詳細を表示" aria-label="天気の詳細を表示">
-            <span class="material-symbols-outlined" id="weather-icon" aria-hidden="true">filter_drama</span>
-            <div class="weather-info">
-                <span id="weather-temp">0°C</span>
-                <span id="weather-desc">読込中...</span>
-            </div>
-        </button>
         <!-- ユーザー名バッジ（設定へのショートカット付き） -->
-        <button type="button" class="user-badge animate-fade-in" id="user-badge" onclick="openUsernameSettings()" title="ユーザー名設定を開く" aria-label="ユーザー名設定を開く">
+        <button type="button" class="user-badge animate-fade-in" id="user-badge" onclick="openUsernameSettings()" title="ユーザープロフィールを開く" aria-label="ユーザープロフィールを開く">
             <span class="user-avatar" aria-hidden="true">
                 <span class="material-symbols-outlined">person</span>
             </span>
@@ -60,7 +43,7 @@
         <!-- ミニゲームトリガー（旧ヘルプボタン位置） -->
         <button type="button" class="icon-btn game-trigger-btn animate-fade-in" id="game-open-btn" onclick="toggleGameModal()" title="ミニゲーム" aria-label="ミニゲームを開く"><span class="material-symbols-outlined" aria-hidden="true">sports_esports</span></button>
         <!-- 設定トリガー -->
-        <button type="button" class="icon-btn animate-fade-in" onclick="toggleSettings()" title="Quickパネル" aria-label="Quickパネル"><span class="material-symbols-outlined" aria-hidden="true">settings</span></button>
+        <button type="button" class="icon-btn animate-fade-in" onclick="toggleSettings()" title="Quickパネル" aria-label="Quickパネル" aria-controls="settings-panel" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">settings</span></button>
     </div>
 </header>
 
@@ -90,17 +73,20 @@
                     <span>オセロ</span>
                 </button>
             </div>
-            <button class="icon-btn" type="button" onclick="toggleGameModal(false)" title="ゲームを閉じる" aria-label="ゲームを閉じる">
+            <div class="game-header-actions"><button type="button" class="icon-btn" popovertarget="game-rules" aria-label="遊び方を表示" title="遊び方"><span class="material-symbols-outlined" aria-hidden="true">info</span></button>
+            <button class="icon-btn close-action" type="button" onclick="toggleGameModal(false)" title="ゲームを閉じる" aria-label="ゲームを閉じる">
                 <span class="material-symbols-outlined" aria-hidden="true">close</span>
-            </button>
+            </button></div>
         </div>
 
+        <div id="game-rules" popover class="game-rules"><h3>遊び方</h3><p id="game-rules-text"></p><button type="button" class="tonal-btn" popovertarget="game-rules" popovertargetaction="hide">閉じる</button></div>
         <div class="game-modal-body">
             <!-- 1. ヘビゲーム (Snake) -->
+            <div data-extra-games></div>
             <div class="game-pane active" data-game-pane="snake" role="tabpanel">
                 <div class="game-layout">
                     <div class="game-stage-wrap snake-stage-wrap">
-                        <canvas id="snake-canvas" width="520" height="520" aria-label="ヘビゲーム画面"></canvas>
+                        <canvas id="snake-canvas" tabindex="0" aria-describedby="snake-status-msg" width="520" height="520" aria-label="ヘビゲーム画面"></canvas>
                     </div>
                     <div class="game-sidebar">
                         <div class="game-stats-grid">
@@ -153,7 +139,7 @@
             <div class="game-pane" data-game-pane="puzzle" role="tabpanel" hidden>
                 <div class="game-layout">
                     <div class="game-stage-wrap puzzle-stage-wrap">
-                        <div class="puzzle-board" id="puzzle-board" aria-label="スライドパズル盤面"></div>
+                        <div class="puzzle-board" id="puzzle-board" tabindex="0" role="group" aria-label="スライドパズル盤面"></div>
                     </div>
                     <div class="game-sidebar">
                         <div class="game-stats-grid">
@@ -203,21 +189,21 @@
             <div class="game-pane" data-game-pane="othello" role="tabpanel" hidden>
                 <div class="game-layout">
                     <div class="game-stage-wrap othello-stage-wrap">
-                        <div class="othello-board" id="othello-board" aria-label="オセロ盤面"></div>
+                        <div class="othello-board" id="othello-board" tabindex="0" role="group" aria-label="オセロ盤面"></div>
                     </div>
                     <div class="game-sidebar">
                         <div class="othello-score-card">
                             <div class="othello-score-side">
                                 <span class="othello-disc-icon disc-black"></span>
                                 <div>
-                                    <span class="game-stat-label">BLACK (先手)</span>
+                                    <span class="game-stat-label">黒（先手）</span>
                                     <strong class="game-stat-val" id="othello-black-count">2</strong>
                                 </div>
                             </div>
                             <div class="othello-score-side">
                                 <span class="othello-disc-icon disc-white"></span>
                                 <div>
-                                    <span class="game-stat-label">WHITE (後手)</span>
+                                    <span class="game-stat-label">白（後手）</span>
                                     <strong class="game-stat-val" id="othello-white-count">2</strong>
                                 </div>
                             </div>
@@ -239,8 +225,8 @@
                         <div class="game-option-group">
                             <span class="game-option-label">あなたの手番（AI対戦時）</span>
                             <div class="game-segmented">
-                                <button type="button" class="game-seg-btn active" data-othello-color="1" aria-pressed="true" onclick="setOthelloPlayerColor(1)">⚫ 黒（先手）</button>
-                                <button type="button" class="game-seg-btn" data-othello-color="-1" aria-pressed="false" onclick="setOthelloPlayerColor(-1)">⚪ 白（後手）</button>
+                                <button type="button" class="game-seg-btn active" data-othello-color="1" aria-pressed="true" onclick="setOthelloPlayerColor(1)">黒（先手）</button>
+                                <button type="button" class="game-seg-btn" data-othello-color="-1" aria-pressed="false" onclick="setOthelloPlayerColor(-1)">白（後手）</button>
                             </div>
                         </div>
 
@@ -258,7 +244,7 @@
                             <strong id="othello-record">0勝 0敗 0分</strong>
                         </div>
 
-                        <p class="game-status-banner" id="othello-status-msg" role="status">⚫ 黒の番 — 置ける場所に裏返せる枚数が表示されます</p>
+                        <p class="game-status-banner" id="othello-status-msg" role="status">黒の番 — 置ける場所に裏返せる枚数が表示されます</p>
                     </div>
                 </div>
             </div>
@@ -269,9 +255,15 @@
 <!-- メインダッシュボード -->
 <div class="dashboard-content">
     <!-- ヒーローエリア（時計と検索） -->
+    <section class="weather-summary-row" aria-label="現在の天気">
+        <button type="button" id="weather-widget" class="weather-summary-card glass-card" onclick="showWeatherDetail()" title="天気の詳細を表示" aria-label="天気の詳細を表示">
+            <span class="material-symbols-outlined weather-summary-icon" id="weather-icon" aria-hidden="true">filter_drama</span>
+            <span class="weather-summary-copy"><span class="weather-summary-label">現在の天気</span><span class="weather-summary-values"><strong id="weather-temp">--°C</strong><span id="weather-desc">読込中...</span></span></span>
+            <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+        </button>
+    </section>
     <section class="hero-section">
         <div class="hero-copy">
-            <p class="hero-eyebrow"><span></span> YOUR DAY, IN ONE PLACE</p>
             <div id="date-display" class="animate-fade-in" style="animation-delay: 0.1s;">2026年7月10日 (金)</div>
             <div id="greeting" class="animate-fade-in" style="animation-delay: 0.2s;">ようこそ</div>
             <div id="clock-container" class="animate-clock">
@@ -284,7 +276,7 @@
             <form action="https://www.google.com/search" method="get" class="search-form" id="search-form">
                 <span class="material-symbols-outlined search-icon" aria-hidden="true">search</span>
                 <input id="search-input" type="search" name="q" class="search-bar" placeholder="Googleで検索" aria-label="検索キーワード" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions">
-                <button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="検索キーワードをクリア" title="クリア" hidden><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+                <button type="button" id="search-clear-btn" class="search-clear-btn close-action" aria-label="検索キーワードをクリア" title="クリア" hidden><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
                 <button type="submit" class="search-button" aria-label="Googleで検索"><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></button>
             </form>
             <div id="search-suggestions" class="search-suggestions" role="listbox" aria-label="検索候補"></div>
@@ -300,13 +292,6 @@
                 <div class="card-header bookmark-card-header">
                     <h3><span class="material-symbols-outlined" aria-hidden="true">bookmarks</span> Quickアクセス</h3>
                     <div class="bookmark-header-controls">
-                        <div class="bookmark-filter-wrap">
-                            <span class="material-symbols-outlined bookmark-filter-icon" aria-hidden="true">filter_list</span>
-                            <input type="search" id="bookmark-filter-input" class="bookmark-filter-input" placeholder="サイトを絞り込み" aria-label="ブックマークを絞り込み" oninput="filterBookmarks(this.value)">
-                            <button type="button" id="bookmark-filter-clear" class="bookmark-filter-clear" onclick="clearBookmarkFilter()" aria-label="絞り込みをクリア" hidden>
-                                <span class="material-symbols-outlined" aria-hidden="true">close</span>
-                            </button>
-                        </div>
                         <button type="button" class="icon-btn-small" id="edit-bookmarks-btn" aria-pressed="false" onclick="toggleBookmarkEditMode()" title="ブックマークを編集" aria-label="ブックマークを編集">
                             <span class="material-symbols-outlined" aria-hidden="true">edit</span>
                         </button>
@@ -566,7 +551,7 @@
             <p class="help-kicker">CUSTOMIZE</p>
             <h2 id="settings-title">Quickパネル</h2>
         </div>
-        <button type="button" class="icon-btn" aria-label="設定を閉じる" title="閉じる" onclick="toggleSettings()"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+        <button type="button" class="icon-btn close-action" aria-label="設定を閉じる" title="閉じる" onclick="toggleSettings()"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
     </div>
 
     <div class="settings-body">
@@ -577,24 +562,23 @@
         </div>
 
         <!-- ユーザー名設定 -->
-        <div class="settings-section">
-            <label class="settings-label">ユーザー名</label>
-            <input type="text" id="username-input" class="settings-input" placeholder="ゲスト" maxlength="20" oninput="saveUsername(this.value)">
-        </div>
-
-        <!-- 外観モード（ダーク / ライト） -->
-        <div class="settings-section">
-            <label class="settings-label">外観モード</label>
-            <div class="color-mode-switch" id="color-mode-switch" role="group" aria-label="外観モードの切り替え">
-                <button type="button" class="color-mode-btn active" data-color-mode-btn="dark" aria-pressed="true" onclick="setColorMode('dark')">
-                    <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
-                    <span>ダーク</span>
-                </button>
-                <button type="button" class="color-mode-btn" data-color-mode-btn="light" aria-pressed="false" onclick="setColorMode('light')">
-                    <span class="material-symbols-outlined" aria-hidden="true">light_mode</span>
-                    <span>ライト</span>
-                </button>
-            </div>
+        <div class="settings-section" id="profile-section">
+            <h3 class="settings-label">ユーザープロフィール</h3>
+            <div class="profile-preview"><span class="user-avatar profile-avatar" id="profile-avatar-preview" aria-hidden="true"></span><div class="profile-preview-copy"><span class="settings-help">現在のプロフィール</span><strong id="profile-name-preview">ゲスト</strong></div></div>
+            <fieldset class="profile-field"><legend>名前を変更</legend>
+                <label for="username-input">表示するユーザー名</label>
+                <input type="text" id="username-input" class="settings-input" placeholder="例：たろう" maxlength="20" aria-describedby="profile-name-help" oninput="saveUsername(this.value)">
+                <p id="profile-name-help" class="settings-help">ヘッダーに表示する名前です。20文字まで入力でき、自動保存されます。</p>
+            </fieldset>
+            <fieldset class="profile-field"><legend>アイコンを変更</legend>
+                <p class="settings-help">下から選ぶか、お好きな画像を使えます。</p>
+                <div id="profile-icon-picker" class="profile-icon-picker" role="group" aria-label="プロフィールアイコン"></div>
+                <button type="button" class="tonal-btn" id="profile-icon-choose">写真・画像を選ぶ</button>
+                <input type="file" id="profile-icon-upload" accept="image/png,image/jpeg,image/webp" hidden>
+                <p class="settings-help">PNG・JPEG・WebP／2MBまで。中央を正方形に切り抜きます。</p>
+                <button type="button" class="text-btn" id="profile-icon-reset">標準アイコンに戻す</button>
+                <p id="profile-icon-status" class="settings-help" role="status">選んだアイコンは自動保存されます。</p>
+            </fieldset>
         </div>
 
         <!-- カラーコンビ -->
@@ -628,17 +612,27 @@
                 <label for="clock-12h-toggle">12時間表記</label>
                 <label class="switch"><input type="checkbox" id="clock-12h-toggle" onchange="toggleClock12h(this.checked)"><span class="slider" aria-hidden="true"></span></label>
             </div>
-            <div class="toggle-wrapper">
-                <label for="clock-show-sec-toggle">秒数を表示</label>
-                <label class="switch"><input type="checkbox" id="clock-show-sec-toggle" onchange="toggleClockSec(this.checked)"><span class="slider" aria-hidden="true"></span></label>
-            </div>
+
         </div>
+
 
         <!-- フォントスタイル -->
         <div class="settings-section">
             <label class="settings-label">時計フォント</label>
             <div class="picker font-picker" id="font-styles"></div>
         </div>
+        <details class="settings-section advanced-settings">
+            <summary class="settings-label">高度な設定</summary>
+            <div class="advanced-content">
+                <div class="toggle-wrapper"><label for="advanced-hideClockBackground">時計エリアの背景を消す</label><label class="switch"><input type="checkbox" role="switch" id="advanced-hideClockBackground" onchange="setAdvancedSetting('hideClockBackground',this.checked)"><span class="slider" aria-hidden="true"></span></label></div>
+                <div class="toggle-wrapper"><label for="clock-show-sec-toggle">時計の秒数表示</label><label class="switch"><input type="checkbox" role="switch" id="clock-show-sec-toggle" onchange="toggleClockSec(this.checked)"><span class="slider" aria-hidden="true"></span></label></div>
+                <div class="toggle-wrapper"><label for="advanced-reduceMotion">アニメーションを減らす</label><label class="switch"><input type="checkbox" role="switch" id="advanced-reduceMotion" onchange="setAdvancedSetting('reduceMotion',this.checked)"><span class="slider" aria-hidden="true"></span></label></div>
+                <div class="setting-choice"><h4 class="setting-choice-label" id="label-searchShape">検索枠の形状</h4><div id="advanced-searchShape" class="choice-group shape-choices" role="radiogroup" aria-labelledby="label-searchShape"><label class="choice-option"><input type="radio" name="searchShape" value="pill" onchange="setAdvancedSetting('searchShape',this.value)"><span class="choice-content"><span class="shape-preview shape-pill" aria-hidden="true"></span><span>カプセル</span><span class="choice-check" aria-hidden="true"></span></span></label><label class="choice-option"><input type="radio" name="searchShape" value="rounded" onchange="setAdvancedSetting('searchShape',this.value)"><span class="choice-content"><span class="shape-preview shape-rounded" aria-hidden="true"></span><span>角丸</span><span class="choice-check" aria-hidden="true"></span></span></label><label class="choice-option"><input type="radio" name="searchShape" value="square" onchange="setAdvancedSetting('searchShape',this.value)"><span class="choice-content"><span class="shape-preview shape-square" aria-hidden="true"></span><span>四角</span><span class="choice-check" aria-hidden="true"></span></span></label></div></div>
+                <div class="setting-choice"><h4 class="setting-choice-label" id="label-searchEngine">検索エンジン</h4><div id="advanced-searchEngine" class="choice-group engine-choices" role="radiogroup" aria-labelledby="label-searchEngine"><label class="choice-option"><input type="radio" name="searchEngine" value="google" onchange="setAdvancedSetting('searchEngine',this.value)"><span class="choice-content"><span>Google</span><span class="choice-check" aria-hidden="true"></span></span></label><label class="choice-option"><input type="radio" name="searchEngine" value="bing" onchange="setAdvancedSetting('searchEngine',this.value)"><span class="choice-content"><span>Bing</span><span class="choice-check" aria-hidden="true"></span></span></label><label class="choice-option"><input type="radio" name="searchEngine" value="duckduckgo" onchange="setAdvancedSetting('searchEngine',this.value)"><span class="choice-content"><span>DuckDuckGo</span><span class="choice-check" aria-hidden="true"></span></span></label><label class="choice-option"><input type="radio" name="searchEngine" value="yahoo" onchange="setAdvancedSetting('searchEngine',this.value)"><span class="choice-content"><span>Yahoo! JAPAN</span><span class="choice-check" aria-hidden="true"></span></span></label></div></div>
+                <button type="button" class="tonal-btn" id="advanced-reset" onclick="resetAdvancedSettings()"><span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>デフォルトに戻す</button>
+                <p class="settings-help" id="advanced-reset-status" role="status">高度な設定の項目だけを初期値に戻します。</p>
+            </div>
+        </details>
     </div>
 </div>
 
@@ -653,7 +647,7 @@
                 <p class="help-kicker">TODAY'S WEATHER</p>
                 <h2 id="weather-modal-title">天気の詳細</h2>
             </div>
-            <button type="button" class="icon-btn weather-modal-close" onclick="closeWeatherDetail()" title="閉じる" aria-label="天気の詳細を閉じる">
+            <button type="button" class="icon-btn weather-modal-close close-action" onclick="closeWeatherDetail()" title="閉じる" aria-label="天気の詳細を閉じる">
                 <span class="material-symbols-outlined" aria-hidden="true">close</span>
             </button>
         </div>
@@ -671,7 +665,7 @@
                 <p class="help-kicker">QUICK ACCESS</p>
                 <h3 id="bookmark-dialog-title">Quickアクセスを追加</h3>
             </div>
-            <button type="button" class="icon-btn" onclick="closeBookmarkDialog()" title="閉じる" aria-label="閉じる">
+            <button type="button" class="icon-btn close-action" onclick="closeBookmarkDialog()" title="閉じる" aria-label="閉じる">
                 <span class="material-symbols-outlined" aria-hidden="true">close</span>
             </button>
         </div>
@@ -690,7 +684,7 @@
             </label>
             <label id="bookmark-url-field-wrap">
                 <span>URL</span>
-                <input id="bookmark-url-input" type="url" placeholder="https://example.com" required>
+                <input id="bookmark-url-input" type="text" inputmode="url" autocomplete="url" placeholder="例：example.com" aria-describedby="bookmark-dialog-error" required>
             </label>
             <label id="bookmark-folder-select-wrap" hidden>
                 <span>保存先フォルダ</span>
@@ -698,6 +692,7 @@
                     <option value="">なし（メイン一覧）</option>
                 </select>
             </label>
+            <p id="bookmark-dialog-error" class="form-error" role="alert"></p>
             <div class="popup-modal-actions">
                 <button type="button" class="secondary-btn" onclick="closeBookmarkDialog()">キャンセル</button>
                 <button type="submit" class="primary-btn">保存する</button>
@@ -706,7 +701,7 @@
     </div>
 </div>
 
-<script type="module" src="./js/main.js?v=4.1.10-light"></script>
+<script type="module" src="./js/main.js?v=4.2.6-official"></script>
 
 
 </body>

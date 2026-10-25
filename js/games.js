@@ -51,17 +51,28 @@ export function toggleGameModal(forceState) {
             modal.querySelector('.game-tab-btn.active')?.focus({ preventScroll: true });
         }, 40);
     } else {
+        document.getElementById('game-rules')?.hidePopover();
         pauseSnakeGame();
         stopPuzzleTimer();
         if (gameModalTrigger?.focus) {
-            gameModalTrigger.focus();
+            gameModalTrigger.focus({ preventScroll: true });
         }
     }
 }
 
 export function switchGameTab(gameId) {
-    if (!['snake', 'puzzle', 'othello'].includes(gameId)) return;
+    if (!['snake', 'puzzle', 'othello', 'go', 'shogi', 'hitblow'].includes(gameId)) return;
     activeGame = gameId;
+    const rules = {
+        snake: '方向キー・WASDまたは画面の方向ボタンで操作します。エサを集め、壁や自分の体を避けましょう。スペースで一時停止。',
+        puzzle: '数字を左上から順に並べます。空白と同じ行・列のタイルを押すとまとめてスライドできます。',
+        othello: '相手の石を挟んで裏返します。置ける場所に表示される数字は裏返せる枚数です。黒が先手、置けないときは自動でパスします。',
+        go: '9路盤の2人対戦。石を囲んで取り合います。コウ・自殺手は禁止。連続2回のパスで終局し中国式の面積で計算します（白コミ6.5目）。死石は終局前に取り切ってください。',
+        shogi: '駒と移動先を選びます。持ち駒を選ぶと盤に打てます。成り・王手・二歩・打ち歩詰めを判定します。入玉時は相談して終局してください。',
+        hitblow: '重複しない4桁を10回以内に当てます。数字と位置が一致するとHit、数字だけ一致するとBlowです。先頭の0も使えます。'
+    };
+    const ruleText = document.getElementById('game-rules-text');
+    if (ruleText) ruleText.textContent = rules[gameId];
 
     if (gameId !== 'snake') pauseSnakeGame();
 
@@ -228,21 +239,6 @@ export function setSnakeDirection(dirName) {
     }
 }
 
-function addSnakeParticles(gridX, gridY, color) {
-    const cx = (gridX + 0.5) * SNAKE_CELL;
-    const cy = (gridY + 0.5) * SNAKE_CELL;
-    for (let i = 0; i < 8; i++) {
-        const angle = (Math.PI * 2 * i) / 8;
-        snakeState.particles.push({
-            x: cx,
-            y: cy,
-            vx: Math.cos(angle) * 4,
-            vy: Math.sin(angle) * 4,
-            alpha: 1,
-            color
-        });
-    }
-}
 
 function stepSnake() {
     if (!snakeState.running || snakeState.paused || snakeState.gameOver) return;
@@ -273,7 +269,6 @@ function stepSnake() {
 
     if (nx === snakeState.food.x && ny === snakeState.food.y) {
         snakeState.score += 10;
-        addSnakeParticles(nx, ny, '#f43f5e');
         if (snakeState.score > (gameStats.snakeBest[snakeState.mode] || 0)) {
             gameStats.snakeBest[snakeState.mode] = snakeState.score;
             saveGameStats();
@@ -285,7 +280,6 @@ function stepSnake() {
         scheduleSnakeTick();
     } else if (snakeState.bonusFood && nx === snakeState.bonusFood.x && ny === snakeState.bonusFood.y) {
         snakeState.score += 30;
-        addSnakeParticles(nx, ny, '#facc15');
         snakeState.bonusFood = null;
         if (snakeState.score > (gameStats.snakeBest[snakeState.mode] || 0)) {
             gameStats.snakeBest[snakeState.mode] = snakeState.score;
@@ -349,7 +343,7 @@ function updateSnakeUI() {
             statusEl.textContent = '一時停止中（スペースキーまたはボタンで再開）';
         } else if (snakeState.running) {
             statusEl.textContent = snakeState.bonusFood
-                ? `⭐ ボーナスターゲット出現中！（残り${snakeState.bonusFood.ticksLeft}）`
+                ? `ボーナスターゲット出現中！（残り${snakeState.bonusFood.ticksLeft}）`
                 : '矢印キー / WASD / スワイプで操作';
         } else {
             statusEl.textContent = 'スタートまたは方向キーを押して開始';
@@ -726,7 +720,7 @@ function updatePuzzleStatsUI() {
 
     if (statusEl) {
         if (puzzleState.solved) {
-            statusEl.textContent = `🎉 クリアおめでとうございます！ ${puzzleState.moves}手・${formatGameTime(puzzleState.seconds)}で完成！`;
+            statusEl.textContent = `クリアおめでとうございます！ ${puzzleState.moves}手・${formatGameTime(puzzleState.seconds)}で完成！`;
         } else {
             const total = puzzleState.size * puzzleState.size - 1;
             const correctCount = puzzleState.tiles.filter((v, i) => v !== 0 && v === i + 1).length;
@@ -741,6 +735,7 @@ function renderPuzzleBoard() {
     const size = puzzleState.size;
     board.style.setProperty('--puzzle-size', String(size));
 
+    const keepBoardFocus = board.contains(document.activeElement);
     board.innerHTML = puzzleState.tiles.map((val, idx) => {
         if (val === 0) {
             return `<div class="puzzle-tile is-blank" aria-hidden="true"></div>`;
@@ -757,6 +752,7 @@ function renderPuzzleBoard() {
             </button>
         `;
     }).join('');
+    if (keepBoardFocus) board.focus({ preventScroll: true });
 }
 
 // =========================================================
@@ -816,6 +812,7 @@ export function setOthelloPlayerColor(color) {
 }
 
 export function initOthelloGame() {
+    othelloRevision++;
     othelloState.initialized = true;
     othelloState.board = Array.from({ length: 8 }, () => Array(8).fill(0));
     othelloState.board[3][3] = -1;
@@ -933,12 +930,15 @@ function advanceOthelloTurn() {
     finishOthelloGame();
 }
 
+let othelloRevision = 0;
+
 function triggerOthelloAIMove() {
+    const revision = othelloRevision;
     othelloState.aiThinking = true;
     renderOthelloBoard();
 
     setTimeout(() => {
-        if (othelloState.gameOver) return;
+        if (othelloState.gameOver || revision !== othelloRevision) return;
         const aiColor = othelloState.turn;
         const moves = getValidMoves(othelloState.board, aiColor);
         othelloState.aiThinking = false;
@@ -1092,13 +1092,13 @@ function renderOthelloBoard() {
 
     if (statusEl) {
         if (othelloState.gameOver) {
-            if (black > white) statusEl.textContent = `🏆 ゲーム終了！ 黒 ${black} - 白 ${white} で【黒の勝ち】です！`;
-            else if (white > black) statusEl.textContent = `🏆 ゲーム終了！ 黒 ${black} - 白 ${white} で【白の勝ち】です！`;
-            else statusEl.textContent = `🤝 ゲーム終了！ 黒 ${black} - 白 ${white} で【引き分け】です！`;
+            if (black > white) statusEl.textContent = `ゲーム終了！ 黒 ${black} - 白 ${white} で【黒の勝ち】です！`;
+            else if (white > black) statusEl.textContent = `ゲーム終了！ 黒 ${black} - 白 ${white} で【白の勝ち】です！`;
+            else statusEl.textContent = `ゲーム終了！ 黒 ${black} - 白 ${white} で【引き分け】です！`;
         } else if (othelloState.aiThinking) {
-            statusEl.textContent = '🤖 AIが思考中です…';
+            statusEl.textContent = 'AIが思考中です…';
         } else {
-            const turnLabel = othelloState.turn === 1 ? '⚫ 黒の番' : '⚪ 白の番';
+            const turnLabel = othelloState.turn === 1 ? '黒の番' : '白の番';
             const suffix = othelloState.statusNote ? ` （${othelloState.statusNote}）` : ` — 置ける場所: ${validMoves.length}ヶ所`;
             statusEl.textContent = `${turnLabel}${suffix}`;
         }
@@ -1131,7 +1131,9 @@ function renderOthelloBoard() {
             `);
         }
     }
+    const keepBoardFocus = boardEl.contains(document.activeElement);
     boardEl.innerHTML = cellsHtml.join('');
+    if (keepBoardFocus) boardEl.focus({ preventScroll: true });
 }
 
 // =========================================================
@@ -1183,7 +1185,9 @@ export function initGames() {
         const modal = document.getElementById('game-modal');
         if (!modal || !modal.classList.contains('active')) return;
 
+        if (event.isComposing || event.target.closest?.('input, textarea, select, [contenteditable="true"]')) return;
         if (activeGame === 'snake') {
+            if (event.key === ' ' && event.target.closest?.('button')) return;
             const key = event.key;
             if (['ArrowUp', 'w', 'W'].includes(key)) {
                 event.preventDefault();

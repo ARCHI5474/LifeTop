@@ -1,5 +1,5 @@
 /* LifeTop - Rich Text Memo with formatting toolbar, auto-save, copy & export */
-import { userConfig } from "./config.js?v=4.0-final";
+import { userConfig } from "./config.js?v=4.2-expressive";
 import { save } from "./storage.js?v=4.0-final";
 
 const ALLOWED_TAGS = new Set([

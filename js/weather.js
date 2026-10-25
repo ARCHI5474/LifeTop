@@ -168,7 +168,7 @@ export function showWeatherDetail() {
         modal.inert = false;
         modal.classList.add('active');
         if (document.body?.style) document.body.style.overflow = 'hidden';
-        modal.querySelector('.weather-modal-close')?.focus();
+        modal.querySelector('.weather-modal-close')?.focus({ preventScroll: true });
         fetchWeather();
         return;
     }
@@ -186,7 +186,7 @@ export function showWeatherDetail() {
         modal.inert = false;
         modal.classList.add('active');
         if (document.body?.style) document.body.style.overflow = 'hidden';
-        modal.querySelector('.weather-modal-close')?.focus();
+        modal.querySelector('.weather-modal-close')?.focus({ preventScroll: true });
         return;
     }
 
@@ -330,7 +330,7 @@ export function showWeatherDetail() {
     modal.inert = false;
     modal.classList.add('active');
     if (document.body?.style) document.body.style.overflow = 'hidden';
-    modal.querySelector('.weather-modal-close')?.focus();
+    modal.querySelector('.weather-modal-close')?.focus({ preventScroll: true });
 }
 
 function formatTimeStr(isoStr) {
@@ -357,7 +357,7 @@ export function closeWeatherDetail() {
         modal.classList.remove('active');
         modal.inert = true;
         if (document.body?.style) document.body.style.overflow = '';
-        if (weatherTrigger?.isConnected) weatherTrigger.focus();
+        if (weatherTrigger?.isConnected) weatherTrigger.focus({ preventScroll: true });
         weatherTrigger = null;
     }
 }

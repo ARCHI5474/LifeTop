@@ -1,5 +1,5 @@
 /* LifeTop - bookmarks (with folder management, drag-and-drop & touch reordering) */
-import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=4.0-final";
+import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=4.2-expressive";
 import { save } from "./storage.js?v=4.0-final";
 
 let bookmarkEditMode = false;
@@ -9,7 +9,6 @@ let dialogMode = "link"; // "link" | "folder"
 let draggedBookmarkIndex = null;
 let bookmarkDialogTrigger = null;
 let deletedBookmark = null;
-let bookmarkFilterQuery = "";
 const FAVICON_CACHE_KEY = "lifetop_favicon_cache";
 const FAVICON_CACHE_DAYS = 30;
 
@@ -292,24 +291,13 @@ export function renderBookmarks() {
         isFixed = true;
     }
 
-    const filterNorm = bookmarkFilterQuery.trim().toLowerCase();
-    const indexedEntries = bookmarksToRender.map((item, originalIndex) => ({ item, originalIndex }))
-        .filter(({ item }) => {
-            if (!filterNorm) return true;
-            const titleMatch = String(item?.title || '').toLowerCase().includes(filterNorm);
-            const urlMatch = String(item?.url || '').toLowerCase().includes(filterNorm);
-            const childMatch = item?.type === 'folder' && Array.isArray(item.children) &&
-                item.children.some(ch => String(ch?.title || '').toLowerCase().includes(filterNorm) || String(ch?.url || '').toLowerCase().includes(filterNorm));
-            return titleMatch || urlMatch || childMatch;
-        });
+    const indexedEntries = bookmarksToRender.map((item, originalIndex) => ({ item, originalIndex }));
 
     if (indexedEntries.length === 0) {
-        const emptyText = filterNorm
-            ? `「${escapeHtml(bookmarkFilterQuery.trim())}」に一致する項目は見つかりませんでした。`
-            : activeFolder
+        const emptyText = activeFolder
                 ? `「${escapeHtml(activeFolder.title)}」フォルダはまだ空です。「サイトを追加」から登録できます。`
                 : `「サイトを追加」や「フォルダを作成」から、よく使うサイトを整理できます。`;
-        grid.innerHTML = `<div class="bookmark-empty"><span class="material-symbols-outlined" aria-hidden="true">${filterNorm ? 'search_off' : activeFolder ? 'folder_open' : 'bookmark_add'}</span><span>${emptyText}</span></div>`;
+        grid.innerHTML = `<div class="bookmark-empty"><span class="material-symbols-outlined" aria-hidden="true">${activeFolder ? 'folder_open' : 'bookmark_add'}</span><span>${emptyText}</span></div>`;
         return;
     }
 
@@ -348,8 +336,8 @@ export function renderBookmarks() {
             const children = Array.isArray(b.children) ? b.children : [];
             const previewLetters = children.slice(0, 4).map(ch => escapeHtml(String(ch?.title || '•')[0])).join('');
             const deleteBtnHtml = `
-                <button type="button" class="bookmark-delete-btn" aria-label="フォルダ「${escapeHtml(folderTitle)}」を削除" onclick="deleteBookmark(${index}, event)">
-                    <span class="material-symbols-outlined" aria-hidden="true" style="font-size:14px">close</span>
+                <button type="button" class="bookmark-delete-btn close-action" aria-label="フォルダ「${escapeHtml(folderTitle)}」を削除" onclick="deleteBookmark(${index}, event)">
+                    <span class="material-symbols-outlined" aria-hidden="true">close</span>
                 </button>
             `;
             return `
@@ -394,8 +382,8 @@ export function renderBookmarks() {
         : `<span class="icon-letter">${escapeHtml(title[0])}</span>`;
             
         const deleteBtnHtml = isFixed ? "" : `
-            <button type="button" class="bookmark-delete-btn" aria-label="${escapeHtml(title)}を削除" onclick="deleteBookmark(${index}, event)">
-                <span class="material-symbols-outlined" aria-hidden="true" style="font-size:14px">close</span>
+            <button type="button" class="bookmark-delete-btn close-action" aria-label="${escapeHtml(title)}を削除" onclick="deleteBookmark(${index}, event)">
+                <span class="material-symbols-outlined" aria-hidden="true">close</span>
             </button>
         `;
 
@@ -528,18 +516,12 @@ export function switchBookmarkTab(cat) {
         }
         if (nextScroll !== null) {
             if (typeof tabs.scrollTo === 'function') {
-                tabs.scrollTo({ left: nextScroll, behavior: 'smooth' });
+                tabs.scrollTo({ left: nextScroll, behavior: userConfig.reduceMotion || window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ? 'auto' : 'smooth' });
             } else {
                 tabs.scrollLeft = nextScroll;
             }
         }
         syncTabScrollButtons(tabs);
-    }
-    const grid = document.getElementById('bookmark-grid');
-    if (grid) {
-        grid.classList.remove('tab-switching');
-        void grid.offsetWidth;
-        grid.classList.add('tab-switching');
     }
 }
 
@@ -589,7 +571,7 @@ function syncDialogModeUI(mode) {
             if (folders.length > 0) {
                 folderSelectWrap.hidden = false;
                 folderSelect.innerHTML = `<option value="">なし（メイン一覧）</option>` +
-                    folders.map(f => `<option value="${escapeHtml(f.id)}">📁 ${escapeHtml(f.title)}</option>`).join('');
+                    folders.map(f => `<option value="${escapeHtml(f.id)}">${escapeHtml(f.title)}</option>`).join('');
                 folderSelect.value = activeFolderId || '';
             } else {
                 folderSelectWrap.hidden = true;
@@ -610,12 +592,14 @@ export function openBookmarkDialog(mode = 'link') {
     if (!overlay || !dialog) return;
     if (!dialog.classList.contains('active')) bookmarkDialogTrigger = document.activeElement;
     syncDialogModeUI(mode);
+    document.getElementById('bookmark-dialog-error').textContent = '';
+    document.getElementById('bookmark-url-input')?.removeAttribute('aria-invalid');
     dialog.inert = false;
     overlay.classList.add('active');
     dialog.classList.add('active');
     if (document.body?.style) document.body.style.overflow = 'hidden';
     setTimeout(() => {
-        if (dialog.classList.contains('active')) document.getElementById('bookmark-title-input')?.focus();
+        if (dialog.classList.contains('active')) document.getElementById('bookmark-title-input')?.focus({ preventScroll: true });
     }, 50);
 }
 
@@ -636,7 +620,7 @@ export function closeBookmarkDialog() {
     syncDialogModeUI('link');
     const trigger = bookmarkDialogTrigger;
     bookmarkDialogTrigger = null;
-    if (trigger?.isConnected) trigger.focus();
+    if (trigger?.isConnected) trigger.focus({ preventScroll: true });
 }
 
 export function createBookmarkFolder(folderNameInput) {
@@ -670,10 +654,13 @@ export function addBookmark(titleInput, urlInput, targetFolderIdInput) {
     }
     const safeUrl = getSafeUrl(url);
     if (!safeUrl) {
-        alert("http:// または https:// で始まる有効なURLを入力してください。");
+        const error = document.getElementById('bookmark-dialog-error');
+        error.textContent = '有効なサイトのURLを入力してください（例：example.com）。';
+        document.getElementById('bookmark-url-input')?.setAttribute('aria-invalid', 'true');
         return;
     }
 
+    document.getElementById('bookmark-url-input')?.removeAttribute('aria-invalid');
     const selectedFolderId = targetFolderIdInput ?? document.getElementById('bookmark-folder-select')?.value ?? activeFolderId ?? '';
     const newEntry = { title, url: safeUrl };
 
@@ -692,20 +679,6 @@ export function addBookmark(titleInput, urlInput, targetFolderIdInput) {
     save();
     renderBookmarks();
     closeBookmarkDialog();
-}
-
-export function filterBookmarks(query) {
-    bookmarkFilterQuery = String(query ?? "");
-    const clearBtn = document.getElementById('bookmark-filter-clear');
-    if (clearBtn) clearBtn.hidden = !bookmarkFilterQuery.trim();
-    renderBookmarks();
-}
-
-export function clearBookmarkFilter() {
-    const input = document.getElementById('bookmark-filter-input');
-    if (input) input.value = "";
-    filterBookmarks("");
-    input?.focus?.();
 }
 
 function updateBookmarkUndoUI() {

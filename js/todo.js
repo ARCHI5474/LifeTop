@@ -1,5 +1,5 @@
 /* LifeTop - todo list */
-import { userConfig } from "./config.js?v=4.0-final";
+import { userConfig } from "./config.js?v=4.2-expressive";
 import { save } from "./storage.js?v=4.0-final";
 
 let todoFilter = 'all';

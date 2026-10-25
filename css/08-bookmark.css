@@ -597,65 +597,6 @@
     margin-left: auto;
 }
 
-.bookmark-filter-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-    background: var(--input-bg);
-    border: 1px solid var(--line-soft);
-    border-radius: 12px;
-    padding: 0 8px 0 10px;
-    height: 36px;
-    width: clamp(135px, 18vw, 195px);
-    transition: border-color var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
-}
-
-.bookmark-filter-wrap:focus-within {
-    border-color: var(--p-strong);
-    box-shadow: 0 0 0 3px rgba(var(--p-rgb), 0.16);
-}
-
-.bookmark-filter-icon {
-    font-size: 16px;
-    color: var(--text-muted);
-    margin-right: 5px;
-    flex-shrink: 0;
-}
-
-.bookmark-filter-input {
-    width: 100%;
-    min-width: 0;
-    border: none;
-    background: transparent;
-    color: var(--text-color);
-    font: inherit;
-    font-size: 0.78rem;
-    outline: none;
-}
-
-.bookmark-filter-input::placeholder {
-    color: var(--text-muted);
-}
-
-.bookmark-filter-clear {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    padding: 2px;
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    border-radius: 50%;
-}
-
-.bookmark-filter-clear .material-symbols-outlined {
-    font-size: 15px;
-}
-
-.bookmark-filter-clear:hover {
-    color: var(--text-color);
-}
-
 .bookmark-undo {
     display: flex;
     align-items: center;

@@ -1,3 +1,4 @@
+import { userConfig } from './config.js?v=4.2-expressive';
 let activeIndex = -1;
 let suggestions = [];
 let lastRenderedSignature = '';
@@ -170,7 +171,7 @@ export function initSearchSuggestions() {
     document.addEventListener('keydown', event => {
         if (event.key !== '/' || event.isComposing || event.ctrlKey || event.metaKey || event.altKey) return;
         if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
-        if (document.querySelector('.settings-panel.active, .help-modal.active, .weather-modal.active, #bookmark-dialog.active')) return;
+        if (document.querySelector('.settings-panel.active, .help-modal.active, .weather-modal.active, #bookmark-dialog.active, #game-modal.active')) return;
         event.preventDefault();
         input.focus();
     });
@@ -210,7 +211,7 @@ export function initSearchSuggestions() {
             window.setTimeout(() => {
                 const rect = container?.getBoundingClientRect?.();
                 if (rect && rect.top > 110) {
-                    container.scrollIntoView?.({ block: 'start', behavior: 'smooth' });
+                    container.scrollIntoView?.({ block: 'start', behavior: userConfig.reduceMotion || window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ? 'auto' : 'smooth' });
                 }
             }, 120);
         }

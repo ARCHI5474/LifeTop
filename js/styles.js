@@ -1,40 +1,26 @@
 /* LifeTop - visual style application */
-import { bgGradients, bgGradientsLight, colorCombos, bgPresets, userConfig } from "./config.js?v=4.0-final";
+import { bgGradients, colorCombos, bgPresets, userConfig } from "./config.js?v=4.2-expressive";
 
-let colorModeFrame;
 
 export function applyStyles() {
     const root = document.documentElement;
-    const isLight = userConfig.colorMode === 'light';
-    const modeChanged = root.dataset.colorMode !== (isLight ? 'light' : 'dark');
-    if (modeChanged) {
-        cancelAnimationFrame(colorModeFrame);
-        root.classList.add('theme-changing');
-    }
-    if (root.dataset) {
-        root.dataset.colorMode = isLight ? 'light' : 'dark';
-    }
-    document.body?.classList?.toggle('light-mode', isLight);
-
+    userConfig.colorMode = 'dark';
+    root.dataset.colorMode = 'dark';
     root.style.setProperty('--p', userConfig.theme);
     const rgb = hexToRgb(userConfig.theme);
     if (rgb) {
         root.style.setProperty('--p-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
-        const strongColor = isLight
-            ? ensureReadableLightAccent(adjustColor(rgb, -20))
-            : ensureBrightAccent(adjustColor(rgb, 48));
+        const strongColor = ensureBrightAccent(adjustColor(rgb, 48));
         const darker = adjustColor(rgb, -36);
         root.style.setProperty('--p-strong', rgbToHex(strongColor));
         root.style.setProperty('--p-deep', rgbToHex(darker));
-        root.style.setProperty('--p-soft', isLight ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.14)` : `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.18)`);
-        root.style.setProperty('--p-glow', isLight ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.22)` : `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.32)`);
-        root.style.setProperty('--glass-border', isLight ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.26)` : `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.28)`);
+        root.style.setProperty('--p-soft', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.18)`);
+        root.style.setProperty('--p-glow', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.32)`);
+        root.style.setProperty('--glass-border', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.28)`);
     }
     root.style.setProperty('--clock-f', userConfig.fontFamily);
 
-    const darkPalette = bgGradients[userConfig.bgType] || bgGradients['gradient-blue'];
-    const lightPalette = bgGradientsLight[userConfig.bgType] || bgGradientsLight['gradient-blue'];
-    const paletteColor = isLight ? lightPalette : darkPalette;
+    const paletteColor = bgGradients[userConfig.bgType] || bgGradients['gradient-blue'];
 
     const background = userConfig.bgImage
         ? `url("${userConfig.bgImage.replace(/["\\]/g, '\\$&')}") center / cover no-repeat, ${paletteColor}`
@@ -44,31 +30,6 @@ export function applyStyles() {
     const hasBgImage = Boolean(userConfig.bgImage);
     document.getElementById('bg-overlay')?.classList.toggle('has-background-image', hasBgImage);
     document.body?.classList?.toggle('has-background-image', hasBgImage);
-    syncColorModeUI(isLight);
-    if (modeChanged) {
-        // Commit the whole palette together, before restoring hover transitions.
-        void root.offsetWidth;
-        colorModeFrame = requestAnimationFrame(() => root.classList.remove('theme-changing'));
-    }
-}
-
-export function syncColorModeUI(isLight = userConfig.colorMode === 'light') {
-    const headerBtn = document.getElementById('theme-mode-btn');
-    const headerIcon = document.getElementById('theme-mode-icon');
-    if (headerBtn) {
-        const label = isLight ? 'ダークモードに切り替え' : 'ライトモードに切り替え';
-        headerBtn.title = label;
-        headerBtn.setAttribute?.('aria-label', label);
-        headerBtn.setAttribute?.('aria-pressed', String(isLight));
-    }
-    if (headerIcon) {
-        headerIcon.textContent = isLight ? 'dark_mode' : 'light_mode';
-    }
-    document.querySelectorAll?.('[data-color-mode-btn]').forEach(btn => {
-        const active = btn.dataset.colorModeBtn === (isLight ? 'light' : 'dark');
-        btn.classList?.toggle?.('active', active);
-        btn.setAttribute?.('aria-pressed', String(active));
-    });
 }
 
 export function hexToRgb(hex) {
@@ -93,13 +54,6 @@ function ensureBrightAccent(rgb) {
     if (luminance >= 145) return rgb;
     const boost = Math.ceil((145 - luminance) * 0.85);
     return adjustColor(rgb, boost);
-}
-
-function ensureReadableLightAccent(rgb) {
-    const luminance = 0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b;
-    if (luminance <= 125) return rgb;
-    const darken = -Math.ceil((luminance - 115) * 0.85);
-    return adjustColor(rgb, darken);
 }
 
 function rgbToHex({ r, g, b }) {

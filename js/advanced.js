@@ -1,0 +1,59 @@
+import { userConfig } from './config.js?v=4.2-expressive';
+import { save } from './storage.js?v=4.0-final';
+import { updateClock } from './clock.js?v=4.0-final';
+
+const engines = {
+    google: ['Google', 'https://www.google.com/search', 'q'],
+    bing: ['Bing', 'https://www.bing.com/search', 'q'],
+    duckduckgo: ['DuckDuckGo', 'https://duckduckgo.com/', 'q'],
+    yahoo: ['Yahoo! JAPAN', 'https://search.yahoo.co.jp/search', 'p']
+};
+const defaults = { hideClockBackground: false, clockShowSec: false, reduceMotion: false, searchShape: 'pill', searchEngine: 'google' };
+
+export function applyAdvancedSettings() {
+    const root = document.documentElement;
+    root.style.setProperty('--search-radius', { pill: '999px', rounded: '16px', square: '0px' }[userConfig.searchShape]);
+    root.classList.toggle('reduce-motion', userConfig.reduceMotion);
+    root.classList.toggle('hide-clock-background', userConfig.hideClockBackground);
+    for (const key of ['hideClockBackground', 'searchShape', 'reduceMotion', 'searchEngine']) {
+        const control = document.getElementById('advanced-' + key);
+        if (!control) continue;
+        if (control.type === 'checkbox') control.checked = userConfig[key];
+        else control.querySelectorAll('input[type="radio"]').forEach(option => {
+            option.checked = option.value === userConfig[key];
+        });
+    }
+    const seconds = document.getElementById('clock-show-sec-toggle');
+    if (seconds) seconds.checked = userConfig.clockShowSec;
+    const secondsDisplay = document.getElementById('clock-sec');
+    if (secondsDisplay) secondsDisplay.style.display = userConfig.clockShowSec ? 'block' : 'none';
+    const [name, url, param] = engines[userConfig.searchEngine] || engines.google;
+    const form = document.getElementById('search-form');
+    const input = document.getElementById('search-input');
+    if (form && input) {
+        form.action = url;
+        input.name = param;
+        input.placeholder = name + 'で検索';
+        form.querySelector('.search-button')?.setAttribute('aria-label', name + 'で検索');
+    }
+}
+
+export function setAdvancedSetting(key, value) {
+    if (key === 'searchShape') {
+        if (!['pill', 'rounded', 'square'].includes(value)) return;
+    } else if (key === 'searchEngine') {
+        if (!Object.hasOwn(engines, value)) return;
+    } else if (['reduceMotion', 'hideClockBackground'].includes(key)) {
+        value = Boolean(value);
+    } else return;
+    userConfig[key] = value;
+    applyAdvancedSettings();
+    save();
+}
+
+export function resetAdvancedSettings() {
+    Object.assign(userConfig, defaults);
+    applyAdvancedSettings();
+    updateClock();
+    if (save()) document.getElementById('advanced-reset-status').textContent = '高度な設定をデフォルトに戻しました。';
+}
