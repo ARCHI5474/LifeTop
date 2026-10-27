@@ -1,4 +1,4 @@
-/* PasideaDesign: ダッシュボードのレスポンシブUIと画面幅に応じた最適化 */
+/* Responsive dashboard layout. */
 
 @media (max-width: 980px) {
     .dashboard-header {

@@ -1,4 +1,4 @@
-/* PasideaDesign: ガラスモーフィズムカードの共通設定 */
+/* Shared glass surface settings. */
 .glass-card {
     display: flex;
     flex-direction: column;

@@ -4,18 +4,10 @@
     --motion-release: 220ms;
     --control-radius: 24px;
 }
-/* Keep translucency through surface color; avoid moving backdrop-blur layers. */
-body .glass-card, body .glass-card:hover,
-body #settings-panel,
-body :is(.game-modal-card, .help-modal-card, .popup-modal-card, .weather-modal-content),
-body .search-form, body .modal-overlay {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-}
 body .glass-card, body .glass-card:hover {
     border-color: var(--glass-edge);
     box-shadow: var(--glass-sheen), 0 12px 32px rgba(0, 0, 0, .12);
-    transition: none;
+    transition: border-color 220ms ease, box-shadow 280ms ease, background-color 220ms ease;
 }
 body :is(.tab-btn, .tool-tab-btn, .news-tab-btn, .bookmark-tab-item, .game-tab-btn, .game-seg-btn) {
     border-radius: var(--control-radius);
@@ -82,8 +74,13 @@ body .search-form, body .search-form:hover, body .search-form:focus-within {
     transform: none;
     border-color: var(--glass-edge);
     box-shadow: var(--glass-sheen);
-    background: var(--md-sys-color-surface-container-high);
-    transition: border-radius 180ms var(--motion-settle);
+    background: color-mix(in srgb, var(--md-sys-color-surface-container-high) 82%, transparent);
+    backdrop-filter: blur(12px) saturate(130%);
+    -webkit-backdrop-filter: blur(12px) saturate(130%);
+    transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease, border-radius 180ms var(--motion-settle);
+}
+body .search-form:focus-within {
+    box-shadow: var(--glass-sheen), 0 0 0 3px color-mix(in srgb, var(--p-strong) 35%, transparent);
 }
 body .search-form:has(#search-input:focus-visible) { border-color: var(--p-strong); }
 /* Fixed geometry for switches: transform moves and grows the thumb without reflow. */
@@ -141,11 +138,13 @@ body .switch input:active + .slider::before { scale: none; }
 :root.reduce-motion body .choice-content { transition: none !important; }
 :root.reduce-motion body .bookmark-item:active { scale: none !important; }
 
-body #settings-panel { background: linear-gradient(145deg, rgba(245, 250, 255, .035), transparent 55%), var(--panel-bg); }
+body #settings-panel { background: linear-gradient(145deg, rgba(245, 250, 255, .06), transparent 55%), color-mix(in srgb, var(--panel-bg) 88%, transparent); }
 body .profile-icon-picker button, body .profile-icon-picker button[aria-pressed="true"] { border-radius: var(--control-radius); }
+.settings-version { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 4px 0; color: var(--text-secondary); font-size: .78rem; font-weight: 650; }
+.settings-version .version-badge { margin: 0; }
 /* Role-based visual tokens: one surface and one neutral icon treatment. */
 :root {
-    --ui-card-fill: color-mix(in srgb, var(--md-sys-color-surface-container-low) 90%, transparent);
+    --ui-card-fill: color-mix(in srgb, var(--md-sys-color-surface-container-low) 78%, transparent);
     --ui-card-background: linear-gradient(145deg, rgba(255, 255, 255, .035), transparent 48%), var(--ui-card-fill);
     --ui-card-border: rgba(225, 241, 255, .13);
     --ui-card-shadow: var(--glass-sheen), 0 12px 32px rgba(0, 0, 0, .12);
@@ -158,9 +157,11 @@ body .hero-section, body .glass-card, body .glass-card:hover {
     border: 1px solid var(--ui-card-border);
     border-radius: 28px;
     box-shadow: var(--ui-card-shadow);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    backdrop-filter: blur(16px) saturate(135%);
+    -webkit-backdrop-filter: blur(16px) saturate(135%);
 }
+body .hero-section { border-radius: var(--radius-hero); }
+body .glass-card, body .glass-card:hover { border-radius: var(--radius-card); }
 html.hide-clock-background body .hero-section {
     background: transparent;
     border-color: transparent;
@@ -259,6 +260,7 @@ body .extra-controls input { min-width: 0; max-width: 100%; }
     body .user-badge { min-width: 0; justify-self: end; max-width: 100%; padding-right: 12px; }
     body .header-user-name { max-width: none; min-width: 0; }
     body .glass-card { padding: 20px 16px; }
+    body .hero-section { border-radius: 32px; }
     body .card-header h3 { font-size: 1.08rem; gap: 8px; }
     body .game-modal-card, body .help-modal-card, body .popup-modal-card, body .weather-modal-content { padding: 16px; border-radius: 24px; }
     body .game-layout { grid-template-columns: minmax(0, 1fr); }

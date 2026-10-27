@@ -1,4 +1,4 @@
-/* PasideaDesign: 設定パネル・ヘルプ・追加ダイアログ・スイッチ共通スタイル */
+/* Settings panel, help, dialogs, and switches. */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -738,7 +738,7 @@
     line-height: 1.45;
 }
 
-/* PasideaDesign: Keyboard-accessible animated switches */
+/* Keyboard-accessible animated switches */
 .switch {
     position: relative;
     display: inline-block;

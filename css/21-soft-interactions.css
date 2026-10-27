@@ -4,8 +4,8 @@
     --motion-soft-spring: cubic-bezier(.22, 1.22, .36, 1);
     --motion-press: 100ms;
     --motion-release: 360ms;
-    --glass-edge: rgba(225, 241, 255, .13);
-    --glass-sheen: inset 0 1px 0 rgba(235, 248, 255, .1);
+    --glass-edge: rgba(225, 241, 255, .16);
+    --glass-sheen: inset 0 1px 0 rgba(235, 248, 255, .14);
 }
 /* Only outer surfaces blur; nested controls stay crisp and inexpensive. */
 body .glass-card, body .glass-card:hover {
