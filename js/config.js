@@ -1,10 +1,10 @@
 
 /* ========================    
-LifeTop v4.0 Codename: "Pleasantly quick"
+LifeTop v6.2 Codename: "Pleasantly quick"
    ======================== */
 const UPDATE_CONFIG = {
-    notice: "Quickアクセスが8カテゴリ・160リンクに拡充。暮らしや仕事に役立つサイトをまとめました。",
-    tag: "LifeTop ver4.0"
+    notice: "LifeTop v6.2にアップデートしました。新しい機能や改善点をぜひお試しください。",
+    tag: "LifeTop ver6.2"
 };
 /* ========================================= */
 

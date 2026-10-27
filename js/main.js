@@ -222,6 +222,36 @@ window.addEventListener('DOMContentLoaded', () => {
         window.setTimeout(() => loadingScreen.remove(), 200);
     }
 
+        const loadinScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        loadingScreen.classList.add('is-hidden');
+        window.setTimeout(() => loadingScreen.remove(), 200);
+    }
+
+        const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        loadingScreen.classList.add('is-hidden');
+        window.setTimeout(() => loadingScreen.remove(), 200);
+    }
+
+        const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        loadingScreen.classList.add('is-hidden');
+        window.setTimeout(() => loadingScreen.remove(), 200);
+    }
+
+        const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        loadingScreen.classList.add('is-hidden');
+        window.setTimeout(() => loadingScreen.remove(), 200);
+    }
+
+        const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        loadingScreen.classList.add('is-hidden');
+        window.setTimeout(() => loadingScreen.remove(), 200);
+    }
+
     setInterval(updateClock, 1000);
     setInterval(updateGreeting, 1800000);
 
