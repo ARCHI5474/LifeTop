@@ -646,8 +646,8 @@
         <h2 id="incident-notice-title">【システム一時停止および不正アクセスに関するお詫びとご報告】</h2>
         <p><time datetime="2026-10-27T14:00:00+09:00">2026年10月27日 14時頃</time>より、不正なアクセスが確認され、コードが書き換えられたため、安全確保と復旧を目的としてシステムを一時停止しておりました。<br>ご利用の皆様には多大なるご不便とご心配をおかけし、深くお詫び申し上げます。</p>
         <p>今回の不正アクセスの主な原因は、管理システムにおけるパスワードの使い回しと、セキュリティ対策の不徹底にあったと認識しております。なお、先日公表されたPHPの脆弱性とは一切関係ございません。</p>
-        <p><strong>今回の事態を厳粛に受け止め、二度とこのような事態を起こさぬよう、管理パスワードの厳格化、不要なアカウントの廃止、およびセキュリティ体制の全面的な見直しと強化に鋭意努めてまいります。</strong></p>
-        <p>なお、今回の不正アクセスによる利用者の皆様の情報の抜き取り（流出）は確認されておりません。</p>
+        <p>今回の事態を厳粛に受け止め、二度とこのような事態を起こさぬよう、管理パスワードの厳格化、およびセキュリティ体制の全面的な見直しと強化に鋭意努めてまいります。</p>
+        <p>なお、今回の不正アクセスによる利用者の皆様の情報の流出は確認されておりません。</p>
         <p>重ねて、この度は多大なるご迷惑をおかけしましたことを、深くお詫び申し上げます。</p>
         <div class="incident-notice-actions">
             <button type="button" class="primary-btn" id="incident-notice-close" autofocus>閉じる</button>
@@ -656,9 +656,12 @@
 </dialog>
 
 <script>
-    const incidentNoticeDialog = document.getElementById('incident-notice-dialog');
-    document.getElementById('incident-notice-close').addEventListener('click', () => incidentNoticeDialog.close());
-    incidentNoticeDialog.showModal();
+    (() => {
+        const dialog = document.getElementById('incident-notice-dialog');
+        const closeButton = document.getElementById('incident-notice-close');
+        closeButton.addEventListener('click', () => dialog.close());
+        dialog.showModal();
+    })();
 </script>
 
 <!-- 天気拡張表示 -->
