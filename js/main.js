@@ -88,7 +88,7 @@ import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggle
 import { initNews, switchNewsCategory, refreshNews, refreshTrends, switchYoutubeCategory, refreshYoutube } from "./news.js?v=4.0-final";
 
 // HTMLのイベントハンドラーから呼び出す関数
-/*Object.assign(window, {
+Object.assign(window, {
     setAdvancedSetting,
     resetAdvancedSettings,
     switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer,
@@ -222,35 +222,7 @@ window.addEventListener('DOMContentLoaded', () => {
         window.setTimeout(() => loadingScreen.remove(), 200);
     }
 
-        const loadinScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-        loadingScreen.classList.add('is-hidden');
-        window.setTimeout(() => loadingScreen.remove(), 200);
-    }
 
-        const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-        loadingScreen.classList.add('is-hidden');
-        window.setTimeout(() => loadingScreen.remove(), 200);
-    }
-
-        const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-        loadingScreen.classList.add('is-hidden');
-        window.setTimeout(() => loadingScreen.remove(), 200);
-    }
-
-        const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-        loadingScreen.classList.add('is-hidden');
-        window.setTimeout(() => loadingScreen.remove(), 200);
-    }
-
-        const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-        loadingScreen.classList.add('is-hidden');
-        window.setTimeout(() => loadingScreen.remove(), 200);
-    }
 
     setInterval(updateClock, 1000);
     setInterval(updateGreeting, 1800000);
@@ -259,4 +231,4 @@ window.addEventListener('DOMContentLoaded', () => {
     setInterval(fetchWeather, 3600000);
     initNews();
 
-});*/
+});
