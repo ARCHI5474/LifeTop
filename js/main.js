@@ -1,4 +1,4 @@
-/*import { initIcons } from './icons.js?v=4.2.6-official';
+import { initIcons } from './icons.js?v=4.2.6-official';
 import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=4.2.2-polish';
 import { initProfile } from './profile.js?v=4.2.6-official';
 import { initExtraGames } from './extra-games.js?v=4.2.6-official';
