@@ -1,4 +1,4 @@
-import { initIcons } from './icons.js?v=4.2.6-official';
+/*import { initIcons } from './icons.js?v=4.2.6-official';
 import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=4.2.2-polish';
 import { initProfile } from './profile.js?v=4.2.6-official';
 import { initExtraGames } from './extra-games.js?v=4.2.6-official';
@@ -88,7 +88,7 @@ import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggle
 import { initNews, switchNewsCategory, refreshNews, refreshTrends, switchYoutubeCategory, refreshYoutube } from "./news.js?v=4.0-final";
 
 // HTMLのイベントハンドラーから呼び出す関数
-Object.assign(window, {
+/*Object.assign(window, {
     setAdvancedSetting,
     resetAdvancedSettings,
     switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer,
@@ -259,4 +259,4 @@ window.addEventListener('DOMContentLoaded', () => {
     setInterval(fetchWeather, 3600000);
     initNews();
 
-});
+});*/
