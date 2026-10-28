@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@500;700&family=Comfortaa:wght@400;700&family=Courier+Prime&family=DotGothic16&family=M+PLUS+1+Code&family=Oswald:wght@300;400;700&family=Outfit:wght@300;400;500;700;900&family=Righteous&family=Roboto+Mono:wght@200;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="preload" href="icons/material/material-symbols-outlined.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="stylesheet" href="css/style.css?v=6.3-recovery-notice"> <!-- バージョン番号は毎回更新すること -->
+    <link rel="stylesheet" href="css/style.css?v=6.4-recovery-complete"> <!-- バージョン番号は毎回更新すること -->
 </head>
 <body id="top">
 
@@ -255,6 +255,12 @@
 
 <!-- メインダッシュボード -->
 <div class="dashboard-content">
+    <section class="recovery-notice" aria-labelledby="recovery-notice-title">
+        <h2 id="recovery-notice-title">復旧作業完了のお知らせとお詫び</h2>
+        <p>システムの復旧作業が終了し、サービスの提供を再開いたしました。</p>
+        <p>この度のシステム一時停止により、ご利用の皆様には多大なるご不便とご心配をおかけしましたことを、深くお詫び申し上げます。</p>
+        <p>今後は再発防止に向け、セキュリティ対策の強化と安定した運営に努めてまいります。</p>
+    </section>
     <!-- ヒーローエリア（時計と検索） -->
     <section class="weather-summary-row" aria-label="現在の天気">
         <button type="button" id="weather-widget" class="weather-summary-card glass-card" onclick="showWeatherDetail()" title="天気の詳細を表示" aria-label="天気の詳細を表示">
@@ -640,27 +646,6 @@
 
 <footer class="app-footer"><span class="footer-brand"><img class="footer-brand-icon" src="icons/icon-192.png" alt="" width="20" height="20" decoding="async">LifeTop</span><span>いつものネットを、ここから。</span></footer>
 <div id="storage-status" class="storage-status" role="status" hidden></div>
-
-<dialog class="incident-notice-dialog" id="incident-notice-dialog" aria-labelledby="incident-notice-title">
-    <div class="incident-notice-content">
-        <h2 id="incident-notice-title">【システム一時停止および不正アクセスに関するお詫びとご報告】</h2>
-        <p class="incident-notice-status"><strong>現在、復旧作業中です。</strong></p>
-        <p><time datetime="2026-10-27T14:00:00+09:00">2026年10月27日 14時頃</time>より、不正なアクセスが確認され、コードが書き換えられたため、安全確保と復旧を目的としてシステムを一時停止しております。<br>ご利用の皆様には多大なるご不便とご心配をおかけし、深くお詫び申し上げます。</p>
-        <p>今回の不正アクセスの主な原因は、管理システムにおけるパスワードの使い回しと、セキュリティ対策の不徹底にあったと認識しております。なお、先日公表されたPHPの脆弱性とは一切関係ございません。</p>
-        <p>今回の事態を厳粛に受け止め、二度とこのような事態を起こさぬよう、管理パスワードの厳格化、およびセキュリティ体制の全面的な見直しと強化に鋭意努めてまいります。</p>
-        <p>なお、今回の不正アクセスによる利用者の皆様の情報の流出は確認されておりません。</p>
-        <p>重ねて、この度は多大なるご迷惑をおかけしましたことを、深くお詫び申し上げます。</p>
-        <p>復旧まで、今しばらくお待ちください。</p>
-    </div>
-</dialog>
-
-<script>
-    (() => {
-        const dialog = document.getElementById('incident-notice-dialog');
-        dialog.addEventListener('cancel', event => event.preventDefault());
-        dialog.showModal();
-    })();
-</script>
 
 <!-- 天気拡張表示 -->
 <div class="weather-modal" id="weather-detail-modal" role="dialog" aria-modal="true" aria-labelledby="weather-modal-title" inert>
