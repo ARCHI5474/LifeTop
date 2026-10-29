@@ -80,12 +80,17 @@ export function switchGameTab(gameId) {
         const isTarget = btn.dataset.gameTab === gameId;
         btn.classList?.toggle?.('active', isTarget);
         btn.setAttribute?.('aria-selected', String(isTarget));
+        btn.setAttribute?.('tabindex', isTarget ? '0' : '-1');
+        btn.id = `game-tab-${btn.dataset.gameTab}`;
+        btn.setAttribute?.('aria-controls', `game-pane-${btn.dataset.gameTab}`);
     });
 
     document.querySelectorAll?.('[data-game-pane]')?.forEach?.(pane => {
         const isTarget = pane.dataset.gamePane === gameId;
         pane.classList?.toggle?.('active', isTarget);
         pane.hidden = !isTarget;
+        pane.id = `game-pane-${pane.dataset.gamePane}`;
+        pane.setAttribute?.('aria-labelledby', `game-tab-${pane.dataset.gamePane}`);
     });
 
     if (gameId === 'snake') {
@@ -1186,6 +1191,21 @@ export function initGames() {
         if (!modal || !modal.classList.contains('active')) return;
 
         if (event.isComposing || event.target.closest?.('input, textarea, select, [contenteditable="true"]')) return;
+        const focusedTab = event.target.closest?.('[data-game-tab]');
+        if (focusedTab) {
+            const tabs = [...modal.querySelectorAll('[data-game-tab]')];
+            const index = tabs.indexOf(focusedTab);
+            let next = index;
+            if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+            else if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
+            else if (event.key === 'Home') next = 0;
+            else if (event.key === 'End') next = tabs.length - 1;
+            else return;
+            event.preventDefault();
+            tabs[next].click();
+            tabs[next].focus({ preventScroll: true });
+            return;
+        }
         if (activeGame === 'snake') {
             if (event.key === ' ' && event.target.closest?.('button')) return;
             const key = event.key;

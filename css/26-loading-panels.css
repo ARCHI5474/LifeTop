@@ -1,0 +1,67 @@
+/* Brand loading: expressive shape, restrained light, no pretend percentage. */
+body .loading-screen {
+    padding: 24px;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 50% 35%, rgba(var(--p-rgb), .22), transparent 65%), #10171f;
+    transition: opacity 420ms ease, visibility 0s linear 420ms;
+}
+.loading-content { display: flex; flex-direction: column; align-items: center; width: min(100%, 480px); text-align: center; }
+.loading-eyebrow { font-size: .65rem; font-weight: 650; letter-spacing: .24em; color: var(--md-sys-color-primary); }
+.loading-art { position: relative; display: grid; place-items: center; width: 216px; height: 196px; margin-top: 16px; }
+.loading-emblem {
+    display: grid; place-items: center; width: 112px; height: 112px;
+    border-radius: 38px 44px 36px 46px;
+    background: radial-gradient(ellipse at 20% 0, rgb(255 255 255 / .2), transparent 65%), var(--md-sys-color-primary-container);
+    border: 1px solid rgb(255 255 255 / .14);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .2), inset 0 -4px 8px rgb(0 0 0 / .12), 0 20px 40px rgb(0 0 0 / .2);
+    animation: loading-emblem-float 2400ms ease-in-out infinite;
+}
+body .loading-icon { width: 64px; height: 64px; border-radius: 20px; border: 0; box-shadow: none; }
+.loading-pebble { position: absolute; display: block; background: var(--md-sys-color-primary); border-radius: 45% 55% 52% 48%; box-shadow: inset 0 2px 2px rgb(255 255 255 / .3), inset 0 -3px 5px rgb(0 0 0 / .12); animation: loading-pebble-float 1800ms ease-in-out infinite; }
+.pebble-one { width: 30px; height: 30px; top: 20px; right: 18px; }
+.pebble-two { width: 19px; height: 19px; bottom: 30px; left: 16px; opacity: .65; animation-delay: -600ms; }
+.pebble-three { width: 12px; height: 12px; bottom: 21px; right: 35px; opacity: .45; animation-delay: -1200ms; }
+body .loading-logo { font-size: clamp(3rem, 10vw, 4.25rem); font-weight: 800; letter-spacing: -.065em; line-height: 1.12; }
+.loading-logo-dot { color: var(--md-sys-color-primary); }
+.loading-tagline { margin-top: 14px; color: var(--text-secondary); font-size: clamp(.85rem, 3.3vw, 1rem); letter-spacing: .04em; }
+.loading-status { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 44px; }
+body .loading-label { font-size: .75rem; color: var(--text-muted); line-height: 1.6; }
+.loading-status-dot { width: 6px; height: 6px; flex: 0 0 6px; border-radius: 50%; background: var(--md-sys-color-primary); animation: loading-breathe 1600ms ease-in-out infinite; }
+.loading-release { margin-top: 20px; color: var(--text-muted); font-size: .65rem; letter-spacing: .08em; }
+.loading-release > span { margin-inline: 8px; opacity: .5; }
+@keyframes loading-emblem-float {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-9px) rotate(3deg); }
+}
+@keyframes loading-pebble-float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-8px) scale(1.06, .96); }
+}
+@keyframes loading-breathe { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
+@media (max-height: 500px) {
+    .loading-art { width: 170px; height: 118px; margin-top: 8px; }
+    .loading-emblem { width: 82px; height: 82px; border-radius: 28px; }
+    body .loading-icon { width: 48px; height: 48px; border-radius: 16px; }
+    body .loading-logo { font-size: 2.5rem; }
+    .loading-status { margin-top: 20px; }
+    .loading-release { margin-top: 12px; }
+}
+/* Opening: an explicit, single landing; closing remains a short transition. */
+@keyframes window-bounce-in {
+    0% { opacity: 0; scale: .96; }
+    65% { opacity: 1; scale: 1.012; }
+    84% { scale: .997; }
+    100% { opacity: 1; scale: 1; }
+}
+body :is(.game-modal, .help-modal, .popup-modal, .weather-modal).active
+    :is(.game-modal-card, .help-modal-card, .popup-modal-card, .weather-modal-content) {
+    animation: window-bounce-in 460ms cubic-bezier(.2,.7,.3,1) both;
+}
+body #settings-panel.active { transition: transform 520ms cubic-bezier(.22,1.18,.36,1), visibility 0s !important; }
+.game-rules:popover-open { animation: window-bounce-in 420ms cubic-bezier(.2,.7,.3,1) both; }
+:root.reduce-motion body :is(.game-modal-card, .help-modal-card, .popup-modal-card, .weather-modal-content, .game-rules, #settings-panel, .loading-screen) { animation: none !important; transition: none !important; }
+:root.reduce-motion body #settings-panel.active { transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+    body :is(.game-modal-card, .help-modal-card, .popup-modal-card, .weather-modal-content, .game-rules, #settings-panel, .loading-screen) { animation: none !important; transition: none !important; }
+    body #settings-panel.active { transition: none !important; }
+}

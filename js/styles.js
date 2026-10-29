@@ -1,5 +1,5 @@
 /* LifeTop - visual style application */
-import { bgGradients, colorCombos, bgPresets, userConfig } from "./config.js?v=4.2-expressive";
+import { bgGradients, colorCombos, bgPresets, userConfig } from "./config.js?v=7.0";
 
 
 export function applyStyles() {

@@ -1,8 +1,7 @@
 body .search-form { border-radius: var(--search-radius, 999px); }
 .advanced-settings summary { cursor: pointer; }
 
-/* Remove decorative bounce, repeated pulsing, and hover travel. */
-body *, body *::before, body *::after { animation: none !important; }
+/* Hover stays still; animation preferences are handled by the shared motion layer. */
 body .glass-card:hover, body .bookmark-item:hover, body .icon-btn:hover { transform: none; }
 :root.reduce-motion *, :root.reduce-motion *::before, :root.reduce-motion *::after { transition: none !important; scroll-behavior: auto !important; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }

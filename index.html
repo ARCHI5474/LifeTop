@@ -10,15 +10,25 @@
     <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@500;700&family=Comfortaa:wght@400;700&family=Courier+Prime&family=DotGothic16&family=M+PLUS+1+Code&family=Oswald:wght@300;400;700&family=Outfit:wght@300;400;500;700;900&family=Righteous&family=Roboto+Mono:wght@200;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="preload" href="icons/material/material-symbols-outlined.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="stylesheet" href="css/style.css?v=6.4-recovery-complete"> <!-- バージョン番号は毎回更新すること -->
+    <link rel="stylesheet" href="css/style.css?v=7.0"> <!-- バージョン番号は毎回更新すること -->
 </head>
 <body id="top">
 
-<!-- 起動中のシンプルな表示 -->
-<div class="loading-screen" id="loading-screen" role="status">
-    <img class="loading-icon" src="icons/icon-192.png" alt="" width="56" height="56" decoding="async">
-    <span class="loading-logo">LifeTop</span>
-    <span class="loading-label">読み込み中…</span>
+<!-- 起動時のブランドシーケンス -->
+<div class="loading-screen" id="loading-screen" role="status" aria-live="polite" aria-label="LifeTopを準備しています">
+    <div class="loading-content">
+        <p class="loading-eyebrow">YOUR EVERYDAY START</p>
+        <div class="loading-art" aria-hidden="true">
+            <span class="loading-pebble pebble-one"></span>
+            <span class="loading-pebble pebble-two"></span>
+            <span class="loading-pebble pebble-three"></span>
+            <div class="loading-emblem"><img class="loading-icon" src="icons/icon-192.png" alt="" width="64" height="64" decoding="async"></div>
+        </div>
+        <span class="loading-logo">LifeTop<span class="loading-logo-dot" aria-hidden="true">.</span></span>
+        <p class="loading-tagline">いつものネットを、ここから。</p>
+        <div class="loading-status"><span class="loading-status-dot" aria-hidden="true"></span><span class="loading-label">あなたのスタートページを準備しています</span></div>
+        <p class="loading-release">v7.0 <span aria-hidden="true">/</span> Bounce gummy</p>
+    </div>
 </div>
 
 <!-- 背景のオーバーレイ -->
@@ -255,12 +265,6 @@
 
 <!-- メインダッシュボード -->
 <div class="dashboard-content">
-    <section class="recovery-notice" aria-labelledby="recovery-notice-title">
-        <h2 id="recovery-notice-title">復旧作業完了のお知らせとお詫び</h2>
-        <p>システムの復旧作業が終了し、サービスの提供を再開いたしました。</p>
-        <p>この度のシステム一時停止により、ご利用の皆様には多大なるご不便とご心配をおかけしましたことを、深くお詫び申し上げます。</p>
-        <p>今後は再発防止に向け、セキュリティ対策の強化と安定した運営に努めてまいります。</p>
-    </section>
     <!-- ヒーローエリア（時計と検索） -->
     <section class="weather-summary-row" aria-label="現在の天気">
         <button type="button" id="weather-widget" class="weather-summary-card glass-card" onclick="showWeatherDetail()" title="天気の詳細を表示" aria-label="天気の詳細を表示">
@@ -640,7 +644,11 @@
                 <p class="settings-help" id="advanced-reset-status" role="status">高度な設定の項目だけを初期値に戻します。</p>
             </div>
         </details>
-        <p class="settings-version">LifeTop <span class="version-badge">Ver6.1</span></p>
+        <section class="settings-about" aria-labelledby="settings-about-title">
+            <h3 id="settings-about-title">情報</h3>
+            <p class="settings-about-version">LifeTop <span>v7.0</span></p>
+            <p class="settings-about-codename">コードネーム：<span lang="en">Bounce gummy</span></p>
+        </section>
     </div>
 </div>
 
@@ -709,7 +717,7 @@
     </div>
 </div>
 
-<script type="module" src="./js/main.js?v=4.2.6-official"></script>
+<script type="module" src="./js/main.js?v=7.0"></script>
 
 
 </body>

@@ -1,10 +1,10 @@
 
 /* ========================    
-LifeTop v6.2 Codename: "Pleasantly quick"
+LifeTop v7.0 Codename: "Bounce gummy"
    ======================== */
 const UPDATE_CONFIG = {
-    notice: "LifeTop v6.2にアップデートしました。新しい機能や改善点をぜひお試しください。",
-    tag: "LifeTop ver6.2"
+    notice: "LifeTop v7.0にアップデートしました。柔らかな操作感と、軽やかなバウンスをお楽しみください。",
+    tag: "LifeTop v7.0"
 };
 /* ========================================= */
 

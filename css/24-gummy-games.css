@@ -1,0 +1,86 @@
+/* Shared expressive material: a soft highlight, tonal depth and elastic release. */
+:root {
+    --gummy-spring: cubic-bezier(.22, 1.35, .36, 1);
+    --gummy-highlight: inset 0 1px 0 rgb(255 255 255 / .22), inset 0 -3px 0 rgb(0 0 0 / .12);
+}
+body :is(.primary-btn, .secondary-btn, .tonal-btn, .game-tab-btn, .game-seg-btn, .dpad-btn) {
+    transition: scale 320ms var(--gummy-spring), border-radius 320ms var(--gummy-spring), background-color 180ms ease, box-shadow 180ms ease;
+}
+body :is(.primary-btn, .secondary-btn, .tonal-btn, .game-tab-btn, .game-seg-btn, .dpad-btn):not(:disabled):active {
+    scale: .95 .91;
+    border-radius: 16px;
+    transition-duration: 90ms;
+}
+body #game-modal .game-modal-card {
+    border-radius: 32px;
+    background: radial-gradient(ellipse at 0 0, rgba(var(--p-rgb), .12), transparent 60%), var(--md-sys-color-surface-container-low);
+    box-shadow: var(--gummy-highlight), 0 24px 80px rgb(0 0 0 / .35);
+}
+body #game-modal .game-stage-wrap {
+    background: var(--md-sys-color-surface);
+    border-radius: 24px;
+    border: 1px solid var(--line-soft);
+    box-shadow: inset 0 3px 16px rgb(0 0 0 / .18);
+}
+body #game-modal .game-selector-tabs { background: var(--md-sys-color-surface-container); border-radius: 24px; }
+body #game-modal :is(.game-tab-btn, .game-seg-btn) { border: 1px solid transparent; }
+body #game-modal :is(.game-tab-btn, .game-seg-btn).active {
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    border-color: var(--md-sys-color-primary);
+    border-radius: 16px;
+    box-shadow: var(--gummy-highlight), 0 3px 8px rgb(0 0 0 / .15);
+    font-weight: 800;
+}
+body #game-modal .game-stat-box {
+    background: var(--md-sys-color-surface-container-high);
+    border-radius: 18px;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .08);
+}
+body #game-modal .game-stat-label { color: var(--text-secondary); letter-spacing: .04em; }
+body #game-modal .game-stat-val { color: var(--text-color); font-variant-numeric: tabular-nums; }
+body #game-modal .game-action-row .game-main-btn {
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    box-shadow: var(--gummy-highlight), 0 4px 12px rgba(var(--p-rgb), .18);
+    font-weight: 800;
+}
+body #game-modal .dpad-btn {
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    border-radius: 16px;
+    box-shadow: var(--gummy-highlight), 0 3px 6px rgb(0 0 0 / .18);
+    touch-action: manipulation;
+}
+body #game-modal :is(.game-status-banner, .extra-game-status) {
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    border: 1px solid var(--line-soft);
+    border-radius: 16px;
+    text-wrap: pretty;
+}
+body #game-modal .puzzle-tile:not(.is-blank) {
+    border-radius: 22%;
+    background: linear-gradient(145deg, rgb(255 255 255 / .12), transparent 65%), var(--md-sys-color-surface-container-highest);
+    box-shadow: var(--gummy-highlight), 0 4px 8px rgb(0 0 0 / .2);
+}
+body #game-modal .puzzle-tile.is-correct { background-color: var(--md-sys-color-primary-container); }
+@media (hover: hover) {
+    body #game-modal :is(.dpad-btn, .game-seg-btn, .game-tab-btn):not(:disabled):hover { border-color: var(--md-sys-color-primary); }
+}
+@media (min-height: 701px) {
+    body #game-modal .game-action-row button, body #game-modal .game-seg-btn, body #game-modal .extra-controls button { min-height: 44px; }
+    body #game-modal .game-stat-box { padding: 10px 6px; }
+    body #game-modal .game-stat-label { font-size: .7rem; }
+    body #game-modal .game-stat-val { font-size: 1.25rem; }
+    body #game-modal .game-status-banner { padding: 10px; font-size: .82rem; }
+}
+@media (prefers-reduced-motion: no-preference) {
+    body #game-modal .game-pane.active { animation: game-pane-arrive 260ms var(--gummy-spring); }
+    @keyframes game-pane-arrive { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+}
+@media (prefers-reduced-motion: reduce) {
+    body :is(.primary-btn, .secondary-btn, .tonal-btn, .game-tab-btn, .game-seg-btn, .dpad-btn),
+    body #game-modal *, body #game-modal .game-modal-card { animation: none !important; transition: none !important; }
+    body :is(.primary-btn, .secondary-btn, .tonal-btn, .game-tab-btn, .game-seg-btn, .dpad-btn):active { scale: 1 !important; }
+}

@@ -22,6 +22,23 @@ const { chromium } = runtimeRequire('playwright');
         });
         await page.goto('http://lifetop.test/', { waitUntil: 'domcontentloaded' });
         await page.locator('#loading-screen').waitFor({ state: 'detached' });
+        const bookmarkMotion = await page.evaluate(() => {
+            const tabs = [...document.querySelectorAll('.bookmark-tab-item')];
+            const original = tabs[0];
+            tabs[1].click();
+            const animated = document.querySelector('#bookmark-grid').getAnimations({ subtree: true }).length;
+            tabs[2].click();
+            tabs[1].click();
+            return { sameButtons: original === document.querySelector('.bookmark-tab-item'),
+                selected: document.querySelector('.bookmark-tab-item.active').textContent === tabs[1].textContent,
+                focused: document.activeElement === tabs[1], animated };
+        });
+        assert.ok(bookmarkMotion.sameButtons && bookmarkMotion.selected && bookmarkMotion.focused);
+        assert.ok(bookmarkMotion.animated > 0, 'category items animate on switch');
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await page.locator('.bookmark-tab-item').first().click();
+        assert.equal(await page.locator('#bookmark-grid').evaluate(e => e.getAnimations({ subtree: true }).length), 0);
+        await page.emulateMedia({ reducedMotion: 'no-preference' });
         await page.locator('#todo-input').fill('ブラウザ動作確認');
         await page.locator('#todo-input').press('Enter');
         assert.match(await page.locator('#todo-list').innerText(), /ブラウザ動作確認/);
@@ -61,6 +78,10 @@ const { chromium } = runtimeRequire('playwright');
         assert.equal(await page.locator('#timer-display').innerText(), '01:00');
         await page.locator('[aria-label="Quickパネル"]').click();
         assert.equal(await page.locator('#settings-panel').evaluate(el => el.inert), false);
+        assert.equal(await page.locator('.settings-about-version').innerText(), 'LifeTop v7.0');
+        assert.equal(await page.locator('.settings-about-codename').innerText(), 'コードネーム：Bounce gummy');
+        assert.equal(await page.locator('.settings-body').evaluate(e => e.lastElementChild.matches('.settings-about')), true);
+        assert.match(await page.locator('#notice-text').innerText(), /v7\.0/);
         await page.keyboard.press('Escape');
         assert.equal(await page.locator('#settings-panel').evaluate(el => el.inert), true);
         await page.setViewportSize({ width: 390, height: 844 });
@@ -68,6 +89,12 @@ const { chromium } = runtimeRequire('playwright');
         assert.equal(await page.locator('#todo-input').isVisible(), true);
         await page.locator('[aria-label="Quickパネル"]').click();
         assert.equal(await page.locator('[data-color-mode-btn]').count(), 0);
+        await page.locator('.settings-about').scrollIntoViewIfNeeded();
+        assert.equal(await page.locator('.settings-about').evaluate(e => e.scrollWidth <= e.clientWidth), true);
+        if (process.env.REVIEW_SCREENSHOT) {
+            await page.waitForTimeout(450);
+            await page.screenshot({ path: process.env.REVIEW_SCREENSHOT + '-quick-info.png' });
+        }
         await page.keyboard.press('Escape');
         await page.evaluate(() => {
             const key = 'lifetop_v1_0_data';
@@ -82,7 +109,7 @@ const { chromium } = runtimeRequire('playwright');
         assert.equal(await page.locator('html').getAttribute('data-color-mode'), 'dark');
         assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme), 'dark');
         await page.evaluate(async () => {
-            const { userConfig } = await import('/js/config.js?v=4.2-expressive');
+            const { userConfig } = await import('/js/config.js?v=7.0');
             if ('clockTransparency' in userConfig || 'cardTransparency' in userConfig) throw Error('obsolete transparency settings');
         });
         assert.deepEqual(errors, [], 'no uncaught application errors');

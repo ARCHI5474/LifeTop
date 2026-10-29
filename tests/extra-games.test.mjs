@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { goMove, goScore, initialShogi, shogiTargets, inCheck, hitResult } from '../js/extra-games.js?v=4.2.6-official';
+import { goMove, goScore, initialShogi, shogiTargets, inCheck, hitResult } from '../js/extra-games.js?v=7.0';
 let b=Array(81).fill(0);b[10]=-1;for(const i of [1,9,11])b[i]=1;
 let next=goMove(b,19,1,null);assert.equal(next[10],0,'surrounded stone is captured');assert.equal(b[10],-1,'illegal-move analysis does not mutate original board');
 b=Array(81).fill(0);for(const i of [1,9,11,19])b[i]=-1;assert.equal(goMove(b,10,1,null),null,'suicide forbidden');

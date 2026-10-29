@@ -4,7 +4,7 @@ import {
     STORAGE_KEY,
     userConfig,
     mergeUserConfig
-} from "./config.js?v=4.2-expressive";
+} from "./config.js?v=7.0";
 
 export function loadData() {
     try {

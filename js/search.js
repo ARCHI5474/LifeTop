@@ -1,4 +1,4 @@
-import { userConfig } from './config.js?v=4.2-expressive';
+import { userConfig } from './config.js?v=7.0';
 let activeIndex = -1;
 let suggestions = [];
 let lastRenderedSignature = '';

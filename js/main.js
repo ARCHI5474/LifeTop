@@ -1,12 +1,14 @@
-import { initIcons } from './icons.js?v=4.2.6-official';
-import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=4.2.2-polish';
-import { initProfile } from './profile.js?v=4.2.6-official';
-import { initExtraGames } from './extra-games.js?v=4.2.6-official';
-import { applyStyles, renderBgSelector } from "./styles.js?v=4.2-expressive";
+import { initIcons } from './icons.js?v=7.0';
+import { initMotion } from './motion.js?v=7.0';
+import { initLoading } from './loading.js?v=7.0';
+import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=7.0';
+import { initProfile } from './profile.js?v=7.0';
+import { initExtraGames } from './extra-games.js?v=7.0';
+import { applyStyles, renderBgSelector } from "./styles.js?v=7.0";
 
 /* LifeTop - application entry point */
-import { userConfig } from "./config.js?v=4.2-expressive";
-import { loadData, save } from "./storage.js?v=4.0-final";
+import { userConfig } from "./config.js?v=7.0";
+import { loadData, save } from "./storage.js?v=7.0";
 import {
     initPickers,
     setTheme,
@@ -20,9 +22,9 @@ import {
     toggleSettings,
     toggleHelp,
     
-} from "./settings.js?v=4.2.5-audit";
-import { updateClock, updateGreeting } from "./clock.js?v=4.0-final";
-import { initSearchSuggestions } from "./search.js?v=4.2.5-audit";
+} from "./settings.js?v=7.0";
+import { updateClock, updateGreeting } from "./clock.js?v=7.0";
+import { initSearchSuggestions } from "./search.js?v=7.0";
 import {
     toggleBookmarkEditMode,
     renderBookmarks,
@@ -45,7 +47,7 @@ import {
     undoDeleteBookmark,
     handleFaviconLoad,
     handleFaviconError
-} from "./bookmarks.js?v=4.2.6-official";
+} from "./bookmarks.js?v=7.0";
 import {
     renderTodoList,
     addTodo,
@@ -57,13 +59,13 @@ import {
     undoDeleteTodo,
     initUtilityTabs,
     switchUtilityTab
-} from "./todo.js?v=4.0-final";
+} from "./todo.js?v=7.0";
 import {
     initMemoEditor,
     formatMemo,
     copyMemoContent,
     updateMemoStatus
-} from "./memo.js?v=4.0-final";
+} from "./memo.js?v=7.0";
 import {
     initGames,
     toggleGameModal,
@@ -82,10 +84,10 @@ import {
     initOthelloGame,
     playOthelloMove,
     undoOthelloMove
-} from "./games.js?v=4.2.6-official";
-import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=4.2.5-audit";
-import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=4.0-final";
-import { initNews, switchNewsCategory, refreshNews, refreshTrends, switchYoutubeCategory, refreshYoutube } from "./news.js?v=4.0-final";
+} from "./games.js?v=7.0";
+import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=7.0";
+import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=7.0";
+import { initNews, switchNewsCategory, refreshNews, refreshTrends, switchYoutubeCategory, refreshYoutube } from "./news.js?v=7.0";
 
 // HTMLのイベントハンドラーから呼び出す関数
 Object.assign(window, {
@@ -184,6 +186,7 @@ document.addEventListener('keydown', event => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
+    const finishLoading = initLoading();
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations()
             .then(registrations => registrations.forEach(registration => registration.unregister()))
@@ -191,6 +194,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     initIcons();
+    initMotion();
     loadData();
 
     applyStyles();
@@ -216,11 +220,7 @@ window.addEventListener('DOMContentLoaded', () => {
     updateClock();
     updateGreeting();
 
-    const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-        loadingScreen.classList.add('is-hidden');
-        window.setTimeout(() => loadingScreen.remove(), 200);
-    }
+    finishLoading();
 
 
 

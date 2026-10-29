@@ -4,6 +4,7 @@ const elements = new Map();
 const element = id => {
     if (!elements.has(id)) elements.set(id, {
         innerHTML: '', style: {}, classList: { toggle() {}, remove() {}, add() {} },
+        querySelectorAll: () => [],
     });
     return elements.get(id);
 };

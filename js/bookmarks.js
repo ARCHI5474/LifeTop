@@ -1,6 +1,6 @@
 /* LifeTop - bookmarks (with folder management, drag-and-drop & touch reordering) */
-import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=4.2-expressive";
-import { save } from "./storage.js?v=4.0-final";
+import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=7.0";
+import { save } from "./storage.js?v=7.0";
 
 let bookmarkEditMode = false;
 let currentBookmarkTab = "ブックマーク";
@@ -9,6 +9,7 @@ let dialogMode = "link"; // "link" | "folder"
 let draggedBookmarkIndex = null;
 let bookmarkDialogTrigger = null;
 let deletedBookmark = null;
+let bookmarkSwitchAnimations = [];
 const FAVICON_CACHE_KEY = "lifetop_favicon_cache";
 const FAVICON_CACHE_DAYS = 30;
 
@@ -197,10 +198,18 @@ export function renderBookmarks() {
     grid.classList.toggle('fixed-links', currentBookmarkTab !== 'ブックマーク');
     
     const allCategories = ["ブックマーク", ...Object.keys(FIXED_BOOKMARKS)];
-    tabsContainer.innerHTML = allCategories.map(cat => {
-        const activeClass = (cat === currentBookmarkTab) ? 'active' : '';
-        return `<button type="button" class="bookmark-tab-item ${activeClass}" aria-pressed="${cat === currentBookmarkTab}" onclick="switchBookmarkTab('${cat}')">${cat}</button>`;
-    }).join('');
+    // Keep the buttons alive so their selected-state transition and scroll do not reset.
+    const existingTabs = [...tabsContainer.querySelectorAll('.bookmark-tab-item')];
+    if (existingTabs.length !== allCategories.length || existingTabs.some((tab, i) => tab.textContent !== allCategories[i])) {
+        tabsContainer.innerHTML = allCategories.map(cat =>
+            `<button type="button" class="bookmark-tab-item" aria-pressed="false" onclick="switchBookmarkTab('${cat}')">${cat}</button>`
+        ).join('');
+    }
+    tabsContainer.querySelectorAll('.bookmark-tab-item').forEach(tab => {
+        const selected = tab.textContent === currentBookmarkTab;
+        tab.classList.toggle('active', selected);
+        tab.setAttribute('aria-pressed', String(selected));
+    });
 
     if (tabsContainer && !tabsContainer.dataset?.wheelBound) {
         if (tabsContainer.dataset) tabsContainer.dataset.wheelBound = 'true';
@@ -501,9 +510,25 @@ export function removeBookmarkFromFolder(index, event) {
 export function switchBookmarkTab(cat) {
     if (cat !== 'ブックマーク' && !Object.hasOwn(FIXED_BOOKMARKS, cat)) return;
     if (currentBookmarkTab === cat && !activeFolderId) return;
+    bookmarkSwitchAnimations.forEach(animation => animation.cancel());
+    bookmarkSwitchAnimations = [];
+    const categories = ['ブックマーク', ...Object.keys(FIXED_BOOKMARKS)];
+    const direction = categories.indexOf(cat) > categories.indexOf(currentBookmarkTab) ? 1 : -1;
     currentBookmarkTab = cat;
     activeFolderId = null;
     renderBookmarks();
+    const reduceMotion = userConfig.reduceMotion || window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    const items = document.querySelectorAll('#bookmark-grid > .bookmark-item-wrapper, #bookmark-grid > .bookmark-empty');
+    if (!reduceMotion) {
+        items.forEach((item, index) => {
+            if (!item.animate) return;
+            const animation = item.animate([
+                { opacity: 0, transform: `translate(${direction * 6}px, 4px)` },
+                { opacity: 1, transform: 'translate(0, 0)' }
+            ], { duration: 220, delay: Math.min(index, 5) * 12, easing: 'cubic-bezier(.2,.7,.25,1)', fill: 'backwards' });
+            bookmarkSwitchAnimations.push(animation);
+        });
+    }
     const activeTab = document.querySelector('.bookmark-tab-item.active');
     activeTab?.focus({ preventScroll: true });
     const tabs = document.getElementById('bookmark-tabs');
@@ -531,7 +556,7 @@ export function scrollTabs(distance) {
     if (tabsContainer) {
         tabsContainer.scrollBy({
             left: distance,
-            behavior: 'smooth'
+            behavior: userConfig.reduceMotion || window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ? 'auto' : 'smooth'
         });
     }
 }

@@ -1,0 +1,189 @@
+/* System-wide Material 3 Expressive contract. New UI reuses these tokens.
+   Interaction is opt-in by semantic control class; board geometry stays stable. */
+:root {
+    --gummy-radius-control: 24px;
+    --gummy-radius-selected: 16px;
+    --gummy-radius-card: 28px;
+    --gummy-radius-dialog: 32px;
+    --gummy-surface: color-mix(in srgb, var(--md-sys-color-primary-container) 12%, var(--md-sys-color-surface-container-low));
+    --gummy-control: var(--md-sys-color-primary-container);
+    --gummy-on-control: var(--md-sys-color-on-primary-container);
+    --gummy-sheen: radial-gradient(ellipse at 15% 0%, rgb(255 255 255 / .075), transparent 65%);
+    --gummy-body-shadow: inset 0 1px 0 rgb(255 255 255 / .09), inset 0 -2px 3px rgb(0 0 0 / .09), 0 8px 24px rgb(0 0 0 / .13);
+    --gummy-spring: cubic-bezier(.22, 1.3, .36, 1);
+    --gummy-highlight: inset 0 1px 0 rgb(255 255 255 / .14), inset 0 -2px 2px rgb(0 0 0 / .08);
+    --motion-soft-spring: var(--gummy-spring);
+    --control-radius: var(--gummy-radius-control);
+    --radius-card: var(--gummy-radius-card);
+    --radius-dialog: var(--gummy-radius-dialog);
+}
+body .glass-card, body .glass-card:hover, body .hero-section {
+    background: var(--gummy-sheen), var(--gummy-surface);
+    border: 1px solid rgb(220 235 250 / .1);
+    box-shadow: var(--gummy-body-shadow);
+    transition: scale 420ms var(--gummy-spring), box-shadow 220ms ease, border-color 220ms ease;
+}
+body .glass-card, body .glass-card:hover { border-radius: var(--gummy-radius-card); }
+body .hero-section {
+    border-radius: var(--radius-hero);
+    background: radial-gradient(ellipse at 0 0, rgba(var(--p-rgb), .15), transparent 70%), color-mix(in srgb, var(--gummy-surface) 65%, var(--md-sys-color-primary-container));
+}
+/* Hierarchy comes from spacing and tone. Reserve stronger highlights for actions. */
+body .card-header { border-bottom: 0; padding-bottom: 0; margin-bottom: 24px; }
+body .card-header h3 { font-weight: 700; letter-spacing: -.025em; }
+body .card-header h3 > .material-symbols-outlined {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    color: var(--md-sys-color-primary);
+    box-shadow: none;
+}
+body :is(.utility-tabs, .news-tabs, .bookmark-tabs-container, .clock-tool-switch) {
+    background: rgb(0 0 0 / .16);
+    border: 0;
+    box-shadow: none;
+}
+body :is(.news-status-text, .news-source-badge) { background: transparent; border-color: transparent; color: var(--text-muted); }
+body :is(.todo-item, .news-item, .trend-item, .yt-card-item, .bookmark-item) {
+    background: rgb(255 255 255 / .035);
+    box-shadow: none;
+}
+/* Squeeze the body only when pressing its non-interactive surface.
+   Editing text, following a link or pressing a child button stays stable. */
+body :is(.glass-card, .hero-section):active:not(:has(:is(button, a, input, textarea, select, label, [role="button"], [contenteditable]):active, :focus-visible)) {
+    scale: .992 .982;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .07), 0 3px 12px rgb(0 0 0 / .12);
+    transition-duration: 100ms;
+}
+body .search-form, body .search-form:hover, body .search-form:focus-within {
+    background: var(--gummy-sheen), color-mix(in srgb, var(--md-sys-color-surface-container-high) 75%, var(--gummy-surface));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .09), 0 4px 12px rgb(0 0 0 / .08);
+    border-color: rgb(220 235 250 / .12);
+}
+body .search-form:focus-within {
+    box-shadow: var(--gummy-highlight), 0 0 0 3px rgba(var(--p-rgb), .25);
+}
+body .settings-section {
+    background: var(--gummy-sheen), var(--md-sys-color-surface-container);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .06);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--gummy-radius-card);
+}
+body .dashboard-header :is(.user-badge, .user-badge:hover) {
+    background: var(--gummy-sheen), var(--gummy-surface);
+    box-shadow: var(--gummy-highlight), 0 3px 8px rgb(0 0 0 / .12);
+}
+body #settings-panel,
+body :is(.help-modal-card, .popup-modal-card, .weather-modal-content, .game-rules) {
+    background: var(--gummy-sheen), var(--gummy-surface);
+    box-shadow: var(--gummy-body-shadow), 0 20px 64px rgb(0 0 0 / .3);
+}
+body :is(.help-modal-card, .popup-modal-card, .weather-modal-content, .game-rules) { border-radius: var(--gummy-radius-dialog); }
+body :is(.icon-btn, .icon-btn-small, .primary-btn, .secondary-btn, .tonal-btn, .ctrl-btn,
+    .font-btn, .background-upload-btn, .background-clear-btn, .tab-btn, .tool-tab-btn,
+    .news-tab-btn, .bookmark-tab-item, .game-tab-btn, .game-seg-btn, .search-button,
+    .timer-preset-btn, .bm-dialog-mode-btn, .add-bookmark-btn, .todo-input-wrapper > button,
+    .memo-toolbar button, .extra-controls button, .dpad-btn) {
+    border-radius: var(--gummy-radius-control);
+    background-image: var(--gummy-sheen);
+    background-color: var(--gummy-control);
+    color: var(--gummy-on-control);
+    box-shadow: var(--gummy-highlight), 0 3px 8px rgb(0 0 0 / .12);
+}
+body :is(.primary-btn, .search-button, .todo-input-wrapper > button) {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+}
+body :is(.tab-btn, .tool-tab-btn, .news-tab-btn, .bookmark-tab-item, .game-tab-btn, .game-seg-btn, .bm-dialog-mode-btn):not(.active) {
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--text-secondary);
+    background-image: none;
+    box-shadow: none;
+}
+body :is(.tab-btn, .tool-tab-btn, .news-tab-btn, .bookmark-tab-item, .game-tab-btn, .game-seg-btn, .bm-dialog-mode-btn).active {
+    border-radius: var(--gummy-radius-selected);
+    background-color: var(--gummy-control);
+    color: var(--gummy-on-control);
+    box-shadow: var(--gummy-highlight);
+}
+body :is(.settings-input, .bookmark-dialog-form input, .bookmark-folder-select, .choice-content) {
+    border-radius: var(--gummy-radius-selected);
+    background: var(--md-sys-color-surface-container-high);
+    color: var(--text-color);
+}
+body .choice-option input:checked + .choice-content {
+    background: var(--gummy-sheen), var(--gummy-control);
+    color: var(--gummy-on-control);
+    box-shadow: var(--gummy-highlight);
+}
+body .switch .slider { box-shadow: inset 0 2px 4px rgb(0 0 0 / .18); }
+body .switch .slider::before { box-shadow: var(--gummy-highlight), 0 2px 5px rgb(0 0 0 / .2); }
+/* Motion uses individual scale so existing layout transforms remain intact. */
+body :is(.icon-btn, .icon-btn-small, .primary-btn, .secondary-btn, .tonal-btn, .text-btn,
+    .ctrl-btn, .font-btn, .background-upload-btn, .background-clear-btn, .tab-btn,
+    .tool-tab-btn, .news-tab-btn, .bookmark-tab-item, .game-tab-btn, .game-seg-btn,
+    .search-button, .timer-preset-btn, .bm-dialog-mode-btn, .color-combo, .bg-preset-card,
+    .profile-icon-picker button, .user-badge, .weather-summary-card, .add-bookmark-btn,
+    .todo-input-wrapper > button, .memo-toolbar button, .todo-delete-btn, .todo-priority-btn,
+    .bookmark-item, .extra-controls button, .dpad-btn, .choice-content) {
+    transition: scale 320ms var(--gummy-spring), border-radius 320ms var(--gummy-spring),
+        background-color 180ms ease, color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+body :is(.icon-btn, .icon-btn-small, .primary-btn, .secondary-btn, .tonal-btn, .text-btn,
+    .ctrl-btn, .font-btn, .background-upload-btn, .background-clear-btn, .tab-btn,
+    .tool-tab-btn, .news-tab-btn, .bookmark-tab-item, .game-tab-btn, .game-seg-btn,
+    .search-button, .timer-preset-btn, .bm-dialog-mode-btn, .color-combo, .bg-preset-card,
+    .profile-icon-picker button, .user-badge, .weather-summary-card, .add-bookmark-btn,
+    .todo-input-wrapper > button, .memo-toolbar button, .todo-delete-btn, .todo-priority-btn,
+    .bookmark-item, .extra-controls button, .dpad-btn):not(:disabled):active,
+body .choice-option:active .choice-content {
+    scale: .97 .95;
+    transition-duration: 90ms;
+}
+/* Header controls follow the same press feedback; hover does not move them. */
+body .dashboard-header :is(a, button) { transition: scale 320ms var(--gummy-spring), box-shadow 180ms ease; }
+body .dashboard-header :is(a, button):not(:disabled):active { scale: .97 .95; transition-duration: 90ms; }
+@media (prefers-reduced-motion: reduce) {
+    body :is(.glass-card, .hero-section):active { scale: none !important; }
+    body :is(button, a, .background-upload-btn, .choice-content) { scale: none !important; }
+    body .dashboard-header :is(a, button) { transition: none !important; }
+}
+:root.reduce-motion body :is(button, a, .background-upload-btn, .choice-content) { scale: none !important; }
+:root.reduce-motion body .dashboard-header :is(a, button) { transition: none !important; }
+:root.reduce-motion body :is(.glass-card, .hero-section):active { scale: none !important; }
+/* Content lands softly without moving surrounding layout. */
+@keyframes soft-content-in {
+    0% { opacity: .35; transform: translateY(6px); }
+    70% { opacity: 1; transform: translateY(-1px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+body .switch .slider { transition: scale 340ms var(--gummy-spring), background-color 180ms ease; }
+/* A fitted game workspace cannot translate beyond its clipping boundary. */
+@keyframes game-content-settle {
+    from { opacity: .35; scale: .992; }
+    to { opacity: 1; scale: 1; }
+}
+body .game-pane.active { animation: game-content-settle 240ms ease-out both !important; }
+:root.reduce-motion body .game-pane.active { animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+    body .game-pane.active { animation: none !important; }
+}
+/* Quiet release metadata, at the end of the scrollable Quick panel. */
+body .settings-about {
+    flex: 0 0 auto;
+    margin-top: 12px;
+    padding: 22px 4px 8px;
+    border-top: 1px solid rgb(220 235 250 / .1);
+    text-align: left;
+}
+body .settings-about h3 { margin: 0 0 10px; font-size: .75rem; font-weight: 600; color: var(--text-muted); }
+body .settings-about p { margin: 0; }
+body .settings-about-version { font-size: 1rem; font-weight: 700; letter-spacing: -.02em; color: var(--text-color); }
+body .settings-about-version span { color: var(--md-sys-color-primary); font-variant-numeric: tabular-nums; }
+body .settings-about .settings-about-codename { margin-top: 6px; font-size: .8rem; color: var(--text-secondary); overflow-wrap: anywhere; }
+body .advanced-settings summary { display: flex; align-items: center; min-height: 44px; cursor: pointer; }
+body .advanced-settings summary::after { content: '+'; margin-left: auto; color: var(--text-muted); font-size: 1.2rem; font-weight: 400; }
+body .advanced-settings[open] summary::after { content: '−'; }
+body .settings-header .close-action { flex-shrink: 0; }
