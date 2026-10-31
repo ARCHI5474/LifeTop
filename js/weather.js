@@ -9,6 +9,18 @@ const DEFAULT_COORDS = { lat: 35.6785, lon: 139.6823 }; // 東京
 
 let savedWeatherData = null;
 let weatherTrigger = null;
+let latestRequest = 0;
+
+export function weatherNumber(value, unit = '') {
+    return typeof value === 'number' && Number.isFinite(value) ? `${Math.round(value)}${unit}` : '--';
+}
+
+export function forecastIndex(times, currentTime) {
+    // API timestamps share the location's timezone and can be compared directly.
+    // Parsing them as browser-local dates shifts the forecast for remote locations.
+    const index = times.findIndex(time => time >= currentTime);
+    return index < 0 ? Math.max(0, times.length - 1) : index;
+}
 
 function readWeatherCache() {
     try {
@@ -63,7 +75,7 @@ function applyWeatherWidgetUI(data) {
     const tempEl = document.getElementById('weather-temp');
     const descEl = document.getElementById('weather-desc');
     const iconEl = document.getElementById('weather-icon');
-    const temp = Math.round(data.current_weather.temperature);
+    const temp = weatherNumber(data.current_weather.temperature);
     const wInfo = parseWeatherCode(data.current_weather.weathercode);
     if (tempEl) tempEl.innerText = `${temp}°C`;
     if (descEl) descEl.innerText = wInfo.text;
@@ -107,6 +119,7 @@ export async function fetchWeather() {
 }
 
 export async function getWeatherData(lat, lon) {
+    const request = ++latestRequest;
     const tempEl = document.getElementById('weather-temp');
     const descEl = document.getElementById('weather-desc');
     const iconEl = document.getElementById('weather-icon');
@@ -119,19 +132,34 @@ export async function getWeatherData(lat, lon) {
         const res = await fetch(url, controller ? { signal: controller.signal } : undefined);
         if (!res.ok) throw new Error(`Weather request failed: ${res.status}`);
         const data = await res.json();
+        if (request !== latestRequest) return;
 
         if (data && data.current_weather) {
             savedWeatherData = data;
             writeWeatherCache(data, lat, lon);
             applyWeatherWidgetUI(data);
+            if (document.getElementById('weather-detail-modal')?.classList.contains('active')) showWeatherDetail(true);
         } else {
             throw new Error("Invalid weather response");
         }
     } catch {
+        if (request !== latestRequest) return;
         if (!savedWeatherData) {
             if (tempEl) tempEl.innerText = "--°C";
             if (descEl) descEl.innerText = "エラー";
             if (iconEl) iconEl.innerText = "cloud_off";
+            const empty = document.querySelector('#weather-detail-content .weather-empty-state');
+            if (empty) {
+                empty.querySelector('p').textContent = '天気を取得できませんでした。通信環境を確認して、もう一度お試しください。';
+                if (!empty.querySelector('button')) {
+                    const retry = document.createElement('button');
+                    retry.type = 'button';
+                    retry.className = 'tonal-btn';
+                    retry.textContent = '再読み込み';
+                    retry.onclick = () => { retry.remove(); fetchWeather(); };
+                    empty.append(retry);
+                }
+            }
         }
     } finally {
         if (timer) clearTimeout(timer);
@@ -139,7 +167,7 @@ export async function getWeatherData(lat, lon) {
 }
 
 // 詳細モーダル表示
-export function showWeatherDetail() {
+export function showWeatherDetail(refresh = false) {
     const modal = document.getElementById('weather-detail-modal');
     if (!modal) return;
 
@@ -190,27 +218,14 @@ export function showWeatherDetail() {
         return;
     }
 
-    let currentIndex = hourly.time.indexOf(current.time);
-    if (currentIndex === -1) {
-        const nowMs = Date.now();
-        let closestDiff = Infinity;
-        hourly.time.forEach((t, idx) => {
-            const diff = Math.abs(new Date(t).getTime() - nowMs);
-            if (diff < closestDiff) {
-                closestDiff = diff;
-                currentIndex = idx;
-            }
-        });
-        if (currentIndex === -1) currentIndex = 0;
-    }
+    const currentIndex = forecastIndex(hourly.time, current.time);
+    const observationIndex = Math.max(0, currentIndex - (hourly.time[currentIndex] > current.time ? 1 : 0));
 
     const humidity = Array.isArray(hourly.relative_humidity_2m)
-        ? `${hourly.relative_humidity_2m[currentIndex] ?? '--'}%`
+        ? `${weatherNumber(hourly.relative_humidity_2m[observationIndex])}%`
         : "--";
-    const apparentTemp = Array.isArray(hourly.apparent_temperature) && hourly.apparent_temperature[currentIndex] != null
-        ? `${Math.round(hourly.apparent_temperature[currentIndex])}°C`
-        : `${Math.round(current.temperature)}°C`;
-    const wind = `${Math.round(current.windspeed)} km/h`;
+    const apparentTemp = weatherNumber(hourly.apparent_temperature?.[observationIndex] ?? current.temperature, '°C');
+    const wind = weatherNumber(current.windspeed, ' km/h');
 
     const maxTemp = Array.isArray(daily.temperature_2m_max) && daily.temperature_2m_max[0] != null
         ? `${Math.round(daily.temperature_2m_max[0])}°C`
@@ -227,18 +242,17 @@ export function showWeatherDetail() {
 
     // 3時間おきの詳細データを作成
     let hourlyHtml = "";
-    const todayDate = new Date().getDate();
+    const todayDate = String(current.time).slice(0, 10);
     
     // 今後24時間の中から3時間おきに8点表示
     for (let i = currentIndex; i < Math.min(currentIndex + 24, hourly.time.length); i += 3) {
         if (!hourly.time[i]) break;
-        const time = new Date(hourly.time[i]);
-        const hour = time.getHours();
-        const timeDate = time.getDate();
+        const hour = Number(hourly.time[i].slice(11, 13));
+        const timeDate = hourly.time[i].slice(0, 10);
         const dayLabel = (timeDate !== todayDate) ? "明日 " : "";
-        const temp = Math.round(hourly.temperature_2m[i]);
-        const hum = hourly.relative_humidity_2m ? hourly.relative_humidity_2m[i] : "--";
-        const prec = hourly.precipitation_probability ? hourly.precipitation_probability[i] : "--";
+        const temp = weatherNumber(hourly.temperature_2m?.[i]);
+        const hum = weatherNumber(hourly.relative_humidity_2m?.[i]);
+        const prec = weatherNumber(hourly.precipitation_probability?.[i]);
         const code = hourly.weathercode ? hourly.weathercode[i] : current.weathercode;
         const wInfo = parseWeatherCode(code);
         
@@ -250,10 +264,10 @@ export function showWeatherDetail() {
                     <span class="hourly-weather-text">${wInfo.text}</span>
                 </div>
                 <span class="hourly-temp">${temp}°C</span>
-                <span class="hourly-prec" title="降水確率">
+                <span class="hourly-prec" title="降水確率"><span class="hourly-data-label">降水</span>
                     <span class="material-symbols-outlined" style="font-size: 14px;">umbrella</span> ${prec}%
                 </span>
-                <span class="hourly-hum" title="湿度">
+                <span class="hourly-hum" title="湿度"><span class="hourly-data-label">湿度</span>
                     <span class="material-symbols-outlined" style="font-size: 14px;">water_drop</span> ${hum}%
                 </span>
             </div>
@@ -263,6 +277,7 @@ export function showWeatherDetail() {
     const currentWeatherInfo = parseWeatherCode(current.weathercode);
     
     container.innerHTML = `
+        <p class="weather-data-time">観測 ${String(current.time || '').replace('T', ' ')} · 現地時刻 / ${savedWeatherData.timezone || '現地時間'}</p>
         <div class="weather-detail-main">
             <div class="weather-detail-icon-wrap">
                 <span class="material-symbols-outlined">${currentWeatherInfo.icon}</span>
@@ -270,10 +285,10 @@ export function showWeatherDetail() {
             <div class="detail-main-text">
                 <h2>${currentWeatherInfo.text}</h2>
                 <div class="detail-temp-row">
-                    <span class="detail-temp">${Math.round(current.temperature)}°C</span>
+                    <span class="detail-temp">${weatherNumber(current.temperature)}°C</span>
                     <div class="detail-high-low">
-                        <span>↑ ${maxTemp}</span>
-                        <span>↓ ${minTemp}</span>
+                        <span>最高 ${maxTemp}</span>
+                        <span>最低 ${minTemp}</span>
                     </div>
                 </div>
                 <div class="detail-apparent">体感温度: ${apparentTemp}</div>
@@ -330,17 +345,11 @@ export function showWeatherDetail() {
     modal.inert = false;
     modal.classList.add('active');
     if (document.body?.style) document.body.style.overflow = 'hidden';
-    modal.querySelector('.weather-modal-close')?.focus({ preventScroll: true });
+    if (!refresh) modal.querySelector('.weather-modal-close')?.focus({ preventScroll: true });
 }
 
 function formatTimeStr(isoStr) {
-    if (!isoStr) return "--:--";
-    try {
-        const d = new Date(isoStr);
-        return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-    } catch {
-        return "--:--";
-    }
+    return typeof isoStr === 'string' && /T\d{2}:\d{2}/.test(isoStr) ? isoStr.slice(11, 16) : '--:--';
 }
 
 function getUvLevel(uv) {

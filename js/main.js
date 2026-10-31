@@ -1,14 +1,17 @@
-import { initIcons } from './icons.js?v=7.0';
-import { initMotion } from './motion.js?v=7.0';
-import { initLoading } from './loading.js?v=7.0';
-import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=7.0';
-import { initProfile } from './profile.js?v=7.0';
-import { initExtraGames } from './extra-games.js?v=7.0';
-import { applyStyles, renderBgSelector } from "./styles.js?v=7.0";
+import { initIcons } from './icons.js?v=8.0';
+import { initMotion } from './motion.js?v=8.0';
+import { initLoading } from './loading.js?v=8.0';
+import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=8.0';
+import { initProfile, renderProfile } from './profile.js?v=8.0';
+import { initExtraGames } from './extra-games.js?v=8.0';
+import { initCasualGames } from './casual-games.js?v=8.0';
+import { initDataManagement } from './data-management.js?v=8.0';
+import { initCloudSync } from './cloud-sync.js?v=8.0';
+import { applyStyles, renderBgSelector, renderColorCombos, renderBgPresets } from "./styles.js?v=8.0";
 
 /* LifeTop - application entry point */
-import { userConfig } from "./config.js?v=7.0";
-import { loadData, save } from "./storage.js?v=7.0";
+import { userConfig, mergeUserConfig, fontStyles } from "./config.js?v=8.0";
+import { loadData, save } from "./storage.js?v=8.0";
 import {
     initPickers,
     setTheme,
@@ -22,9 +25,9 @@ import {
     toggleSettings,
     toggleHelp,
     
-} from "./settings.js?v=7.0";
-import { updateClock, updateGreeting } from "./clock.js?v=7.0";
-import { initSearchSuggestions } from "./search.js?v=7.0";
+} from "./settings.js?v=8.0";
+import { updateClock, updateGreeting } from "./clock.js?v=8.0";
+import { initSearchSuggestions } from "./search.js?v=8.0";
 import {
     toggleBookmarkEditMode,
     renderBookmarks,
@@ -45,9 +48,10 @@ import {
     removeBookmarkFromFolder,
     deleteBookmark,
     undoDeleteBookmark,
+    clearBookmarkUndo,
     handleFaviconLoad,
     handleFaviconError
-} from "./bookmarks.js?v=7.0";
+} from "./bookmarks.js?v=8.0";
 import {
     renderTodoList,
     addTodo,
@@ -57,15 +61,17 @@ import {
     deleteTodo,
     setTodoFilter,
     undoDeleteTodo,
+    clearTodoUndo,
     initUtilityTabs,
     switchUtilityTab
-} from "./todo.js?v=7.0";
+} from "./todo.js?v=8.0";
 import {
     initMemoEditor,
+    syncMemoFromConfig,
     formatMemo,
     copyMemoContent,
     updateMemoStatus
-} from "./memo.js?v=7.0";
+} from "./memo.js?v=8.0";
 import {
     initGames,
     toggleGameModal,
@@ -84,10 +90,10 @@ import {
     initOthelloGame,
     playOthelloMove,
     undoOthelloMove
-} from "./games.js?v=7.0";
-import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=7.0";
-import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=7.0";
-import { initNews, switchNewsCategory, refreshNews, refreshTrends, switchYoutubeCategory, refreshYoutube } from "./news.js?v=7.0";
+} from "./games.js?v=8.0";
+import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=8.0";
+import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=8.0";
+import { initNews, switchNewsCategory, refreshNews, refreshTrends, switchYoutubeCategory, refreshYoutube } from "./news.js?v=8.0";
 
 // HTMLのイベントハンドラーから呼び出す関数
 Object.assign(window, {
@@ -97,6 +103,7 @@ Object.assign(window, {
     stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap,
     openUsernameSettings() {
         if (!document.getElementById('settings-panel').classList.contains('active')) toggleSettings();
+        document.getElementById('settings-tab-profile')?.click();
         const body = document.querySelector('#settings-panel .settings-body');
         const section = document.getElementById('profile-section');
         body.scrollTop += section.getBoundingClientRect().top - body.getBoundingClientRect().top - 12;
@@ -206,10 +213,32 @@ window.addEventListener('DOMContentLoaded', () => {
     initGames();
     renderBgSelector();
     initPickers();
+    initDataManagement();
     initProfile();
     initSearchSuggestions();
     applyAdvancedSettings();
     initExtraGames();
+    initCasualGames();
+    void initCloudSync(data => {
+        mergeUserConfig(data);
+        clearTodoUndo();
+        clearBookmarkUndo();
+        applyStyles();
+        applyAdvancedSettings();
+        renderBookmarks();
+        renderTodoList();
+        syncMemoFromConfig();
+        renderBgSelector();
+        renderColorCombos();
+        renderBgPresets();
+        renderProfile();
+        document.getElementById('username-input').value = userConfig.username;
+        document.getElementById('clock-12h-toggle').checked = userConfig.clock12h;
+        document.querySelectorAll('#font-styles .font-btn').forEach((button, index) => button.classList.toggle('active', fontStyles[index].family === userConfig.fontFamily));
+        document.getElementById('background-image-url').value = userConfig.bgImage.startsWith('https://') ? userConfig.bgImage : '';
+        updateClock();
+        updateGreeting();
+    });
 
     const bookmarkForm = document.getElementById('bookmark-dialog-form');
     bookmarkForm?.addEventListener('submit', (event) => {

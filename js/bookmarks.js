@@ -1,6 +1,6 @@
 /* LifeTop - bookmarks (with folder management, drag-and-drop & touch reordering) */
-import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=7.0";
-import { save } from "./storage.js?v=7.0";
+import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=8.0";
+import { save } from "./storage.js?v=8.0";
 
 let bookmarkEditMode = false;
 let currentBookmarkTab = "ブックマーク";
@@ -9,6 +9,12 @@ let dialogMode = "link"; // "link" | "folder"
 let draggedBookmarkIndex = null;
 let bookmarkDialogTrigger = null;
 let deletedBookmark = null;
+
+export function clearBookmarkUndo() {
+    deletedBookmark = null;
+    activeFolderId = null;
+    document.getElementById('bookmark-undo').hidden = true;
+}
 let bookmarkSwitchAnimations = [];
 const FAVICON_CACHE_KEY = "lifetop_favicon_cache";
 const FAVICON_CACHE_DAYS = 30;

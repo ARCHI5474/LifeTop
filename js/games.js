@@ -61,9 +61,12 @@ export function toggleGameModal(forceState) {
 }
 
 export function switchGameTab(gameId) {
-    if (!['snake', 'puzzle', 'othello', 'go', 'shogi', 'hitblow'].includes(gameId)) return;
+    if (!['snake', 'puzzle', 'othello', 'go', 'shogi', 'hitblow', 'tictactoe', 'memory', 'lights'].includes(gameId)) return;
     activeGame = gameId;
     const rules = {
+        tictactoe: '2人対戦。交互に○と×を置き、縦・横・斜めに3つ並べると勝ち。全マスが埋まると引き分けです。',
+        memory: '2枚ずつカードを開き、同じ記号をそろえます。異なるペアは0.9秒後に閉じます。すべてそろえるとクリアです。',
+        lights: '押したマスと上下左右が反転します。明るいマスをすべて消すとクリア。必ず解ける配置で出題します。',
         snake: '方向キー・WASDまたは画面の方向ボタンで操作します。エサを集め、壁や自分の体を避けましょう。スペースで一時停止。',
         puzzle: '数字を左上から順に並べます。空白と同じ行・列のタイルを押すとまとめてスライドできます。',
         othello: '相手の石を挟んで裏返します。置ける場所に表示される数字は裏返せる枚数です。黒が先手、置けないときは自動でパスします。',

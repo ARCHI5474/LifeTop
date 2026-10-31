@@ -1,0 +1,68 @@
+/* The indicator sits behind the labels, including wrapped and scrolling tabs. */
+body .sliding-selection { position: relative; isolation: isolate; }
+body .sliding-selection > button { position: relative; }
+body .sliding-selection::before {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    left: 0;
+    top: 0;
+    width: var(--selection-width, 0px);
+    height: var(--selection-height, 0px);
+    transform: translate(var(--selection-x, 0px), var(--selection-y, 0px));
+    border-radius: var(--gummy-radius-selected);
+    background: var(--gummy-sheen), var(--gummy-control);
+    box-shadow: var(--gummy-highlight);
+    opacity: 0;
+    z-index: 0;
+}
+body .sliding-selection.selection-ready::before {
+    opacity: 1;
+    transition: transform 460ms cubic-bezier(.22, 1.28, .36, 1),
+        width 460ms cubic-bezier(.22, 1.28, .36, 1),
+        height 460ms cubic-bezier(.22, 1.28, .36, 1);
+}
+body .sliding-selection.selection-ready > button,
+body .sliding-selection.selection-ready > button.active {
+    position: relative;
+    z-index: 1;
+    background: transparent;
+    box-shadow: none;
+    border-color: transparent;
+}
+body #game-modal .sliding-selection.selection-ready > button.active {
+    background: transparent;
+    box-shadow: none;
+    border-color: transparent;
+}
+body .sliding-selection > button.active { color: var(--gummy-on-control); }
+body .settings-category-tabs {
+    display: flex;
+    flex-shrink: 0;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 22px;
+    background: rgb(0 0 0 / .16);
+}
+body .settings-category-tabs > button {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 4px;
+    border: 0;
+    border-radius: var(--gummy-radius-selected);
+    background: transparent;
+    color: var(--text-secondary);
+    font: inherit;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: color 180ms ease;
+}
+.settings-category-panel:not([hidden]) { display: grid; flex-shrink: 0; min-width: 0; gap: 12px; animation: soft-content-in 220ms ease both; }
+.settings-category-panel[hidden] { display: none; }
+:root.reduce-motion .settings-category-panel { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+    .settings-category-panel { animation: none !important; }
+    body .sliding-selection::before { transition: none !important; }
+}
+:root.reduce-motion body .sliding-selection::before { transition: none !important; }

@@ -21,16 +21,16 @@ const assert=require('node:assert/strict');const fs=require('node:fs/promises');
   await page.setViewportSize({width,height});await page.locator('#game-open-btn').click();await page.waitForTimeout(450);
   await page.locator('.game-tab-btn.active').focus();
   await page.keyboard.press('End');
-  assert.equal(await page.locator('[data-game-tab=hitblow]').getAttribute('aria-selected'),'true');
+  assert.equal(await page.locator('[data-game-tab=lights]').getAttribute('aria-selected'),'true');
   await page.keyboard.press('ArrowRight');
   assert.equal(await page.locator('[data-game-tab=snake]').getAttribute('aria-selected'),'true');
   assert.equal(await page.locator('.game-tab-btn[tabindex="0"]').count(),1);
   await page.keyboard.press('ArrowLeft');await page.keyboard.press('Home');
   assert.equal(await page.locator('[data-game-tab=snake]').evaluate(e=>e===document.activeElement),true);
-  assert.equal(await page.locator('.game-tab-btn .material-symbols-outlined').count(),6);
-  assert.equal(await page.locator('.game-tab-btn > span:not(.material-symbols-outlined)').evaluateAll(nodes=>nodes.length===6&&nodes.every(n=>{const r=n.getBoundingClientRect(),b=n.parentElement.getBoundingClientRect();return r.width>0&&r.height>0&&r.left>=b.left&&r.right<=b.right+1&&r.bottom<=b.bottom+1&&getComputedStyle(n).visibility==='visible';})),true,'all game names are visible inside their tabs');
+  assert.equal(await page.locator('.game-tab-btn .material-symbols-outlined').count(),9);
+  assert.equal(await page.locator('.game-tab-btn > span:not(.material-symbols-outlined)').evaluateAll(nodes=>nodes.length===9&&nodes.every(n=>{const r=n.getBoundingClientRect(),b=n.parentElement.getBoundingClientRect();return r.width>0&&r.height>0&&r.left>=b.left&&r.right<=b.right+1&&r.bottom<=b.bottom+1&&getComputedStyle(n).visibility==='visible';})),true,'all game names are visible inside their tabs');
   assert.equal(await page.locator('.game-tab-btn .material-symbols-outlined').evaluateAll(nodes=>nodes.every(n=>getComputedStyle(n).display!=='none')),true,'all game icons visible');
-  for(const game of ['snake','puzzle','othello','go','shogi','hitblow']){
+  for(const game of ['snake','puzzle','othello','go','shogi','hitblow','tictactoe','memory','lights']){
    await page.locator('[data-game-tab='+game+']').click();
    if(game==='hitblow'){for(let i=0;i<10;i++){if(await page.locator('#hit-input').isDisabled())break;await page.locator('#hit-input').fill('0123');await page.locator('#hit-submit').click();}}
    const found=await page.evaluate(()=>{
@@ -47,5 +47,5 @@ const assert=require('node:assert/strict');const fs=require('node:fs/promises');
   await page.keyboard.press('Escape');await page.waitForTimeout(250);
  }
  assert.deepEqual(issues,[],'all boards and controls fit without game-window scrolling');assert.deepEqual(errors,[]);
- console.log('PASS: official font, square icon/avatar frames, matching colors, no profile checkmark, 6 labeled game icons, no game scrolling at 7 viewport sizes, full guess history, instructions');
+ console.log('PASS: official font, square icon/avatar frames, matching colors, no profile checkmark, 9 labeled game icons, no game scrolling at 7 viewport sizes, full guess history, instructions');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,9 +1,14 @@
 /* LifeTop - todo list */
-import { userConfig } from "./config.js?v=7.0";
-import { save } from "./storage.js?v=7.0";
+import { userConfig } from "./config.js?v=8.0";
+import { save } from "./storage.js?v=8.0";
 
 let todoFilter = 'all';
 let deletedTodo = null;
+
+export function clearTodoUndo() {
+    deletedTodo = null;
+    document.getElementById('todo-undo').hidden = true;
+}
 
 export function setTodoFilter(filter) {
     if (!['all', 'active', 'completed'].includes(filter)) return;

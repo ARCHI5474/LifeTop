@@ -1,27 +1,29 @@
-@import url("./01-base.css?v=7.0");
-@import url("./02-background.css?v=7.0");
-@import url("./03-glass.css?v=7.0");
-@import url("./04-header.css?v=7.0");
-@import url("./05-hero-search.css?v=7.0");
-@import url("./06-notice.css?v=7.0");
-@import url("./07-layout.css?v=7.0");
-@import url("./08-bookmark.css?v=7.0");
-@import url("./09-todo-memo.css?v=7.0");
-@import url("./10-settings.css?v=7.0");
-@import url("./11-animations.css?v=7.0");
-@import url("./15-weather-detail.css?v=7.0");
-@import url("./16-v4-refinements.css?v=7.0");
-@import url("./17-game-center.css?v=7.0");
-@import url("./18-dashboard-redesign.css?v=7.0");
+@import url("./01-base.css?v=8.0");
+@import url("./02-background.css?v=8.0");
+@import url("./03-glass.css?v=8.0");
+@import url("./04-header.css?v=8.0");
+@import url("./05-hero-search.css?v=8.0");
+@import url("./06-notice.css?v=8.0");
+@import url("./07-layout.css?v=8.0");
+@import url("./08-bookmark.css?v=8.0");
+@import url("./09-todo-memo.css?v=8.0");
+@import url("./10-settings.css?v=8.0");
+@import url("./11-animations.css?v=8.0");
+@import url("./15-weather-detail.css?v=8.0");
+@import url("./16-v4-refinements.css?v=8.0");
+@import url("./17-game-center.css?v=8.0");
+@import url("./18-dashboard-redesign.css?v=8.0");
 
-@import url("./19-advanced.css?v=7.0");
-@import url("./20-material-expressive.css?v=7.0");
+@import url("./19-advanced.css?v=8.0");
+@import url("./20-material-expressive.css?v=8.0");
 
-@import url("./21-soft-interactions.css?v=7.0");
+@import url("./21-soft-interactions.css?v=8.0");
 
-@import url("./22-ui-consistency.css?v=7.0");
+@import url("./22-ui-consistency.css?v=8.0");
 
-@import url("./23-official-icons-games.css?v=7.0");
-@import url("./24-gummy-games.css?v=7.0");
-@import url("./25-system-gummy.css?v=7.0");
-@import url("./26-loading-panels.css?v=7.0");
+@import url("./23-official-icons-games.css?v=8.0");
+@import url("./24-gummy-games.css?v=8.0");
+@import url("./25-system-gummy.css?v=8.0");
+@import url("./26-loading-panels.css?v=8.0");
+@import url("./27-sliding-selection.css?v=8.0");
+@import url("./28-readability-games.css?v=8.0");

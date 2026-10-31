@@ -1,8 +1,8 @@
 /* LifeTop - settings panel controls */
-import { colorCombos, bgPresets, fontStyles, userConfig } from "./config.js?v=7.0";
-import { applyStyles, renderColorCombos, renderBgPresets, renderBgSelector } from "./styles.js?v=7.0";
-import { save } from "./storage.js?v=7.0";
-import { updateClock, updateGreeting } from "./clock.js?v=7.0";
+import { colorCombos, bgPresets, fontStyles, userConfig } from "./config.js?v=8.0";
+import { applyStyles, renderColorCombos, renderBgPresets, renderBgSelector } from "./styles.js?v=8.0";
+import { save } from "./storage.js?v=8.0";
+import { updateClock, updateGreeting } from "./clock.js?v=8.0";
 
 let settingsTrigger;
 let helpTrigger;
@@ -43,6 +43,7 @@ function bindDialogFocusTrap(dialogEl) {
 
 // ピッカーの初期化
 export function initPickers() {
+    initSettingsCategories();
     renderColorCombos();
     renderBgPresets();
     ['settings-panel', 'game-modal', 'help-modal', 'weather-detail-modal', 'bookmark-dialog'].forEach(id => {
@@ -72,6 +73,66 @@ export function initPickers() {
     };
     imageUpload.onchange = event => setBackgroundImageFile(event.target.files?.[0]);
     clearImage.onclick = clearBackgroundImage;
+}
+
+function initSettingsCategories() {
+    const body = document.querySelector('.settings-body');
+    if (!body || body.querySelector('.settings-category-tabs')) return;
+    const sections = [...body.querySelectorAll(':scope > .settings-section, :scope > .settings-about')];
+    const tabs = document.createElement('div');
+    tabs.className = 'settings-category-tabs';
+    tabs.setAttribute('role', 'tablist');
+    tabs.setAttribute('aria-label', '設定カテゴリ');
+    const labels = { profile: 'プロフィール', appearance: '外観', clock: '時計', advanced: '詳細' };
+    const panels = Object.keys(labels).map(category => {
+        const panel = document.createElement('div');
+        panel.id = `settings-category-${category}`;
+        panel.className = 'settings-category-panel';
+        panel.setAttribute('role', 'tabpanel');
+        panel.setAttribute('aria-labelledby', `settings-tab-${category}`);
+        sections.forEach(section => {
+            if (section.dataset.settingCategory === category) panel.append(section);
+        });
+        body.append(panel);
+        return panel;
+    });
+    tabs.innerHTML = Object.entries(labels).map(([key, label]) =>
+        `<button type="button" id="settings-tab-${key}" role="tab" aria-controls="settings-category-${key}">${label}</button>`).join('');
+    const buttons = [...tabs.children];
+    const select = index => {
+        const changed = !buttons[index].classList.contains('active');
+        buttons.forEach((button, i) => {
+            button.classList.toggle('active', i === index);
+            button.setAttribute('aria-selected', String(i === index));
+            button.tabIndex = i === index ? 0 : -1;
+            panels[i].hidden = i !== index;
+        });
+        if (changed) body.scrollTop = 0;
+    };
+    buttons.forEach((button, index) => {
+        button.addEventListener('click', () => select(index));
+        button.addEventListener('keydown', event => {
+            let next;
+            if (event.key === 'ArrowRight') next = (index + 1) % buttons.length;
+            else if (event.key === 'ArrowLeft') next = (index + buttons.length - 1) % buttons.length;
+            else if (event.key === 'Home') next = 0;
+            else if (event.key === 'End') next = buttons.length - 1;
+            else return;
+            event.preventDefault();
+            select(next);
+            buttons[next].focus();
+        });
+    });
+    body.insertBefore(tabs, panels[0]);
+    const display = document.createElement('section');
+    display.className = 'settings-section';
+    display.innerHTML = `<h3 class="settings-label">見やすさと表示</h3>
+        <label for="advanced-textSize">文字サイズ</label>
+        <select id="advanced-textSize" class="settings-input" onchange="setAdvancedSetting('textSize',this.value)"><option value="standard">標準</option><option value="large">大きめ</option><option value="larger">さらに大きく</option></select>
+        ${[['highContrast','コントラストを強める'],['compactLayout','余白をコンパクトにする'],['showNews','ニュースを表示'],['showYoutube','YouTubeを表示']].map(([key,label]) => `<div class="toggle-wrapper"><label for="advanced-${key}">${label}</label><label class="switch"><input type="checkbox" role="switch" id="advanced-${key}" onchange="setAdvancedSetting('${key}',this.checked)"><span class="slider" aria-hidden="true"></span></label></div>`).join('')}
+        <p class="settings-help">変更は自動保存されます。「詳細」のデフォルトに戻す操作で、この表示設定もリセットできます。</p>`;
+    panels[1].append(display);
+    select(0);
 }
 
 export function setColorCombo(index) {

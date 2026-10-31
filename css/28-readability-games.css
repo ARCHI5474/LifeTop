@@ -1,0 +1,48 @@
+:root[data-text-size="large"] { font-size: 18px; }
+:root[data-text-size="larger"] { font-size: 20px; }
+:root.high-contrast { --text-muted: #d0d9e5; --text-secondary: #e2e9f3; --text-color: #fff; --line-soft: #728096; }
+:root.high-contrast body .glass-card { border-color: #728096; }
+body .news-card[hidden], body .youtube-card[hidden] { display: none !important; }
+body #settings-panel :is(#backup-restore, #backup-cancel)[hidden] { display: none !important; }
+body #backup-upload { width: 100%; min-width: 0; font: inherit; font-size: .85rem; }
+body #data-management-status { overflow-wrap: anywhere; }
+body .cloud-sync-section > button[hidden] { display: none !important; }
+body #cloud-sync-account, body #cloud-sync-status { overflow-wrap: anywhere; }
+body #cloud-sync-status[data-state="conflict"] { color: var(--text-color); font-weight: 700; }
+:root.compact-layout body .glass-card { padding: 16px; }
+:root.compact-layout body .card-header { margin-bottom: 12px; }
+body .weather-modal-content { width: min(94vw, 700px); max-height: 90dvh; color: var(--text-color); }
+body .weather-data-time { font-size: .8rem; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+body .weather-detail-main { background: var(--md-sys-color-surface-container-high); }
+body .detail-temp { font-size: clamp(2.4rem, 8vw, 3.6rem); line-height: 1.2; }
+body .detail-high-low { font-size: .95rem; gap: 8px; }
+body .weather-metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+body .weather-metric-card { padding: 16px; background: var(--md-sys-color-surface-container-high); }
+body .metric-label { font-size: .85rem; color: var(--text-secondary); }
+body .metric-value { font-size: 1.1rem; white-space: normal; overflow: visible; overflow-wrap: anywhere; }
+body .metric-sub { font-size: .85rem; color: var(--text-secondary); }
+body .weather-hourly-grid { max-height: none; overflow: visible; padding: 0; gap: 8px; }
+body .weather-hourly-item { display: grid; grid-template-columns: 76px minmax(0, 1fr) 64px; gap: 8px 12px; padding: 14px; background: var(--md-sys-color-surface-container-high); }
+body .hourly-time, body .hourly-weather-text { display: inline; font-size: .9rem; color: var(--text-color); white-space: normal; overflow: visible; }
+body .hourly-temp { font-size: 1.1rem; min-width: 0; }
+body .hourly-prec, body .hourly-hum { font-size: .85rem; color: var(--text-secondary); min-width: 0; justify-content: flex-start; }
+body .hourly-prec { grid-column: 2; }
+body .hourly-hum { grid-column: 3; }
+body .hourly-data-label { font-size: .75rem; }
+body .hourly-prec > .material-symbols-outlined, body .hourly-hum > .material-symbols-outlined { display: none; }
+/* A single opening animation owns scale; avoid multiplying it by a transform transition. */
+body :is(.game-modal, .help-modal, .popup-modal, .weather-modal).active :is(.game-modal-card, .help-modal-card, .popup-modal-card, .weather-modal-content) { transform: none; transition: opacity 180ms ease; }
+body .casual-board { display: grid; gap: 8px; max-width: 400px; margin: 18px auto; width: 100%; }
+body .casual-board button { min-width: 0; min-height: 48px; aspect-ratio: 1; border: 1px solid var(--line-soft); border-radius: 14px; background: var(--md-sys-color-surface-container-high); color: var(--text-color); font: inherit; font-size: 1.5rem; cursor: pointer; }
+body .casual-board button:disabled { opacity: 1; cursor: default; }
+body .casual-board button.is-lit, body .casual-board button.is-open { background: var(--gummy-control); color: var(--gummy-on-control); }
+body .casual-board button.is-matched { border: 3px solid var(--md-sys-color-primary); }
+body .casual-status { min-height: 3em; font-weight: 700; line-height: 1.5; }
+body .game-selector-tabs { max-height: 180px; overflow-y: auto; }
+@media (max-width: 420px) {
+    body .weather-metric-card { padding: 12px; gap: 8px; }
+    body .metric-icon { display: none; }
+    body .weather-detail-main { gap: 12px; padding: 12px; }
+    body .weather-detail-icon-wrap { width: 44px; height: 44px; }
+    body .weather-hourly-item { grid-template-columns: 64px minmax(0, 1fr) 56px; gap: 8px; padding: 10px; }
+}

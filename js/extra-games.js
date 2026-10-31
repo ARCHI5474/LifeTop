@@ -1,4 +1,4 @@
-import { createMaterialIcon } from './icons.js?v=7.0';
+import { createMaterialIcon } from './icons.js?v=8.0';
 /* Local two-player board games and a solo deduction game. */
 export const neighbors = (i, size=9) => [i%size ? i-1:-1, i%size<size-1?i+1:-1, i>=size?i-size:-1, i<size*(size-1)?i+size:-1].filter(n=>n>=0);
 function group(board,i) {

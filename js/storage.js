@@ -4,7 +4,20 @@ import {
     STORAGE_KEY,
     userConfig,
     mergeUserConfig
-} from "./config.js?v=7.0";
+} from "./config.js?v=8.0";
+
+const saveListeners = new Set();
+export function onLocalSave(listener) {
+    saveListeners.add(listener);
+    return () => saveListeners.delete(listener);
+}
+
+export function writeStoredConfig(config, notify = true) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    if (notify) saveListeners.forEach(listener => {
+        try { listener(); } catch (error) { console.error('Sync notification failed', error); }
+    });
+}
 
 export function loadData() {
     try {
@@ -32,7 +45,7 @@ export function loadData() {
 
 export function save() {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(userConfig));
+        writeStoredConfig(userConfig);
         showStorageStatus('');
         return true;
     } catch (error) {

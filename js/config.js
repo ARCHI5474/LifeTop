@@ -1,10 +1,10 @@
 
 /* ========================    
-LifeTop v7.0 Codename: "Bounce gummy"
+LifeTop v8.0 Codename: "Slide gummy"
    ======================== */
 const UPDATE_CONFIG = {
-    notice: "LifeTop v7.0にアップデートしました。柔らかな操作感と、軽やかなバウンスをお楽しみください。",
-    tag: "LifeTop v7.0"
+    notice: "LifeTop v8.0 Slide gummyにアップデートしました。滑らかなタブ切り替え、見やすい天気、新しい設定と9種類のゲームをお楽しみください。",
+    tag: "LifeTop v8.0"
 };
 /* ========================================= */
 
@@ -350,12 +350,23 @@ let userConfig = {
     hideClockBackground: false,
     searchShape: "pill",
     reduceMotion: false,
+    textSize: 'standard',
+    highContrast: false,
+    compactLayout: false,
+    showNews: true,
+    showYoutube: true,
     searchEngine: "google",
     healthLog: {
         meals: {},
         medications: []
     }
 };
+
+// Personal content is kept when resetting preferences.
+const DEFAULT_SETTINGS = Object.freeze(Object.fromEntries(
+    Object.entries(userConfig).filter(([key, value]) =>
+        !['memo', 'memoHtml'].includes(key) && typeof value !== 'object')
+));
 
 function mergeUserConfig(parsed) {
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return;
@@ -449,6 +460,11 @@ function mergeUserConfig(parsed) {
         hideClockBackground: parsed.hideClockBackground === true,
         searchShape: ["pill", "rounded", "square"].includes(parsed.searchShape) ? parsed.searchShape : "pill",
         reduceMotion: parsed.reduceMotion === true,
+        textSize: ['standard', 'large', 'larger'].includes(parsed.textSize) ? parsed.textSize : 'standard',
+        highContrast: parsed.highContrast === true,
+        compactLayout: parsed.compactLayout === true,
+        showNews: parsed.showNews !== false,
+        showYoutube: parsed.showYoutube !== false,
         searchEngine: ["google", "bing", "duckduckgo", "yahoo"].includes(parsed.searchEngine) ? parsed.searchEngine : "google",
         calendarEvents: parsed.calendarEvents && typeof parsed.calendarEvents === 'object'
             ? parsed.calendarEvents
@@ -471,5 +487,6 @@ export {
     bgPresets,
     FIXED_BOOKMARKS,
     userConfig,
+    DEFAULT_SETTINGS,
     mergeUserConfig
 };

@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@500;700&family=Comfortaa:wght@400;700&family=Courier+Prime&family=DotGothic16&family=M+PLUS+1+Code&family=Oswald:wght@300;400;700&family=Outfit:wght@300;400;500;700;900&family=Righteous&family=Roboto+Mono:wght@200;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="preload" href="icons/material/material-symbols-outlined.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="stylesheet" href="css/style.css?v=7.0"> <!-- バージョン番号は毎回更新すること -->
+    <link rel="stylesheet" href="css/style.css?v=8.0"> <!-- バージョン番号は毎回更新すること -->
 </head>
 <body id="top">
 
@@ -27,7 +27,7 @@
         <span class="loading-logo">LifeTop<span class="loading-logo-dot" aria-hidden="true">.</span></span>
         <p class="loading-tagline">いつものネットを、ここから。</p>
         <div class="loading-status"><span class="loading-status-dot" aria-hidden="true"></span><span class="loading-label">あなたのスタートページを準備しています</span></div>
-        <p class="loading-release">v7.0 <span aria-hidden="true">/</span> Bounce gummy</p>
+        <p class="loading-release">v8.0 <span aria-hidden="true">/</span> Slide gummy</p>
     </div>
 </div>
 
@@ -572,8 +572,21 @@
             <span id="notice-text">お知らせはありません。</span>
         </div>
 
+        <section class="settings-section cloud-sync-section" data-setting-category="profile" aria-labelledby="cloud-sync-title">
+            <h3 class="settings-label" id="cloud-sync-title">Googleアカウント同期</h3>
+            <p class="settings-help">設定・プロフィール・ブックマーク・タスク・メモを端末間で同期します。ログイン後、初めに使うデータを選べます。</p>
+            <p id="cloud-sync-account" class="settings-help">未ログイン</p>
+            <p id="cloud-sync-status" class="settings-help" role="status" aria-live="polite">Googleアカウント同期は準備中です。現在はこの端末に保存されます。</p>
+            <button type="button" class="primary-btn" id="cloud-sync-login" hidden>Googleでログイン</button>
+            <button type="button" class="tonal-btn" id="cloud-sync-retry" hidden>今すぐ同期</button>
+            <button type="button" class="tonal-btn" id="cloud-sync-local" hidden>この端末のデータを残す</button>
+            <button type="button" class="tonal-btn" id="cloud-sync-cloud" hidden>クラウドのデータを使う</button>
+            <button type="button" class="tonal-btn" id="cloud-sync-recovery" hidden>同期前の端末データをバックアップ保存</button>
+            <button type="button" class="tonal-btn" id="cloud-sync-logout" hidden>ログアウト</button>
+            <p class="settings-help">変更が競合した場合は自動同期を止めて確認します。大きな画像などを含む900KB超のデータは同期できません。JSONバックアップをご利用ください。</p>
+        </section>
         <!-- ユーザー名設定 -->
-        <div class="settings-section" id="profile-section">
+        <div class="settings-section" id="profile-section" data-setting-category="profile">
             <h3 class="settings-label">ユーザープロフィール</h3>
             <div class="profile-preview"><span class="user-avatar profile-avatar" id="profile-avatar-preview" aria-hidden="true"></span><div class="profile-preview-copy"><span class="settings-help">現在のプロフィール</span><strong id="profile-name-preview">ゲスト</strong></div></div>
             <fieldset class="profile-field"><legend>名前を変更</legend>
@@ -593,13 +606,13 @@
         </div>
 
         <!-- カラーコンビ -->
-        <div class="settings-section">
+        <div class="settings-section" data-setting-category="appearance">
             <label class="settings-label">カラーコンビ</label>
             <div class="color-combo-grid" id="color-combos"></div>
         </div>
 
         <!-- 高画質壁紙（プリセット＆カスタム画像） -->
-        <div class="settings-section">
+        <div class="settings-section" data-setting-category="appearance">
             <label class="settings-label">高画質な壁紙</label>
             <div class="bg-preset-grid" id="bg-presets"></div>
             <div class="background-image-controls">
@@ -617,7 +630,7 @@
         </div>
 
         <!-- 時計表示設定 -->
-        <div class="settings-section">
+        <div class="settings-section" data-setting-category="clock">
             <label class="settings-label">時計の設定</label>
             <div class="toggle-wrapper">
                 <label for="clock-12h-toggle">12時間表記</label>
@@ -628,11 +641,11 @@
 
 
         <!-- フォントスタイル -->
-        <div class="settings-section">
+        <div class="settings-section" data-setting-category="clock">
             <label class="settings-label">時計フォント</label>
             <div class="picker font-picker" id="font-styles"></div>
         </div>
-        <details class="settings-section advanced-settings">
+        <details class="settings-section advanced-settings" data-setting-category="advanced">
             <summary class="settings-label">高度な設定</summary>
             <div class="advanced-content">
                 <div class="toggle-wrapper"><label for="advanced-hideClockBackground">時計エリアの背景を消す</label><label class="switch"><input type="checkbox" role="switch" id="advanced-hideClockBackground" onchange="setAdvancedSetting('hideClockBackground',this.checked)"><span class="slider" aria-hidden="true"></span></label></div>
@@ -644,10 +657,21 @@
                 <p class="settings-help" id="advanced-reset-status" role="status">高度な設定の項目だけを初期値に戻します。</p>
             </div>
         </details>
-        <section class="settings-about" aria-labelledby="settings-about-title">
+        <section class="settings-section" data-setting-category="advanced" aria-labelledby="data-management-title">
+            <h3 class="settings-label" id="data-management-title">バックアップと初期化</h3>
+            <p class="settings-help">設定・プロフィール・ブックマーク・タスク・メモをJSONファイルに保存し、別のブラウザでも復元できます。バックアップには入力した内容やアップロード画像が含まれます。</p>
+            <button type="button" class="tonal-btn" id="backup-download">バックアップを保存</button>
+            <label for="backup-upload">バックアップファイルを選ぶ（JSON・10MBまで）</label>
+            <input id="backup-upload" type="file" accept=".json,application/json" aria-describedby="data-management-status">
+            <button type="button" class="primary-btn" id="backup-restore" hidden>この内容で復元して再読み込み</button>
+            <button type="button" class="tonal-btn" id="backup-cancel" hidden>復元をキャンセル</button>
+            <p class="settings-help" role="status" aria-live="polite" id="data-management-status">復元する前にファイルを確認します。設定の初期化ではブックマーク・タスク・メモは削除されません。</p>
+            <button type="button" class="tonal-btn" id="settings-reset-all">設定をすべてデフォルトに戻す</button>
+        </section>
+        <section class="settings-about" aria-labelledby="settings-about-title" data-setting-category="advanced">
             <h3 id="settings-about-title">情報</h3>
-            <p class="settings-about-version">LifeTop <span>v7.0</span></p>
-            <p class="settings-about-codename">コードネーム：<span lang="en">Bounce gummy</span></p>
+            <p class="settings-about-version">LifeTop <span>v8.0</span></p>
+            <p class="settings-about-codename">コードネーム：<span lang="en">Slide gummy</span></p>
         </section>
     </div>
 </div>
@@ -717,7 +741,7 @@
     </div>
 </div>
 
-<script type="module" src="./js/main.js?v=7.0"></script>
+<script type="module" src="./js/main.js?v=8.0"></script>
 
 
 </body>

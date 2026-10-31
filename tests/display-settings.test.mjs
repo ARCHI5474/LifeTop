@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { mergeUserConfig, userConfig } from '../js/config.js?v=8.0';
+mergeUserConfig({textSize:'larger', highContrast:true, compactLayout:true, showNews:false, showYoutube:false});
+assert.equal(userConfig.textSize,'larger');
+assert.equal(userConfig.highContrast,true);
+assert.equal(userConfig.compactLayout,true);
+assert.equal(userConfig.showNews,false);
+assert.equal(userConfig.showYoutube,false);
+mergeUserConfig({textSize:'invalid', highContrast:'true', compactLayout:1});
+assert.equal(userConfig.textSize,'standard');
+assert.equal(userConfig.highContrast,false);
+assert.equal(userConfig.compactLayout,false);
+assert.equal(userConfig.showNews,true,'older saved configurations preserve visible widgets');
+assert.equal(userConfig.showYoutube,true);
+console.log('PASS: new display settings restore safely and older saved data retains defaults');

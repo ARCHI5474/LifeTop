@@ -1,6 +1,6 @@
-import { userConfig } from './config.js?v=7.0';
-import { save } from './storage.js?v=7.0';
-import { updateClock } from './clock.js?v=7.0';
+import { userConfig } from './config.js?v=8.0';
+import { save } from './storage.js?v=8.0';
+import { updateClock } from './clock.js?v=8.0';
 
 const engines = {
     google: ['Google', 'https://www.google.com/search', 'q'],
@@ -8,13 +8,27 @@ const engines = {
     duckduckgo: ['DuckDuckGo', 'https://duckduckgo.com/', 'q'],
     yahoo: ['Yahoo! JAPAN', 'https://search.yahoo.co.jp/search', 'p']
 };
-const defaults = { hideClockBackground: false, clockShowSec: false, reduceMotion: false, searchShape: 'pill', searchEngine: 'google' };
+const defaults = { hideClockBackground: false, clockShowSec: false, reduceMotion: false, searchShape: 'pill', searchEngine: 'google', textSize: 'standard', highContrast: false, compactLayout: false, showNews: true, showYoutube: true };
 
 export function applyAdvancedSettings() {
     const root = document.documentElement;
     root.style.setProperty('--search-radius', { pill: '999px', rounded: '16px', square: '0px' }[userConfig.searchShape]);
     root.classList.toggle('reduce-motion', userConfig.reduceMotion);
     root.classList.toggle('hide-clock-background', userConfig.hideClockBackground);
+    root.dataset.textSize = userConfig.textSize;
+    root.classList.toggle('high-contrast', userConfig.highContrast);
+    root.classList.toggle('compact-layout', userConfig.compactLayout);
+    for (const [key, selector] of [['showNews', '.news-card'], ['showYoutube', '.youtube-card']]) {
+        const card = document.querySelector(selector);
+        if (card) card.hidden = !userConfig[key];
+    }
+    for (const key of ['textSize', 'highContrast', 'compactLayout', 'showNews', 'showYoutube']) {
+        const control = document.getElementById('advanced-' + key);
+        if (control) {
+            if (control.type === 'checkbox') control.checked = userConfig[key];
+            else control.value = userConfig[key];
+        }
+    }
     for (const key of ['hideClockBackground', 'searchShape', 'reduceMotion', 'searchEngine']) {
         const control = document.getElementById('advanced-' + key);
         if (!control) continue;
@@ -39,11 +53,13 @@ export function applyAdvancedSettings() {
 }
 
 export function setAdvancedSetting(key, value) {
-    if (key === 'searchShape') {
+    if (key === 'textSize') {
+        if (!['standard', 'large', 'larger'].includes(value)) return;
+    } else if (key === 'searchShape') {
         if (!['pill', 'rounded', 'square'].includes(value)) return;
     } else if (key === 'searchEngine') {
         if (!Object.hasOwn(engines, value)) return;
-    } else if (['reduceMotion', 'hideClockBackground'].includes(key)) {
+    } else if (['reduceMotion', 'hideClockBackground', 'highContrast', 'compactLayout', 'showNews', 'showYoutube'].includes(key)) {
         value = Boolean(value);
     } else return;
     userConfig[key] = value;

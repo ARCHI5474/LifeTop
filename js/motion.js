@@ -1,18 +1,23 @@
 /* One input-independent feedback layer. Never delays the control's action. */
 export function initMotion() {
+    initSelectionIndicators();
     const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
     const reduced = () => preference.matches || document.documentElement.classList.contains('reduce-motion');
     const presses = new Map();
     const running = new Map();
     const targetFor = target => {
+        if (!(target instanceof Element)) return null;
         if (target.closest('.puzzle-board, .othello-board, .extra-board, [contenteditable]')) return null;
         const control = target.closest('button, a.bookmark-item, .background-upload-btn, .choice-option, .switch');
         if (!control || control.matches(':disabled, [aria-disabled="true"]') || control.querySelector('input:disabled')) return null;
         return control.matches('.choice-option') ? control.querySelector('.choice-content') : control.matches('.switch') ? control.querySelector('.slider') : control;
     };
     const animate = (element, frames, options) => {
+        const currentScale = getComputedStyle(element).scale;
         running.get(element)?.cancel();
+        running.delete(element);
         if (reduced() || !element.isConnected) return;
+        frames[0] = { ...frames[0], scale: currentScale === 'none' ? '1' : currentScale };
         const animation = element.animate(frames, options);
         running.set(element, animation);
         animation.finished.then(() => {
@@ -67,4 +72,57 @@ export function initMotion() {
         presses.forEach(({ element }) => release(element, false));
         presses.clear();
     });
+}
+
+/* A shared background moves independently of the labels and press feedback. */
+function initSelectionIndicators() {
+    const selector = '.utility-tabs, .news-tabs, .bookmark-tabs, .clock-tool-switch, .game-selector-tabs, .game-segmented, .bm-dialog-mode-tabs, .settings-category-tabs';
+    const groups = new Set();
+    let pending = false;
+    const update = () => {
+        pending = false;
+        document.querySelectorAll(selector).forEach(group => {
+            if (!groups.has(group)) {
+                groups.add(group);
+                group.classList.add('sliding-selection');
+                resize.observe(group);
+            }
+            const active = [...group.children].find(child => child.matches('button.active'));
+            if (!active || !active.getClientRects().length) {
+                group.classList.remove('selection-ready');
+                return;
+            }
+            const x = active.offsetLeft;
+            const y = active.offsetTop;
+            group.style.setProperty('--selection-x', `${x}px`);
+            group.style.setProperty('--selection-y', `${y}px`);
+            group.style.setProperty('--selection-width', `${active.offsetWidth}px`);
+            group.style.setProperty('--selection-height', `${active.offsetHeight}px`);
+            // Commit the first position without animating from the origin.
+            if (!group.classList.contains('selection-ready')) {
+                group.getBoundingClientRect();
+                group.classList.add('selection-ready');
+            }
+        });
+        groups.forEach(group => {
+            if (!group.isConnected) { resize.unobserve(group); groups.delete(group); }
+        });
+    };
+    const schedule = () => {
+        if (!pending) { pending = true; requestAnimationFrame(update); }
+    };
+    const resize = new ResizeObserver(schedule);
+    new MutationObserver(records => {
+        // Ignore clock ticks, game board updates and our own marker classes.
+        // Only selection controls or ancestors affecting their layout matter.
+        if (records.some(record => {
+            const target = record.target;
+            if (!(target instanceof Element)) return false;
+            if (record.type === 'attributes' && target.matches(selector)) return false;
+            return !!target.closest(selector) || !!target.querySelector(selector);
+        })) schedule();
+    }).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class', 'hidden'] });
+    window.addEventListener('resize', schedule, { passive: true });
+    document.fonts.ready.then(schedule);
+    update();
 }
