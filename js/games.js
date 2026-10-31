@@ -1,4 +1,4 @@
-/* LifeTop - Mini Game Center (Snake, Sliding Puzzle, Othello) */
+/* LifeTop - GameBox */
 
 const GAME_STATS_KEY = 'lifetop_v4_game_stats';
 
@@ -48,7 +48,9 @@ export function toggleGameModal(forceState) {
         gameModalTrigger = document.activeElement;
         switchGameTab(activeGame);
         setTimeout(() => {
-            modal.querySelector('.game-tab-btn.active')?.focus({ preventScroll: true });
+            const picker = document.getElementById('gamebox-select');
+            if (picker?.getClientRects().length) picker.focus({preventScroll:true});
+            else modal.querySelector('.game-tab-btn.active')?.focus({ preventScroll: true });
         }, 40);
     } else {
         document.getElementById('game-rules')?.hidePopover();
@@ -63,6 +65,11 @@ export function toggleGameModal(forceState) {
 export function switchGameTab(gameId) {
     if (!['snake', 'puzzle', 'othello', 'go', 'shogi', 'hitblow', 'tictactoe', 'memory', 'lights'].includes(gameId)) return;
     activeGame = gameId;
+    const picker = document.getElementById('gamebox-select');
+    if (picker) {
+        picker.value = gameId;
+        picker.setAttribute('aria-controls', `game-pane-${gameId}`);
+    }
     const rules = {
         tictactoe: '2人対戦。交互に○と×を置き、縦・横・斜めに3つ並べると勝ち。全マスが埋まると引き分けです。',
         memory: '2枚ずつカードを開き、同じ記号をそろえます。異なるペアは0.9秒後に閉じます。すべてそろえるとクリアです。',

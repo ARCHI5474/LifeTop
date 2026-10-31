@@ -53,6 +53,13 @@ export function initCasualGames() {
         host.append(pane);
         const status = pane.querySelector('.casual-status');
         const board = pane.querySelector('.casual-board');
+        board.style.gridTemplateRows = `repeat(${size}, minmax(0, 1fr))`;
+        const layout = document.createElement('div'); layout.className = 'game-layout casual-game-layout';
+        const stage = document.createElement('div'); stage.className = 'game-stage-wrap'; stage.append(board);
+        const sidebar = document.createElement('div'); sidebar.className = 'game-sidebar';
+        sidebar.append(pane.querySelector('h3'), pane.querySelector('.extra-controls'), status);
+        layout.append(stage, sidebar);
+        pane.replaceChildren(layout);
         const cells = Array.from({length: size * size}, (_, index) => {
             const button = document.createElement('button'); button.type = 'button';
             button.onclick = () => play(index);

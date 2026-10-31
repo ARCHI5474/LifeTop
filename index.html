@@ -52,8 +52,8 @@
     </div>
     <div class="header-right">
         <button type="button" class="primary-btn google-account-trigger" id="header-google-account" hidden>Googleでログイン</button>
-        <!-- ミニゲームトリガー（旧ヘルプボタン位置） -->
-        <button type="button" class="icon-btn game-trigger-btn animate-fade-in" id="game-open-btn" onclick="toggleGameModal()" title="ミニゲーム" aria-label="ミニゲームを開く"><span class="material-symbols-outlined" aria-hidden="true">sports_esports</span></button>
+        <!-- GameBox -->
+        <button type="button" class="icon-btn game-trigger-btn animate-fade-in" id="game-open-btn" onclick="toggleGameModal()" title="GameBox" aria-label="GameBoxを開く"><span class="material-symbols-outlined" aria-hidden="true">sports_esports</span></button>
         <!-- 設定トリガー -->
         <button type="button" class="icon-btn animate-fade-in" onclick="toggleSettings()" title="Quickパネル" aria-label="Quickパネル" aria-controls="settings-panel" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">settings</span></button>
     </div>
@@ -63,15 +63,15 @@
 
 <div class="modal-overlay" id="game-overlay" onclick="toggleGameModal(false)"></div>
 
-<!-- 大画面ミニゲームセンター (ヘビゲーム / パズル / オセロ) -->
+<!-- GameBox -->
 <div class="game-modal" id="game-modal" role="dialog" aria-modal="true" aria-labelledby="game-modal-title" inert>
     <div class="game-modal-card">
         <div class="popup-modal-header game-modal-header">
             <div class="game-header-title-wrap">
                 <p class="help-kicker">LifeTop ARCADE</p>
-                <h2 id="game-modal-title"><span class="material-symbols-outlined" aria-hidden="true">sports_esports</span> ミニゲームセンター</h2>
+                <h2 id="game-modal-title"><span class="material-symbols-outlined" aria-hidden="true">sports_esports</span> GameBox</h2>
             </div>
-            <div class="game-selector-tabs" role="tablist" aria-label="ミニゲーム選択">
+            <div class="game-selector-tabs" role="tablist" aria-label="GameBoxのゲーム選択">
                 <button type="button" class="game-tab-btn active" data-game-tab="snake" role="tab" aria-selected="true" onclick="switchGameTab('snake')">
                     <span class="material-symbols-outlined" aria-hidden="true">conversion_path</span>
                     <span>ヘビゲーム</span>
@@ -85,6 +85,7 @@
                     <span>オセロ</span>
                 </button>
             </div>
+            <div class="gamebox-picker"><label for="gamebox-select">ゲームを選ぶ</label><select id="gamebox-select" onchange="switchGameTab(this.value)"><option value="snake">ヘビゲーム</option><option value="puzzle">パズル</option><option value="othello">オセロ</option><option value="go">囲碁</option><option value="shogi">将棋</option><option value="hitblow">ヒットアンドブロー</option><option value="tictactoe">三目並べ</option><option value="memory">神経衰弱</option><option value="lights">ライツアウト</option></select></div>
             <div class="game-header-actions"><button type="button" class="icon-btn" popovertarget="game-rules" aria-label="遊び方を表示" title="遊び方"><span class="material-symbols-outlined" aria-hidden="true">info</span></button>
             <button class="icon-btn close-action" type="button" onclick="toggleGameModal(false)" title="ゲームを閉じる" aria-label="ゲームを閉じる">
                 <span class="material-symbols-outlined" aria-hidden="true">close</span>

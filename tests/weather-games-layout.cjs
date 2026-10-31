@@ -19,6 +19,14 @@ const assert=require('node:assert/strict');const fs=require('node:fs/promises');
  for(const [width,height]of [[320,568],[320,740],[390,844],[600,900],[768,1024],[1440,1000],[740,360]]){
   if(process.env.LAYOUT_WIDTH&&width!==Number(process.env.LAYOUT_WIDTH))continue;
   await page.setViewportSize({width,height});await page.locator('#game-open-btn').click();await page.waitForTimeout(450);
+  const compact=await page.locator('#gamebox-select').isVisible();
+  assert.match(await page.locator('#game-modal-title').innerText(),/GameBox/);
+  if(compact){
+   assert.equal(await page.locator('#gamebox-select option').count(),9);
+   await page.locator('#gamebox-select').selectOption('lights');
+   assert.equal(await page.locator('[data-game-pane=lights]').isVisible(),true);
+   await page.locator('#gamebox-select').selectOption('snake');
+  }else{
   await page.locator('.game-tab-btn.active').focus();
   await page.keyboard.press('End');
   assert.equal(await page.locator('[data-game-tab=lights]').getAttribute('aria-selected'),'true');
@@ -30,11 +38,14 @@ const assert=require('node:assert/strict');const fs=require('node:fs/promises');
   assert.equal(await page.locator('.game-tab-btn .material-symbols-outlined').count(),9);
   assert.equal(await page.locator('.game-tab-btn > span:not(.material-symbols-outlined)').evaluateAll(nodes=>nodes.length===9&&nodes.every(n=>{const r=n.getBoundingClientRect(),b=n.parentElement.getBoundingClientRect();return r.width>0&&r.height>0&&r.left>=b.left&&r.right<=b.right+1&&r.bottom<=b.bottom+1&&getComputedStyle(n).visibility==='visible';})),true,'all game names are visible inside their tabs');
   assert.equal(await page.locator('.game-tab-btn .material-symbols-outlined').evaluateAll(nodes=>nodes.every(n=>getComputedStyle(n).display!=='none')),true,'all game icons visible');
+  }
   for(const game of ['snake','puzzle','othello','go','shogi','hitblow','tictactoe','memory','lights']){
-   await page.locator('[data-game-tab='+game+']').click();
+   if(compact)await page.locator('#gamebox-select').selectOption(game);
+   else await page.locator('[data-game-tab='+game+']').click();
+   assert.equal(await page.locator('#gamebox-select').inputValue(),game,'desktop and compact selectors stay synchronized');
    if(game==='hitblow'){for(let i=0;i<10;i++){if(await page.locator('#hit-input').isDisabled())break;await page.locator('#hit-input').fill('0123');await page.locator('#hit-submit').click();}}
    const found=await page.evaluate(()=>{
-    const selectors=['.game-modal-card','.game-modal-body','.game-pane.active','.game-pane.active .game-sidebar','.game-pane.active .hit-history'];
+    const selectors=['.game-modal-card','.game-modal-body','.game-pane.active','.game-pane.active .game-sidebar','.game-pane.active .game-stage-wrap','.game-pane.active .hit-history'];
     const problems=[];for(const s of selectors){const e=document.querySelector(s);if(e&&e.scrollHeight>e.clientHeight+2)problems.push({s,h:e.clientHeight,scroll:e.scrollHeight});}
     const pane=document.querySelector('.game-pane.active'),r=pane.getBoundingClientRect();for(const e of pane.querySelectorAll('button,input')){const b=e.getBoundingClientRect();if(b.width&&b.height&&(b.bottom>r.bottom+2||b.right>r.right+2||b.left<r.left-2||b.top<r.top-2))problems.push({control:e.id||e.className,bottom:b.bottom,right:b.right,paneBottom:r.bottom,paneRight:r.right});}
     return problems;

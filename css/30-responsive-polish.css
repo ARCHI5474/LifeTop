@@ -77,8 +77,6 @@ body .environment-info, body .environment-info dl { min-width: 0; }
     body .sync-guide-actions { flex-direction: column; }
     body .sync-guide-actions .primary-btn { flex-basis: auto; }
 }
-body #game-modal .game-pane:is([data-game-pane="tictactoe"],[data-game-pane="memory"],[data-game-pane="lights"]).active { overflow-y: auto; overscroll-behavior: contain; padding: 4px; }
-body #game-modal .casual-board.extra-board { width: min(100%,360px); height: auto; aspect-ratio: auto; }
 @media(max-height:500px) {
     body dialog.sync-guide { padding: 16px 20px; border-radius: 20px; }
     body .sync-guide-art { width: 44px; height: 44px; font-size: 30px; margin-bottom: 10px; }
