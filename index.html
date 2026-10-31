@@ -305,7 +305,6 @@
                 <div class="card-header bookmark-card-header">
                     <h3><span class="material-symbols-outlined" aria-hidden="true">bookmarks</span> Quickアクセス</h3>
                     <div class="bookmark-header-controls">
-                        <button type="button" class="tonal-btn stability-check-trigger" id="stability-check-open" aria-haspopup="dialog" aria-controls="stability-check"><span class="material-symbols-outlined" aria-hidden="true">check_circle</span>安定性チェック</button>
                         <button type="button" class="icon-btn-small" id="edit-bookmarks-btn" aria-pressed="false" onclick="toggleBookmarkEditMode()" title="ブックマークを編集" aria-label="ブックマークを編集">
                             <span class="material-symbols-outlined" aria-hidden="true">edit</span>
                         </button>
@@ -671,6 +670,11 @@
                 <p class="settings-help" id="advanced-reset-status" role="status">高度な設定の項目だけを初期値に戻します。</p>
             </div>
         </details>
+        <section class="settings-section" data-setting-category="advanced" aria-labelledby="stability-settings-title">
+            <h3 class="settings-label" id="stability-settings-title">安定性チェック</h3>
+            <p class="settings-help">約3秒で、このブラウザでのLifeTopの描画・応答・端末内保存を確認します。</p>
+            <button type="button" class="tonal-btn stability-check-trigger" id="stability-check-open" aria-haspopup="dialog" aria-controls="stability-check"><span class="material-symbols-outlined" aria-hidden="true">check_circle</span>安定性チェックを開く</button>
+        </section>
         <section class="settings-section" data-setting-category="advanced" aria-labelledby="data-management-title">
             <h3 class="settings-label" id="data-management-title">バックアップと初期化</h3>
             <p class="settings-help">設定・プロフィール・ブックマーク・タスク・メモをJSONファイルに保存し、別のブラウザでも復元できます。バックアップには入力した内容やアップロード画像が含まれます。</p>
