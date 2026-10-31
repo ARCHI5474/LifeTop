@@ -356,6 +356,7 @@ let userConfig = {
     showNews: true,
     showYoutube: true,
     searchEngine: "google",
+    syncTiming: 'every3',
     healthLog: {
         meals: {},
         medications: []
@@ -363,6 +364,7 @@ let userConfig = {
 };
 
 // Personal content is kept when resetting preferences.
+export const DEFAULT_CONTENT = JSON.parse(JSON.stringify({memo:userConfig.memo, memoHtml:userConfig.memoHtml, bookmarks:userConfig.bookmarks, todoList:userConfig.todoList}));
 const DEFAULT_SETTINGS = Object.freeze(Object.fromEntries(
     Object.entries(userConfig).filter(([key, value]) =>
         !['memo', 'memoHtml'].includes(key) && typeof value !== 'object')
@@ -466,6 +468,7 @@ function mergeUserConfig(parsed) {
         showNews: parsed.showNews !== false,
         showYoutube: parsed.showYoutube !== false,
         searchEngine: ["google", "bing", "duckduckgo", "yahoo"].includes(parsed.searchEngine) ? parsed.searchEngine : "google",
+        syncTiming: ['every3','everyVisit','live','manual'].includes(parsed.syncTiming) ? parsed.syncTiming : 'every3',
         calendarEvents: parsed.calendarEvents && typeof parsed.calendarEvents === 'object'
             ? parsed.calendarEvents
             : {},

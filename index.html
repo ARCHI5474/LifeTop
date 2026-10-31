@@ -51,6 +51,7 @@
         </button>
     </div>
     <div class="header-right">
+        <button type="button" class="primary-btn google-account-trigger" id="header-google-account" hidden>Googleでログイン</button>
         <!-- ミニゲームトリガー（旧ヘルプボタン位置） -->
         <button type="button" class="icon-btn game-trigger-btn animate-fade-in" id="game-open-btn" onclick="toggleGameModal()" title="ミニゲーム" aria-label="ミニゲームを開く"><span class="material-symbols-outlined" aria-hidden="true">sports_esports</span></button>
         <!-- 設定トリガー -->
@@ -67,7 +68,7 @@
     <div class="game-modal-card">
         <div class="popup-modal-header game-modal-header">
             <div class="game-header-title-wrap">
-                <p class="help-kicker">LIFETOP ARCADE</p>
+                <p class="help-kicker">LifeTop ARCADE</p>
                 <h2 id="game-modal-title"><span class="material-symbols-outlined" aria-hidden="true">sports_esports</span> ミニゲームセンター</h2>
             </div>
             <div class="game-selector-tabs" role="tablist" aria-label="ミニゲーム選択">
@@ -573,11 +574,22 @@
         </div>
 
         <section class="settings-section cloud-sync-section" data-setting-category="profile" aria-labelledby="cloud-sync-title">
-            <h3 class="settings-label" id="cloud-sync-title">Googleアカウント同期</h3>
-            <p class="settings-help">設定・プロフィール・ブックマーク・タスク・メモを端末間で同期します。ログイン後、初めに使うデータを選べます。</p>
+            <span class="cloud-save-badge" id="cloud-save-mode">この端末に保存中</span>
+            <h3 class="settings-label" id="cloud-sync-title">Googleで、いつものLifeTopを</h3>
+            <p class="settings-help">ログインすると、この端末の設定・ブックマーク・タスク・メモを自動で引き継ぎ、ほかの端末でも使えます。</p>
             <p id="cloud-sync-account" class="settings-help">未ログイン</p>
             <p id="cloud-sync-status" class="settings-help" role="status" aria-live="polite">Googleアカウント同期は準備中です。現在はこの端末に保存されます。</p>
             <button type="button" class="primary-btn" id="cloud-sync-login" hidden>Googleでログイン</button>
+            <button type="button" class="text-btn" id="cloud-sync-guide" hidden>同期のはじめ方を見る</button>
+            <button type="button" class="text-btn" id="sync-explanation-open" aria-haspopup="dialog" aria-controls="sync-explanation">同期のしくみ・保存について</button>
+            <label for="advanced-syncTiming">同期タイミング</label>
+            <select class="settings-input" id="advanced-syncTiming" aria-describedby="cloud-sync-timing-status" onchange="setAdvancedSetting('syncTiming',this.value)">
+                <option value="every3">アクセス3回に1回（標準）</option>
+                <option value="everyVisit">アクセスするたび</option>
+                <option value="live">リアルタイム</option>
+                <option value="manual">手動のみ</option>
+            </select>
+            <p class="settings-help" id="cloud-sync-timing-status">初回移行はすぐに実行し、その後はアクセス3回に1回、自動同期します。</p>
             <button type="button" class="tonal-btn" id="cloud-sync-retry" hidden>今すぐ同期</button>
             <button type="button" class="tonal-btn" id="cloud-sync-local" hidden>この端末のデータを残す</button>
             <button type="button" class="tonal-btn" id="cloud-sync-cloud" hidden>クラウドのデータを使う</button>
@@ -672,12 +684,61 @@
             <h3 id="settings-about-title">情報</h3>
             <p class="settings-about-version">LifeTop <span>v8.0</span></p>
             <p class="settings-about-codename">コードネーム：<span lang="en">Slide gummy</span></p>
+            <details class="environment-info" open>
+                <summary>推奨環境・対応環境</summary>
+                <p>推奨：Windows・macOSの最新版Chrome／Edge。PCでは幅1280px以上、スマートフォンでは幅390px以上が見やすい構成です。</p>
+                <dl>
+                    <dt>PCブラウザ</dt><dd>Chrome・Edge・Firefox・Safariの現行安定版を対応対象としています。SafariはmacOS版が対象です。</dd>
+                    <dt>スマートフォン・タブレット</dt><dd>AndroidのChrome、iPhone・iPadのSafariの現行版。タッチ操作に対応し、幅320pxからレイアウトを調整します。横向きの狭い画面ではスクロールをご利用ください。</dd>
+                    <dt>Googleログイン・同期</dt><dd>HTTPS接続、Googleアカウント、インターネット接続が必要です。JavaScriptとサイトのデータ保存を許可し、ログイン時はポップアップを許可してください。同期タイミングは標準でアクセス3回に1回です。</dd>
+                    <dt>端末内保存・オフライン</dt><dd>読み込み済みの画面では、タスク・メモ・設定を端末内に保存できます。ブラウザのデータ削除で端末の保存内容も消えます。オフラインでの初回起動や、画面の再読み込みは保証されません。天気・ニュースの更新には通信が必要です。</dd>
+                    <dt>容量とバックアップ</dt><dd>クラウド同期は合計900KBまで、JSONバックアップの保存・復元は10MBまで。アップロード画像も容量に含まれます。ブラウザ側の保存容量が不足すると端末保存も失敗するため、保存エラーの表示をご確認ください。</dd>
+                    <dt>制限がある環境</dt><dd>プライベートブラウズではログインや保存内容が終了時に失われることがあります。SNSなどのアプリ内ブラウザでは通常のChromeやSafariで開き直してください。古いブラウザ、Internet Explorer、JavaScript無効、サイトデータ保存禁止、file://での直接起動は対象外です。</dd>
+                    <dt>操作と見やすさ</dt><dd>キーボード・マウス・タッチ操作に対応。Quickパネルで文字サイズ・コントラスト・動きを減らす設定を変更できます。音声読み上げの動作はブラウザと支援技術によって異なります。</dd>
+                </dl>
+                <p class="settings-help">上記は設計上の対応対象です。すべてのOS・端末の組み合わせで実機検証済みという意味ではありません。</p>
+                <a href="https://firebase.google.com/docs/web/environments-js-sdk" target="_blank" rel="noopener noreferrer">Google同期で使用するFirebaseの対応環境</a>
+            </details>
         </section>
     </div>
 </div>
 
 <footer class="app-footer"><span class="footer-brand"><img class="footer-brand-icon" src="icons/icon-192.png" alt="" width="20" height="20" decoding="async">LifeTop</span><span>いつものネットを、ここから。</span></footer>
 <div id="storage-status" class="storage-status" role="status" hidden></div>
+
+<dialog id="sync-guide" class="sync-guide" aria-labelledby="sync-guide-title" aria-describedby="sync-guide-copy">
+    <div class="sync-guide-art" aria-hidden="true">☁</div>
+    <p class="help-kicker" id="sync-guide-progress">同期のはじめ方</p>
+    <h2 id="sync-guide-title">Googleで、いつものLifeTopを</h2>
+    <p id="sync-guide-copy"></p>
+    <p id="sync-guide-error" role="status" aria-live="polite"></p>
+    <div class="sync-guide-actions">
+        <button type="button" class="text-btn" id="sync-guide-back" hidden>戻る</button>
+        <button type="button" class="primary-btn" id="sync-guide-primary">次へ</button>
+        <button type="button" class="text-btn" id="sync-guide-learn" hidden>使い方を見る</button>
+    </div>
+    <p class="settings-help">ログイン前はこの端末に保存されます。大きな画像などを含む900KB超のデータは、移行前に調整が必要です。</p>
+    <div class="sync-guide-dismiss">
+        <button type="button" class="text-btn" id="sync-guide-later">あとで（7日後に案内）</button>
+        <button type="button" class="text-btn" id="sync-guide-never">今後は自動表示しない</button>
+    </div>
+</dialog>
+
+<dialog id="sync-explanation" class="sync-guide sync-explanation" aria-labelledby="sync-explanation-title">
+    <p class="help-kicker">SAVE &amp; SYNC</p>
+    <h2 id="sync-explanation-title">同期と保存のしくみ</h2>
+    <p id="sync-explanation-mode" class="cloud-save-badge"></p>
+    <dl>
+        <dt>まず端末に保存</dt><dd>タスク・メモ・設定の変更は、その都度このブラウザに保存します。同期を待つ間やオフライン中も編集できます。</dd>
+        <dt>標準はアクセス3回に1回</dt><dd>ログインした状態でページを開く・再読み込みするたびに1アクセスです。同じページでタブやQuickパネルを切り替えても回数は増えません。3回目ごとのアクセスと、その訪問中の変更を自動同期します。回数とタイミング設定は端末・ブラウザごとに管理します。</dd>
+        <dt>自分に合うタイミング</dt><dd>「アクセスするたび」は毎回と訪問中の変更を同期。「リアルタイム」はさらに別端末の更新も継続受信。「手動のみ」は「今すぐ同期」を押したときに実行します。どの設定でも初回ログイン時の自動移行はすぐに行います。</dd>
+        <dt>自動移行と競合</dt><dd>初回はローカルデータを自動移行し、既存のタスク・ブックマーク・メモを残して統合します。同期を始めた後、双方で異なる編集がある場合は自動同期を止めて確認します。意図しない別アカウントへの移行も確認します。</dd>
+        <dt>通信が戻ったら</dt><dd>同期対象の訪問中は、接続回復後に自動で再試行します。同期を見送る訪問では、次の同期対象アクセスまで端末保存を続けます。「今すぐ同期」なら回数を待たずに反映できます。</dd>
+        <dt>何を同期する？</dt><dd>設定・プロフィール・ブックマーク・タスク・メモが対象です。天気などのキャッシュ、位置情報、ゲームの記録、同期タイミングとアクセス回数は同期しません。同期は900KBまでです。</dd>
+        <dt>バックアップも残せます</dt><dd>「詳細」からJSONバックアップを保存できます。クラウド内容の取り込み前には、直前の端末内容を復旧用に1世代保存します。ログアウトしても端末データは残ります。</dd>
+    </dl>
+    <button type="button" class="primary-btn" id="sync-explanation-close">わかりました</button>
+</dialog>
 
 <!-- 天気拡張表示 -->
 <div class="weather-modal" id="weather-detail-modal" role="dialog" aria-modal="true" aria-labelledby="weather-modal-title" inert>

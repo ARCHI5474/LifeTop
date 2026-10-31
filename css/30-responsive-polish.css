@@ -1,0 +1,88 @@
+:root { --dialog-gap: clamp(10px, 2.5vw, 24px); --visual-height: 100dvh; --visual-top: 0px; }
+body .brand-word { display: inline-block; white-space: nowrap; word-break: normal; overflow-wrap: normal; text-indent: 0; text-transform: none; }
+body .brand-copy { min-width: 0; max-width: 100%; }
+/* The global margin reset must not override the native dialog's centering. */
+body dialog.sync-guide {
+    position: fixed;
+    inset: 0;
+    inset-block-start: var(--visual-top);
+    inset-block-end: calc(100dvh - var(--visual-top) - var(--visual-height));
+    margin: auto;
+    width: min(480px, calc(100% - 2 * var(--dialog-gap) - env(safe-area-inset-left) - env(safe-area-inset-right)));
+    max-width: none;
+    max-height: calc(var(--visual-height) - 2 * var(--dialog-gap) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    padding: clamp(18px, 4vw, 28px);
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    overflow-wrap: anywhere;
+    scroll-padding-block: 20px;
+}
+body :is(.game-modal,.help-modal,.popup-modal,.weather-modal) {
+    top: var(--visual-top);
+    bottom: auto;
+    height: var(--visual-height);
+    padding: max(var(--dialog-gap), env(safe-area-inset-top)) max(var(--dialog-gap), env(safe-area-inset-right)) max(var(--dialog-gap), env(safe-area-inset-bottom)) max(var(--dialog-gap), env(safe-area-inset-left));
+}
+body :is(.help-modal-card,.popup-modal-card,.weather-modal-content),
+body #game-modal .game-modal-card {
+    max-width: 100%;
+    min-width: 0;
+    max-height: calc(var(--visual-height) - 2 * var(--dialog-gap) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+}
+body #settings-panel {
+    top: calc(var(--visual-top) + max(10px, env(safe-area-inset-top)));
+    bottom: auto;
+    height: calc(var(--visual-height) - max(10px, env(safe-area-inset-top)) - max(10px, env(safe-area-inset-bottom)));
+    max-height: none;
+    width: min(460px, calc(100% - 12px - env(safe-area-inset-left)));
+}
+body :is(.settings-header,.popup-modal-header) { gap: 12px; align-items: flex-start; }
+body :is(.settings-header,.popup-modal-header) > div { min-width: 0; }
+body :is(.settings-header,.popup-modal-header) :is(h2,h3) { line-height: 1.4; overflow-wrap: anywhere; }
+body :is(.settings-header,.popup-modal-header) .close-action { flex-shrink: 0; align-self: flex-start; }
+body .settings-body { min-height: 0; padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+body :is(.settings-section,.sync-guide) :is(button,select) { min-width: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere; line-height: 1.5; }
+body :is(.settings-section,.sync-guide) :is(.primary-btn,.tonal-btn) { min-height: 44px; padding: 10px 16px; }
+body .cloud-save-badge { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+body .cloud-save-badge::before { flex: 0 0 8px; }
+body .sync-guide-actions { align-items: stretch; }
+body .sync-guide-actions .primary-btn { flex: 1 1 180px; }
+body .sync-guide-dismiss > button { flex: 1 1 150px; text-align: center; }
+body #sync-guide-copy { min-height: 0; }
+body .environment-info, body .environment-info dl { min-width: 0; }
+/* Keep account, profile and utility controls in predictable rows. */
+@media(max-width:760px) {
+    body .dashboard-header { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px 12px; align-items: center; }
+    body .dashboard-header .brand-mark { grid-column: 1; grid-row: 1; justify-self: start; }
+    body .dashboard-header .header-left { display: flex; grid-column: 2; grid-row: 1; width: auto; justify-content: flex-end; min-width: 0; }
+    body .dashboard-header .header-right { display: flex; grid-column: 1 / -1; grid-row: 2; width: 100%; min-width: 0; margin: 0; flex-wrap: nowrap; gap: 8px; justify-content: flex-end; }
+    body .dashboard-header .google-account-trigger { flex: 1 1 auto; min-width: 0; margin-right: auto; max-width: 240px; white-space: normal; line-height: 1.4; }
+    body .header-user-name { max-width: min(30vw,160px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    body .hero-section { padding: clamp(18px,4vw,28px); }
+    body .container { padding-inline: clamp(12px,3vw,24px); }
+    body .card-header { flex-wrap: wrap; align-items: center; }
+    body .card-header > :is(h3,div) { min-width: 0; max-width: 100%; }
+    body .search-bar { min-width: 0; font-size: 1rem; }
+    body .settings-header { padding: 16px; }
+    body .settings-body { padding-inline: 12px; }
+    body #game-modal .game-selector-tabs { grid-template-columns: repeat(3,minmax(0,1fr)); }
+}
+@media(min-width:1000px) { body #game-modal .game-selector-tabs { grid-template-columns: repeat(9,minmax(0,1fr)); } }
+@media(max-width:420px) {
+    body .settings-category-tabs { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+    body .settings-category-tabs > button { padding: 9px 6px; line-height: 1.4; }
+    body .weather-detail-main { flex-wrap: wrap; }
+    body .weather-detail-main .detail-main-text { flex-basis: 160px; }
+    body .weather-hourly-item { grid-template-columns: 58px minmax(0,1fr) 58px; }
+    body .sync-guide-actions { flex-direction: column; }
+    body .sync-guide-actions .primary-btn { flex-basis: auto; }
+}
+body #game-modal .game-pane:is([data-game-pane="tictactoe"],[data-game-pane="memory"],[data-game-pane="lights"]).active { overflow-y: auto; overscroll-behavior: contain; padding: 4px; }
+body #game-modal .casual-board.extra-board { width: min(100%,360px); height: auto; aspect-ratio: auto; }
+@media(max-height:500px) {
+    body dialog.sync-guide { padding: 16px 20px; border-radius: 20px; }
+    body .sync-guide-art { width: 44px; height: 44px; font-size: 30px; margin-bottom: 10px; }
+    body .sync-guide h2 { font-size: 1.2rem; margin-block: 6px 10px; }
+    body .sync-guide-actions { margin-block: 12px; }
+    body .settings-header { padding-block: 12px; }
+}

@@ -1,0 +1,25 @@
+import assert from 'node:assert/strict';
+import {automaticSyncDue,beginSyncVisit,normalizeSyncTiming,SYNC_VISITS_KEY} from '../js/sync-timing.js?v=8.0';
+import {userConfig,mergeUserConfig} from '../js/config.js?v=8.0';
+import {createBackup,parseBackup} from '../js/data-management.js?v=8.0';
+import {selectSyncData} from '../js/cloud-sync.js?v=8.0';
+
+assert.equal(normalizeSyncTiming(undefined),'every3');
+assert.equal(normalizeSyncTiming('invalid'),'every3');
+const memory=new Map();const storage={getItem:k=>memory.get(k)??null,setItem:(k,v)=>memory.set(k,v)};
+assert.deepEqual(Array.from({length:6},()=>automaticSyncDue('every3',beginSyncVisit(storage,'alice'))),[false,false,true,false,false,true]);
+assert.equal(beginSyncVisit(storage,'bob'),1,'each account has an independent access count');
+assert.equal(beginSyncVisit(storage,'alice'),7,'counts survive new controllers and reloads');
+for(const mode of ['everyVisit','live'])for(const visit of [1,2,3])assert.equal(automaticSyncDue(mode,visit),true);
+assert.equal(automaticSyncDue('manual',3),false);
+assert.equal(automaticSyncDue('manual',1,true),true,'first migration runs immediately after login');
+assert.equal(automaticSyncDue('every3',1,true),true);
+memory.set(SYNC_VISITS_KEY,'broken');assert.equal(beginSyncVisit(storage,'alice'),1);
+memory.set(SYNC_VISITS_KEY,'{"alice":-10}');assert.equal(beginSyncVisit(storage,'alice'),1);
+const old=JSON.parse(createBackup());delete old.data.syncTiming;
+assert.equal(parseBackup(JSON.stringify(old)).syncTiming,'every3','existing backups remain restorable');
+mergeUserConfig({syncTiming:'manual'});assert.equal(userConfig.syncTiming,'manual');
+assert.ok(!('syncTiming' in selectSyncData(userConfig)),'device timing must not be changed by another device');
+const backup=JSON.parse(createBackup());backup.data.syncTiming='sometimes';assert.throws(()=>parseBackup(JSON.stringify(backup)),/設定値/);
+mergeUserConfig({syncTiming:'bad'});assert.equal(userConfig.syncTiming,'every3');
+console.log('PASS: every-third-access default, persistent independent counts, timing modes, first migration and old backup compatibility');

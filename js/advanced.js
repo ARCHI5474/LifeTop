@@ -22,7 +22,7 @@ export function applyAdvancedSettings() {
         const card = document.querySelector(selector);
         if (card) card.hidden = !userConfig[key];
     }
-    for (const key of ['textSize', 'highContrast', 'compactLayout', 'showNews', 'showYoutube']) {
+    for (const key of ['textSize', 'highContrast', 'compactLayout', 'showNews', 'showYoutube', 'syncTiming']) {
         const control = document.getElementById('advanced-' + key);
         if (control) {
             if (control.type === 'checkbox') control.checked = userConfig[key];
@@ -53,7 +53,9 @@ export function applyAdvancedSettings() {
 }
 
 export function setAdvancedSetting(key, value) {
-    if (key === 'textSize') {
+    if (key === 'syncTiming') {
+        if (!['every3','everyVisit','live','manual'].includes(value)) return;
+    } else if (key === 'textSize') {
         if (!['standard', 'large', 'larger'].includes(value)) return;
     } else if (key === 'searchShape') {
         if (!['pill', 'rounded', 'square'].includes(value)) return;

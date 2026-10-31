@@ -7,6 +7,8 @@ import { initExtraGames } from './extra-games.js?v=8.0';
 import { initCasualGames } from './casual-games.js?v=8.0';
 import { initDataManagement } from './data-management.js?v=8.0';
 import { initCloudSync } from './cloud-sync.js?v=8.0';
+import { initSyncExplanation } from './sync-explanation.js?v=8.0';
+import { initResponsiveUI } from './responsive-ui.js?v=8.0';
 import { applyStyles, renderBgSelector, renderColorCombos, renderBgPresets } from "./styles.js?v=8.0";
 
 /* LifeTop - application entry point */
@@ -201,6 +203,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     initIcons();
+    initResponsiveUI();
     initMotion();
     loadData();
 
@@ -213,6 +216,7 @@ window.addEventListener('DOMContentLoaded', () => {
     initGames();
     renderBgSelector();
     initPickers();
+    initSyncExplanation();
     initDataManagement();
     initProfile();
     initSearchSuggestions();

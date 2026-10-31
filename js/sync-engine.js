@@ -19,13 +19,14 @@ export function checkedPayload(config) {
     return payload;
 }
 
-export function createSyncEngine({ remote, storage, readLocal, applyCloud, validate, onState, canApplyCloud = () => true }) {
+export function createSyncEngine({ remote, storage, readLocal, applyCloud, validate, onState, canApplyCloud = () => true, autoMigrate = false, mergeInitialData }) {
     let uid = null;
     let generation = 0;
     let busy = false;
     let queued = false;
     let base = null;
     let choiceRequired = false;
+    let otherAccount = false;
     const emit = (status, message) => onState({status, message, uid});
     const remember = (revision, payload) => {
         const next = {uid, revision, payload};
@@ -47,8 +48,10 @@ export function createSyncEngine({ remote, storage, readLocal, applyCloud, valid
             base = null;
             queued = false;
             choiceRequired = false;
+            otherAccount = false;
             try {
                 const saved = JSON.parse(storage.getItem(SYNC_META_KEY) || 'null');
+                otherAccount = !!saved?.uid && saved.uid !== uid;
                 if (saved?.uid === uid && Number.isSafeInteger(saved.revision) && saved.revision >= 1 && typeof saved.payload === 'string') base = saved;
             } catch { /* Start with an explicit choice if the local baseline is unavailable. */ }
             emit('checking', 'クラウドのデータを確認しています…');
@@ -84,6 +87,27 @@ export function createSyncEngine({ remote, storage, readLocal, applyCloud, valid
                     return;
                 }
                 if (!base && mode === 'auto') {
+                    if (autoMigrate && !otherAccount) {
+                        const data = cloud ? mergeInitialData(JSON.parse(local), cloud.data) : JSON.parse(local);
+                        const payload = checkedPayload(data);
+                        if (!canApplyCloud()) { emit('waiting', 'ログインできました。入力を終えるとデータを自動移行します。'); return; }
+                        storage.setItem(SYNC_RECOVERY_KEY, local);
+                        const revision = cloud?.revision || 0;
+                        if (payload !== cloud?.payload) await remote.write(account, revision, payload, current);
+                        if (!current()) return;
+                        // Preserve edits made during the upload; the next pass detects a conflict.
+                        if (checkedPayload(readLocal()) !== local) {
+                            remember(payload === cloud?.payload ? revision : revision+1, payload);
+                            choiceRequired = true;
+                            emit('conflict', '移行中に端末の内容が変わりました。両方のデータを残しているので、続ける内容を確認してください。');
+                            return;
+                        }
+                        if (payload !== local) applyCloud(data);
+                        remember(payload === cloud?.payload ? revision : revision+1, payload);
+                        choiceRequired = false;
+                        emit('synced', 'データの自動移行が完了しました。同期済み');
+                        return;
+                    }
                     choiceRequired = true;
                     emit(cloud ? 'choice' : 'first-upload', cloud ? 'クラウドにデータがあります。最初に使うデータを選んでください。' : '最初の同期です。この端末のデータをクラウドに保存できます。');
                     return;
