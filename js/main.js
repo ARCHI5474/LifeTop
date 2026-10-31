@@ -9,6 +9,7 @@ import { initDataManagement } from './data-management.js?v=8.0';
 import { initCloudSync } from './cloud-sync.js?v=8.0';
 import { initSyncExplanation } from './sync-explanation.js?v=8.0';
 import { initResponsiveUI } from './responsive-ui.js?v=8.0';
+import { initStabilityCheck } from './stability-check.js?v=8.0';
 import { applyStyles, renderBgSelector, renderColorCombos, renderBgPresets } from "./styles.js?v=8.0";
 
 /* LifeTop - application entry point */
@@ -217,6 +218,7 @@ window.addEventListener('DOMContentLoaded', () => {
     renderBgSelector();
     initPickers();
     initSyncExplanation();
+    initStabilityCheck();
     initDataManagement();
     initProfile();
     initSearchSuggestions();

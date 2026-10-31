@@ -305,6 +305,7 @@
                 <div class="card-header bookmark-card-header">
                     <h3><span class="material-symbols-outlined" aria-hidden="true">bookmarks</span> Quickアクセス</h3>
                     <div class="bookmark-header-controls">
+                        <button type="button" class="tonal-btn stability-check-trigger" id="stability-check-open" aria-haspopup="dialog" aria-controls="stability-check"><span class="material-symbols-outlined" aria-hidden="true">check_circle</span>安定性チェック</button>
                         <button type="button" class="icon-btn-small" id="edit-bookmarks-btn" aria-pressed="false" onclick="toggleBookmarkEditMode()" title="ブックマークを編集" aria-label="ブックマークを編集">
                             <span class="material-symbols-outlined" aria-hidden="true">edit</span>
                         </button>
@@ -706,6 +707,17 @@
 
 <footer class="app-footer"><span class="footer-brand"><img class="footer-brand-icon" src="icons/icon-192.png" alt="" width="20" height="20" decoding="async">LifeTop</span><span>いつものネットを、ここから。</span></footer>
 <div id="storage-status" class="storage-status" role="status" hidden></div>
+
+<dialog id="stability-check" class="sync-guide stability-check" aria-labelledby="stability-check-title" aria-describedby="stability-check-description">
+    <p class="help-kicker">LifeTop CHECK</p>
+    <h2 id="stability-check-title">安定性チェック</h2>
+    <p id="stability-check-description">約3秒で、このブラウザでのLifeTopの動作目安を確認します。描画の滑らかさ・短い処理の応答・端末内保存・表示機能を検証します。</p>
+    <p class="settings-help">端末全体の故障・安全性・将来の安定性を判定するものではありません。ほかのアプリや省電力設定で結果は変わります。通信速度やGoogle同期の接続は検証しません。</p>
+    <p id="stability-check-status" role="status" aria-live="polite">「チェックを開始」を押してください。結果の送信や自動設定変更は行いません。</p>
+    <progress id="stability-check-progress" max="1" value="0" aria-label="安定性チェックの進行状況" hidden></progress>
+    <div id="stability-check-results"></div>
+    <div class="sync-guide-actions"><button type="button" class="primary-btn" id="stability-check-start">チェックを開始</button><button type="button" class="text-btn" id="stability-check-close">閉じる</button></div>
+</dialog>
 
 <dialog id="sync-guide" class="sync-guide" aria-labelledby="sync-guide-title" aria-describedby="sync-guide-copy">
     <div class="sync-guide-art" aria-hidden="true">☁</div>

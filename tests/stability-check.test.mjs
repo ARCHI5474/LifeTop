@@ -1,0 +1,40 @@
+import assert from 'node:assert/strict';
+import {percentile,probeStorage,summarizeStability,collectStabilitySamples} from '../js/stability-check.js?v=8.0';
+assert.equal(percentile([], .95),null);
+assert.equal(percentile([NaN,Infinity,-1,1,2,3],.5),2);
+const data=new Map([['lifetop_v1_0_data','important']]);
+const storage={getItem:k=>data.get(k)??null,setItem:(k,v)=>data.set(k,v),removeItem:k=>data.delete(k)};
+assert.equal(probeStorage(storage,'probe'),true);
+assert.deepEqual([...data],[['lifetop_v1_0_data','important']],'only the temporary probe can be removed');
+assert.equal(probeStorage(storage,'lifetop_v1_0_data'),false,'a key collision must not overwrite existing data');
+assert.equal(data.get('lifetop_v1_0_data'),'important');
+assert.equal(probeStorage({...storage,setItem(){throw Error('quota');}},'probe'),false);
+assert.equal(probeStorage({...storage,removeItem(){throw Error('blocked');}},'probe'),false);
+const normal={frames:Array(150).fill(16.7),delays:Array(30).fill(2),storageOK:true};
+assert.equal(summarizeStability(normal).state,'good');
+assert.equal(summarizeStability({...normal,frames:Array(150).fill(33.3)}).state,'good','steady 30 Hz is not a device fault');
+assert.equal(summarizeStability({...normal,delays:Array(30).fill(150)}).state,'attention');
+assert.equal(summarizeStability({...normal,storageOK:false}).state,'problem');
+assert.equal(summarizeStability({...normal,missing:['container queries']}).state,'attention');
+assert.equal(summarizeStability({...normal,frames:[]}).state,'unknown','missing frame samples cannot produce a stable rating');
+assert.equal(summarizeStability({...normal,frames:Array(100).fill(NaN)}).state,'unknown','invalid measurements cannot produce a stable rating');
+
+function fakeRuntime(){
+    let now=0,next=0;const jobs=new Map();
+    const timer=(fn,ms)=>{const id=++next;jobs.set(id,{fn,time:now+ms});return id;};
+    const runtime={now:()=>now,timer,clearTimer:id=>jobs.delete(id),frame:fn=>timer(fn,16),cancelFrame:id=>jobs.delete(id)};
+    return{runtime,jobs,advance(){while(jobs.size){const [id,job]=[...jobs].sort((a,b)=>a[1].time-b[1].time)[0];jobs.delete(id);now=job.time;job.fn();if(now>4000)throw Error('sampling failed to stop');}}};
+}
+let fake=fakeRuntime();let progress=0;
+const samples=collectStabilitySamples({runtime:fake.runtime,onProgress:value=>progress=value});
+fake.advance();const result=await samples;
+assert.ok(result.frames.length>100&&result.delays.length>20);
+assert.equal(progress,1);assert.equal(fake.jobs.size,0,'finished checks leave no active timers or animation frames');
+fake=fakeRuntime();const controller=new AbortController();
+const aborted=collectStabilitySamples({runtime:fake.runtime,signal:controller.signal});
+controller.abort();await assert.rejects(aborted,{name:'AbortError'});
+assert.equal(fake.jobs.size,0,'cancelled checks must stop all scheduled work');
+fake=fakeRuntime();const already=new AbortController();already.abort();
+await assert.rejects(collectStabilitySamples({runtime:fake.runtime,signal:already.signal}),{name:'AbortError'});
+assert.equal(fake.jobs.size,0);
+console.log('PASS: isolated storage probe, measured ratings, insufficient samples, bounded collection and cancellation cleanup');
