@@ -31,14 +31,14 @@ export function initMotion() {
             { scale: '.997 .998', offset: .78 },
             { scale: '1', offset: 1 }
         ] : [{ scale: getComputedStyle(element).scale }, { scale: '1' }],
-        { duration: bounce ? 340 : 120, easing: 'cubic-bezier(.2,.7,.3,1)' });
+        { duration: bounce ? 900 : 260, easing: 'cubic-bezier(.32,0,.24,1)' });
     };
     document.addEventListener('pointerdown', event => {
         if (!event.isPrimary || event.button !== 0 || reduced()) return;
         const element = targetFor(event.target);
         if (!element) return;
         presses.set(event.pointerId, { element, x: event.clientX, y: event.clientY });
-        animate(element, [{ scale: '1' }, { scale: '.97 .95' }], { duration: 90, fill: 'forwards', easing: 'ease-out' });
+        animate(element, [{ scale: '1' }, { scale: '.97 .95' }], { duration: 240, fill: 'forwards', easing: 'ease-out' });
     }, { passive: true });
     document.addEventListener('pointermove', event => {
         const press = presses.get(event.pointerId);

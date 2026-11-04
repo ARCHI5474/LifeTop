@@ -14,7 +14,7 @@ body .loading-screen {
     background: radial-gradient(ellipse at 20% 0, rgb(255 255 255 / .2), transparent 65%), var(--md-sys-color-primary-container);
     border: 1px solid rgb(255 255 255 / .14);
     box-shadow: inset 0 1px 0 rgb(255 255 255 / .2), inset 0 -4px 8px rgb(0 0 0 / .12), 0 20px 40px rgb(0 0 0 / .2);
-    animation: loading-emblem-float 2400ms ease-in-out infinite;
+    animation: loading-emblem-float 4800ms ease-in-out infinite;
 }
 body .loading-icon { width: 64px; height: 64px; border-radius: 20px; border: 0; box-shadow: none; }
 .loading-pebble { position: absolute; display: block; background: var(--md-sys-color-primary); border-radius: 45% 55% 52% 48%; box-shadow: inset 0 2px 2px rgb(255 255 255 / .3), inset 0 -3px 5px rgb(0 0 0 / .12); animation: loading-pebble-float 1800ms ease-in-out infinite; }
@@ -55,9 +55,9 @@ body .loading-label { font-size: .75rem; color: var(--text-muted); line-height: 
 }
 body :is(.game-modal, .help-modal, .popup-modal, .weather-modal).active
     :is(.game-modal-card, .help-modal-card, .popup-modal-card, .weather-modal-content) {
-    animation: window-bounce-in 460ms cubic-bezier(.2,.7,.3,1) both;
+    animation: window-bounce-in 1000ms cubic-bezier(.32,0,.24,1) both;
 }
-body #settings-panel.active { transition: transform 520ms cubic-bezier(.22,1.18,.36,1), visibility 0s !important; }
+body #settings-panel.active { transition: transform 1100ms cubic-bezier(.32,0,.24,1), visibility 0s !important; }
 .game-rules:popover-open { animation: window-bounce-in 420ms cubic-bezier(.2,.7,.3,1) both; }
 :root.reduce-motion body :is(.game-modal-card, .help-modal-card, .popup-modal-card, .weather-modal-content, .game-rules, #settings-panel, .loading-screen) { animation: none !important; transition: none !important; }
 :root.reduce-motion body #settings-panel.active { transition: none !important; }

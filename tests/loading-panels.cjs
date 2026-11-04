@@ -1,7 +1,9 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const path = require('node:path');
-const { chromium } = require('playwright');
+const { createRequire } = require('node:module');
+const runtimeRequire = createRequire(process.env.PLAYWRIGHT_MODULE_PATH || require.resolve('playwright'));
+const { chromium } = runtimeRequire('playwright');
 
 (async () => {
     const browser = await chromium.launch({ headless: true, executablePath: process.env.BROWSER_PATH });
@@ -31,8 +33,8 @@ const { chromium } = require('playwright');
             assert.equal(await page.locator('#loading-screen').evaluate(e => e.classList.contains('is-hidden')), false);
             if (reducedMotion === 'reduce') assert.equal(await page.locator('.loading-emblem').evaluate(e => getComputedStyle(e).animationName), 'none');
             if (process.env.REVIEW_SCREENSHOT && reducedMotion === 'no-preference') await page.screenshot({ path: process.env.REVIEW_SCREENSHOT + '-loading.png' });
-            await page.locator('#loading-screen').waitFor({ state: 'detached', timeout: 15000 });
-            assert.ok(await page.evaluate(() => window.loadingHiddenAt - window.loadingSeenAt >= 5000), 'loader stays fully visible at least five seconds');
+            await page.locator('#loading-screen').waitFor({ state: 'detached', timeout: 25000 });
+            assert.ok(await page.evaluate(() => window.loadingHiddenAt - window.loadingSeenAt >= 15000), 'loader stays fully visible at least fifteen seconds');
             assert.equal(await page.locator('.dashboard-header').evaluate(e => e.inert), false);
             assert.equal(await page.locator('#game-modal').evaluate(e => e.inert), true);
             await page.locator('#game-open-btn').click();
@@ -53,11 +55,11 @@ const { chromium } = require('playwright');
             }
             await page.getByRole('button', { name: 'Quickパネル' }).click();
             const transition = await page.locator('#settings-panel').evaluate(e => getComputedStyle(e).transitionTimingFunction);
-            assert.ok(reducedMotion === 'reduce' || transition.includes('1.18'), 'Quick panel has spring overshoot');
+            assert.ok(reducedMotion === 'reduce' || transition.includes('0.32'), 'Quick panel uses the slow weighted easing');
             if (reducedMotion === 'reduce') assert.equal(await page.locator('#settings-panel').evaluate(e => getComputedStyle(e).transitionDuration), '0s');
             assert.deepEqual(errors, []);
             await page.close();
         }
-        console.log('PASS: five-second loader, inert restoration, dialog/panel bounce and reduced motion');
+        console.log('PASS: fifteen-second loader, inert restoration, weighted dialog/panel motion and reduced motion');
     } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

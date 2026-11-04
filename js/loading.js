@@ -1,8 +1,8 @@
-/* A five-second brand sequence, measured after the loading surface can paint. */
+/* A fifteen-second brand sequence, measured after the loading surface can paint. */
 export function initLoading() {
     const screen = document.getElementById('loading-screen');
     if (!screen) return () => {};
-    const minimumDuration = 5000;
+    const minimumDuration = 15000;
     const restoredElements = [...document.body.children].filter(element => element !== screen && !element.inert && !element.matches('script'));
     restoredElements.forEach(element => { element.inert = true; });
     const previousOverflow = document.body.style.overflow;
