@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import { initLoading } from '../js/loading.js?v=9.0';
+const screen={inert:false,matches:()=>false,remove(){this.removed=true;}};
+const page={inert:false,matches:()=>false},modal={inert:true,matches:()=>false},script={inert:false,matches:()=>true};
+globalThis.document={getElementById:()=>screen,body:{children:[screen,page,modal,script],style:{overflow:'auto'}}};
+const finish=initLoading();
+assert.equal(page.inert,true);assert.equal(script.inert,false);assert.equal(document.body.style.overflow,'hidden');
+finish();
+assert.equal(screen.removed,true,'initialization completion dismisses the loader synchronously');
+assert.equal(page.inert,false);assert.equal(modal.inert,true,'pre-existing inert modals remain inert');assert.equal(document.body.style.overflow,'auto');
+page.inert=true;finish();assert.equal(page.inert,true,'finishing twice must not overwrite later modal state');
+document.getElementById=()=>null;assert.doesNotThrow(()=>initLoading()());
+console.log('PASS: instant startup without timers, preserved inert state, overflow restoration and idempotent finish');

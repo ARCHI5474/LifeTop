@@ -28,13 +28,7 @@ const { chromium } = runtimeRequire('playwright');
                 catch { await route.fulfill({ status: 404, body: '' }); }
             });
             await page.goto('http://lifetop.test', { waitUntil: 'domcontentloaded' });
-            assert.equal(await page.locator('.dashboard-header').evaluate(e => e.inert), true);
-            await page.waitForTimeout(1000);
-            assert.equal(await page.locator('#loading-screen').evaluate(e => e.classList.contains('is-hidden')), false);
-            if (reducedMotion === 'reduce') assert.equal(await page.locator('.loading-emblem').evaluate(e => getComputedStyle(e).animationName), 'none');
-            if (process.env.REVIEW_SCREENSHOT && reducedMotion === 'no-preference') await page.screenshot({ path: process.env.REVIEW_SCREENSHOT + '-loading.png' });
-            await page.locator('#loading-screen').waitFor({ state: 'detached', timeout: 25000 });
-            assert.ok(await page.evaluate(() => window.loadingHiddenAt - window.loadingSeenAt >= 15000), 'loader stays fully visible at least fifteen seconds');
+            await page.locator('#loading-screen').waitFor({ state: 'detached', timeout: 5000 });
             assert.equal(await page.locator('.dashboard-header').evaluate(e => e.inert), false);
             assert.equal(await page.locator('#game-modal').evaluate(e => e.inert), true);
             await page.locator('#game-open-btn').click();
@@ -55,11 +49,12 @@ const { chromium } = runtimeRequire('playwright');
             }
             await page.getByRole('button', { name: 'Quickパネル' }).click();
             const transition = await page.locator('#settings-panel').evaluate(e => getComputedStyle(e).transitionTimingFunction);
-            assert.ok(reducedMotion === 'reduce' || transition.includes('0.32'), 'Quick panel uses the slow weighted easing');
+            assert.ok(reducedMotion === 'reduce' || transition.includes('0.8'), 'Quick panel uses fast easing');
+            if (reducedMotion !== 'reduce') assert.ok((await page.locator('#settings-panel').evaluate(e => getComputedStyle(e).transitionDuration)).startsWith('0.11s'), 'Quick panel opens in 110ms');
             if (reducedMotion === 'reduce') assert.equal(await page.locator('#settings-panel').evaluate(e => getComputedStyle(e).transitionDuration), '0s');
             assert.deepEqual(errors, []);
             await page.close();
         }
-        console.log('PASS: fifteen-second loader, inert restoration, weighted dialog/panel motion and reduced motion');
+        console.log('PASS: immediate loader dismissal, inert restoration, fast dialog/panel motion and reduced motion');
     } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

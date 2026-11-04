@@ -18,9 +18,9 @@ body .sliding-selection::before {
 }
 body .sliding-selection.selection-ready::before {
     opacity: 1;
-    transition: transform 950ms cubic-bezier(.32, 0, .24, 1),
-        width 950ms cubic-bezier(.32, 0, .24, 1),
-        height 950ms cubic-bezier(.32, 0, .24, 1);
+    transition: transform 90ms cubic-bezier(.2, .8, .2, 1),
+        width 90ms cubic-bezier(.2, .8, .2, 1),
+        height 90ms cubic-bezier(.2, .8, .2, 1);
 }
 body .sliding-selection.selection-ready > button,
 body .sliding-selection.selection-ready > button.active {
