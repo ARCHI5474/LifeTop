@@ -1,10 +1,10 @@
 
 /* ========================    
-LifeTop v8.0 Codename: "Slide gummy"
+LifeTop v9.0 Codename: "Life&WorkTop"
    ======================== */
 const UPDATE_CONFIG = {
-    notice: "LifeTop v8.0 Slide gummyにアップデートしました。滑らかなタブ切り替え、見やすい天気、新しい設定と9種類のゲームをお楽しみください。",
-    tag: "LifeTop v8.0"
+    notice: "LifeTop v9.0 Life&WorkTopにアップデートしました。全部ここで。文書・表計算・動画編集など、14のミニアプリをお楽しみください。",
+    tag: "LifeTop v9.0"
 };
 /* ========================================= */
 

@@ -213,7 +213,7 @@ body .profile-icon-picker button { position: relative; min-height: 72px; padding
 body #settings-panel { right: min(0px, calc(100% - 100vw)); }
 body .settings-body { scroll-behavior: auto; }
 /* Input-independent feedback and content motion are defined by the shared system. */
-body :is(.primary-btn, .secondary-btn, .tonal-btn, .ctrl-btn, .search-button):not(:disabled):hover { filter: none; box-shadow: none; }
+body :is(.primary-btn, .secondary-btn, .tonal-btn, .ctrl-btn, .search-button):not(:disabled):hover { filter: none; }
 /* Shrink grid tracks and text, rather than hiding overflowing content. */
 body .dashboard-grid, body .dashboard-grid > *, body .card-header > *,
 body .search-container, body .tab-content, body .clock-tool-pane { min-width: 0; }

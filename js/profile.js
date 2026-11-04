@@ -1,6 +1,6 @@
-import { createMaterialIcon } from './icons.js?v=8.0';
-import { userConfig } from './config.js?v=8.0';
-import { save } from './storage.js?v=8.0';
+import { createMaterialIcon } from './icons.js?v=9.0';
+import { userConfig } from './config.js?v=9.0';
+import { save } from './storage.js?v=9.0';
 
 const icons = { person: 'ひと', face: 'スマイル', pets: '足あと', eco: '葉', rocket_launch: 'ロケット', favorite: 'ハート', star: '星', sports_esports: 'ゲーム' };
 let uploadRevision = 0;

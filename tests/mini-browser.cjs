@@ -1,0 +1,50 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs/promises');
+const path=require('node:path');
+const http=require('node:http');
+const {createRequire}=require('node:module');
+const runtimeRequire=createRequire(process.env.PLAYWRIGHT_MODULE_PATH||require.resolve('playwright'));
+const {chromium}=runtimeRequire('playwright');
+(async()=>{
+    const root=path.resolve(__dirname,'..'),types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.ttf':'font/ttf'};
+    const server=http.createServer(async(req,res)=>{try{const url=new URL(req.url,'http://localhost'),file=path.resolve(root,'.'+decodeURIComponent(url.pathname));if(!file.startsWith(root+path.sep))throw Error();res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream'});res.end(await fs.readFile(file));}catch{res.writeHead(404).end();}});
+    await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+    const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_PATH,args:['--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream']});
+    try{
+        const page=await browser.newPage({viewport:{width:1440,height:1000},acceptDownloads:true}),errors=[];
+        page.on('pageerror',error=>errors.push(error.message));
+        await page.addInitScript(()=>{window.showSaveFilePicker=undefined;});
+        const base=`http://127.0.0.1:${server.address().port}`;
+        await page.goto(base+'/mini-apps.html');await page.locator('.mini-app-card').first().waitFor();assert.equal(await page.locator('.mini-app-card').count(),14);
+        await fs.mkdir(path.join(root,'test-artifacts'),{recursive:true});
+        await page.screenshot({path:path.join(root,'test-artifacts/mini-home.png'),fullPage:true});
+        const open=async id=>{if(await page.locator('#mini-workspace').isVisible())await page.locator('#mini-home-button').click();await page.locator(`[data-app="${id}"]`).click();await page.waitForFunction(expected=>location.hash==='#'+expected,id);};
+        await open('document');await page.locator('#editor').fill('保存テストの文書');await page.waitForTimeout(650);await page.reload();await page.locator('#editor').waitFor();assert.equal(await page.locator('#editor').innerText(),'保存テストの文書');
+        let downloading=page.waitForEvent('download');await page.locator('#html-export').click();assert.match((await downloading).suggestedFilename(),/\.html$/);
+        await open('sheet');await page.locator('[aria-label="A1"]').fill('2');await page.locator('[aria-label="B1"]').fill('3');await page.locator('[aria-label="C1"]').fill('=SUM(A1:B1)');assert.match(await page.locator('output[data-r="0"][data-c="2"]').innerText(),/5/);
+        await page.locator('[aria-label="A2"]').fill('項目');await page.locator('[aria-label="B2"]').fill('10');await page.locator('#to-chart').click();await page.locator('#chart svg').waitFor();assert.equal(await page.locator('#mini-picker').inputValue(),'data');
+        await open('slides');await page.locator('#slide-title').fill('発表テスト');await page.locator('#slide-add').click();assert.equal(await page.locator('[data-slide]').count(),2);await page.locator('#slide-title').fill('2枚目');await page.locator('#slide-left').click();assert.equal(await page.locator('#slide-title').inputValue(),'2枚目');
+        await open('compare');await page.locator('#before').fill('a\nb');await page.locator('#after').fill('a\nc');await page.locator('#diff-run').click();assert.equal(await page.locator('.added').innerText(),'+ c');assert.equal(await page.locator('.removed').innerText(),'− b');
+        await open('text');await page.locator('#text-body').fill(' a \na\na');await page.locator('[data-text="trim"]').click();await page.locator('[data-text="unique"]').click();assert.equal(await page.locator('#text-body').inputValue(),'a');
+        await open('units');await page.locator('#unit-group').selectOption('temperature');await page.locator('#unit-from').selectOption('℃');await page.locator('#unit-to').selectOption('℉');await page.locator('#unit-value').fill('0');assert.match(await page.locator('#unit-result').innerText(),/32/);
+        await open('diagram');await page.locator('#node-add').click();assert.equal(await page.locator('[data-node]').count(),3);await page.locator('#node-text').fill('<script>alert(1)</script>');downloading=page.waitForEvent('download');await page.locator('#diagram-save').click();assert.match((await downloading).suggestedFilename(),/\.svg$/);
+        await open('draw');const box=await page.locator('#drawing').boundingBox();await page.mouse.move(box.x+40,box.y+40);await page.mouse.down();await page.mouse.move(box.x+140,box.y+100);await page.mouse.up();downloading=page.waitForEvent('download');await page.locator('#draw-save').click();await downloading;
+        const png=Buffer.from(await page.locator('#drawing').evaluate(c=>Array.from(Uint8Array.from(atob(c.toDataURL().split(',')[1]),ch=>ch.charCodeAt(0)))));
+        await open('image');await page.locator('#images').setInputFiles({name:'test.png',mimeType:'image/png',buffer:png});await page.locator('#image-info').filter({hasText:'test.png'}).waitFor();downloading=page.waitForEvent('download');await page.locator('#image-save').click();assert.match((await downloading).suggestedFilename(),/\.webp$/);
+        await open('pdf');await page.locator('#pdf-files').setInputFiles({name:'test.png',mimeType:'image/png',buffer:png});await page.locator('#pdf-mode').selectOption('images');downloading=page.waitForEvent('download');await page.locator('#pdf-run').click();const pdfDownload=await downloading,pdfPath=await pdfDownload.path(),pdfBytes=await fs.readFile(pdfPath);assert.equal(pdfBytes.subarray(0,4).toString(),'%PDF');
+        await page.locator('#pdf-files').setInputFiles([{name:'one.pdf',mimeType:'application/pdf',buffer:pdfBytes},{name:'two.pdf',mimeType:'application/pdf',buffer:pdfBytes}]);await page.locator('#pdf-mode').selectOption('merge');downloading=page.waitForEvent('download');await page.locator('#pdf-run').click();await downloading;await page.locator('#mini-status').filter({hasText:'2ページ'}).waitFor();
+        await page.locator('#pdf-mode').selectOption('extract');await page.locator('#pdf-pages').fill('1');downloading=page.waitForEvent('download');await page.locator('#pdf-run').click();await downloading;
+        await open('submit');await page.locator('#submit-files').setInputFiles({name:'report.txt',mimeType:'text/plain',buffer:Buffer.from('test')});await page.locator('#submit-ext').fill('pdf');await page.locator('#submit-run').click();assert.equal(await page.locator('#submit-results [data-ok="false"]').count(),1);
+        await open('audio');const wav=await page.evaluate(async()=>{const {wavBlob}=await import('./js/mini-model.js?v=1');return [...new Uint8Array(await wavBlob([Float32Array.from({length:8000},(_,i)=>Math.sin(i/10)*.1)],8000).arrayBuffer())];});await page.locator('#audio-file').setInputFiles({name:'tone.wav',mimeType:'audio/wav',buffer:Buffer.from(wav)});await page.waitForFunction(()=>document.querySelector('#audio').duration===1);await page.locator('#audio-end').fill('0.5');downloading=page.waitForEvent('download');await page.locator('#audio-save').click();assert.match((await downloading).suggestedFilename(),/\.wav$/);
+        await page.locator('#record').click();await page.waitForFunction(()=>document.querySelector('#record').disabled&& !document.querySelector('#record-stop').disabled);await page.waitForTimeout(900);await page.locator('#record-stop').click();await page.waitForFunction(()=>!document.querySelector('#record').disabled&&Number.isFinite(document.querySelector('#audio').duration));assert.ok(+(await page.locator('#audio-end').inputValue())>0);
+        await open('video');
+        await page.evaluate(async()=>{const canvas=document.createElement('canvas');canvas.width=160;canvas.height=90;const stream=canvas.captureStream(15),recorder=new MediaRecorder(stream,{mimeType:'video/webm'}),chunks=[];recorder.ondataavailable=e=>chunks.push(e.data);const finished=new Promise(resolve=>recorder.onstop=resolve);recorder.start();const g=canvas.getContext('2d');for(let i=0;i<20;i++){g.fillStyle=i%2?'red':'blue';g.fillRect(0,0,160,90);await new Promise(r=>setTimeout(r,70));}recorder.stop();await finished;stream.getTracks().forEach(t=>t.stop());const file=new File(chunks,'clip.webm',{type:'video/webm'}),dt=new DataTransfer();dt.items.add(file);const input=document.querySelector('#video-file');input.files=dt.files;input.dispatchEvent(new Event('change',{bubbles:true}));});
+        await page.waitForFunction(()=>document.querySelector('#video').readyState>=2);
+        await page.waitForFunction(()=>Number.isFinite(document.querySelector('#video').duration));
+        await page.locator('#video-start').fill('0');await page.locator('#video-end').fill('0.6');await page.locator('#video-caption').fill('テスト字幕');await page.locator('#clip-add').click();
+        downloading=page.waitForEvent('download');await page.locator('#video-export').click();assert.match((await downloading).suggestedFilename(),/\.webm$/);
+        await page.setViewportSize({width:390,height:844});for(const app of ['document','sheet','slides','pdf','video','diagram','data','draw']){await open(app);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),true,'mobile overflow: '+app);}
+        await page.screenshot({path:path.join(root,'test-artifacts/mini-mobile.png'),fullPage:true});assert.deepEqual(errors,[]);
+        console.log('PASS: 14 mini apps, autosave reload, cross-app chart, office edits, image/PDF/audio/video output, drawing, submit checks, and mobile layouts');
+    }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
+})().catch(error=>{console.error(error);process.exitCode=1;});

@@ -260,6 +260,8 @@
     right: 0;
     max-height: min(320px, 46vh);
     overflow-y: auto;
+    overflow-x: hidden;
+    scroll-padding-block: 8px;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     background: var(--panel-bg);
@@ -291,6 +293,11 @@
 
 .search-suggestion {
     width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
     border: 1px solid transparent;
     background: transparent;
     color: var(--text-color);
@@ -310,7 +317,7 @@
 .search-suggestion.active {
     background: rgba(var(--p-rgb), 0.18);
     border-color: rgba(var(--p-rgb), 0.32);
-    transform: translateX(4px);
+    transform: none;
 }
 
 .search-suggestion:focus-visible {

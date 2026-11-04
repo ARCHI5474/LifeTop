@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
-import { userConfig, DEFAULT_SETTINGS, STORAGE_KEY } from '../js/config.js?v=8.0';
-import { createBackup, parseBackup, resetSettingsSnapshot, storeSnapshot, MAX_BACKUP_BYTES } from '../js/data-management.js?v=8.0';
+import { userConfig, DEFAULT_SETTINGS, STORAGE_KEY } from '../js/config.js?v=9.0';
+import { createBackup, parseBackup, resetSettingsSnapshot, storeSnapshot, MAX_BACKUP_BYTES } from '../js/data-management.js?v=9.0';
 
 const source = structuredClone(userConfig);
 source.username = 'テスト';

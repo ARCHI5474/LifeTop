@@ -1,5 +1,5 @@
-import {userConfig} from './config.js?v=8.0';
-import {normalizeSyncTiming} from './sync-timing.js?v=8.0';
+import {userConfig} from './config.js?v=9.0';
+import {normalizeSyncTiming} from './sync-timing.js?v=9.0';
 
 export function initSyncExplanation() {
     const dialog=document.getElementById('sync-explanation');

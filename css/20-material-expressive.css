@@ -119,7 +119,6 @@ body :is(.bookmark-item, .news-item, .trend-item, .yt-card-item, .todo-item, .we
 }
 @media (hover: hover) {
     body :is(.bookmark-item, .news-item, .trend-item, .yt-card-item, .todo-item):hover { background: var(--md-sys-color-surface-container-high); transform: none; }
-    body button:not(:disabled):hover { filter: brightness(1.1); }
 }
 body :is(.settings-input, .todo-input-wrapper input, #hit-input, #memo-editor) {
     background: var(--md-sys-color-surface-container-high);

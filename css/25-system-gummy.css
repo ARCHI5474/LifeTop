@@ -94,6 +94,16 @@ body :is(.primary-btn, .search-button, .todo-input-wrapper > button) {
     background-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
 }
+/* Icon controls keep the same shape and surface when the pointer enters.
+   Older :hover rules otherwise morph 24px corners into 999px corners. */
+body :is(.icon-btn, .icon-btn-small),
+body :is(.icon-btn, .icon-btn-small):hover {
+    border-radius: 999px;
+    background-image: var(--gummy-sheen);
+    background-color: var(--gummy-control);
+    color: var(--gummy-on-control);
+    box-shadow: var(--gummy-highlight), 0 3px 8px rgb(0 0 0 / .12);
+}
 body :is(.tab-btn, .tool-tab-btn, .news-tab-btn, .bookmark-tab-item, .game-tab-btn, .game-seg-btn, .bm-dialog-mode-btn):not(.active) {
     background-color: var(--md-sys-color-surface-container);
     color: var(--text-secondary);

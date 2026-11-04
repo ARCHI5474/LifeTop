@@ -22,4 +22,7 @@ function inspect(url) {
     }
 }
 inspect(new URL(entry, root));
+const miniHtml = readFileSync(new URL('mini-apps.html', root), 'utf8');
+inspect(new URL(miniHtml.match(/<script type="module" src="([^"]+)"/)[1], root));
+inspect(new URL('js/mini-pdf-worker.js', root));
 console.log('PASS: application module graph uses one URL per shared module');

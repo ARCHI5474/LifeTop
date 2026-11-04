@@ -1,20 +1,20 @@
-import { initIcons } from './icons.js?v=8.0';
-import { initMotion } from './motion.js?v=8.0';
-import { initLoading } from './loading.js?v=8.0';
-import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=8.0';
-import { initProfile, renderProfile } from './profile.js?v=8.0';
-import { initExtraGames } from './extra-games.js?v=8.0';
-import { initCasualGames } from './casual-games.js?v=8.0';
-import { initDataManagement } from './data-management.js?v=8.0';
-import { initCloudSync } from './cloud-sync.js?v=8.0';
-import { initSyncExplanation } from './sync-explanation.js?v=8.0';
-import { initResponsiveUI } from './responsive-ui.js?v=8.0';
-import { initStabilityCheck } from './stability-check.js?v=8.0';
-import { applyStyles, renderBgSelector, renderColorCombos, renderBgPresets } from "./styles.js?v=8.0";
+import { initIcons } from './icons.js?v=9.0';
+import { initMotion } from './motion.js?v=9.0';
+import { initLoading } from './loading.js?v=9.0';
+import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=9.0';
+import { initProfile, renderProfile } from './profile.js?v=9.0';
+import { initExtraGames } from './extra-games.js?v=9.0';
+import { initCasualGames } from './casual-games.js?v=9.0';
+import { initDataManagement } from './data-management.js?v=9.0';
+import { initCloudSync } from './cloud-sync.js?v=9.0';
+import { initSyncExplanation } from './sync-explanation.js?v=9.0';
+import { initResponsiveUI } from './responsive-ui.js?v=9.0';
+import { initStabilityCheck } from './stability-check.js?v=9.0';
+import { applyStyles, renderBgSelector, renderColorCombos, renderBgPresets } from "./styles.js?v=9.0";
 
 /* LifeTop - application entry point */
-import { userConfig, mergeUserConfig, fontStyles } from "./config.js?v=8.0";
-import { loadData, save } from "./storage.js?v=8.0";
+import { userConfig, mergeUserConfig, fontStyles } from "./config.js?v=9.0";
+import { loadData, save } from "./storage.js?v=9.0";
 import {
     initPickers,
     setTheme,
@@ -28,9 +28,9 @@ import {
     toggleSettings,
     toggleHelp,
     
-} from "./settings.js?v=8.0";
-import { updateClock, updateGreeting } from "./clock.js?v=8.0";
-import { initSearchSuggestions } from "./search.js?v=8.0";
+} from "./settings.js?v=9.0";
+import { updateClock, updateGreeting } from "./clock.js?v=9.0";
+import { initSearchSuggestions } from "./search.js?v=9.0";
 import {
     toggleBookmarkEditMode,
     renderBookmarks,
@@ -54,7 +54,7 @@ import {
     clearBookmarkUndo,
     handleFaviconLoad,
     handleFaviconError
-} from "./bookmarks.js?v=8.0";
+} from "./bookmarks.js?v=9.0";
 import {
     renderTodoList,
     addTodo,
@@ -67,14 +67,14 @@ import {
     clearTodoUndo,
     initUtilityTabs,
     switchUtilityTab
-} from "./todo.js?v=8.0";
+} from "./todo.js?v=9.0";
 import {
     initMemoEditor,
     syncMemoFromConfig,
     formatMemo,
     copyMemoContent,
     updateMemoStatus
-} from "./memo.js?v=8.0";
+} from "./memo.js?v=9.0";
 import {
     initGames,
     toggleGameModal,
@@ -93,10 +93,10 @@ import {
     initOthelloGame,
     playOthelloMove,
     undoOthelloMove
-} from "./games.js?v=8.0";
-import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=8.0";
-import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=8.0";
-import { initNews, switchNewsCategory, refreshNews, refreshTrends, switchYoutubeCategory, refreshYoutube } from "./news.js?v=8.0";
+} from "./games.js?v=9.0";
+import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=9.0";
+import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=9.0";
+import { initNews, switchNewsCategory, refreshNews, refreshTrends, switchYoutubeCategory, refreshYoutube } from "./news.js?v=9.0";
 
 // HTMLのイベントハンドラーから呼び出す関数
 Object.assign(window, {

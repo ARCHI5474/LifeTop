@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {initSyncOnboarding,REMINDER_INTERVAL,SYNC_GUIDE_KEY} from '../js/sync-onboarding.js?v=8.0';
+import {initSyncOnboarding,REMINDER_INTERVAL,SYNC_GUIDE_KEY} from '../js/sync-onboarding.js?v=9.0';
 const elements=new Map(),stored=new Map(),timers=[];
 let now=10000, loginCalls=0,accountCalls=0,editing=false,otherDialog=false;
 const originalNow=Date.now;

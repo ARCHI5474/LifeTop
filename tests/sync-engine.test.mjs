@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import {createSyncEngine, canonicalJson, checkedPayload, SYNC_META_KEY, SYNC_RECOVERY_KEY, MAX_SYNC_BYTES} from '../js/sync-engine.js?v=8.0';
-import {selectSyncData} from '../js/cloud-sync.js?v=8.0';
-import {userConfig} from '../js/config.js?v=8.0';
+import {createSyncEngine, canonicalJson, checkedPayload, SYNC_META_KEY, SYNC_RECOVERY_KEY, MAX_SYNC_BYTES} from '../js/sync-engine.js?v=9.0';
+import {selectSyncData} from '../js/cloud-sync.js?v=9.0';
+import {userConfig} from '../js/config.js?v=9.0';
 
 assert.equal(canonicalJson({b:[2,1],a:1}),canonicalJson({a:1,b:[2,1]}));
 assert.throws(()=>checkedPayload({memo:'あ'.repeat(MAX_SYNC_BYTES/2)}),/900KB/,'limit counts UTF-8 bytes');

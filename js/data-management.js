@@ -1,11 +1,11 @@
-import { userConfig, DEFAULT_SETTINGS, STORAGE_KEY, themes, colorCombos, fontStyles, bgGradients } from './config.js?v=8.0';
-import { writeStoredConfig } from './storage.js?v=8.0';
+import { userConfig, DEFAULT_SETTINGS, STORAGE_KEY, themes, colorCombos, fontStyles, bgGradients } from './config.js?v=9.0';
+import { writeStoredConfig } from './storage.js?v=9.0';
 
 export const MAX_BACKUP_BYTES = 10 * 1024 * 1024;
 const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 
 export function createBackup(config = userConfig) {
-    return JSON.stringify({ format: 'lifetop-backup', version: 1, appVersion: '8.0', createdAt: new Date().toISOString(), data: config }, null, 2);
+    return JSON.stringify({ format: 'lifetop-backup', version: 1, appVersion: '9.0', createdAt: new Date().toISOString(), data: config }, null, 2);
 }
 
 export function resetSettingsSnapshot(config = userConfig) {

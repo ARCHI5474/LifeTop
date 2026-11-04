@@ -1,8 +1,8 @@
 /* LifeTop - settings panel controls */
-import { colorCombos, bgPresets, fontStyles, userConfig } from "./config.js?v=8.0";
-import { applyStyles, renderColorCombos, renderBgPresets, renderBgSelector } from "./styles.js?v=8.0";
-import { save } from "./storage.js?v=8.0";
-import { updateClock, updateGreeting } from "./clock.js?v=8.0";
+import { colorCombos, bgPresets, fontStyles, userConfig } from "./config.js?v=9.0";
+import { applyStyles, renderColorCombos, renderBgPresets, renderBgSelector } from "./styles.js?v=9.0";
+import { save } from "./storage.js?v=9.0";
+import { updateClock, updateGreeting } from "./clock.js?v=9.0";
 
 let settingsTrigger;
 let helpTrigger;

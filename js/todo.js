@@ -1,6 +1,6 @@
 /* LifeTop - todo list */
-import { userConfig } from "./config.js?v=8.0";
-import { save } from "./storage.js?v=8.0";
+import { userConfig } from "./config.js?v=9.0";
+import { save } from "./storage.js?v=9.0";
 
 let todoFilter = 'all';
 let deletedTodo = null;

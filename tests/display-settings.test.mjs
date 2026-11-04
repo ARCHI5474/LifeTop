@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mergeUserConfig, userConfig } from '../js/config.js?v=8.0';
+import { mergeUserConfig, userConfig } from '../js/config.js?v=9.0';
 mergeUserConfig({textSize:'larger', highContrast:true, compactLayout:true, showNews:false, showYoutube:false});
 assert.equal(userConfig.textSize,'larger');
 assert.equal(userConfig.highContrast,true);

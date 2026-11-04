@@ -1,0 +1,113 @@
+/* Final role-based contract. Location may change layout, never control feedback. */
+:root {
+    --control-feedback: scale 320ms var(--gummy-spring), background-color 180ms ease,
+        color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    --control-shadow: var(--gummy-highlight), 0 3px 8px rgb(0 0 0 / .12);
+}
+body .mini-studio-link { display:inline-flex; align-items:center; text-decoration:none; padding:10px 14px; font-size:.8rem; white-space:nowrap; }
+
+body :is(.primary-btn, .secondary-btn, .tonal-btn, .text-btn, .ctrl-btn,
+    .icon-btn, .icon-btn-small, .close-action, .search-clear-btn,
+    .search-button, .background-upload-btn, .background-clear-btn,
+    .tab-btn, .tool-tab-btn, .news-tab-btn, .bookmark-tab-item,
+    .game-tab-btn, .game-seg-btn, .bm-dialog-mode-btn, .settings-category-tabs > button,
+    .timer-preset-btn, .add-bookmark-btn, .add-folder-btn,
+    .todo-input-wrapper > button, .memo-toolbar button),
+body .dashboard-header :is(a, button) {
+    transition: var(--control-feedback);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+body :is(.primary-btn, .secondary-btn, .tonal-btn, .text-btn, .ctrl-btn,
+    .icon-btn, .icon-btn-small, .close-action, .search-clear-btn,
+    .search-button, .background-upload-btn, .background-clear-btn,
+    .tab-btn, .tool-tab-btn, .news-tab-btn, .bookmark-tab-item,
+    .game-tab-btn, .game-seg-btn, .bm-dialog-mode-btn, .settings-category-tabs > button,
+    .timer-preset-btn, .add-bookmark-btn, .add-folder-btn,
+    .todo-input-wrapper > button, .memo-toolbar button):not(:disabled):active {
+    scale: .97 .95;
+    transition-duration: 90ms;
+}
+
+/* Match each role in both pointer states, avoiding legacy hover overrides. */
+body :is(.primary-btn, .search-button, .todo-input-wrapper > button):is(:hover, :not(:hover)),
+body #game-modal .game-action-row .primary-btn:is(:hover, :not(:hover)) {
+    background: var(--gummy-sheen), var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border: 1px solid transparent;
+    border-radius: var(--gummy-radius-control);
+    box-shadow: var(--control-shadow);
+    filter: none;
+}
+body :is(.secondary-btn, .tonal-btn, .ctrl-btn, .background-upload-btn,
+    .background-clear-btn, .timer-preset-btn, .add-bookmark-btn, .add-folder-btn):is(:hover, :not(:hover)) {
+    background: var(--gummy-sheen), var(--gummy-control);
+    color: var(--gummy-on-control);
+    border: 1px solid transparent;
+    border-radius: var(--gummy-radius-control);
+    box-shadow: var(--control-shadow);
+    filter: none;
+}
+body .text-btn:is(:hover, :not(:hover)) {
+    background: transparent;
+    color: var(--md-sys-color-primary);
+    border: 1px solid transparent;
+    border-radius: var(--gummy-radius-control);
+    box-shadow: none;
+    filter: none;
+}
+body :is(.icon-btn, .icon-btn-small, .close-action, .search-clear-btn, .memo-tool-btn):is(:hover, :not(:hover)),
+body .dashboard-header :is(.icon-btn, .icon-btn-small):is(:hover, :not(:hover)) {
+    background: var(--gummy-sheen), var(--gummy-control);
+    color: var(--gummy-on-control);
+    border: 1px solid var(--line-soft);
+    border-radius: 999px;
+    box-shadow: var(--control-shadow);
+    filter: none;
+}
+body :is(.icon-btn, .icon-btn-small, .memo-tool-btn).active:is(:hover, :not(:hover)),
+body .timer-preset-btn[aria-pressed="true"]:is(:hover, :not(:hover)) {
+    background: var(--gummy-sheen), var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+}
+
+/* Selection backgrounds belong to the shared sliding indicator. */
+body .sliding-selection.selection-ready > button:is(:hover, :not(:hover)),
+body #game-modal .sliding-selection.selection-ready > button:is(:hover, :not(:hover)) {
+    background: transparent;
+    color: var(--text-secondary);
+    border-color: transparent;
+    border-radius: var(--gummy-radius-selected);
+    box-shadow: none;
+    filter: none;
+}
+body .sliding-selection.selection-ready > button.active:is(:hover, :not(:hover)),
+body #game-modal .sliding-selection.selection-ready > button.active:is(:hover, :not(:hover)) {
+    color: var(--gummy-on-control);
+    font-weight: 700;
+}
+
+body :is(.settings-input, .bookmark-dialog-form input, .bookmark-folder-select):not([aria-invalid="true"]) {
+    background: var(--md-sys-color-surface-container-high);
+    color: var(--text-color);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--gummy-radius-selected);
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+body :is(.settings-input, .bookmark-dialog-form input, .bookmark-folder-select):not([aria-invalid="true"]):focus {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--p-rgb), .18);
+}
+
+:root.reduce-motion body :is(button, a, .background-upload-btn),
+:root.reduce-motion body .dashboard-header :is(a, button) {
+    transition: none !important;
+    scale: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+    body :is(button, a, .background-upload-btn),
+    body .dashboard-header :is(a, button) {
+        transition: none !important;
+        scale: none !important;
+    }
+}

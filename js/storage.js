@@ -4,7 +4,7 @@ import {
     STORAGE_KEY,
     userConfig,
     mergeUserConfig
-} from "./config.js?v=8.0";
+} from "./config.js?v=9.0";
 
 const saveListeners = new Set();
 export function onLocalSave(listener) {

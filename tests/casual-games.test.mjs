@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { lineWinner, toggleLights, shuffledPairs } from '../js/casual-games.js?v=8.0';
+import { lineWinner, toggleLights, shuffledPairs } from '../js/casual-games.js?v=9.0';
 for (const line of [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]) {
     const board = Array(9).fill(null);
     line.forEach(i => board[i] = '○');

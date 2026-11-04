@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
-import {cloudSyncConfig} from '../js/firebase-config.js?v=8.0';
-import {initCloudSync} from '../js/cloud-sync.js?v=8.0';
+import {cloudSyncConfig} from '../js/firebase-config.js?v=9.0';
+import {initCloudSync} from '../js/cloud-sync.js?v=9.0';
 
 const enabled = cloudSyncConfig.enabled;
 cloudSyncConfig.enabled = false;

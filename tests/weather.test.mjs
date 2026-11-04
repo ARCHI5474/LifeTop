@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { weatherNumber, forecastIndex, getWeatherData } from '../js/weather.js?v=8.0';
+import { weatherNumber, forecastIndex, getWeatherData } from '../js/weather.js?v=9.0';
 
 for (const value of [null, undefined, NaN, Infinity, '20']) assert.equal(weatherNumber(value, '°C'), '--');
 assert.equal(weatherNumber(0, '%'), '0%');

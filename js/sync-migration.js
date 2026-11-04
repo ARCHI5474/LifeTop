@@ -1,5 +1,5 @@
-import {DEFAULT_SETTINGS, DEFAULT_CONTENT} from './config.js?v=8.0';
-import {canonicalJson} from './sync-engine.js?v=8.0';
+import {DEFAULT_SETTINGS, DEFAULT_CONTENT} from './config.js?v=9.0';
+import {canonicalJson} from './sync-engine.js?v=9.0';
 
 const same = (a,b) => canonicalJson(a) === canonicalJson(b);
 const comparable = data => Object.fromEntries(Object.entries(data).filter(([key])=>key!=='syncTiming'));

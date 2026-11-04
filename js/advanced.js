@@ -1,6 +1,6 @@
-import { userConfig } from './config.js?v=8.0';
-import { save } from './storage.js?v=8.0';
-import { updateClock } from './clock.js?v=8.0';
+import { userConfig } from './config.js?v=9.0';
+import { save } from './storage.js?v=9.0';
+import { updateClock } from './clock.js?v=9.0';
 
 const engines = {
     google: ['Google', 'https://www.google.com/search', 'q'],

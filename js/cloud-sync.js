@@ -1,12 +1,12 @@
-import { cloudSyncConfig } from './firebase-config.js?v=8.0';
-import { createFirebaseAdapter } from './firebase-adapter.js?v=8.0';
-import { createSyncEngine, SYNC_RECOVERY_KEY, SYNC_META_KEY } from './sync-engine.js?v=8.0';
-import { userConfig, STORAGE_KEY, DEFAULT_SETTINGS } from './config.js?v=8.0';
-import { onLocalSave, writeStoredConfig } from './storage.js?v=8.0';
-import { createBackup, parseBackup } from './data-management.js?v=8.0';
-import { mergeInitialData } from './sync-migration.js?v=8.0';
-import { initSyncOnboarding } from './sync-onboarding.js?v=8.0';
-import {beginSyncVisit, automaticSyncDue, normalizeSyncTiming} from './sync-timing.js?v=8.0';
+import { cloudSyncConfig } from './firebase-config.js?v=9.0';
+import { createFirebaseAdapter } from './firebase-adapter.js?v=9.0';
+import { createSyncEngine, SYNC_RECOVERY_KEY, SYNC_META_KEY } from './sync-engine.js?v=9.0';
+import { userConfig, STORAGE_KEY, DEFAULT_SETTINGS } from './config.js?v=9.0';
+import { onLocalSave, writeStoredConfig } from './storage.js?v=9.0';
+import { createBackup, parseBackup } from './data-management.js?v=9.0';
+import { mergeInitialData } from './sync-migration.js?v=9.0';
+import { initSyncOnboarding } from './sync-onboarding.js?v=9.0';
+import {beginSyncVisit, automaticSyncDue, normalizeSyncTiming} from './sync-timing.js?v=9.0';
 
 // Sync only the content advertised in the UI. Cached location, health logs,
 // game scores, auth tokens and legacy fields never enter a cloud payload.

@@ -1,6 +1,6 @@
 /* LifeTop - bookmarks (with folder management, drag-and-drop & touch reordering) */
-import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=8.0";
-import { save } from "./storage.js?v=8.0";
+import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=9.0";
+import { save } from "./storage.js?v=9.0";
 
 let bookmarkEditMode = false;
 let currentBookmarkTab = "ブックマーク";

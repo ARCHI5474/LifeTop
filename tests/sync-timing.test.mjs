@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
-import {automaticSyncDue,beginSyncVisit,normalizeSyncTiming,SYNC_VISITS_KEY} from '../js/sync-timing.js?v=8.0';
-import {userConfig,mergeUserConfig} from '../js/config.js?v=8.0';
-import {createBackup,parseBackup} from '../js/data-management.js?v=8.0';
-import {selectSyncData} from '../js/cloud-sync.js?v=8.0';
+import {automaticSyncDue,beginSyncVisit,normalizeSyncTiming,SYNC_VISITS_KEY} from '../js/sync-timing.js?v=9.0';
+import {userConfig,mergeUserConfig} from '../js/config.js?v=9.0';
+import {createBackup,parseBackup} from '../js/data-management.js?v=9.0';
+import {selectSyncData} from '../js/cloud-sync.js?v=9.0';
 
 assert.equal(normalizeSyncTiming(undefined),'every3');
 assert.equal(normalizeSyncTiming('invalid'),'every3');

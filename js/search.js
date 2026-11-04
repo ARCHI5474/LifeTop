@@ -1,4 +1,4 @@
-import { userConfig } from './config.js?v=8.0';
+import { userConfig } from './config.js?v=9.0';
 let activeIndex = -1;
 let suggestions = [];
 let lastRenderedSignature = '';
@@ -48,6 +48,7 @@ function fetchGoogleSuggestJsonp(query, signal) {
 
         const cleanup = () => {
             settled = true;
+            signal?.removeEventListener('abort', onAbort);
             try { delete window[cbName]; } catch { window[cbName] = undefined; }
             script.remove();
         };
@@ -59,13 +60,15 @@ function fetchGoogleSuggestJsonp(query, signal) {
             }
         }, 1200);
 
-        signal?.addEventListener?.('abort', () => {
+        const onAbort = () => {
             clearTimeout(timer);
             if (!settled) {
                 cleanup();
                 reject(new DOMException('Aborted', 'AbortError'));
             }
-        }, { once: true });
+        };
+        signal?.addEventListener?.('abort', onAbort, { once: true });
+        if (signal?.aborted) { onAbort(); return; }
 
         window[cbName] = (data) => {
             clearTimeout(timer);
@@ -179,6 +182,7 @@ export function initSearchSuggestions() {
     const scheduleSuggestions = (event) => {
         syncClearButton();
         window.clearTimeout(searchTimer);
+        requestController?.abort();
         const rawVal = input.value || '';
         const composingData = typeof event?.data === 'string' ? event.data : '';
         const query = (rawVal || composingData).trim();
@@ -202,6 +206,7 @@ export function initSearchSuggestions() {
         if (suggestionCache.has(cacheKey)) {
             return;
         }
+        if (event?.isComposing || event?.type === 'compositionupdate') return;
         searchTimer = window.setTimeout(() => fetchSuggestions(query, input, list), 70);
     };
 
@@ -238,8 +243,7 @@ export function initSearchSuggestions() {
 
     input.addEventListener('keydown', event => handleKeyboard(event, input, list));
     input.addEventListener('blur', () => window.setTimeout(() => {
-        // 入力欄に文字がある間はスマホのキーボード「完了」押下時でも候補を閉じない
-        if (document.activeElement !== input && !input.value.trim()) {
+        if (!input.closest('.search-container')?.contains(document.activeElement)) {
             clearSuggestions(input, list);
         }
     }, 180));
@@ -289,21 +293,26 @@ async function fetchSuggestions(query, input, list) {
         ]);
         if (controller.signal.aborted || input.value.trim() !== query) return;
         const merged = buildMergedSuggestions(query, result);
-        suggestions = merged;
         if (suggestionCache.size > 60) {
             const firstKey = suggestionCache.keys().next().value;
             suggestionCache.delete(firstKey);
         }
         suggestionCache.set(cacheKey, merged);
-        renderSuggestions(input, list);
+        // Keep the keyboard selection stable while a remote response arrives.
+        if (activeIndex < 0) {
+            suggestions = merged;
+            renderSuggestions(input, list);
+        }
     } catch (error) {
-        if (!controller.signal.aborted && error.name !== 'AbortError' && input.value.trim() === query) {
+        if (!controller.signal.aborted && error.name !== 'AbortError' && input.value.trim() === query && activeIndex < 0) {
             // APIが0件またはエラーでも、入力中は現在の入力ワード候補を維持して閉じない
             suggestions = buildMergedSuggestions(query, []);
             renderSuggestions(input, list);
         }
     } finally {
         window.clearTimeout(timeoutId);
+        controller.abort();
+        if (requestController === controller) requestController = null;
     }
 }
 
@@ -363,6 +372,7 @@ function updateActiveSuggestion(input, list) {
         item.setAttribute('aria-selected', String(index === activeIndex));
     });
     input.setAttribute('aria-activedescendant', `search-suggestion-${activeIndex}`);
+    list.querySelector('.search-suggestion.active')?.scrollIntoView({ block: 'nearest' });
 }
 
 function clearSuggestions(input, list) {
