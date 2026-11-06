@@ -1,9 +1,9 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{uid}/lifetop/state {
+    match /users/{uid}/{collection}/state {
       function owner() {
-        return request.auth != null && request.auth.uid == uid
+        return collection in ['lifetop', 'canvas'] && request.auth != null && request.auth.uid == uid
           && request.auth.token.firebase.sign_in_provider == 'google.com';
       }
       function validDocument() {
@@ -19,6 +19,30 @@ service cloud.firestore {
       allow update: if owner() && validDocument()
         && request.resource.data.revision == resource.data.revision + 1;
       allow delete: if false;
+    }
+    match /messageRooms/{roomId} {
+      function member() {
+        return request.auth != null
+          && request.auth.token.firebase.sign_in_provider == 'anonymous'
+          && !resource.data.deleted
+          && request.auth.uid in resource.data.members
+          && resource.data.lastUsedAtMs >= request.time.toMillis() - 7776000000;
+      }
+      allow get: if member();
+      allow list, write: if false;
+      match /messages/{messageId} {
+        function roomMember() {
+          let room = get(/databases/$(database)/documents/messageRooms/$(roomId)).data;
+          return request.auth != null
+            && request.auth.token.firebase.sign_in_provider == 'anonymous'
+            && !room.deleted && request.auth.uid in room.members
+            && room.lastUsedAtMs >= request.time.toMillis() - 7776000000;
+        }
+        allow get: if roomMember() && resource.data.expiresAt > request.time;
+        allow list: if roomMember() && request.query.limit != null && request.query.limit <= 100
+          && resource.data.expiresAt > request.time;
+        allow write: if false;
+      }
     }
     match /{document=**} { allow read, write: if false; }
   }

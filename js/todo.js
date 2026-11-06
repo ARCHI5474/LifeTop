@@ -103,6 +103,7 @@ export function renderTodoList() {
             </li>
         `;
     }).join('');
+    document.dispatchEvent?.(new Event('lifetop:tasks-rendered'));
 }
 
 export function addTodo() {
@@ -119,7 +120,9 @@ export function addTodo() {
     const newTodo = {
         id: nextId,
         text: text,
-        completed: false
+        completed: false,
+        description: '', status: 'todo', due: '', projectId: '', fileId: '',
+        createdAt: Date.now(), updatedAt: Date.now(), completedAt: null
     };
 
     if (!userConfig.todoList) userConfig.todoList = [];
@@ -135,6 +138,9 @@ export function toggleTodo(id) {
     const todo = userConfig.todoList.find(t => t.id === id);
     if (todo) {
         todo.completed = !todo.completed;
+        todo.status = todo.completed ? 'done' : 'todo';
+        todo.updatedAt = Date.now();
+        todo.completedAt = todo.completed ? Date.now() : null;
         save();
         renderTodoList();
         (document.querySelector(`#todo-item-${id} input`) || document.getElementById('todo-input')).focus();
@@ -144,6 +150,7 @@ export function toggleTodo(id) {
 export function toggleTodoPriority(id) {
     const todo = userConfig.todoList?.find(t => t.id === id);
     if (!todo) return;
+    todo.updatedAt = Date.now();
     if (todo.priority) {
         delete todo.priority;
     } else {

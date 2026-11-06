@@ -1,4 +1,6 @@
 import { initIcons } from './icons.js?v=9.0';
+import {initCanvas} from './connected-canvas.js';
+import {initFestivalEntry} from './festival-entry.js';
 import { initMotion } from './motion.js?v=9.0';
 import { initLoading } from './loading.js?v=9.0';
 import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=9.0';
@@ -207,6 +209,8 @@ window.addEventListener('DOMContentLoaded', () => {
     initResponsiveUI();
     initMotion();
     loadData();
+    void initCanvas();
+    void initFestivalEntry();
 
     applyStyles();
     renderBookmarks();

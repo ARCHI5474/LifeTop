@@ -1,10 +1,10 @@
 
 /* ========================    
-LifeTop v9.0 Codename: "Life&WorkTop"
+LifeTop v10.0 Codename: "Connected Canvas"
    ======================== */
 const UPDATE_CONFIG = {
-    notice: "LifeTop v9.0 Life&WorkTopにアップデートしました。全部ここで。文書・表計算・動画編集など、14のミニアプリをお楽しみください。",
-    tag: "LifeTop v9.0"
+    notice: "LifeTop v10.0 Connected Canvas。作る、つながる、もっと便利に。Workspace・Calendar・Studio連携を追加しました。Messagesはサーバー設定後に利用できます。",
+    tag: "LifeTop v10.0"
 };
 /* ========================================= */
 
@@ -432,6 +432,14 @@ function mergeUserConfig(parsed) {
                 id: todo.id,
                 text: todo.text,
                 completed: Boolean(todo.completed),
+                description: typeof todo.description === 'string' ? todo.description : '',
+                status: todo.completed ? 'done' : todo.status === 'doing' ? 'doing' : 'todo',
+                due: typeof todo.due === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(todo.due) ? todo.due : '',
+                projectId: typeof todo.projectId === 'string' ? todo.projectId : '',
+                fileId: typeof todo.fileId === 'string' ? todo.fileId : '',
+                createdAt: Number.isFinite(todo.createdAt) ? todo.createdAt : 0,
+                updatedAt: Number.isFinite(todo.updatedAt) ? todo.updatedAt : 0,
+                completedAt: todo.completed && Number.isFinite(todo.completedAt) ? todo.completedAt : null,
                 ...(todo.priority ? { priority: true } : {})
             }))
         : userConfig.todoList;

@@ -1,6 +1,7 @@
 const SDK = 'https://www.gstatic.com/firebasejs/13.1.0';
 
-export async function createFirebaseAdapter(config) {
+export async function createFirebaseAdapter(config, collection = 'lifetop') {
+    if (!['lifetop','canvas'].includes(collection)) throw new Error('Unsupported sync collection');
     const [appSDK, authSDK, dbSDK] = await Promise.all([
         import(`${SDK}/firebase-app.js`),
         import(`${SDK}/firebase-auth.js`),
@@ -10,7 +11,7 @@ export async function createFirebaseAdapter(config) {
     const auth = authSDK.getAuth(app);
     auth.languageCode = 'ja';
     const db = dbSDK.getFirestore(app);
-    const ref = uid => dbSDK.doc(db, 'users', uid, 'lifetop', 'state');
+    const ref = uid => dbSDK.doc(db, 'users', uid, collection, 'state');
     return {
         onAuth: callback => authSDK.onAuthStateChanged(auth, callback),
         signIn: () => {

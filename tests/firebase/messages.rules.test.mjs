@@ -1,0 +1,15 @@
+import {readFile} from 'node:fs/promises';
+import {initializeTestEnvironment,assertFails,assertSucceeds} from '@firebase/rules-unit-testing';
+import {doc,collection,query,where,orderBy,limit,getDoc,getDocs,setDoc,deleteDoc,Timestamp,serverTimestamp} from 'firebase/firestore';
+if(!process.env.FIRESTORE_EMULATOR_HOST)throw Error('Firebase Emulator only; never production.');
+const env=await initializeTestEnvironment({projectId:'demo-lifetop',firestore:{rules:await readFile(new URL('../../firestore.rules',import.meta.url),'utf8')}});
+try{
+ const anonymous=id=>env.authenticatedContext(id,{firebase:{sign_in_provider:'anonymous'}}).firestore(),alice=anonymous('alice'),outsider=anonymous('outsider'),google=env.authenticatedContext('alice',{firebase:{sign_in_provider:'google.com'}}).firestore(),guest=env.unauthenticatedContext().firestore();
+ await env.withSecurityRulesDisabled(async c=>{const db=c.firestore();await setDoc(doc(db,'messageRooms/r'),{name:'room',owner:'alice',members:['alice'],lastUsedAtMs:Date.now(),deleted:false});await setDoc(doc(db,'messageRooms/r/messages/m'),{sender:'alice',body:'<script>not HTML</script>',createdAt:Timestamp.now(),expiresAt:Timestamp.fromMillis(Date.now()+86400000)});await setDoc(doc(db,'messageRooms/r/messages/old'),{sender:'alice',body:'expired',expiresAt:Timestamp.fromMillis(Date.now()-1000)});await setDoc(doc(db,'messageInvites/secret'),{roomId:'r'});});
+ await assertSucceeds(getDoc(doc(alice,'messageRooms/r')));for(const db of [outsider,google,guest]){await assertFails(getDoc(doc(db,'messageRooms/r')));await assertFails(getDoc(doc(db,'messageRooms/r/messages/m')));}
+ await assertFails(getDocs(collection(alice,'messageRooms')));await assertFails(getDoc(doc(alice,'messageInvites/secret')));await assertFails(setDoc(doc(alice,'messageRooms/r'),{members:['alice','outsider']}));await assertFails(setDoc(doc(alice,'messageRooms/r/messages/new'),{body:'bad'}));await assertFails(deleteDoc(doc(alice,'messageRooms/r/messages/m')));await assertFails(getDoc(doc(alice,'messageRooms/r/messages/old')));
+ const messages=collection(alice,'messageRooms/r/messages');await assertFails(getDocs(query(messages,limit(101))));await assertFails(getDocs(messages));await assertSucceeds(getDocs(query(messages,where('expiresAt','>',Timestamp.fromMillis(Date.now()+60000)),orderBy('expiresAt','desc'),limit(100))));
+ const canvas=doc(google,'users/alice/canvas/state');await assertSucceeds(setDoc(canvas,{schema:1,revision:1,payload:'{}',updatedAt:serverTimestamp()}));await assertFails(getDoc(doc(alice,'users/alice/canvas/state')));await assertFails(getDoc(doc(outsider,'users/alice/canvas/state')));
+ await env.withSecurityRulesDisabled(c=>setDoc(doc(c.firestore(),'messageRooms/r'),{deleted:true,members:[],lastUsedAtMs:0},{merge:true}));await assertFails(getDoc(doc(alice,'messageRooms/r/messages/m')));
+ console.log('PASS: Messages membership, expiry, read limits, direct-write denial, deletion, private invites; Canvas Google-owner isolation');
+}finally{await env.cleanup();}
