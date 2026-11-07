@@ -8,9 +8,9 @@ try{
  await p.goto('http://localhost/');await p.locator('.festival-banner').waitFor();await p.locator('#loading-screen').waitFor({state:'detached'});
  assert.match(await p.locator('.festival-banner-time').innerText(),/終了まで 9日/);
  assert.equal(await p.locator('.app-footer .festival-secret').count(),1);
- assert.match(await fs.readFile(path.join(root,'index.html'),'utf8'),/loading-release.*v10.1.*Festival Playground/);
- assert.match(await p.locator('.settings-about-version').textContent(),/v10.1/);
- assert.match(await p.locator('.settings-about-codename').textContent(),/Festival Playground/);
+ assert.match(await fs.readFile(path.join(root,'index.html'),'utf8'),/loading-release.*v10.0.*LifeTop10 Fes/);
+ assert.match(await p.locator('.settings-about-version').textContent(),/v10.0/);
+ assert.match(await p.locator('.settings-about-codename').textContent(),/LifeTop10 Fes/);
  await p.evaluate(async()=>{const m=await import('./js/festival-entry.js');await m.initFestivalEntry();});
  assert.equal(await p.locator('.app-footer .festival-secret').count(),1);assert.equal(await p.locator('.festival-banner').count(),1);
  for(const width of [1440,390]){await p.setViewportSize({width,height:900});await p.evaluate(()=>scrollTo(0,0));assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await fs.mkdir(path.join(root,'test-artifacts'),{recursive:true});await p.screenshot({path:path.join(root,'test-artifacts/festival-launch-'+width+'.png')});}

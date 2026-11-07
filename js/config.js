@@ -1,10 +1,10 @@
 
 /* ========================    
-LifeTop v10.1 Codename: "Festival Playground"
+LifeTop v10.0 Codename: "LifeTop10 Fes"
    ======================== */
 const UPDATE_CONFIG = {
-    notice: "LifeTop v10.1 Festival Playground。10かくれんぼや記念ガチャでv10 Festivalをお祝い。Studio・GameBoxの表示とポップアップ操作も改善しました。",
-    tag: "LifeTop v10.1"
+    notice: "LifeTop v10.0 LifeTop10 Fes。10かくれんぼや記念ガチャでv10 Festivalをお祝い。Studio・GameBoxの表示とポップアップ操作も改善しました。",
+    tag: "LifeTop v10.0"
 };
 /* ========================================= */
 
