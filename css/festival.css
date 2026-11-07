@@ -2,3 +2,57 @@
 @media(max-width:650px){.festival-grid,.festival-collection{grid-template-columns:1fr}.festival-card{padding:20px}.festival-main{padding-top:20px}}
 @media(prefers-reduced-motion:reduce){.festival-spark,.festival-result.is-revealed{animation:none}.festival-spark{display:none}}.reduce-motion .festival-spark{display:none}.reduce-motion .festival-result.is-revealed{animation:none}
 .festival-ticket-description{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.festival-collection{grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.festival-collection strong{font-size:.8rem;line-height:1.5}.festival-collection small{font-size:.72rem}.festival-result{min-height:1.5rem}.festival-history{font-size:.8rem;line-height:1.8}@media(max-width:850px){.festival-collection{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* v10 launch celebration: isolated from the everyday dashboard palette. */
+.festival-banner{--festival-ink:#fff8ee;position:relative;isolation:isolate;display:grid;grid-template-columns:180px minmax(0,1fr) auto;align-items:center;gap:28px;margin:20px 0 24px;padding:30px 36px;overflow:hidden;border:1px solid #efc67e;border-radius:24px;color:var(--festival-ink);background:radial-gradient(ellipse at 10% 0%,#ff8e594d,transparent 55%),radial-gradient(ellipse at 90% 100%,#ee579d66,transparent 55%),linear-gradient(115deg,#30215b,#643264 65%,#a54257);box-shadow:0 12px 40px #792a5f33,inset 0 0 60px #ffc4630d}
+.festival-banner[hidden]{display:none!important}
+.festival-banner::before,.festival-banner::after{content:'';position:absolute;z-index:-1;width:260px;height:260px;border:1px solid #ffd57750;border-radius:50%;right:-100px;top:-170px;box-shadow:0 0 0 28px #ffd57712,0 0 0 56px #ffd5770a}
+.festival-banner::after{right:auto;left:-160px;top:auto;bottom:-190px}
+.festival-banner-art{text-align:center;transform:rotate(-9deg)}
+.festival-banner-art>span{display:block;font:900 132px/.95 system-ui;letter-spacing:-.12em;padding-right:.12em;color:#ffdc84;text-shadow:4px 5px 0 #c77050,8px 10px 0 #381f4d}
+.festival-banner-art>small{display:block;font:700 8px/1.5 system-ui;letter-spacing:.14em;margin-top:20px;color:#ffe6b5}
+.festival-banner-copy p{margin:8px 0;font-size:13px;color:#ffeddf;line-height:1.6}
+.festival-banner-copy .festival-banner-kicker{font-size:10px;font-weight:800;letter-spacing:.16em;color:#ffdc84}
+.festival-banner-copy h2{font:800 clamp(24px,3vw,38px)/1.12 system-ui;margin:8px 0;letter-spacing:-.03em;color:#fff8ee}
+.festival-banner-copy h2 em{font-style:normal;color:#ffdc84;font-size:1.25em}
+.festival-banner-copy .festival-banner-time{font-size:11px;font-variant-numeric:tabular-nums;color:#f7d6df}
+a.festival-banner-cta{display:flex;align-items:center;justify-content:center;gap:18px;min-height:48px;padding:0 22px;border-radius:12px;background:#ffdc84;color:#38203f;font:800 14px/1.4 system-ui;text-decoration:none;box-shadow:0 4px 0 #ad6a59;transition:transform .18s,background .18s}
+a.festival-banner-cta:hover{background:#ffe9ad;transform:translateY(-2px)}
+a.festival-banner-cta:focus-visible{outline:3px solid white;outline-offset:5px}
+.festival-banner .festival-spark{width:7px;height:12px;animation-duration:2.1s}
+body.ui-system .festival-pop.festival-welcome{border:1px solid #ffd885;background:linear-gradient(130deg,#392258,#853e69);color:#fff5e5;box-shadow:0 12px 54px #b65c694d}
+.festival-welcome>p{font-size:22px;font-weight:800;line-height:1.35;padding-top:12px;color:#ffdc84}
+body.ui-system .festival-welcome a,body.ui-system .festival-welcome button{color:#fff5e5;border-color:#ffe6ad80}
+body.festival-page .festival-heading{background:radial-gradient(ellipse at 0% 0%,#ff976d44,transparent 65%),linear-gradient(120deg,#392258,#853e69)!important;color:#fff5e5;border-color:#ffdc84}
+body.festival-page .festival-heading :is(h1,p,button){color:#fff5e5!important}
+body.festival-page .festival-heading h1{font-weight:900!important;text-shadow:2px 3px 0 #38203f}
+@media(max-width:850px){.festival-banner{grid-template-columns:120px minmax(0,1fr);padding:24px;gap:20px}.festival-banner-art>span{font-size:100px}.festival-banner-cta{grid-column:1/-1}.festival-banner-art>small{font-size:7px}}
+@media(max-width:480px){.festival-banner{grid-template-columns:90px minmax(0,1fr);gap:16px;padding:22px 18px;border-radius:18px}.festival-banner-art>span{font-size:84px}.festival-banner-art>small{display:none}.festival-banner-copy h2{font-size:23px}.festival-banner-copy .festival-banner-kicker{font-size:8px;letter-spacing:.08em}.festival-banner-copy p{font-size:12px}.festival-banner-copy .festival-banner-time{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.festival-banner-cta{transition:none!important;transform:none!important}}.reduce-motion .festival-banner-cta{transition:none!important;transform:none!important}
+/* Keep the celebration inside the same responsive column as the home cards. */
+body.ui-system .festival-banner{box-sizing:border-box;width:min(var(--ui-content-max,1200px),calc(100% - 64px));max-width:var(--ui-content-max,1200px);margin-inline:auto;grid-template-columns:minmax(100px,160px) minmax(0,1fr) auto;min-width:0}
+.festival-banner-copy,.festival-banner-cta{min-width:0}.festival-banner-copy{overflow-wrap:anywhere}
+#festival-hunt{grid-column:1/-1}
+.festival-hunt-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-block:16px}
+.festival-hunt-toolbar output{margin-left:auto;font:700 22px/1.4 monospace;font-variant-numeric:tabular-nums}
+.festival-hunt-grid{--hunt-columns:6;display:grid;grid-template-columns:repeat(var(--hunt-columns),minmax(0,1fr));gap:8px;max-width:640px;margin:16px auto}
+body.festival-page .festival-hunt-tile{min-width:0;min-height:52px;padding:10px 4px;background:var(--ui-surface-muted);color:var(--ui-text);border:1px solid var(--ui-border);border-radius:10px;font:700 22px/1.2 monospace;cursor:pointer;touch-action:manipulation;box-shadow:0 3px 0 color-mix(in srgb,var(--ui-border) 70%,transparent)}
+body.festival-page .festival-hunt-tile:hover{border-color:var(--ui-primary);background:var(--ui-primary-soft)}
+body.festival-page .festival-hunt-tile:focus-visible{outline:3px solid var(--ui-focus);outline-offset:2px}
+body.festival-page .festival-hunt-tile:disabled{opacity:.45;cursor:default}
+body.festival-page .festival-hunt-tile[data-miss=true]{border-color:var(--ui-danger);color:var(--ui-danger)}
+#festival-hunt.is-cleared{animation:festival-reveal .35s ease-out;border-color:var(--festival-gold,#f0bf65)}
+@media(max-width:1023px){body.ui-system .festival-banner{width:calc(100% - 48px)}}
+@media(max-width:850px){body.ui-system .festival-banner{grid-template-columns:110px minmax(0,1fr)}body.ui-system .festival-banner-cta{grid-column:1/-1}}
+@media(max-width:639px){body.ui-system .festival-banner{width:calc(100% - 32px);grid-template-columns:80px minmax(0,1fr);padding:20px 16px;gap:14px}.festival-banner-copy h2{font-size:22px}.festival-banner-art>span{font-size:76px}.festival-banner-copy .festival-banner-kicker{font-size:8px;letter-spacing:.06em}.festival-hunt-grid{--hunt-columns:4;gap:8px}.festival-hunt-toolbar output{font-size:18px}body.festival-page .festival-hunt-tile{min-height:48px;font-size:20px}}
+@media(prefers-reduced-motion:reduce){#festival-hunt.is-cleared{animation:none}}.reduce-motion #festival-hunt.is-cleared{animation:none}
+body.festival-page .festival-hunt-grid{width:100%;box-sizing:border-box;max-width:520px}body.festival-page .festival-hunt-tile{width:100%;font-size:22px}
+/* Small collectible markers sit in the flow, away from the normal controls. */
+body.ui-system button.festival-hidden-ten{display:inline-grid;place-items:center;box-sizing:border-box;flex:0 0 44px;width:44px;min-width:44px;height:44px;min-height:44px;padding:4px;margin:2px 4px;background:transparent;color:var(--ui-text-muted,#b2bdcb);border:1px dashed color-mix(in srgb,var(--ui-border,#8293aa) 70%,transparent);border-radius:7px;font:700 12px/1 monospace;letter-spacing:-.04em;vertical-align:middle;cursor:pointer;transform:rotate(-8deg);touch-action:manipulation}
+body.ui-system button.festival-hidden-ten:hover{color:var(--ui-text);border-color:#c99b41;background:#f0bf651c}
+body.ui-system button.festival-hidden-ten:focus-visible{outline:3px solid var(--ui-focus);outline-offset:2px;transform:none}
+.festival-found-toast{position:fixed;inset:auto 16px 20px;z-index:100010;width:fit-content;max-width:calc(100% - 32px);box-sizing:border-box;margin-inline:auto;padding:16px 22px;color:#fff5e5;background:linear-gradient(120deg,#392258,#853e69);border:1px solid #ffdc84;border-radius:14px;box-shadow:0 12px 35px #0005;font:700 14px/1.6 system-ui;pointer-events:none;animation:festival-reveal .25s ease-out}
+.festival-hunt-toolbar progress{flex:1;min-width:80px;max-width:360px;accent-color:#d2a342;height:14px}
+.festival-hunt-hints{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0;list-style:none;font-size:13px;line-height:1.7}
+.festival-hunt-hints li{padding:10px;border:1px solid var(--ui-border);border-radius:8px;overflow-wrap:anywhere}
+@media(max-width:639px){.festival-hunt-hints{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.festival-found-toast{animation:none}}.reduce-motion .festival-found-toast{animation:none}

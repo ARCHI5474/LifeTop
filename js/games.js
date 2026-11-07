@@ -36,16 +36,21 @@ export function toggleGameModal(forceState) {
     const overlay = document.getElementById('game-overlay');
     if (!modal) return;
 
+    const embedded = modal.closest('#mini-app-dialog');
     const shouldOpen = typeof forceState === 'boolean' ? forceState : !modal.classList.contains('active');
     modal.classList.toggle('active', shouldOpen);
     modal.inert = !shouldOpen;
-    overlay?.classList.toggle('active', shouldOpen);
-    if (document.body?.style) {
+    if (embedded) {
+        modal.dispatchEvent(new CustomEvent('lifetop:game-modal-state', {bubbles:true, detail:{open:shouldOpen}}));
+    } else {
+        overlay?.classList.toggle('active', shouldOpen);
+    }
+    if (!embedded && document.body?.style) {
         document.body.style.overflow = shouldOpen ? 'hidden' : '';
     }
 
     if (shouldOpen) {
-        gameModalTrigger = document.activeElement;
+        if (!embedded) gameModalTrigger = document.activeElement;
         switchGameTab(activeGame);
         setTimeout(() => {
             const picker = document.getElementById('gamebox-select');
@@ -56,7 +61,7 @@ export function toggleGameModal(forceState) {
         document.getElementById('game-rules')?.hidePopover();
         pauseSnakeGame();
         stopPuzzleTimer();
-        if (gameModalTrigger?.focus) {
+        if (!embedded && gameModalTrigger?.focus) {
             gameModalTrigger.focus({ preventScroll: true });
         }
     }

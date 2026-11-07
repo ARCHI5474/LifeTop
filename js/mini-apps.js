@@ -1,3 +1,4 @@
+import {initUISystem} from './ui-system.js?v=10.0-ui5';
 import { apps } from './mini-model.js?v=1';
 import {readCanvas,saveStudioFile} from './canvas-model.js';
 import {initFestivalEntry} from './festival-entry.js';
@@ -50,18 +51,24 @@ $('mini-catalog').innerHTML=apps.map((app,index)=>`<button class="mini-app-card"
 $('mini-picker').innerHTML=apps.map(app=>`<option value="${app.id}">${app.name}</option>`).join('');
 $('mini-catalog').addEventListener('click',event=>{const card=event.target.closest('[data-app]');if(card)void openApp(card.dataset.app);});
 $('mini-picker').addEventListener('change',()=>void openApp($('mini-picker').value));
-$('mini-filter').addEventListener('input',()=>{const query=$('mini-filter').value.trim().toLowerCase();let count=0;for(const card of $('mini-catalog').children){card.hidden=!card.textContent.toLowerCase().includes(query);if(!card.hidden)count++;}$('mini-no-results').hidden=count>0;});
+let catalogPage=0;
+const pager=document.createElement('nav');pager.className='studio-pager';pager.setAttribute('aria-label','アプリ一覧のページ');
+pager.innerHTML='<button type="button" class="tonal-btn">前へ</button><output aria-live="polite"></output><button type="button" class="tonal-btn">次へ</button>';
+$('mini-catalog').after(pager);
+function pageCatalog(){const query=$('mini-filter').value.trim().toLowerCase(),cards=[...$('mini-catalog').children],matched=cards.filter(c=>c.textContent.toLowerCase().includes(query));const embedded=new URLSearchParams(location.search).has('embedded'),size=embedded?(innerHeight<350?(innerWidth<640?2:3):innerWidth<640?4:6):cards.length,pages=Math.max(1,Math.ceil(matched.length/size));catalogPage=Math.min(catalogPage,pages-1);cards.forEach(c=>c.hidden=true);matched.slice(catalogPage*size,(catalogPage+1)*size).forEach(c=>c.hidden=false);pager.hidden=!embedded||pages===1;pager.querySelector('output').textContent=(catalogPage+1)+' / '+pages;pager.firstElementChild.disabled=catalogPage===0;pager.lastElementChild.disabled=catalogPage===pages-1;$('mini-no-results').hidden=matched.length>0;}
+pager.firstElementChild.onclick=()=>{catalogPage--;pageCatalog();};pager.lastElementChild.onclick=()=>{catalogPage++;pageCatalog();};
+$('mini-filter').addEventListener('input',()=>{catalogPage=0;pageCatalog();});window.addEventListener('resize',pageCatalog);pageCatalog();
 $('mini-name').addEventListener('input',changed);
 $('mini-home-button').addEventListener('click',async()=>{if(opening)return;await save();context?.dispose();context=null;snapshot=null;active=null;$('mini-workspace').hidden=true;$('mini-home').hidden=false;history.replaceState(null,'',location.pathname);$('mini-filter').focus();notify('使いたいアプリを選んでください。');});
 $('mini-project-save').addEventListener('click',()=>{if(!active||!snapshot)return;const name=$('mini-name').value.trim()||'無題';download(JSON.stringify({format:'lifetop-mini',version:1,app:active,name,state:snapshot()},null,2),name.replace(/[<>:"/\\|?*]/g,'_')+'.lifetop.json','application/json');void save();});
 $('mini-project-open').addEventListener('change',async()=>{const file=$('mini-project-open').files[0];if(!file)return;try{if(file.size>15*1024**2)throw new Error('作業ファイルは15MBまでです。素材は別途選択してください。');const project=JSON.parse(await file.text());if(project.format!=='lifetop-mini'||project.version!==1||!hasApp(project.app)||!project.state||typeof project.state!=='object'||Array.isArray(project.state))throw new Error('対応するLifeTop作業ファイルではありません。');await openApp(project.app,project.state);$('mini-name').value=String(project.name||'無題').slice(0,80);changed();notify('作業ファイルを開きました。素材が必要なアプリでは元ファイルを選んでください。');}catch(error){notify(error.message,true);}finally{$('mini-project-open').value='';}});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)void save();});
 window.addEventListener('pagehide',()=>{void save();context?.dispose();});
-const studioBar=document.createElement('div');studioBar.className='mini-tools';studioBar.innerHTML=`<button type="button" class="tonal-btn" id="studio-undo" disabled>Undo</button><button type="button" class="tonal-btn" id="studio-redo" disabled>Redo</button><button type="button" class="tonal-btn" id="studio-new">新規ファイル</button><button type="button" class="tonal-btn" id="studio-recover">前の自動保存を復元</button><button type="button" class="tonal-btn" id="studio-workspace-save">Workspaceへ保存</button><a class="text-btn" href="index.html">Workspaceを開く</a><button type="button" class="tonal-btn" id="studio-template-save">テンプレートとして保存</button><label>テンプレート<select id="studio-template"><option value="">選択</option></select></label>`;$('mini-workspace').insertBefore(studioBar,$('mini-content'));
+const studioBar=document.createElement('div');studioBar.className='mini-tools';studioBar.innerHTML=`<button type="button" class="tonal-btn" id="studio-undo" disabled>Undo</button><button type="button" class="tonal-btn" id="studio-redo" disabled>Redo</button><button type="button" class="tonal-btn" id="studio-new">新規ファイル</button><button type="button" class="tonal-btn" id="studio-recover">前の自動保存を復元</button><button type="button" class="tonal-btn" id="studio-workspace-save">ファイル一覧に保存</button><a class="text-btn" href="index.html">保存済みファイル</a><button type="button" class="tonal-btn" id="studio-template-save">テンプレートとして保存</button><label>テンプレート<select id="studio-template"><option value="">選択</option></select></label>`;$('mini-workspace').insertBefore(studioBar,$('mini-content'));
 $('studio-recover').onclick=async()=>{try{if(!active||!confirm('前の自動保存を復元しますか？現在の作業は作業ファイルとしてダウンロードしてください。'))return;const db=await database(),project=await new Promise((resolve,reject)=>{const tx=db.transaction('recovery'),r=tx.objectStore('recovery').get(active);tx.oncomplete=()=>resolve(r.result);tx.onerror=()=>reject(tx.error);});if(!project)throw Error('復元データはまだありません。');if(snapshot)download(JSON.stringify({format:'lifetop-mini',version:1,app:active,name:$('mini-name').value,state:snapshot()}),'before-recovery.lifetop.json','application/json');await openApp(active,project.state);$('mini-name').value=project.name;changed();}catch(e){notify(e.message,true);}};
 $('studio-undo').onclick=()=>void restoreHistory().catch(e=>notify(e.message,true));$('studio-redo').onclick=()=>void restoreHistory(true).catch(e=>notify(e.message,true));
 $('studio-new').onclick=async()=>{if(!active||opening)return;$('studio-new').disabled=true;$('mini-content').hidden=true;try{await save();if(!workspaceFile)await saveStudioFile({format:'lifetop-mini',version:1,app:active,name:$('mini-name').value||'無題',state:snapshot()});await openApp(active,{});$('mini-name').value='無題';const saved=await saveStudioFile({format:'lifetop-mini',version:1,app:active,name:'無題',state:snapshot()});workspaceFile=saved.id;workspaceUpdatedAt=saved.updatedAt;fileVersions.set(saved.id,saved.updatedAt);changed();}catch(e){notify(e.message,true);}finally{$('studio-new').disabled=false;$('mini-content').hidden=false;}};
-$('studio-workspace-save').onclick=async()=>{try{if(!active||!snapshot)return;await save();const saved=await saveStudioFile({format:'lifetop-mini',version:1,app:active,name:$('mini-name').value.trim()||'無題',state:snapshot()},workspaceFile,workspaceUpdatedAt);workspaceFile=saved.id;workspaceUpdatedAt=saved.updatedAt;fileVersions.set(saved.id,saved.updatedAt);notify('Workspaceへ保存しました。複数のファイルをホームから管理できます。');}catch(e){notify(e.message,true);}};
+$('studio-workspace-save').onclick=async()=>{try{if(!active||!snapshot)return;await save();const saved=await saveStudioFile({format:'lifetop-mini',version:1,app:active,name:$('mini-name').value.trim()||'無題',state:snapshot()},workspaceFile,workspaceUpdatedAt);workspaceFile=saved.id;workspaceUpdatedAt=saved.updatedAt;fileVersions.set(saved.id,saved.updatedAt);notify('ファイル一覧に保存しました。複数のファイルをホームから管理できます。');}catch(e){notify(e.message,true);}};
 async function templates(){const state=await readCanvas();$('studio-template').innerHTML='<option value="">選択</option>'+state.files.filter(f=>f.template&&!f.deletedAt).map(f=>`<option value="${esc(f.id)}">${esc(f.name)}</option>`).join('');}
 $('studio-template-save').onclick=async()=>{try{if(!snapshot)return;await saveStudioFile({format:'lifetop-mini',version:1,app:active,name:$('mini-name').value||'テンプレート',state:snapshot(),template:true});await templates();notify('テンプレートを保存しました。');}catch(e){notify(e.message,true);}};
 $('studio-template').onchange=async()=>{try{const state=await readCanvas(),file=state.files.find(f=>f.id===$('studio-template').value&&!f.deletedAt);if(!file)return;await openApp(file.app,file.state);$('mini-name').value=file.name+' コピー';workspaceFile=null;changed();}catch(e){notify(e.message,true);}};
@@ -70,3 +77,13 @@ async function startStudio(){try{await templates();}catch{}try{const fileId=new 
 void startStudio();
 
 void initFestivalEntry();
+
+initUISystem();
+
+if(new URLSearchParams(location.search).has('embedded')){
+ document.body.classList.add('mini-embedded');
+ document.querySelector('.mini-header')?.remove();
+ document.querySelectorAll('a[href="index.html"]').forEach(link=>link.remove());
+}
+
+window.flushMiniApp=async()=>{clearTimeout(timer);await save();if($('mini-status').dataset.error==='true')throw Error('保存を確認してください。');};

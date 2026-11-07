@@ -1,5 +1,5 @@
 // Connected Canvas uses a separate database; legacy settings and Studio remain intact.
-export const emptyCanvas = () => ({schema:1,revision:0,projects:[],folders:[],files:[],events:[],flows:[],runs:[],dashboard:{hidden:['miniCalendar','actions','flow','storage'],order:[],sizes:{},layoutVersion:2},pins:['task','event','document','workspace'],notifications:[]});
+export const emptyCanvas = () => ({schema:1,revision:0,projects:[],folders:[],files:[],events:[],flows:[],runs:[],dashboard:{hidden:['miniCalendar','storage','actions','flow'],order:[],sizes:{},layoutVersion:4},pins:['task','event','document','workspace'],notifications:[]});
 export function normalizeTask(task, now=Date.now()) {
     return {...task,description:task.description||'',status:task.completed?'done':(['todo','doing','done'].includes(task.status)?task.status:'todo'),due:task.due||'',projectId:task.projectId||'',fileId:task.fileId||'',createdAt:task.createdAt||now,updatedAt:task.updatedAt||now,completedAt:task.completed?(task.completedAt||now):null};
 }

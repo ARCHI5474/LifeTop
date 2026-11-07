@@ -5,7 +5,7 @@ import { userConfig, STORAGE_KEY, DEFAULT_SETTINGS } from './config.js?v=9.0';
 import { onLocalSave, writeStoredConfig } from './storage.js?v=9.0';
 import { createBackup, parseBackup } from './data-management.js?v=9.0';
 import { mergeInitialData } from './sync-migration.js?v=9.0';
-import { initSyncOnboarding } from './sync-onboarding.js?v=9.0';
+import { initSyncOnboarding } from './sync-onboarding.js?v=10.0-ui8';
 import {beginSyncVisit, automaticSyncDue, normalizeSyncTiming} from './sync-timing.js?v=9.0';
 
 // Sync only the content advertised in the UI. Cached location, health logs,
@@ -169,7 +169,6 @@ export async function initCloudSync(refreshUI) {
     });
     logout.addEventListener('click', async () => {
         signingOut = true;
-        onboarding.snooze();
         clearTimeout(timer);
         watcher?.(); watcher = null;
         engine.disconnect(); // Invalidate in-flight reads and transaction retries immediately.

@@ -48,7 +48,7 @@ const frames=await page.evaluate(async()=>{
  window.closeBookmarkDialog();return samples;
 });
 assert.ok(new Set(frames.map(f=>f.y.toFixed(2))).size>4,'popup is interpolated across frames');
-assert.ok(frames.some(f=>f.y<0),'popup has a bounded bounce');
+assert.ok(frames.every(f=>f.y>=-.05),'MD popup motion does not overshoot');
 assert.ok(Math.abs(frames.at(-1).y)<.1,'popup settles exactly');
 await page.waitForTimeout(240);
 for(let i=0;i<4;i++){await page.evaluate(()=>window.openBookmarkDialog());await page.waitForTimeout(65);await page.evaluate(()=>window.closeBookmarkDialog());await page.waitForTimeout(65);}
@@ -58,7 +58,7 @@ assert.equal(await page.locator('#bookmark-dialog').evaluate(e=>e.inert),false);
 await page.keyboard.press('Escape');await page.waitForTimeout(240);
 assert.equal(await page.locator('#bookmark-dialog').evaluate(e=>getComputedStyle(e).visibility),'hidden');
 await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>window.openBookmarkDialog());
-assert.equal(await page.locator('.popup-modal-card').evaluate(e=>getComputedStyle(e).transitionDuration),'0s');await page.keyboard.press('Escape');await page.emulateMedia({reducedMotion:'no-preference'});
+assert.equal(await page.locator('.popup-modal-card').evaluate(e=>getComputedStyle(e).transitionDuration.split(',').every(v=>parseFloat(v)<=.001)),true);await page.keyboard.press('Escape');await page.emulateMedia({reducedMotion:'no-preference'});
 // Contrast audit of labels and status text against composited ancestor surfaces.
 await page.getByRole('button',{name:'Quickパネル',exact:true}).click();
 const contrast=await page.evaluate(()=>{
@@ -88,6 +88,6 @@ for(const width of [320,768,1440]){
 }
 if(process.env.REVIEW_SCREENSHOT){await page.setViewportSize({width:390,height:844});await page.screenshot({path:process.env.REVIEW_SCREENSHOT+'-weather-summary.png',fullPage:true});}
 assert.deepEqual(errors,[]);
-const sorted=frames.map(f=>f.dt).sort((a,b)=>a-b);console.log('PASS: search/clear, modal keyboard/IME/focus, bookmark URL validation/folder/persistence, memo, stale Othello AI, interrupted bounce, reduced motion, icons and contrast');
+const sorted=frames.map(f=>f.dt).sort((a,b)=>a-b);console.log('PASS: search/clear, modal keyboard/IME/focus, bookmark URL validation/folder/persistence, memo, stale Othello AI, interrupted MD motion, reduced motion, icons and contrast');
 console.log('Animation sample: '+frames.length+' frames, p95 interval '+sorted[Math.floor(sorted.length*.95)].toFixed(1)+'ms (this local browser; device performance varies).');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

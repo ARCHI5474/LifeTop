@@ -13,3 +13,5 @@ assert.equal(userConfig.compactLayout,false);
 assert.equal(userConfig.showNews,true,'older saved configurations preserve visible widgets');
 assert.equal(userConfig.showYoutube,true);
 console.log('PASS: new display settings restore safely and older saved data retains defaults');
+
+mergeUserConfig({colorMode:'light'});assert.equal(userConfig.colorMode,'light');mergeUserConfig({colorMode:'invalid'});assert.equal(userConfig.colorMode,'dark');

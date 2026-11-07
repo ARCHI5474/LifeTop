@@ -8,7 +8,7 @@ const engines = {
     duckduckgo: ['DuckDuckGo', 'https://duckduckgo.com/', 'q'],
     yahoo: ['Yahoo! JAPAN', 'https://search.yahoo.co.jp/search', 'p']
 };
-const defaults = { hideClockBackground: false, clockShowSec: false, reduceMotion: false, searchShape: 'pill', searchEngine: 'google', textSize: 'standard', highContrast: false, compactLayout: false, showNews: true, showYoutube: true };
+const defaults = { hideClockBackground: false, clockShowSec: false, reduceMotion: false, searchShape: 'pill', searchEngine: 'google', textSize: 'standard', highContrast: false, compactLayout: false, showNews: true };
 
 export function applyAdvancedSettings() {
     const root = document.documentElement;
@@ -18,11 +18,11 @@ export function applyAdvancedSettings() {
     root.dataset.textSize = userConfig.textSize;
     root.classList.toggle('high-contrast', userConfig.highContrast);
     root.classList.toggle('compact-layout', userConfig.compactLayout);
-    for (const [key, selector] of [['showNews', '.news-card'], ['showYoutube', '.youtube-card']]) {
+    for (const [key, selector] of [['showNews', '.news-card']]) {
         const card = document.querySelector(selector);
         if (card) card.hidden = !userConfig[key];
     }
-    for (const key of ['textSize', 'highContrast', 'compactLayout', 'showNews', 'showYoutube', 'syncTiming']) {
+    for (const key of ['textSize', 'highContrast', 'compactLayout', 'showNews', 'syncTiming']) {
         const control = document.getElementById('advanced-' + key);
         if (control) {
             if (control.type === 'checkbox') control.checked = userConfig[key];
@@ -61,7 +61,7 @@ export function setAdvancedSetting(key, value) {
         if (!['pill', 'rounded', 'square'].includes(value)) return;
     } else if (key === 'searchEngine') {
         if (!Object.hasOwn(engines, value)) return;
-    } else if (['reduceMotion', 'hideClockBackground', 'highContrast', 'compactLayout', 'showNews', 'showYoutube'].includes(key)) {
+    } else if (['reduceMotion', 'hideClockBackground', 'highContrast', 'compactLayout', 'showNews'].includes(key)) {
         value = Boolean(value);
     } else return;
     userConfig[key] = value;

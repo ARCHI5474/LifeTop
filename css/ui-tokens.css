@@ -1,0 +1,63 @@
+/* UI_UX_DESIGN_SYSTEM.md v2.0. Scoped to new features; existing home tokens are unchanged. */
+.ui-scope {
+  color-scheme: light;
+  --ui-font: Inter, "Noto Sans JP", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ui-bg: #f5f7fa;
+  --ui-surface: #ffffff;
+  --ui-surface-muted: #eef2f6;
+  --ui-text: #182431;
+  --ui-text-muted: #566576;
+  --ui-border: #d9e1e9;
+  --ui-primary: var(--ui-accent-override, #245d8f);
+  --ui-primary-hover: var(--ui-accent-hover-override, #1b4d78);
+  --ui-primary-pressed: var(--ui-accent-pressed-override, #153c5e);
+  --ui-primary-soft: var(--ui-accent-soft-override, #e8f1f8);
+  --ui-danger: #b42332;
+  --ui-success: #21744a;
+  --ui-focus: #3b82f6;
+  --ui-shadow-sm: 0 1px 3px rgb(17 34 51 / 8%);
+  --ui-shadow-md: 0 8px 24px rgb(17 34 51 / 10%);
+  --ui-shadow-lg: 0 20px 48px rgb(17 34 51 / 16%);
+  --ui-radius-xs: 4px;
+  --ui-radius-sm: 8px;
+  --ui-radius-md: 12px;
+  --ui-radius-lg: 16px;
+  --ui-radius-xl: 24px;
+  --ui-radius-pill: 999px;
+  --ui-space-1: 4px;
+  --ui-space-2: 8px;
+  --ui-space-3: 12px;
+  --ui-space-4: 16px;
+  --ui-space-5: 20px;
+  --ui-space-6: 24px;
+  --ui-space-8: 32px;
+  --ui-space-10: 40px;
+  --ui-space-12: 48px;
+  --ui-content-max: 1200px;
+  --ui-control-height: 40px;
+  --ui-control-height-sm: 32px;
+  --ui-control-height-lg: 48px;
+  --ui-ease-standard: cubic-bezier(.2, 0, 0, 1);
+  --ui-ease-enter: cubic-bezier(0, 0, .2, 1);
+  --ui-ease-exit: cubic-bezier(.4, 0, 1, 1);
+  --ui-duration-instant: 80ms;
+  --ui-duration-fast: 140ms;
+  --ui-duration-normal: 220ms;
+  --ui-duration-slow: 320ms;
+}
+.ui-scope[data-theme="dark"], [data-theme="dark"] .ui-scope:not([data-theme]) {
+  color-scheme: dark;
+  --ui-bg: #101820;
+  --ui-surface: #1b2732;
+  --ui-surface-muted: #253443;
+  --ui-text: #edf3f8;
+  --ui-text-muted: #b1bfcb;
+  --ui-border: #3b4c5b;
+  --ui-primary: var(--ui-accent-override, #83b7e2);
+  --ui-primary-hover: var(--ui-accent-hover-override, #a2cdf0);
+  --ui-primary-pressed: var(--ui-accent-pressed-override, #c4e0f7);
+  --ui-primary-soft: var(--ui-accent-soft-override, #263f55);
+  --ui-danger: #ff8894;
+  --ui-success: #72d4a0;
+  --ui-focus: #9bcaff;
+}

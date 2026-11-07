@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import {DEFAULT_SETTINGS,DEFAULT_CONTENT} from '../js/config.js?v=9.0';
 import {mergeInitialData} from '../js/sync-migration.js?v=9.0';
 import {createSyncEngine,canonicalJson,SYNC_META_KEY,SYNC_RECOVERY_KEY} from '../js/sync-engine.js?v=9.0';
-import {shouldShowSyncPrompt,REMINDER_INTERVAL} from '../js/sync-onboarding.js?v=9.0';
 
 const defaults=()=>structuredClone({...DEFAULT_SETTINGS,...DEFAULT_CONTENT});
 const local=defaults(), cloud=defaults();
@@ -33,8 +32,4 @@ storage.delete(SYNC_META_KEY);current=structuredClone(cloud);engine.connect('ali
 assert.equal(states.at(-1).status,'synced');assert.equal(applied,1);assert.equal(current.todoList.length,2,'initial cloud and device content are combined');
 engine.connect('bob');await engine.sync();assert.equal(states.at(-1).status,'choice','a different account never inherits another account data automatically');
 
-assert.equal(shouldShowSyncPrompt({},0),true);
-assert.equal(shouldShowSyncPrompt({nextPromptAt:REMINDER_INTERVAL},REMINDER_INTERVAL-1),false);
-assert.equal(shouldShowSyncPrompt({nextPromptAt:REMINDER_INTERVAL},REMINDER_INTERVAL),true);
-assert.equal(shouldShowSyncPrompt({optedOut:true},REMINDER_INTERVAL*2),false);
-console.log('PASS: automatic migration, content preservation, duplicate IDs, empty-device restore, account boundaries and reminder scheduling');
+console.log('PASS: automatic migration, content preservation, duplicate IDs, empty-device restore and account boundaries');

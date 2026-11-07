@@ -1,10 +1,10 @@
 
 /* ========================    
-LifeTop v10.0 Codename: "Connected Canvas"
+LifeTop v10.1 Codename: "Festival Playground"
    ======================== */
 const UPDATE_CONFIG = {
-    notice: "LifeTop v10.0 Connected Canvas。作る、つながる、もっと便利に。Workspace・Calendar・Studio連携を追加しました。Messagesはサーバー設定後に利用できます。",
-    tag: "LifeTop v10.0"
+    notice: "LifeTop v10.1 Festival Playground。10かくれんぼや記念ガチャでv10 Festivalをお祝い。Studio・GameBoxの表示とポップアップ操作も改善しました。",
+    tag: "LifeTop v10.1"
 };
 /* ========================================= */
 
@@ -463,7 +463,7 @@ function mergeUserConfig(parsed) {
             : userConfig.fontFamily,
         bgType: Object.hasOwn(bgGradients, parsed.bgType) ? parsed.bgType : userConfig.bgType,
         bgImage: safeBackgroundImage,
-        colorMode: 'dark',
+        colorMode: parsed.colorMode === 'light' ? 'light' : 'dark',
         clock12h: typeof parsed.clock12h === 'boolean' ? parsed.clock12h : userConfig.clock12h,
         clockShowSec: typeof parsed.clockShowSec === 'boolean' ? parsed.clockShowSec : userConfig.clockShowSec,
         profileIcon: typeof parsed.profileIcon === 'string' && (/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(parsed.profileIcon) || ['person','face','pets','eco','rocket_launch','favorite','star','sports_esports'].includes(parsed.profileIcon)) && parsed.profileIcon.length < 3000000 ? parsed.profileIcon : 'person',

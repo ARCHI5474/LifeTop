@@ -7,7 +7,7 @@ export function initMotion() {
     const running = new Map();
     const targetFor = target => {
         if (!(target instanceof Element)) return null;
-        if (target.closest('.puzzle-board, .othello-board, .extra-board, [contenteditable]')) return null;
+        if (target.closest('.puzzle-board, .othello-board, .extra-board, [contenteditable], .ui-scope')) return null;
         const control = target.closest('button, a.bookmark-item, .background-upload-btn, .choice-option, .switch');
         if (!control || control.matches(':disabled, [aria-disabled="true"]') || control.querySelector('input:disabled')) return null;
         return control.matches('.choice-option') ? control.querySelector('.choice-content') : control.matches('.switch') ? control.querySelector('.slider') : control;

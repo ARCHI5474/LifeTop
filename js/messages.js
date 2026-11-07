@@ -1,3 +1,6 @@
+import {initHiddenTens} from './festival-hunt.js?v=10.1-hide1';
+import {festivalConfig} from './festival-config.js';
+import {initUISystem} from './ui-system.js?v=10.0-ui5';
 import {messagesConfig as config} from './messages-config.js';
 import {cloudSyncConfig} from './firebase-config.js?v=9.0';
 const $=id=>document.getElementById(id),SDK='https://www.gstatic.com/firebasejs/13.1.0';
@@ -28,3 +31,7 @@ if(!config.enabled||!config.appCheckSiteKey){show('messages-setup',true);status(
  $('messages-send').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button');b.disabled=true;try{await command('send',{roomId,body:$('messages-body').value,nickname:nickname(),requestId:crypto.randomUUID()});$('messages-body').value='';}catch(error){status(error.message);}finally{b.disabled=false;}};
 }
 window.addEventListener('pagehide',()=>{unwatch?.();unwatchRoom?.();});
+
+initUISystem();
+
+initHiddenTens(festivalConfig);

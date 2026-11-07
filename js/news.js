@@ -1,4 +1,4 @@
-/* LifeTop - External Feeds Engine (News, Realtime Trends, YouTube Recommendations)
+/* LifeTop - External Feeds Engine (News, Realtime Trends)
    with 6-Layer Rate-Limit Protection, Cross-Tab Sync & Multi-Provider Fallback */
 
 const NEWS_CACHE_KEY = 'lifetop_news_cache_v2';
@@ -1078,6 +1078,8 @@ export async function loadTrends(forceManual = false) {
 }
 
 export async function loadYoutube(ytCategory = currentYtCategory, forceManual = false) {
+    // Recommendations were removed. Preserve old module exports without issuing requests.
+    if (!document.getElementById('yt-grid')) return;
     if (!Object.hasOwn(YT_CATEGORIES, ytCategory)) ytCategory = 'trending';
     currentYtCategory = ytCategory;
 
@@ -1208,7 +1210,6 @@ function bindTabKeyboardNavigation(selector, dataKey, switchFn) {
 
 export function initNews() {
     bindTabKeyboardNavigation('#news-tabs .news-tab-btn', 'newsCat', switchNewsCategory);
-    bindTabKeyboardNavigation('#yt-tabs .news-tab-btn', 'ytCat', switchYoutubeCategory);
 
     // 別タブでキャッシュが更新されたら即座に画面へ反映（API通信なし）
     if (typeof window !== 'undefined') {
@@ -1237,10 +1238,9 @@ export function initNews() {
         window.addEventListener?.('beforeunload', releaseAllOwnLocks);
     }
 
-    // 初回ロード時は3フィードを並列で即時開始（キャッシュヒット時は0ms描画、通信時も並列レースで高速完了）
+    // 初回ロード時はニュースとトレンドを並列で即時開始（キャッシュヒット時は0ms描画、通信時も並列レースで高速完了）
     loadNews('top', false);
     loadTrends(false);
-    loadYoutube('trending', false);
 
     // 30分ごとに、タブがアクティブかつオンラインの時のみバックグラウンド更新チェック
     setInterval(() => {
@@ -1248,6 +1248,5 @@ export function initNews() {
         if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
         loadNews(currentCategory, false);
         loadTrends(false);
-        loadYoutube(currentYtCategory, false);
     }, NEWS_FRESH_TTL_MS);
 }

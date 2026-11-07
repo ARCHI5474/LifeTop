@@ -1,3 +1,2 @@
-// Set the exact official release timestamp (ISO 8601 with timezone) when confirmed.
-// Example format only: YYYY-MM-DDTHH:mm:ss+09:00. null keeps the event closed.
-export const festivalConfig = Object.freeze({releaseAt:null,durationDays:10});
+// Festival schedule, independent of product releases. All timestamps include JST.
+export const festivalConfig = Object.freeze({startAt:'2026-11-07T14:11:54+09:00',releaseAt:null,durationDays:10});

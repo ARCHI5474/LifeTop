@@ -1,0 +1,101 @@
+/* Shared components for the new application surfaces. Source: UI specification v2.0. */
+.ui-scope {
+  font-family: var(--ui-font);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--ui-text);
+  -webkit-font-smoothing: antialiased;
+}
+.ui-scope *, .ui-scope *::before, .ui-scope *::after { box-sizing: border-box; }
+.ui-scope [hidden] { display: none !important; }
+.ui-scope button, .ui-scope input, .ui-scope select, .ui-scope textarea { font: inherit; }
+.ui-scope :where(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--ui-focus);
+  outline-offset: 2px;
+}
+.ui-scope :where(h1, h2, h3, h4, p) { margin: 0; }
+.cc-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-space-2);
+  min-height: var(--ui-control-height);
+  padding: var(--ui-space-2) var(--ui-space-4);
+  border: 1px solid transparent;
+  border-radius: var(--ui-radius-sm);
+  background: transparent;
+  color: var(--ui-text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color var(--ui-duration-fast) var(--ui-ease-standard),
+    border-color var(--ui-duration-fast) var(--ui-ease-standard),
+    transform var(--ui-duration-instant) var(--ui-ease-standard);
+}
+.cc-control:hover:not(:disabled) { background: var(--ui-surface-muted); }
+.cc-control:active:not(:disabled) { transform: scale(.98); }
+.cc-control.cc-primary { background: var(--ui-primary); color: var(--ui-bg); }
+.cc-control.cc-primary:hover:not(:disabled) { background: var(--ui-primary-hover); }
+.cc-control.cc-primary:active:not(:disabled) { background: var(--ui-primary-pressed); }
+.cc-control.cc-secondary-button { background: var(--ui-surface); border-color: var(--ui-border); }
+.cc-control.cc-quiet { color: var(--ui-text-muted); }
+.cc-control.cc-danger { color: var(--ui-danger); }
+.cc-control.cc-icon { width: 40px; height: 40px; padding: var(--ui-space-2); flex: none; }
+.cc-control.cc-icon > span:not(.cc-icon-svg) { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
+.cc-control:disabled { opacity: .48; cursor: not-allowed; }
+.cc-icon-svg { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; flex: none; vertical-align: middle; font-family: 'Material Symbols Outlined'; font-size: 20px; font-weight: normal; font-style: normal; line-height: 1; letter-spacing: normal; text-transform: none; white-space: nowrap; overflow: hidden; direction: ltr; -webkit-font-smoothing: antialiased; font-feature-settings: 'liga'; }
+.cc-control[aria-busy=true]::before {
+  content: ''; width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent;
+  border-radius: var(--ui-radius-pill); animation: ui-spin 800ms linear infinite;
+}
+.cc-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.cc-eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; color: var(--ui-text-muted); }
+.cc-secondary, .cc-summary-empty { color: var(--ui-text-muted); font-size: 14px; line-height: 1.6; }
+.cc-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: var(--ui-space-2); }
+.cc-segment { display: inline-flex; max-width: 100%; padding: var(--ui-space-1); gap: var(--ui-space-1); background: var(--ui-surface-muted); border: 1px solid var(--ui-border); border-radius: var(--ui-radius-sm); }
+.cc-segment button { min-height: 32px; border: 0; padding: 6px 12px; border-radius: var(--ui-radius-xs); background: transparent; color: var(--ui-text-muted); font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background-color var(--ui-duration-fast) var(--ui-ease-standard); }
+.cc-segment button[aria-pressed=true] { color: var(--ui-text); background: var(--ui-surface); font-weight: 600; box-shadow: var(--ui-shadow-sm); }
+.cc-row-menu { position: relative; flex: none; }
+.cc-row-menu > summary { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; cursor: pointer; border-radius: var(--ui-radius-sm); list-style: none; }
+.cc-row-menu > summary::-webkit-details-marker { display: none; }
+.cc-row-menu > summary:hover, .cc-row-menu[open] > summary { background: var(--ui-surface-muted); }
+.cc-row-menu > summary .cc-icon-svg { stroke-width: 3; }
+.cc-menu-content { position: absolute; right: 0; top: calc(100% + 4px); z-index: 20; min-width: 216px; padding: var(--ui-space-1); background: var(--ui-surface); border: 1px solid var(--ui-border); border-radius: var(--ui-radius-sm); box-shadow: var(--ui-shadow-md); animation: ui-menu-in var(--ui-duration-fast) var(--ui-ease-enter); }
+.cc-menu-content .cc-control { display: flex; width: 100%; justify-content: flex-start; white-space: nowrap; }
+.ui-scope input:not([type=checkbox]):not([type=radio]), .ui-scope select, .ui-scope textarea {
+  width: 100%; min-width: 0; min-height: var(--ui-control-height); padding: var(--ui-space-2) var(--ui-space-3);
+  border: 1px solid var(--ui-border); border-radius: var(--ui-radius-sm); background: var(--ui-surface); color: var(--ui-text); font-size: 14px;
+}
+.ui-scope input::placeholder, .ui-scope textarea::placeholder { color: var(--ui-text-muted); opacity: .8; }
+.ui-scope input[type=checkbox], .ui-scope input[type=radio] { width: 18px; height: 18px; accent-color: var(--ui-primary); flex: none; }
+.cc-dialog { position: fixed; inset: 0; margin: auto; width: min(480px, calc(100vw - 32px)); max-width: none; max-height: calc(100dvh - 48px); padding: 0; border: 1px solid var(--ui-border); border-radius: var(--ui-radius-lg); background: var(--ui-surface); color: var(--ui-text); box-shadow: var(--ui-shadow-lg); overflow: auto; }
+.cc-dialog::backdrop { background: rgb(0 0 0 / 55%); }
+.cc-dialog[data-state=open] { animation: ui-dialog-in var(--ui-duration-normal) var(--ui-ease-enter); }
+.cc-dialog[data-state=closing] { animation: ui-dialog-out var(--ui-duration-fast) var(--ui-ease-exit) both; }
+.cc-form-header { display: flex; justify-content: space-between; align-items: flex-start; padding: var(--ui-space-6); border-bottom: 1px solid var(--ui-border); gap: var(--ui-space-4); }
+.cc-form-header h2 { margin-top: var(--ui-space-1); font-size: 20px; line-height: 1.4; font-weight: 700; }
+.cc-form-fields { display: grid; gap: var(--ui-space-4); padding: var(--ui-space-6); }
+.cc-form-fields > label, .cc-form-fields fieldset label { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-2); font-size: 14px; font-weight: 600; }
+.cc-form-fields > label > input:not([type=checkbox]), .cc-form-fields > label > select { flex: 1 0 100%; }
+.cc-required { font-size: 12px; font-weight: 400; color: var(--ui-text-muted); }
+.cc-form-error { color: var(--ui-danger); font-size: 14px; }
+.cc-form-error:empty { display: none; }
+.cc-form-footer { position: sticky; bottom: 0; display: flex; justify-content: flex-end; gap: var(--ui-space-2); padding: var(--ui-space-4) var(--ui-space-6); border-top: 1px solid var(--ui-border); background: var(--ui-surface); }
+.ui-modal-open { overflow: hidden !important; }
+.cc-empty { display: grid; justify-items: center; gap: var(--ui-space-3); padding: var(--ui-space-12) var(--ui-space-6); text-align: center; color: var(--ui-text-muted); }
+.cc-empty > .cc-icon-svg { width: 40px; height: 40px; color: var(--ui-primary); opacity: .7; }
+.cc-empty h4 { font-size: 16px; color: var(--ui-text); font-weight: 600; }
+.cc-empty p { max-width: 440px; font-size: 14px; }
+@keyframes ui-spin { to { transform: rotate(360deg); } }
+@keyframes ui-menu-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes ui-dialog-in { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes ui-dialog-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) {
+  .ui-scope *, .ui-scope *::before, .ui-scope *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+.reduce-motion .ui-scope *, .reduce-motion .ui-scope *::before, .reduce-motion .ui-scope *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+@media (pointer: coarse) { .ui-scope .cc-control, .ui-scope .cc-row-menu > summary { min-height: 44px; } .ui-scope .cc-icon { width: 44px; height: 44px; } }

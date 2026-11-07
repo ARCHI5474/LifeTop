@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script>document.documentElement.dataset.colorMode = 'dark';</script>
+    <script>try{const c=JSON.parse(localStorage.getItem('lifetop_v1_0_data')||'{}');const m=c?.colorMode==='light'?'light':'dark';document.documentElement.dataset.theme=m;document.documentElement.dataset.colorMode=m;document.documentElement.style.colorScheme=m;}catch{document.documentElement.dataset.theme='dark';}</script>
     <title>LifeTop│全部ここで。</title>
     <meta name="description" content="Google検索、よく使うサイト、タスク、メモ、時計をひとつに。毎日に役立つスタートページ、LifeTop。">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@500;700&family=Comfortaa:wght@400;700&family=Courier+Prime&family=DotGothic16&family=M+PLUS+1+Code&family=Oswald:wght@300;400;700&family=Outfit:wght@300;400;500;700;900&family=Righteous&family=Roboto+Mono:wght@200;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <link rel="preload" href="icons/material/material-symbols-outlined.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="stylesheet" href="css/style.css?v=9.0"> <!-- バージョン番号は毎回更新すること -->
-<link rel="stylesheet" href="css/festival.css?v=10.0">
-</head>
-<body id="top">
+    <link rel="stylesheet" href="css/style.css?v=10.0-ui7"> <!-- バージョン番号は毎回更新すること -->
+<link rel="stylesheet" href="css/festival.css?v=10.1-hide1">
+<link rel="stylesheet" href="css/35-unified-ui.css?v=10.0-ui8"></head>
+<body id="top" class="ui-system ui-scope">
 
 <!-- 起動時のブランドシーケンス -->
 <div class="loading-screen" id="loading-screen" role="status" aria-live="polite" aria-label="LifeTopを準備しています">
@@ -28,7 +28,7 @@
         <span class="loading-logo">LifeTop<span class="loading-logo-dot" aria-hidden="true">.</span></span>
         <p class="loading-tagline">全部ここで。</p>
         <div class="loading-status"><span class="loading-status-dot" aria-hidden="true"></span><span class="loading-label">あなたのスタートページを準備しています</span></div>
-        <p class="loading-release">v10.0 <span aria-hidden="true">/</span> Connected Canvas</p>
+        <p class="loading-release">v10.1 <span aria-hidden="true">/</span> Festival Playground</p>
     </div>
 </div>
 
@@ -37,10 +37,6 @@
 
 <!-- ヘッダーエリア：天気とコントロール -->
 <header class="dashboard-header">
-    <a class="brand-mark" href="#top" aria-label="LifeTop ホーム">
-        <img class="brand-symbol" src="icons/icon-192.png" alt="" width="38" height="38" decoding="async">
-        <span class="brand-name">LifeTop</span>
-    </a>
     <div class="header-left">
     
         
@@ -52,11 +48,8 @@
         </button>
     </div>
     <div class="header-right">
-        <button type="button" class="primary-btn google-account-trigger" id="header-google-account" hidden>Googleでログイン</button>
-        <a class="tonal-btn mini-studio-link" href="mini-apps.html" title="14のミニアプリ">ミニアプリ</a>
-        <a class="tonal-btn" href="messages.html" title="匿名チャット（サーバー設定後に利用可能）">Messages</a>
-        <!-- GameBox -->
-        <button type="button" class="icon-btn game-trigger-btn animate-fade-in" id="game-open-btn" onclick="toggleGameModal()" title="GameBox" aria-label="GameBoxを開く"><span class="material-symbols-outlined" aria-hidden="true">sports_esports</span></button>
+        <button type="button" class="icon-btn" data-cc="panel" data-id="workspace" title="ファイル" aria-label="ファイル"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span></button>
+        <button type="button" class="icon-btn" onclick="openMiniApps()" title="Studio" aria-label="Studioを開く"><span class="material-symbols-outlined" aria-hidden="true">grid_view</span></button>
         <!-- 設定トリガー -->
         <button type="button" class="icon-btn animate-fade-in" onclick="toggleSettings()" title="Quickパネル" aria-label="Quickパネル" aria-controls="settings-panel" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">settings</span></button>
     </div>
@@ -374,14 +367,6 @@
                         <input type="text" id="todo-input" placeholder="次にやることを追加" aria-label="新しいタスク" maxlength="500" onkeydown="if(event.key==='Enter' &amp;&amp; !event.isComposing &amp;&amp; event.keyCode!==229) addTodo()">
                         <button type="button" onclick="addTodo()" aria-label="タスクを追加"><span class="material-symbols-outlined">add</span></button>
                     </div>
-                    <div class="todo-summary"><span id="todo-summary" role="status"></span><span id="todo-progress-label"></span></div>
-                    <progress id="todo-progress" max="1" value="0" aria-label="タスクの完了率"></progress>
-                    <div class="todo-filters" role="group" aria-label="タスクの絞り込み">
-                        <button type="button" data-filter="all" aria-pressed="true" onclick="setTodoFilter('all')">すべて</button>
-                        <button type="button" data-filter="active" aria-pressed="false" onclick="setTodoFilter('active')">未完了</button>
-                        <button type="button" data-filter="completed" aria-pressed="false" onclick="setTodoFilter('completed')">完了</button>
-                        <button type="button" id="todo-clear-completed-btn" class="todo-clear-completed-btn" onclick="clearCompletedTodos()" hidden>完了済みを削除</button>
-                    </div>
                     <ul id="todo-list" class="todo-list">
                         <!-- 動的に挿入 -->
                     </ul>
@@ -536,25 +521,6 @@
                 <div class="trends-list" id="trends-list" aria-live="polite"></div>
             </div>
 
-            <!-- YouTubeおすすめ動画 (外部API + 多重キャッシュ・レート制限対策) -->
-            <div class="card glass-card youtube-card">
-                <div class="card-header news-card-header">
-                    <h3><span class="material-symbols-outlined" aria-hidden="true">smart_display</span> YouTubeおすすめ</h3>
-                    <div class="news-header-meta">
-                        <span id="yt-status-text" class="news-status-text" role="status" aria-live="polite">準備中...</span>
-                        <button type="button" class="icon-btn-small" id="yt-refresh-btn" onclick="refreshYoutube(true)" title="おすすめ動画を更新" aria-label="おすすめ動画を更新">
-                            <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="news-tabs yt-tabs" id="yt-tabs" role="tablist" aria-label="YouTubeカテゴリ">
-                    <button type="button" class="news-tab-btn active" data-yt-cat="trending" role="tab" aria-selected="true" onclick="switchYoutubeCategory('trending')">話題・注目</button>
-                    <button type="button" class="news-tab-btn" data-yt-cat="music" role="tab" aria-selected="false" tabindex="-1" onclick="switchYoutubeCategory('music')">音楽・ライブ</button>
-                    <button type="button" class="news-tab-btn" data-yt-cat="gaming" role="tab" aria-selected="false" tabindex="-1" onclick="switchYoutubeCategory('gaming')">ゲーム・エンタメ</button>
-                    <button type="button" class="news-tab-btn" data-yt-cat="news" role="tab" aria-selected="false" tabindex="-1" onclick="switchYoutubeCategory('news')">ニュース・解説</button>
-                </div>
-                <div class="yt-grid" id="yt-grid" role="tabpanel" aria-live="polite"></div>
-            </div>
 
         </div>
     </div>
@@ -577,7 +543,14 @@
             <span id="notice-text">お知らせはありません。</span>
         </div>
 
-        <section class="settings-section cloud-sync-section" data-setting-category="profile" aria-labelledby="cloud-sync-title">
+        <nav class="settings-release-notes" aria-label="リリースノート">
+            <a href="https://pasidea-s.blogspot.com/2026/11/lifetop-pasideaspace.html" target="_blank" rel="noopener noreferrer">
+                <span><strong>リリースノート一覧</strong><small>LifeTopの更新履歴を見る · 新しいタブで開きます</small></span>
+                <span class="material-symbols-outlined" aria-hidden="true">open_in_new</span>
+            </a>
+        </nav>
+
+        <section class="settings-section cloud-sync-section" data-setting-category="advanced" aria-labelledby="cloud-sync-title">
             <span class="cloud-save-badge" id="cloud-save-mode">この端末に保存中</span>
             <h3 class="settings-label" id="cloud-sync-title">Googleで、いつものLifeTopを</h3>
             <p class="settings-help">ログインすると、この端末の設定・ブックマーク・タスク・メモを自動で引き継ぎ、ほかの端末でも使えます。</p>
@@ -601,6 +574,10 @@
             <button type="button" class="tonal-btn" id="cloud-sync-logout" hidden>ログアウト</button>
             <p class="settings-help">変更が競合した場合は自動同期を止めて確認します。大きな画像などを含む900KB超のデータは同期できません。JSONバックアップをご利用ください。</p>
         </section>
+        <section class="settings-section" id="cc-settings-storage-section" data-setting-category="advanced" aria-labelledby="cc-settings-storage-title">
+            <h3 class="settings-label" id="cc-settings-storage-title">ファイルの保存と同期</h3>
+            <div id="cc-settings-storage">保存と同期の設定を読み込んでいます。</div>
+        </section>
         <!-- ユーザー名設定 -->
         <div class="settings-section" id="profile-section" data-setting-category="profile">
             <h3 class="settings-label">ユーザープロフィール</h3>
@@ -622,6 +599,14 @@
         </div>
 
         <!-- カラーコンビ -->
+        <section class="settings-section" data-setting-category="appearance" aria-labelledby="display-mode-title">
+            <h3 id="display-mode-title">表示モード</h3>
+            <p class="settings-help">すべての画面に同じモードを適用します。</p>
+            <div class="ui-theme-options" role="group" aria-label="表示モード">
+                <button type="button" data-ui-mode="light" data-color-mode-btn="light" aria-pressed="false">ライト</button>
+                <button type="button" data-ui-mode="dark" data-color-mode-btn="dark" aria-pressed="true">ダーク</button>
+            </div>
+        </section>
         <div class="settings-section" data-setting-category="appearance">
             <label class="settings-label">カラーコンビ</label>
             <div class="color-combo-grid" id="color-combos"></div>
@@ -642,7 +627,8 @@
                 </div>
                 <button id="background-image-clear" class="background-clear-btn" type="button">画像の壁紙を解除</button>
             </div>
-            <p class="settings-help">用意された高画質プリセットのほか、画像ファイル（2MBまで）やHTTPSの画像URLも設定できます。</p>
+            <p class="settings-help">用意された高画質プリセットのほか、画像ファイル（2MBまで）やHTTPSの画像URLも設定できます。画像を設定するとカードやパネルを半透明にして壁紙を透かします。</p>
+            <p id="background-image-status" class="settings-help" role="status" aria-live="polite"></p>
         </div>
 
         <!-- 時計表示設定 -->
@@ -691,8 +677,8 @@
         </section>
         <section class="settings-about" aria-labelledby="settings-about-title" data-setting-category="advanced">
             <h3 id="settings-about-title">情報</h3>
-            <p class="settings-about-version">LifeTop <span>v10.0</span></p>
-            <p class="settings-about-codename">コードネーム：<span lang="en">Connected Canvas</span></p>
+            <p class="settings-about-version">LifeTop <span>v10.1</span></p>
+            <p class="settings-about-codename">コードネーム：<span lang="en">Festival Playground</span></p>
             <details class="environment-info" open>
                 <summary>推奨環境・対応環境</summary>
                 <p>推奨：Windows・macOSの最新版Chrome／Edge。PCでは幅1280px以上、スマートフォンでは幅390px以上が見やすい構成です。</p>
@@ -735,12 +721,10 @@
     <div class="sync-guide-actions">
         <button type="button" class="text-btn" id="sync-guide-back" hidden>戻る</button>
         <button type="button" class="primary-btn" id="sync-guide-primary">次へ</button>
-        <button type="button" class="text-btn" id="sync-guide-learn" hidden>使い方を見る</button>
     </div>
     <p class="settings-help">ログイン前はこの端末に保存されます。大きな画像などを含む900KB超のデータは、移行前に調整が必要です。</p>
     <div class="sync-guide-dismiss">
-        <button type="button" class="text-btn" id="sync-guide-later">あとで（7日後に案内）</button>
-        <button type="button" class="text-btn" id="sync-guide-never">今後は自動表示しない</button>
+        <button type="button" class="text-btn" id="sync-guide-later">閉じる</button>
     </div>
 </dialog>
 
@@ -822,7 +806,7 @@
     </div>
 </div>
 
-<script type="module" src="./js/main.js?v=9.0"></script>
+<script type="module" src="./js/main.js?v=10.0-ui8"></script>
 
 
 </body>

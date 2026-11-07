@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import path from 'node:path';
+import {iconAliases} from '../js/canvas-ui.js?v=10.0-ui8';
 const root=new URL('../icons/material/',import.meta.url);
 const b=fs.readFileSync(new URL('material-symbols-outlined.ttf',root));
 assert.equal(b.readUInt32BE(0),0x00010000,'official subset is a TrueType font');
@@ -15,4 +17,11 @@ function glyph(cp){
 }
 const glyphs=JSON.parse(fs.readFileSync(new URL('glyphs.json',root),'utf8'));
 for(const [name,cp]of Object.entries(glyphs))assert.ok(glyph(parseInt(cp,16)),'official glyph exists: '+name);
+const projectRoot=new URL('../',import.meta.url),sources=[];
+for(const file of ['index.html','mini-apps.html','messages.html','festival.html'])sources.push([file,fs.readFileSync(new URL(file,projectRoot),'utf8')]);
+for(const file of fs.readdirSync(new URL('js/',projectRoot)).filter(file=>file.endsWith('.js')))sources.push([`js/${file}`,fs.readFileSync(new URL(`js/${file}`,projectRoot),'utf8')]);
+for(const [file,source]of sources){
+ const names=[...source.matchAll(/icon\(['"]([a-z][a-z0-9_]*)['"]\)/g),...source.matchAll(/material-symbols-outlined[^>]*>\s*([a-z][a-z0-9_]*)\s*</g)].map(match=>match[1]);
+ for(const name of names)assert.ok(glyphs[iconAliases[name]||name],`${file} uses a missing Material Symbols glyph: ${name}`);
+}
 console.log('PASS: official Material Symbols font contains all '+Object.keys(glyphs).length+' application glyphs');

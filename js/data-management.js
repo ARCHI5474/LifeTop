@@ -30,7 +30,7 @@ export function parseBackup(text) {
     for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
         if (typeof data[key] !== typeof value) throw new Error('設定データが不足しているか、形式が正しくありません。');
     }
-    const choices = {textSize:['standard','large','larger'],searchShape:['pill','rounded','square'],searchEngine:['google','bing','duckduckgo','yahoo'],colorMode:['dark'],syncTiming:['every3','everyVisit','live','manual']};
+    const choices = {textSize:['standard','large','larger'],searchShape:['pill','rounded','square'],searchEngine:['google','bing','duckduckgo','yahoo'],colorMode:['dark','light'],syncTiming:['every3','everyVisit','live','manual']};
     if (Object.entries(choices).some(([key, values]) => !values.includes(data[key])) ||
         ![...themes, ...colorCombos.map(combo => combo.theme)].includes(data.theme) ||
         !fontStyles.some(font => font.family === data.fontFamily) || !Object.hasOwn(bgGradients, data.bgType)) {

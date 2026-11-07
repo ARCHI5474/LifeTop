@@ -56,7 +56,6 @@ body .environment-info, body .environment-info dl { min-width: 0; }
     body .dashboard-header .brand-mark { grid-column: 1; grid-row: 1; justify-self: start; }
     body .dashboard-header .header-left { display: flex; grid-column: 2; grid-row: 1; width: auto; justify-content: flex-end; min-width: 0; }
     body .dashboard-header .header-right { display: flex; grid-column: 1 / -1; grid-row: 2; width: 100%; min-width: 0; margin: 0; flex-wrap: nowrap; gap: 8px; justify-content: flex-end; }
-    body .dashboard-header .google-account-trigger { flex: 1 1 auto; min-width: 0; margin-right: auto; max-width: 240px; white-space: normal; line-height: 1.4; }
     body .header-user-name { max-width: min(30vw,160px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     body .hero-section { padding: clamp(18px,4vw,28px); }
     body .container { padding-inline: clamp(12px,3vw,24px); }

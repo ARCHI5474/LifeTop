@@ -4,8 +4,8 @@ import { bgGradients, colorCombos, bgPresets, userConfig } from "./config.js?v=9
 
 export function applyStyles() {
     const root = document.documentElement;
-    userConfig.colorMode = 'dark';
-    root.dataset.colorMode = 'dark';
+    root.dataset.colorMode = userConfig.colorMode === 'light' ? 'light' : 'dark';
+    root.style.colorScheme = root.dataset.colorMode;
     root.style.setProperty('--p', userConfig.theme);
     const rgb = hexToRgb(userConfig.theme);
     if (rgb) {

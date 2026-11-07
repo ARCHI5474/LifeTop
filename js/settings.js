@@ -228,16 +228,13 @@ export function setBg(type, element) {
 
 function setBackgroundImageUrl(value) {
     const url = value.trim();
-    if (!/^https:\/\/.+/i.test(url)) {
+    let parsed;
+    try { parsed = new URL(url); } catch { parsed = null; }
+    if (parsed?.protocol !== 'https:' || !parsed.hostname) {
         alert('HTTPSで始まる画像URLを入力してください。');
         return;
     }
-    userConfig.bgImage = url;
-    applyStyles();
-    save();
-    renderColorCombos();
-    renderBgPresets();
-    renderBgSelector();
+    commitBackgroundImage(parsed.href);
 }
 
 function setBackgroundImageFile(file) {
@@ -249,24 +246,37 @@ function setBackgroundImageFile(file) {
     const reader = new FileReader();
     reader.onerror = () => alert('画像を読み込めませんでした。別の画像でお試しください。');
     reader.onload = () => {
-        userConfig.bgImage = String(reader.result);
-        applyStyles();
-        save();
-        renderColorCombos();
-        renderBgPresets();
-        renderBgSelector();
-        document.getElementById('background-image-url').value = '';
+        if (typeof reader.result !== 'string' || !reader.result.startsWith(`data:${file.type};base64,`)) {
+            alert('画像を読み込めませんでした。別の画像でお試しください。');
+            return;
+        }
+        if (commitBackgroundImage(reader.result)) {
+            document.getElementById('background-image-url').value = '';
+            document.getElementById('background-image-upload').value = '';
+        }
     };
     reader.readAsDataURL(file);
 }
 
-function clearBackgroundImage() {
-    userConfig.bgImage = '';
+function commitBackgroundImage(image) {
+    const previous = userConfig.bgImage;
+    userConfig.bgImage = image;
     applyStyles();
-    save();
+    if (!save()) {
+        userConfig.bgImage = previous;
+        applyStyles();
+        return false;
+    }
     renderColorCombos();
     renderBgPresets();
     renderBgSelector();
+    const status = document.getElementById('background-image-status');
+    if (status) status.textContent = image ? '壁紙を設定しました。カードとパネルに透過を適用しています。' : '画像の壁紙を解除しました。';
+    return true;
+}
+
+function clearBackgroundImage() {
+    if (!commitBackgroundImage('')) return;
     document.getElementById('background-image-url').value = '';
     document.getElementById('background-image-upload').value = '';
 }

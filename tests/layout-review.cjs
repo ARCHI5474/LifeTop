@@ -49,7 +49,7 @@ const { chromium } = createRequire(process.env.PLAYWRIGHT_MODULE_PATH || require
             }
             const before = await page.locator('.hero-section').boundingBox();
             await page.getByRole('button', { name: 'Quickパネル', exact: true }).click();
-            await page.waitForTimeout(420);
+            await page.waitForTimeout(420);await page.getByRole('tab',{name:'プロフィール',exact:true}).click();
             const after = await page.locator('.hero-section').boundingBox();
             assert.equal(after.x, before.x, 'drawer must not shift dashboard');
             assert.equal(after.width, before.width, 'drawer must not resize dashboard');
@@ -58,6 +58,7 @@ const { chromium } = createRequire(process.env.PLAYWRIGHT_MODULE_PATH || require
                 await page.locator('#profile-avatar-preview').scrollIntoViewIfNeeded();
                 await page.screenshot({ path: process.env.REVIEW_SCREENSHOT + '-profile.png' });
             }
+            await page.getByRole('tab',{name:'詳細',exact:true}).click();
             if (!(await page.locator('.advanced-settings').getAttribute('open')) && !(await page.locator('.advanced-settings').evaluate(e => e.open))) await page.locator('.advanced-settings summary').click();
             await page.locator('#advanced-reset').scrollIntoViewIfNeeded();
             await scan(width + ':advanced');

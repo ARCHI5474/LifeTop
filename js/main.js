@@ -1,18 +1,21 @@
+import {initModalScroll} from './modal-scroll.js';
 import { initIcons } from './icons.js?v=9.0';
-import {initCanvas} from './connected-canvas.js';
+import {initUISystem} from './ui-system.js?v=10.0-ui5';
+import {initCanvas} from './connected-canvas.js?v=10.0-ui8';
 import {initFestivalEntry} from './festival-entry.js';
-import { initMotion } from './motion.js?v=9.0';
+import { initMotion } from './motion.js?v=10.0-ui2';
 import { initLoading } from './loading.js?v=9.0';
 import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=9.0';
 import { initProfile, renderProfile } from './profile.js?v=9.0';
 import { initExtraGames } from './extra-games.js?v=9.0';
 import { initCasualGames } from './casual-games.js?v=9.0';
 import { initDataManagement } from './data-management.js?v=9.0';
-import { initCloudSync } from './cloud-sync.js?v=9.0';
+import { initCloudSync } from './cloud-sync.js?v=10.0-ui8';
 import { initSyncExplanation } from './sync-explanation.js?v=9.0';
 import { initResponsiveUI } from './responsive-ui.js?v=9.0';
 import { initStabilityCheck } from './stability-check.js?v=9.0';
 import { applyStyles, renderBgSelector, renderColorCombos, renderBgPresets } from "./styles.js?v=9.0";
+import { openMiniApps } from "./mini-popup.js?v=10.0-ui8";
 
 /* LifeTop - application entry point */
 import { userConfig, mergeUserConfig, fontStyles } from "./config.js?v=9.0";
@@ -30,7 +33,7 @@ import {
     toggleSettings,
     toggleHelp,
     
-} from "./settings.js?v=9.0";
+} from "./settings.js?v=9.2";
 import { updateClock, updateGreeting } from "./clock.js?v=9.0";
 import { initSearchSuggestions } from "./search.js?v=9.0";
 import {
@@ -56,20 +59,17 @@ import {
     clearBookmarkUndo,
     handleFaviconLoad,
     handleFaviconError
-} from "./bookmarks.js?v=9.0";
+} from "./bookmarks.js?v=9.2";
 import {
     renderTodoList,
     addTodo,
     toggleTodo,
-    toggleTodoPriority,
-    clearCompletedTodos,
     deleteTodo,
-    setTodoFilter,
     undoDeleteTodo,
     clearTodoUndo,
     initUtilityTabs,
     switchUtilityTab
-} from "./todo.js?v=9.0";
+} from "./todo.js?v=9.1";
 import {
     initMemoEditor,
     syncMemoFromConfig,
@@ -95,10 +95,10 @@ import {
     initOthelloGame,
     playOthelloMove,
     undoOthelloMove
-} from "./games.js?v=9.0";
+} from "./games.js?v=10.0-ui8";
 import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=9.0";
 import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=9.0";
-import { initNews, switchNewsCategory, refreshNews, refreshTrends, switchYoutubeCategory, refreshYoutube } from "./news.js?v=9.0";
+import { initNews, switchNewsCategory, refreshNews, refreshTrends } from "./news.js?v=9.0";
 
 // HTMLのイベントハンドラーから呼び出す関数
 Object.assign(window, {
@@ -116,6 +116,7 @@ Object.assign(window, {
     },
     toggleSettings,
     toggleHelp,
+    openMiniApps,
     toggleGameModal,
     switchGameTab,
     setSnakeMode,
@@ -163,10 +164,7 @@ Object.assign(window, {
     switchUtilityTab,
     addTodo,
     toggleTodo,
-    toggleTodoPriority,
-    clearCompletedTodos,
     deleteTodo,
-    setTodoFilter,
     undoDeleteTodo,
     formatMemo,
     copyMemoContent,
@@ -175,8 +173,6 @@ Object.assign(window, {
     switchNewsCategory,
     refreshNews,
     refreshTrends,
-    switchYoutubeCategory,
-    refreshYoutube,
 });
 
 document.addEventListener('keydown', event => {
@@ -209,6 +205,7 @@ window.addEventListener('DOMContentLoaded', () => {
     initResponsiveUI();
     initMotion();
     loadData();
+    initUISystem();
     void initCanvas();
     void initFestivalEntry();
 
@@ -271,3 +268,5 @@ window.addEventListener('DOMContentLoaded', () => {
     initNews();
 
 });
+
+initModalScroll();
