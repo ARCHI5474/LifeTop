@@ -1,0 +1,36 @@
+const assert=require('node:assert/strict');
+const {withApp}=require('./helpers/browser.cjs');
+withApp(async(page,context)=>{
+    await context.route(/\/js\/festival-config\.js(?:\?.*)?$/,route=>route.fulfill({contentType:'text/javascript',body:'export const festivalConfig={startAt:null,durationDays:10};'}));
+    await page.reload();
+    await page.evaluate(()=>{
+        const original=Storage.prototype.setItem;window.rejectPreferences=true;
+        Storage.prototype.setItem=function(key,value){if(key==='lifetop_v1_0_data'&&window.rejectPreferences)throw new DOMException('quota','QuotaExceededError');return original.call(this,key,value);};
+    });
+    const state=()=>page.evaluate(async()=>structuredClone((await import('./js/config.js?v=9.0')).userConfig));
+    const before=await state();
+    await page.evaluate(()=>{window.setTheme('#ff0000');window.setFontFamily('unavailable-test-font');window.toggleClockSec(true);window.toggleClock12h(true);window.setAdvancedSetting('searchEngine','yahoo');window.setColorCombo(1);window.setPresetWallpaper(0);window.setBg('gradient-purple');window.saveUsername('保存できない名前');});
+    let after=await state();
+    for(const key of ['theme','fontFamily','clockShowSec','clock12h','searchEngine','bgType','bgImage','username'])assert.equal(after[key],before[key],'failed preference save restores '+key);
+    await page.evaluate(()=>{window.rejectPreferences=false;window.setAdvancedSetting('reduceMotion',true);window.rejectPreferences=true;window.resetAdvancedSettings();});
+    assert.equal((await state()).reduceMotion,true,'failed reset preserves the previous settings');
+    assert.match(await page.locator('#advanced-reset-status').innerText(),/保存できません/);
+    await page.evaluate(()=>window.rejectPreferences=false);
+    await page.locator('[aria-label="Quickパネル"]').click();
+    await page.locator('#settings-tab-appearance').click();
+    await page.locator('#background-image-url').fill('javascript:alert(1)');
+    await page.locator('#background-image-url-apply').click();
+    assert.equal(await page.locator('#background-image-url').getAttribute('aria-invalid'),'true');
+    assert.match(await page.locator('#background-image-status').innerText(),/HTTPS/);
+    assert.equal(await page.locator('#background-image-url').evaluate(e=>e===document.activeElement),true);
+    await page.evaluate(()=>{window.pendingReaders=[];window.FileReader=class{readAsDataURL(){window.pendingReaders.push(this);}};});
+    await page.locator('#background-image-upload').setInputFiles({name:'first.png',mimeType:'image/png',buffer:Buffer.from('x')});
+    await page.locator('#background-image-upload').setInputFiles({name:'last.png',mimeType:'image/png',buffer:Buffer.from('y')});
+    await page.evaluate(()=>{const readers=window.pendingReaders;readers[1].result='data:image/png;base64,bGFzdA==';readers[1].onload();readers[0].result='data:image/png;base64,Zmlyc3Q=';readers[0].onload();});
+    after=await state();assert.equal(after.bgImage,'data:image/png;base64,bGFzdA==','latest wallpaper selection wins even if older read finishes later');
+    await page.locator('#background-image-upload').setInputFiles({name:'pending.png',mimeType:'image/png',buffer:Buffer.from('z')});
+    await page.locator('#background-image-clear').click();
+    await page.evaluate(()=>{const reader=window.pendingReaders.at(-1);reader.result='data:image/png;base64,b2xk';reader.onload();});
+    assert.equal((await state()).bgImage,'','clear prevents a pending image from reappearing');
+    console.log('PASS: preference save rollback and latest wallpaper action wins');
+}).catch(error=>{console.error(error);process.exitCode=1;});

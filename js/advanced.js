@@ -64,14 +64,18 @@ export function setAdvancedSetting(key, value) {
     } else if (['reduceMotion', 'hideClockBackground', 'highContrast', 'compactLayout', 'showNews'].includes(key)) {
         value = Boolean(value);
     } else return;
+    const previous = userConfig[key];
     userConfig[key] = value;
+    if (!save()) userConfig[key] = previous;
     applyAdvancedSettings();
-    save();
 }
 
 export function resetAdvancedSettings() {
+    const previous = Object.fromEntries(Object.keys(defaults).map(key => [key, userConfig[key]]));
     Object.assign(userConfig, defaults);
+    const saved = save();
+    if (!saved) Object.assign(userConfig, previous);
     applyAdvancedSettings();
     updateClock();
-    if (save()) document.getElementById('advanced-reset-status').textContent = '高度な設定をデフォルトに戻しました。';
+    document.getElementById('advanced-reset-status').textContent = saved ? '高度な設定をデフォルトに戻しました。' : '設定を保存できませんでした。元の設定を維持しています。';
 }

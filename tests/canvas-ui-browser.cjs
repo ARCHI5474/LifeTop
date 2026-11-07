@@ -1,9 +1,44 @@
-const assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path');const {createRequire}=require('node:module');const {chromium}=createRequire(process.env.PLAYWRIGHT_MODULE_PATH||require.resolve('playwright'))('playwright');
-(async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_PATH});try{const context=await browser.newContext({viewport:{width:1440,height:1000}}),page=await context.newPage(),errors=[],root=path.resolve(__dirname,'..');page.on('pageerror',e=>errors.push(e.message));await context.route('**/*',async route=>{const url=new URL(route.request().url());if(url.origin!=='http://localhost')return route.abort();const file=path.resolve(root,'.'+(url.pathname==='/'?'/index.html':url.pathname));if(!file.startsWith(root+path.sep))return route.abort();try{await route.fulfill({body:await fs.readFile(file),contentType:file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.ttf')?'font/ttf':'text/html'});}catch{await route.fulfill({status:404,body:''});}});
-await page.goto('http://localhost/');await page.locator('#cc-settings-storage .cc-settings-layout').waitFor();assert.equal(await page.locator('.bookmark-card').count(),1);assert.equal(await page.locator('.utility-card').count(),1);assert.equal(await page.locator('#cc-widgets .cc-widget').count(),0);
-await page.locator('#todo-input').fill('統合タスク');await page.locator('#todo-input').press('Enter');await page.locator('#todo-list .todo-item').filter({hasText:'統合タスク'}).waitFor();assert.equal(await page.locator('#todo-list').isVisible(),true);assert.equal(await page.locator('[data-cc=quick-task-view]').count(),0);
-await page.locator('.cc-home-toolbar [data-cc=dashboard-edit]').click();await page.locator('#cc-dashboard-editor').waitFor();await page.locator('[data-dashboard-visible=base-access]').uncheck();await page.locator('.bookmark-card').waitFor({state:'hidden'});await page.locator('[data-dashboard-visible=base-access]').check();await page.locator('.bookmark-card').waitFor();await page.locator('[data-dashboard-size=base-access]').selectOption('2');await page.waitForFunction(()=>document.querySelector('.bookmark-card').style.gridColumn==='1 / -1');await page.locator('#cc-dashboard-editor [data-cc=widget-left][data-id=base-quick]').click();await page.waitForFunction(()=>document.querySelector('.dashboard-grid').firstElementChild.classList.contains('utility-card'));await page.screenshot({path:path.join(root,'test-artifacts/dashboard-editor.png'),fullPage:false});await page.locator('#cc-dashboard-editor [data-cc=dashboard-close]').first().click();await page.locator('#cc-dashboard-editor').waitFor({state:'detached'});await page.reload();await page.locator('#cc-settings-storage .cc-settings-layout').waitFor();assert.equal(await page.locator('.dashboard-grid').evaluate(e=>e.firstElementChild.classList.contains('utility-card')),true);assert.equal(await page.locator('.bookmark-card').evaluate(e=>e.style.gridColumn),'1 / -1');
-await page.evaluate(async()=>{const m=await import('./js/canvas-model.js');let s=await m.readCanvas();s.projects.push({id:'ui-project',name:'新学期の資料',description:'レポートと発表資料をまとめる',progress:40});s.folders.push({id:'ui-folder',projectId:'ui-project',parentId:'',name:'参考資料'});await m.commitCanvas(s,s.revision);await m.saveStudioFile({format:'lifetop-mini',version:1,app:'document',name:'企画書.lifetop',state:{html:'<p>企画書</p>'}});await m.saveStudioFile({format:'lifetop-mini',version:1,app:'sheet',name:'作業予定表',state:{grid:[['日付','担当']]}});});await page.reload();await page.locator('#cc-settings-storage .cc-settings-layout').waitFor();await page.locator('.dashboard-header [aria-label="ファイル"]').click();await page.locator('.cc-file-table').waitFor();assert.equal(await page.locator('.cc-app-sidebar').isVisible(),true);assert.equal(await page.locator('.cc-mobile-section').isVisible(),false);const box=await page.locator('#cc-dialog').boundingBox();assert.ok(box.x>20&&box.y>20,'desktop dialog centered');assert.equal(await page.locator('.cc-file-table tbody tr').count(),2);
-await page.locator('#cc-workspace-query').fill('企画');assert.equal(await page.locator('.cc-file-table tbody tr').count(),1);await page.locator('#cc-workspace-query').fill('');await page.locator('.cc-file-table tbody tr').filter({hasText:'企画書'}).locator('.cc-row-menu summary').click();await page.locator('.cc-file-table tbody tr').filter({hasText:'企画書'}).locator('[data-cc=file-copy]').click();await page.locator('.cc-file-table tbody tr').filter({hasText:'企画書.lifetop コピー'}).waitFor();await page.screenshot({path:path.join(root,'test-artifacts/workspace-files-desktop.png'),fullPage:false});
-await page.setViewportSize({width:390,height:844});assert.equal(await page.locator('.cc-app-sidebar').isVisible(),false);assert.equal(await page.locator('.cc-mobile-section').isVisible(),true);assert.equal(await page.evaluate(()=>document.querySelector('#cc-dialog').scrollWidth<=document.querySelector('#cc-dialog').clientWidth+1),true);await page.locator('#cc-workspace-project').selectOption('ui-project');await page.getByRole('button',{name:'参考資料',exact:true}).waitFor();await page.screenshot({path:path.join(root,'test-artifacts/workspace-files-mobile.png'),fullPage:false});assert.deepEqual(errors,[]);console.log('PASS: single Quick instances, integrated task views, Dashboard visibility/size/order persistence, Workspace sidebar/table/filter/menus/duplication, centered desktop and mobile navigation');
-}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
+const assert = require('node:assert/strict');
+const { withApp } = require('./helpers/browser.cjs');
+
+withApp(async page => {
+    await page.locator('[data-cc=dashboard-edit]').click();
+    await page.locator('[data-dashboard-visible=base-access]').uncheck();
+    await page.locator('.bookmark-card').waitFor({state:'hidden'});
+    await page.locator('[data-dashboard-visible=base-access]').check();
+    await page.locator('.bookmark-card').waitFor();
+    await page.locator('[data-dashboard-size=base-access]').selectOption('2');
+    await page.locator('[data-cc=widget-left][data-id=base-quick]').click();
+    await page.getByRole('button',{name:'完了',exact:true}).click();
+    await page.reload();
+    await page.waitForFunction(() => document.querySelector('.dashboard-grid').firstElementChild.classList.contains('utility-card'));
+    assert.equal(await page.locator('.bookmark-card').evaluate(e => e.style.gridColumn), '1 / -1');
+    await page.evaluate(async () => {
+        const m = await import('./js/canvas-model.js');
+        await m.saveStudioFile({format:'lifetop-mini',version:1,app:'document',name:'企画書 <img src=x onerror=alert(1)>',state:{html:'<p>企画書</p>'}});
+        await m.saveStudioFile({format:'lifetop-mini',version:1,app:'sheet',name:'作業予定表',state:{grid:[['日付','担当']]}});
+    });
+    await page.reload();
+    await page.locator('.dashboard-header [aria-label="ファイル"]').click();
+    await page.locator('.cc-saved-files .cc-row').nth(1).waitFor();
+    assert.equal(await page.locator('#cc-body img').count(), 0);
+    await page.locator('#cc-workspace-query').fill('企画');
+    assert.equal(await page.locator('.cc-saved-files .cc-row').count(), 1);
+    await page.locator('[data-cc=file-rename]').click();
+    const form = page.locator('dialog.cc-form-dialog form');
+    await form.locator('[name=name]').fill('企画書・改訂版');
+    await form.locator('[type=submit]').click();
+    await page.locator('dialog.cc-form-dialog').waitFor({state:'detached'});
+    await page.locator('.cc-saved-files').getByText('企画書・改訂版', {exact:true}).waitFor();
+    await page.locator('#cc-workspace-query').fill('');
+    for (const width of [375, 768, 1440]) {
+        await page.setViewportSize({width,height:1000});
+        assert.equal(await page.locator('#cc-dialog').evaluate(e => e.scrollWidth <= e.clientWidth + 1), true);
+    }
+    await page.keyboard.press('Escape');
+    await page.locator('#cc-dialog').waitFor({state:'detached'});
+    await page.reload();
+    await page.locator('.dashboard-header [aria-label="ファイル"]').click();
+    await page.locator('.cc-saved-files').getByText('企画書・改訂版', {exact:true}).waitFor();
+    console.log('PASS: dashboard visibility/size/order persistence, file filtering/rename/XSS and responsive file dialog');
+}).catch(error => {console.error(error); process.exitCode = 1;});

@@ -195,7 +195,7 @@ body.ui-system :is(.bookmark-item,.todo-item,.news-item,.trend-item,.yt-card-ite
 body.ui-system :is(.bookmark-item,.todo-item,.news-item,.trend-item,.yt-card-item):hover { background: var(--ui-surface-muted); transform: none; box-shadow: none; }
 body.ui-system .bookmark-item { background: var(--ui-surface-muted); border: 1px solid var(--ui-border); }
 body.ui-system :is(.todo-delete,.bookmark-delete,.bookmark-delete-btn,.danger-btn) { color: var(--ui-danger); }
-body.ui-system :is(.search-form,.search-form:hover,.search-form:focus-within) { background: var(--ui-surface); border: 1px solid var(--ui-control-border); border-radius: var(--ui-radius-sm); box-shadow: none; padding: 4px 4px 4px 12px; }
+body.ui-system :is(.search-form,.search-form:hover,.search-form:focus-within) { background: var(--ui-surface); border: 1px solid var(--ui-control-border); border-radius: var(--search-radius, var(--ui-radius-sm)); box-shadow: none; padding: 4px 4px 4px 12px; }
 body.ui-system .search-form input[type=search] { background: transparent; border: 0; padding: 8px; outline: none; }
 body.ui-system .search-form:focus-within { outline: 3px solid var(--ui-focus); outline-offset: 2px; }
 body.ui-system .search-button { width: 40px; min-width: 40px; height: 40px; padding: 8px !important; }
@@ -327,7 +327,7 @@ body.ui-system .dashboard-header .icon-btn:hover { background:var(--ui-primary-s
 .mini-popup .game-modal:not(.active) { display:none; }
 .mini-popup .game-modal.active { opacity:1; }
 .mini-popup .game-modal-card { width:min(100%,1020px); max-height:none; height:100%; min-height:0; }
-.mini-popup .game-modal-header .game-header-title-wrap,.mini-popup .game-modal-header .game-header-actions { display:none; }
+.mini-popup .game-modal-header .game-header-title-wrap,.mini-popup .game-header-actions .close-action { display:none; }
 .mini-popup-loading { padding:0 24px; }
 body.mini-embedded .mini-main { width:100%; max-width:1200px; padding:24px; margin:auto; }
 body.mini-embedded .mini-workspace-header h1 { font-size:24px; }
@@ -381,6 +381,10 @@ body.mini-embedded .mini-app-card strong{font-size:16px;margin:8px 0}
 body #mini-app-dialog #game-modal .game-modal-card{height:100%;max-height:100%;min-height:0}
 .mini-popup{box-sizing:border-box}.mini-popup-header{min-width:0}.mini-popup-header>[data-cancel]{flex-shrink:0}
 @media(max-width:639px){.mini-popup-header h2{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.mini-popup-tabs{flex:1;gap:6px}.mini-popup-header{gap:8px}.mini-popup-tabs button{padding-inline:10px}}
+@media(max-height:600px){
+  .mini-popup{width:100vw;height:100dvh;max-width:100%;max-height:100dvh;border-radius:0;}
+  .mini-popup-header{padding:6px 16px;}
+}
 .festival-secret.is-revealed{animation:festival-reveal .32s ease-out;background:color-mix(in srgb,var(--ui-primary) 18%,transparent)}
 @media(prefers-reduced-motion:reduce){.festival-secret.is-revealed{animation:none}}.reduce-motion .festival-secret.is-revealed{animation:none}
 /* Release history remains available across every Quick-panel category. */

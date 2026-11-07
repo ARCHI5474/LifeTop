@@ -1,46 +1,55 @@
-const assert=require('node:assert/strict');
-const fs=require('node:fs/promises');
-const path=require('node:path');
-const {createRequire}=require('node:module');
-const {chromium}=createRequire(process.env.PLAYWRIGHT_MODULE_PATH||require.resolve('playwright'))('playwright');
-(async()=>{
- const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_PATH});
- const root=path.resolve(__dirname,'..'),artifacts=path.join(root,'test-artifacts/md-review');
- try{
-  await fs.mkdir(artifacts,{recursive:true});
-  const context=await browser.newContext({viewport:{width:1440,height:1000},timezoneId:'Asia/Tokyo'}),page=await context.newPage(),errors=[];
-  page.on('pageerror',e=>errors.push(e.message));
-  await context.route('**/*',async route=>{const url=new URL(route.request().url());if(url.origin!=='http://localhost')return route.abort();const file=path.resolve(root,'.'+(url.pathname==='/'?'/index.html':url.pathname));if(!file.startsWith(root+path.sep))return route.abort();try{await route.fulfill({body:await fs.readFile(file),contentType:file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.ttf')?'font/ttf':'text/html'});}catch{await route.fulfill({status:404,body:''});}});
-  await page.goto('http://localhost/');await page.locator('#cc-settings-storage .cc-settings-layout').waitFor();
-  const open=async()=>{await page.locator('.dashboard-header [aria-label="ファイル"]').click();await page.locator('#cc-dialog[open] .cc-app-main').waitFor();};
-  const close=async()=>{await page.locator('#cc-dialog [data-cc=close]').click();await page.locator('#cc-dialog').waitFor({state:'detached'});};
-  await open();assert.equal(new URL(page.url()).pathname,'/');assert.equal(await page.locator('#cc-dialog').evaluate(d=>d instanceof HTMLDialogElement),true);await page.screenshot({path:path.join(artifacts,'workspace-empty-1440.png')});await close();
-  await page.evaluate(async()=>{const m=await import('./js/canvas-model.js');let s=await m.readCanvas(),now=Date.now();s.projects=[{id:'p1',name:'新学期の制作プロジェクト',description:'授業のレポートと発表資料をまとめて管理します。',progress:65},{id:'p2',name:'LifeTop × チーム制作 / Autumn 2026',description:'共同作業の資料',progress:25}];s.folders=[{id:'folder1',name:'参考資料',projectId:'p1',parentId:''},{id:'folder2',name:'レポート',projectId:'p1',parentId:''}];s.files=Array.from({length:48},(_,i)=>({id:'file'+i,format:'lifetop-mini',version:1,kind:'studio',app:i<4?['document','document','sheet','slides'][i]:['document','sheet','slides'][i%3],name:i===0?'日本語とEnglishが混ざる、非常に長い企画書のタイトル_ConnectedCanvas_2026年度最終版.lifetop':i===1?'研究レポート — 第3章の構成案':i===2?'チームの作業予定表':i===3?'発表スライド / LifeTop v10.0':'制作資料 '+String(i+1).padStart(2,'0'),state:(i===0||i===1)?{html:'<p>保存された文書</p>'}:i===2?{grid:[['項目','担当']]}:i===3?{slides:[]}:i%3===0?{html:'<p>保存された文書</p>'}:i%3===1?{grid:[['項目','担当']]}:{slides:[]},projectId:i%2?'p1':'p2',folderId:'',favorite:i%7===0,createdAt:now-i*86400000,updatedAt:now-i*3600000}));const d=new Date();const date=n=>new Date(d.getFullYear(),d.getMonth(),d.getDate(),n).toISOString();s.events=[{id:'event1',title:'制作プロジェクトの打ち合わせ',description:'進捗の共有と、来週の作業を相談します。',category:'ミーティング',location:'オンライン',projectId:'p1',start:date(10),end:date(11),repeat:'none',allDay:false},{id:'event2',title:'日本語とEnglishを含む長い予定タイトルの表示確認',description:'長いタイトルは選択日の一覧で確認できます。',category:'制作',location:'',projectId:'p2',start:date(14),end:date(16),repeat:'none',allDay:false}];s.flows=[{id:'flow1',name:'作業を始める',blocks:[{type:'task',text:'今日の作業を確認する'},{type:'memo',text:'今日の作業ログ'}]}];await m.commitCanvas(s,s.revision);});
-  await page.reload();await page.locator('#cc-settings-storage .cc-settings-layout').waitFor();
-  for(const width of [1440,768,375]){
-   await page.setViewportSize({width,height:1000});await open();
-   assert.equal(await page.locator('.cc-file-table tbody tr').count(),48);
-   assert.equal(await page.locator('.cc-app-main').evaluate(n=>n.scrollWidth<=n.clientWidth+1),true,'workspace overflow '+width);
-   assert.equal(await page.locator('#cc-dialog').evaluate(n=>getComputedStyle(n).getPropertyValue('--ui-primary').trim()),'#83b7e2');
-   assert.equal(await page.locator('.cc-file-table').evaluate(n=>getComputedStyle(n).fontSize),'14px');
-   const contrasts=await page.locator('#cc-dialog').evaluate(root=>{const s=getComputedStyle(root),canvas=document.createElement('canvas'),g=canvas.getContext('2d');const luminance=color=>{g.fillStyle=color;g.fillRect(0,0,1,1);const c=[...g.getImageData(0,0,1,1).data].slice(0,3).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;});return c[0]*.2126+c[1]*.7152+c[2]*.0722;};const ratio=(a,b)=>{a=luminance(a);b=luminance(b);return(Math.max(a,b)+.05)/(Math.min(a,b)+.05);};const v=k=>s.getPropertyValue(k).trim(),input=getComputedStyle(root.querySelector('.cc-search-input'));return {text:[ratio(v('--ui-text'),v('--ui-bg')),ratio(v('--ui-text-muted'),v('--ui-surface')),ratio(v('--ui-bg'),v('--ui-primary'))],boundary:ratio(input.borderColor,input.backgroundColor),focus:ratio(v('--ui-focus'),v('--ui-bg'))};});assert.ok(contrasts.text.every(v=>v>=4.5)&&contrasts.boundary>=3&&contrasts.focus>=3,'contrast '+JSON.stringify(contrasts));
+const assert = require('node:assert/strict');
+const { withApp } = require('./helpers/browser.cjs');
 
-   await page.locator('#cc-workspace-query').fill('English');assert.equal(await page.locator('.cc-file-table tbody tr').count(),1);await page.locator('#cc-workspace-query').fill('');
-   await page.locator('.cc-file-table tbody tr').first().locator('.cc-row-menu summary').click();await page.locator('.cc-row-menu[open] .cc-menu-content').waitFor();
-   const menu=await page.locator('.cc-row-menu[open] .cc-menu-content').boundingBox();assert.ok(menu.x>=0&&menu.x+menu.width<=width+1);await page.keyboard.press('Escape');assert.equal(await page.locator('#cc-dialog').isVisible(),true);assert.equal(await page.locator('.cc-row-menu[open]').count(),0);
-   await page.screenshot({path:path.join(artifacts,'workspace-'+width+'.png')});
-   assert.deepEqual(await page.locator('.cc-app-sidebar nav [data-cc=panel]').evaluateAll(nodes=>nodes.map(n=>n.dataset.id)),['workspace','search']);
-   await close();assert.equal(await page.locator('#cc-widgets .cc-widget').count(),0);await page.locator('#home-calendar-card').click();await page.locator('#cc-dialog.cc-calendar-only').waitFor();assert.equal(await page.locator('.cc-app-sidebar').isVisible(),false);assert.equal(await page.locator('.cc-app-sidebar nav [data-cc=panel]').count(),2);assert.equal(await page.locator('.cc-calendar-weekdays span').count(),7);assert.equal(await page.locator('.cc-calendar-cell').count(),42);const month=await page.locator('#cc-body .cc-page-heading h2').innerText();await page.locator('[data-cc=calendar-next]').click();await page.waitForFunction(previous=>document.querySelector('#cc-body .cc-page-heading h2')?.textContent!==previous,month);await page.locator('[data-cc=calendar-prev]').click();await page.locator('.cc-calendar-date').nth(10).click();assert.equal(await page.locator('.cc-calendar-date[aria-pressed=true]').count(),1);await page.screenshot({path:path.join(artifacts,'calendar-'+width+'.png')});await close();
-   await page.locator('[aria-label="Quickパネル"]').click();await page.locator('#settings-tab-advanced').click();await page.locator('#cc-settings-storage-section').waitFor();assert.equal(await page.locator('#cc-settings-storage [data-cc=sync-upload]').count(),1);await page.screenshot({path:path.join(artifacts,'quick-details-'+width+'.png')});await page.locator('[aria-label="Quickパネル"]').click();assert.equal(await page.locator('body').evaluate(n=>n.classList.contains('ui-modal-open')),false);
-  }
-  await page.setViewportSize({width:1440,height:1000});await open();
-  await page.locator('.cc-workspace-heading [data-cc=project]').click();const form=page.locator('dialog[open] form');await form.locator('[name=name]').fill('未保存のプロジェクト');for(let i=0;i<12;i++){await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.querySelector('dialog.cc-form-dialog').contains(document.activeElement)),true);}page.once('dialog',d=>d.dismiss());await page.keyboard.press('Escape');assert.equal(await form.locator('[name=name]').inputValue(),'未保存のプロジェクト');
-  await page.evaluate(()=>{window.__transaction=IDBDatabase.prototype.transaction;IDBDatabase.prototype.transaction=function(names,mode,...rest){if(this.name==='lifetop-connected-canvas'&&mode==='readwrite')throw new DOMException('保存できません。容量を確認して再試行してください。','QuotaExceededError');return window.__transaction.call(this,names,mode,...rest);};});
-  await form.locator('[type=submit]').click();await form.locator('[role=alert]').filter({hasText:'保存できません'}).waitFor();assert.equal(await form.locator('[name=name]').inputValue(),'未保存のプロジェクト');assert.equal(await form.locator('[type=submit]').isEnabled(),true);assert.equal(await page.evaluate(()=>document.querySelector('dialog.cc-form-dialog').contains(document.activeElement)),true);assert.equal(await page.locator('#cc-dialog').evaluate(d=>d.scrollTop),0);await page.screenshot({path:path.join(artifacts,'form-error-1440.png')});
-  await page.evaluate(()=>IDBDatabase.prototype.transaction=window.__transaction);await form.locator('[type=submit]').click();await page.locator('dialog.cc-form-dialog').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>document.querySelector('#cc-dialog').contains(document.activeElement)),true);
-  await close();await page.locator('.dashboard-header [aria-label="ファイル"]').click();
-  await page.keyboard.press('Control+k');await page.locator('#cc-query').fill('English');await page.locator('.cc-search-result').first().waitFor();await page.screenshot({path:path.join(artifacts,'search-1440.png')});
-  await page.emulateMedia({reducedMotion:'reduce'});await page.locator('#cc-dialog').waitFor();assert.ok(await page.locator('#cc-dialog').evaluate(n=>parseFloat(getComputedStyle(n).animationDuration)<=.001));await page.keyboard.press('Escape');await page.locator('#cc-dialog').waitFor({state:'detached'});
-  assert.deepEqual(errors,[]);console.log('PASS: MD tokens, Files/Search-only navigation, 375/768/1440 layouts, 48 files/long names, working calendar popup, removed Quick/Automation cards, Quick Details save/sync, menu Escape, focus retention, quota error/retry and reduced motion');
- }finally{await browser.close();}
-})().catch(error=>{console.error(error);process.exitCode=1;});
+withApp(async page => {
+    await page.evaluate(async () => {
+        const m = await import('./js/canvas-model.js');
+        const state = await m.readCanvas();
+        state.files = Array.from({length:48}, (_,i) => ({id:'file'+i,format:'lifetop-mini',version:1,kind:'studio',app:'document',name:i===0?'日本語とEnglish'.repeat(12):'制作資料 '+i,state:{html:'<p>本文</p>'},createdAt:Date.now(),updatedAt:Date.now()}));
+        await m.commitCanvas(state,state.revision);
+    });
+    await page.reload();
+    for (const width of [375,768,1440]) {
+        await page.setViewportSize({width,height:1000});
+        await page.locator('.dashboard-header [aria-label="ファイル"]').click();
+        assert.equal(await page.locator('.cc-saved-files .cc-row').count(),48);
+        assert.equal(await page.locator('.cc-app-main').evaluate(e => e.scrollWidth <= e.clientWidth+1),true);
+        await page.locator('#cc-workspace-query').fill('English');
+        assert.equal(await page.locator('.cc-saved-files .cc-row').count(),1);
+        await page.locator('#cc-workspace-query').fill('');
+        await page.keyboard.press('Escape');
+        await page.locator('#cc-dialog').waitFor({state:'detached'});
+    }
+    await page.locator('.dashboard-header [aria-label="ファイル"]').click();
+    await page.locator('[data-cc=file-rename]').first().click();
+    const form = page.locator('dialog.cc-form-dialog form');
+    await form.locator('[name=name]').fill('変更を維持');
+    for(let i=0;i<12;i++) {
+        await page.keyboard.press('Tab');
+        assert.equal(await page.evaluate(() => document.querySelector('dialog.cc-form-dialog').contains(document.activeElement)),true);
+    }
+    page.once('dialog',dialog => dialog.dismiss());
+    await page.keyboard.press('Escape');
+    assert.equal(await form.locator('[name=name]').inputValue(),'変更を維持');
+    await page.evaluate(() => {
+        window.originalTransaction=IDBDatabase.prototype.transaction;
+        IDBDatabase.prototype.transaction=function(names,mode,...rest) {
+            if(this.name==='lifetop-connected-canvas'&&mode==='readwrite')throw new DOMException('保存できません。容量を確認してください。','QuotaExceededError');
+            return window.originalTransaction.call(this,names,mode,...rest);
+        };
+    });
+    await form.locator('[type=submit]').click();
+    await form.locator('[role=alert]').filter({hasText:'保存できません'}).waitFor();
+    assert.equal(await form.locator('[name=name]').inputValue(),'変更を維持');
+    assert.equal(await form.locator('[type=submit]').isEnabled(),true);
+    await page.evaluate(() => IDBDatabase.prototype.transaction=window.originalTransaction);
+    await form.locator('[type=submit]').click();
+    await page.locator('dialog.cc-form-dialog').waitFor({state:'detached'});
+    assert.equal(await page.evaluate(() => document.querySelector('#cc-dialog').contains(document.activeElement)),true);
+    await page.keyboard.press('Escape');
+    await page.locator('#cc-dialog').waitFor({state:'detached'});
+    await page.keyboard.press('Control+k');
+    await page.locator('#cc-query').fill('変更を維持');
+    await page.locator('[data-cc=result-file]').filter({hasText:'変更を維持'}).waitFor();
+    console.log('PASS: 48 files/long names at 375/768/1440, filter/search, modal focus trap, dirty cancel, storage quota error and retry');
+}).catch(error => {console.error(error);process.exitCode=1;});

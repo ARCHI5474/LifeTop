@@ -1,8 +1,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const path = require('node:path');
-const { createRequire } = require('node:module');
-const { chromium } = createRequire(process.env.PLAYWRIGHT_MODULE_PATH || require.resolve('playwright'))('playwright');
+const { chromium, openGames } = require('./helpers/browser.cjs');
 (async () => {
     const browser = await chromium.launch({ headless: true, executablePath: process.env.BROWSER_PATH });
     try {
@@ -64,9 +63,9 @@ const { chromium } = createRequire(process.env.PLAYWRIGHT_MODULE_PATH || require
             await scan(width + ':advanced');
             await page.keyboard.press('Escape');
             await page.waitForTimeout(260);
-            await page.evaluate(() => window.toggleGameModal(true));
+            await openGames(page);
             for (const game of ['snake', 'puzzle', 'othello', 'go', 'shogi', 'hitblow']) {
-                await page.locator('[data-game-tab="' + game + '"]').click();
+                if(await page.locator('#gamebox-select').isVisible())await page.locator('#gamebox-select').selectOption(game);else await page.locator('[data-game-tab="' + game + '"]').click();
                 await scan(width + ':' + game);
             }
             await page.keyboard.press('Escape');

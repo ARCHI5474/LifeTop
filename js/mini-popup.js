@@ -25,18 +25,25 @@ export function openMiniApps(path='mini-apps.html') {
         dialog.querySelector('.mini-popup-studio').hidden=games;
         gameHost.hidden=!games;
         dialog.querySelector('#mini-popup-title').textContent=games?'GameBox':'Studio';
-        tabs.forEach(tab=>{const selected=tab.dataset.view===view;tab.classList.toggle('is-active',selected);tab.setAttribute('aria-selected',String(selected));});
+        dialog.querySelector('[data-cancel]').setAttribute('aria-label',games?'GameBoxを閉じる':'Studioを閉じる');
+        tabs.forEach(tab=>{const selected=tab.dataset.view===view;tab.classList.toggle('is-active',selected);tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;});
     };
     if(gameModal){gameHost.append(gameModal);gameModal.setAttribute('role','region');gameModal.setAttribute('aria-modal','false');}
     const lifecycle=openUIDialog(dialog,{onRequestClose:async()=>{try{await frame.contentWindow?.flushMiniApp?.();return true;}catch{dialog.querySelector('[role=status]').hidden=false;dialog.querySelector('[role=status]').textContent='保存できませんでした。作業ファイルを保存してから閉じてください。';return false;}}});
     frame.addEventListener('load',()=>{
         dialog.querySelector('[role=status]').hidden=true;
         frame.contentDocument?.addEventListener('keydown',event=>{
-            if(event.key==='Escape'&&!frame.contentDocument.querySelector('dialog[open]')){event.preventDefault();void lifecycle.close();}
+            if(event.key==='Escape'&&!event.isComposing&&event.keyCode!==229&&!event.defaultPrevented&&!frame.contentDocument.querySelector('dialog[open]')){event.preventDefault();void lifecycle.close();}
         });
     });
     dialog.addEventListener('lifetop:game-modal-state',event=>setView(event.detail.open?'games':'studio'));
     tabs.forEach(tab=>tab.addEventListener('click',()=>window.toggleGameModal?.(tab.dataset.view==='games')));
+    tabs.forEach((tab,index)=>tab.addEventListener('keydown',event=>{
+        if(event.isComposing||event.keyCode===229)return;
+        const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:event.key==='ArrowRight'?(index+1)%tabs.length:event.key==='ArrowLeft'?(index+tabs.length-1)%tabs.length:-1;
+        if(next<0)return;event.preventDefault();tabs[next].click();tabs[next].focus();
+    }));
+    setView('studio');
     dialog.addEventListener('close',()=>{
         if(gameModal){
             if(gameModal.classList.contains('active'))window.toggleGameModal?.(false);

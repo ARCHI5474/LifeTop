@@ -1,7 +1,6 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');const path=require('node:path');
-const {createRequire}=require('node:module');
-const {chromium}=createRequire(process.env.PLAYWRIGHT_MODULE_PATH||require.resolve('playwright'))('playwright');
+const { chromium, openGames } = require('./helpers/browser.cjs');
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_PATH});try{
 const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
 await page.route('**/*',async route=>{const u=new URL(route.request().url());if(u.origin!=='http://lifetop.test')return route.abort();const f=path.resolve(__dirname,'..','.'+(u.pathname==='/'?'/index.html':u.pathname));try{await route.fulfill({body:await fs.readFile(f),contentType:f.endsWith('.ttf')?'font/ttf':f.endsWith('.js')?'text/javascript':f.endsWith('.css')?'text/css':'text/html'});}catch{await route.fulfill({status:404,body:''});}});
@@ -15,7 +14,7 @@ await page.evaluate(()=>document.querySelector('#search-form').addEventListener(
 await page.locator('#search-input').press('ArrowDown');await page.locator('#search-input').press('Enter');
 assert.ok(await page.evaluate(()=>window.lastSearch?.includes('q=')));
 await page.locator('#search-clear-btn').click();assert.equal(await page.locator('#search-input').inputValue(),'');
-await page.locator('#game-open-btn').click();await page.keyboard.press('/');assert.notEqual(await page.evaluate(()=>document.activeElement.id),'search-input','game modal owns keyboard');
+await openGames(page);await page.keyboard.press('/');assert.notEqual(await page.evaluate(()=>document.activeElement.id),'search-input','game modal owns keyboard');
 await page.getByRole('tab',{name:'オセロ',exact:true}).click();
 await page.locator('#othello-board .is-playable').first().click();
 await page.evaluate(()=>window.initOthelloGame());await page.waitForTimeout(450);

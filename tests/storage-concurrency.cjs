@@ -1,0 +1,31 @@
+const assert = require('node:assert/strict');
+const { withApp } = require('./helpers/browser.cjs');
+
+withApp(async (page, context) => {
+    const other = await context.newPage();
+    await other.goto('http://localhost/');
+    await other.locator('#cc-settings-storage .cc-settings-layout').waitFor({state:'attached'});
+    await page.locator('#todo-input').fill('タブAのタスク');
+    await page.locator('#todo-input').press('Enter');
+    await other.locator('[data-tab=memo]').click();
+    await other.locator('#memo-editor').fill('タブBのメモ');
+    let stored = await page.evaluate(() => JSON.parse(localStorage.getItem('lifetop_v1_0_data')));
+    assert.ok(stored.todoList.some(todo => todo.text === 'タブAのタスク'), 'a memo edit must preserve another tab’s new task');
+    assert.equal(stored.memo, 'タブBのメモ');
+    await other.locator('[data-tab=todo]').click();
+    await other.locator('#todo-input').fill('競合したタブBのタスク');
+    await other.locator('#todo-input').press('Enter');
+    stored = await page.evaluate(() => JSON.parse(localStorage.getItem('lifetop_v1_0_data')));
+    assert.ok(stored.todoList.some(todo => todo.text === 'タブAのタスク'));
+    assert.ok(!stored.todoList.some(todo => todo.text === '競合したタブBのタスク'), 'a stale edit of the same field must not overwrite stored tasks');
+    assert.match(await other.locator('#storage-status').innerText(), /別のタブ|再読み込み/);
+    await other.reload();
+    await other.locator('#todo-list').filter({hasText:'タブAのタスク'}).waitFor();
+    await other.locator('#todo-input').fill('再読込後のタスク');
+    await other.locator('#todo-input').press('Enter');
+    stored = await page.evaluate(() => JSON.parse(localStorage.getItem('lifetop_v1_0_data')));
+    assert.ok(stored.todoList.some(todo => todo.text === '再読込後のタスク'));
+    assert.equal(stored.memo, 'タブBのメモ');
+    await other.close();
+    console.log('PASS: independent cross-tab edits merge, same-field stale edits are rejected and reload permits retry');
+}).catch(error => { console.error(error); process.exitCode = 1; });

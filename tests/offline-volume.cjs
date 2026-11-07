@@ -1,0 +1,40 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const { withApp } = require('./helpers/browser.cjs');
+
+withApp(async (page, context) => {
+    await page.evaluate(() => {
+        const key = 'lifetop_v1_0_data', data = JSON.parse(localStorage.getItem(key) || '{}');
+        data.todoList = Array.from({length:1000}, (_,i) => ({id:i+1,text:'大量データ・タスク '+i,completed:false}));
+        data.bookmarks = Array.from({length:500}, (_,i) => ({title:'保存リンク '+i,url:'https://example.com/'+i}));
+        localStorage.setItem(key, JSON.stringify(data));
+    });
+    const start = Date.now();
+    await page.reload();
+    await page.locator('#cc-settings-storage .cc-settings-layout').waitFor({state:'attached'});
+    assert.equal(await page.locator('#todo-list .todo-item').count(), 1000);
+    const startupMs = Date.now() - start;
+    await context.setOffline(true);
+    assert.equal(await page.evaluate(() => navigator.onLine), false);
+    await page.locator('#todo-input').fill('オフラインの追加');
+    const editStart = Date.now();
+    await page.locator('#todo-input').press('Enter');
+    const editMs = Date.now() - editStart;
+    await page.locator('[data-tab=memo]').click();
+    const memo = '長いメモの保存確認。'.repeat(10000);
+    await page.locator('#memo-editor').fill(memo);
+    await page.reload();
+    await page.locator('#cc-settings-storage .cc-settings-layout').waitFor({state:'attached'});
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('lifetop_v1_0_data')));
+    assert.equal(stored.todoList.length,1001);
+    assert.equal(stored.todoList.filter(task => task.text==='オフラインの追加').length,1);
+    assert.equal(stored.bookmarks.length,500);
+    assert.equal(stored.memo,memo);
+    await context.setOffline(false);
+    await page.locator('[data-tab=memo]').click();
+    assert.equal(await page.locator('#memo-editor').innerText(),memo);
+    await fs.mkdir(path.resolve(__dirname,'../test-artifacts'),{recursive:true});
+    await fs.writeFile(path.resolve(__dirname,'../test-artifacts/volume-measurements.json'),JSON.stringify({tasks:1000,bookmarks:500,memoCharacters:memo.length,startupMs,editMs,browser:process.env.BROWSER_PATH||'Playwright Chromium',note:'Local routed test, wall time includes automation; not a production SLA or long-duration memory profile.'},null,2));
+    console.log('PASS: 1000 tasks/500 bookmarks/large memo, offline edit/reload and online recovery without data loss');
+}).catch(error => { console.error(error); process.exitCode = 1; });

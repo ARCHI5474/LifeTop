@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict');const fs=require('node:fs/promises');const path=require('node:path');const {createRequire}=require('node:module');const {chromium}=createRequire(process.env.PLAYWRIGHT_MODULE_PATH||require.resolve('playwright'))('playwright');
+const assert=require('node:assert/strict');const fs=require('node:fs/promises');const path=require('node:path');const { chromium, openGames } = require('./helpers/browser.cjs');
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_PATH});try{
  const page=await browser.newPage();const errors=[],issues=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',async route=>{const u=new URL(route.request().url());if(u.origin!=='http://lifetop.test')return route.abort();const f=path.resolve(__dirname,'..','.'+(u.pathname==='/'?'/index.html':u.pathname));try{await route.fulfill({body:await fs.readFile(f),contentType:f.endsWith('.ttf')?'font/ttf':f.endsWith('.js')?'text/javascript':f.endsWith('.css')?'text/css':'text/html'});}catch{await route.fulfill({status:404,body:''});}});
@@ -18,7 +18,7 @@ const assert=require('node:assert/strict');const fs=require('node:fs/promises');
  const image=await page.locator('#user-badge img').boundingBox();assert.ok(Math.abs(image.width-image.height)<.1,'uploaded profile photo remains square before circular crop');
  for(const [width,height]of [[320,568],[320,740],[390,844],[600,900],[768,1024],[1440,1000],[740,360]]){
   if(process.env.LAYOUT_WIDTH&&width!==Number(process.env.LAYOUT_WIDTH))continue;
-  await page.setViewportSize({width,height});await page.locator('#game-open-btn').click();await page.waitForTimeout(450);
+  await page.setViewportSize({width,height});await openGames(page);await page.waitForTimeout(450);
   const compact=await page.locator('#gamebox-select').isVisible();
   assert.match(await page.locator('#game-modal-title').innerText(),/GameBox/);
   if(compact){

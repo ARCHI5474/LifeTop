@@ -10,6 +10,13 @@ let draggedBookmarkIndex = null;
 let bookmarkDialogTrigger = null;
 let deletedBookmark = null;
 
+function saveBookmarks(before) {
+    if (save()) return true;
+    userConfig.bookmarks = before;
+    renderBookmarks();
+    return false;
+}
+
 export function clearBookmarkUndo() {
     deletedBookmark = null;
     activeFolderId = null;
@@ -179,10 +186,11 @@ function bindGridDragAndDrop(grid) {
         const destItem = list[toIndex];
 
         if (dropIntoFolder && !activeFolderId && destItem?.type === 'folder' && sourceItem && sourceItem.type !== 'folder') {
+            const before = structuredClone(userConfig.bookmarks);
             if (!Array.isArray(destItem.children)) destItem.children = [];
             const [moved] = list.splice(fromIndex, 1);
             destItem.children.push(moved);
-            save();
+            if (!saveBookmarks(before)) return;
             renderBookmarks();
             return;
         }
@@ -442,8 +450,9 @@ export function renameBookmarkFolder(folderId) {
     if (nextTitle === null) return;
     const trimmed = nextTitle.trim().slice(0, 20);
     if (!trimmed) return;
+    const before = structuredClone(userConfig.bookmarks);
     target.title = trimmed;
-    save();
+    if (!saveBookmarks(before)) return;
     renderBookmarks();
 }
 
@@ -453,9 +462,10 @@ export function reorderBookmark(fromIndex, toIndex) {
     if (fromIndex < 0 || fromIndex >= list.length || toIndex < 0 || toIndex >= list.length || fromIndex === toIndex) {
         return;
     }
+    const before = structuredClone(userConfig.bookmarks);
     const [moved] = list.splice(fromIndex, 1);
     list.splice(toIndex, 0, moved);
-    save();
+    if (!saveBookmarks(before)) return;
     renderBookmarks();
 }
 
@@ -476,13 +486,14 @@ export function promptMoveToFolder(index, event) {
     const list = userConfig.bookmarks || [];
     const item = list[index];
     if (!item || item.type === 'folder') return;
+    const before = structuredClone(userConfig.bookmarks);
 
     if (folders.length === 1) {
         const targetFolder = folders[0];
         if (!Array.isArray(targetFolder.children)) targetFolder.children = [];
         list.splice(index, 1);
         targetFolder.children.push(item);
-        save();
+        if (!saveBookmarks(before)) return;
         renderBookmarks();
         return;
     }
@@ -496,7 +507,7 @@ export function promptMoveToFolder(index, event) {
     if (!Array.isArray(targetFolder.children)) targetFolder.children = [];
     list.splice(index, 1);
     targetFolder.children.push(item);
-    save();
+    if (!saveBookmarks(before)) return;
     renderBookmarks();
 }
 
@@ -505,10 +516,11 @@ export function removeBookmarkFromFolder(index, event) {
     event?.stopPropagation?.();
     const folder = getActiveFolder();
     if (!folder || !Array.isArray(folder.children)) return;
+    const before = structuredClone(userConfig.bookmarks);
     const [removed] = folder.children.splice(index, 1);
     if (!removed) return;
     userConfig.bookmarks.push(removed);
-    save();
+    if (!saveBookmarks(before)) return;
     renderBookmarks();
 }
 
@@ -638,10 +650,14 @@ export function openFolderDialog() {
     openBookmarkDialog('folder');
 }
 
-export function closeBookmarkDialog() {
+export function closeBookmarkDialog(saved = false) {
     const overlay = document.getElementById('bookmark-dialog-overlay');
     const dialog = document.getElementById('bookmark-dialog');
     if (!overlay || !dialog) return;
+    const hasDraft = document.getElementById('bookmark-title-input')?.value.trim()
+        || document.getElementById('bookmark-url-input')?.value.trim();
+    if (saved !== true && dialog.classList.contains('active') && hasDraft
+        && !confirm('未保存の入力を破棄して閉じますか？')) return;
     overlay.classList.remove('active');
     dialog.classList.remove('active');
     dialog.inert = true;
@@ -658,6 +674,7 @@ export function createBookmarkFolder(folderNameInput) {
     const title = (folderNameInput ?? document.getElementById('bookmark-title-input')?.value ?? '').trim().slice(0, 20);
     if (!title) return;
     if (!Array.isArray(userConfig.bookmarks)) userConfig.bookmarks = [];
+    const before = structuredClone(userConfig.bookmarks);
     const newFolder = {
         id: `folder_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         type: 'folder',
@@ -665,9 +682,9 @@ export function createBookmarkFolder(folderNameInput) {
         children: []
     };
     userConfig.bookmarks.push(newFolder);
-    save();
+    if (!saveBookmarks(before)) return;
     renderBookmarks();
-    closeBookmarkDialog();
+    closeBookmarkDialog(true);
 }
 
 export function addBookmark(titleInput, urlInput, targetFolderIdInput) {
@@ -694,6 +711,7 @@ export function addBookmark(titleInput, urlInput, targetFolderIdInput) {
     document.getElementById('bookmark-url-input')?.removeAttribute('aria-invalid');
     const selectedFolderId = targetFolderIdInput ?? document.getElementById('bookmark-folder-select')?.value ?? activeFolderId ?? '';
     const newEntry = { title, url: safeUrl };
+    const before = structuredClone(userConfig.bookmarks);
 
     if (selectedFolderId) {
         const folder = getUserFolders().find(f => f.id === selectedFolderId);
@@ -707,9 +725,9 @@ export function addBookmark(titleInput, urlInput, targetFolderIdInput) {
         userConfig.bookmarks.push(newEntry);
     }
 
-    save();
+    if (!saveBookmarks(before)) return;
     renderBookmarks();
-    closeBookmarkDialog();
+    closeBookmarkDialog(true);
 }
 
 function updateBookmarkUndoUI() {
@@ -734,15 +752,17 @@ export function deleteBookmark(index, event) {
     const item = list?.[index];
     if (!item) return;
 
+    const before = structuredClone(userConfig.bookmarks);
     const cloned = JSON.parse(JSON.stringify(item));
-    deletedBookmark = {
+    const pendingDelete = {
         item: cloned,
         index,
         folderId: activeFolderId || null
     };
 
     list.splice(index, 1);
-    save();
+    if (!saveBookmarks(before)) return;
+    deletedBookmark = pendingDelete;
     renderBookmarks();
     updateBookmarkUndoUI();
     document.querySelector?.('#bookmark-undo button')?.focus?.();
@@ -751,7 +771,9 @@ export function deleteBookmark(index, event) {
 export function undoDeleteBookmark() {
     if (!deletedBookmark) return;
     const { item, index, folderId } = deletedBookmark;
-    deletedBookmark = null;
+    const before = structuredClone(userConfig.bookmarks);
+    const previousFolder = activeFolderId;
+    const previousTab = currentBookmarkTab;
 
     if (currentBookmarkTab !== "ブックマーク") {
         currentBookmarkTab = "ブックマーク";
@@ -778,8 +800,14 @@ export function undoDeleteBookmark() {
 
     const insertAt = Math.max(0, Math.min(index, targetList.length));
     targetList.splice(insertAt, 0, item);
+    if (!saveBookmarks(before)) {
+        activeFolderId = previousFolder;
+        currentBookmarkTab = previousTab;
+        renderBookmarks();
+        return;
+    }
+    deletedBookmark = null;
     updateBookmarkUndoUI();
-    save();
     renderBookmarks();
 }
 

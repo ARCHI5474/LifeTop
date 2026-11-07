@@ -11,10 +11,10 @@
 .festival-banner-art>span{display:block;font:900 132px/.95 system-ui;letter-spacing:-.12em;padding-right:.12em;color:#ffdc84;text-shadow:4px 5px 0 #c77050,8px 10px 0 #381f4d}
 .festival-banner-art>small{display:block;font:700 8px/1.5 system-ui;letter-spacing:.14em;margin-top:20px;color:#ffe6b5}
 .festival-banner-copy p{margin:8px 0;font-size:13px;color:#ffeddf;line-height:1.6}
-.festival-banner-copy .festival-banner-kicker{font-size:10px;font-weight:800;letter-spacing:.16em;color:#ffdc84}
+.festival-banner-copy .festival-banner-kicker{font-size:12px;font-weight:800;letter-spacing:.16em;color:#ffdc84}
 .festival-banner-copy h2{font:800 clamp(24px,3vw,38px)/1.12 system-ui;margin:8px 0;letter-spacing:-.03em;color:#fff8ee}
 .festival-banner-copy h2 em{font-style:normal;color:#ffdc84;font-size:1.25em}
-.festival-banner-copy .festival-banner-time{font-size:11px;font-variant-numeric:tabular-nums;color:#f7d6df}
+.festival-banner-copy .festival-banner-time{font-size:12px;font-variant-numeric:tabular-nums;color:#f7d6df}
 a.festival-banner-cta{display:flex;align-items:center;justify-content:center;gap:18px;min-height:48px;padding:0 22px;border-radius:12px;background:#ffdc84;color:#38203f;font:800 14px/1.4 system-ui;text-decoration:none;box-shadow:0 4px 0 #ad6a59;transition:transform .18s,background .18s}
 a.festival-banner-cta:hover{background:#ffe9ad;transform:translateY(-2px)}
 a.festival-banner-cta:focus-visible{outline:3px solid white;outline-offset:5px}
@@ -26,7 +26,7 @@ body.festival-page .festival-heading{background:radial-gradient(ellipse at 0% 0%
 body.festival-page .festival-heading :is(h1,p,button){color:#fff5e5!important}
 body.festival-page .festival-heading h1{font-weight:900!important;text-shadow:2px 3px 0 #38203f}
 @media(max-width:850px){.festival-banner{grid-template-columns:120px minmax(0,1fr);padding:24px;gap:20px}.festival-banner-art>span{font-size:100px}.festival-banner-cta{grid-column:1/-1}.festival-banner-art>small{font-size:7px}}
-@media(max-width:480px){.festival-banner{grid-template-columns:90px minmax(0,1fr);gap:16px;padding:22px 18px;border-radius:18px}.festival-banner-art>span{font-size:84px}.festival-banner-art>small{display:none}.festival-banner-copy h2{font-size:23px}.festival-banner-copy .festival-banner-kicker{font-size:8px;letter-spacing:.08em}.festival-banner-copy p{font-size:12px}.festival-banner-copy .festival-banner-time{font-size:10px}}
+@media(max-width:480px){.festival-banner{grid-template-columns:90px minmax(0,1fr);gap:16px;padding:22px 18px;border-radius:18px}.festival-banner-art>span{font-size:84px}.festival-banner-art>small{display:none}.festival-banner-copy h2{font-size:23px}.festival-banner-copy .festival-banner-kicker{font-size:12px;letter-spacing:.08em}.festival-banner-copy p{font-size:12px}.festival-banner-copy .festival-banner-time{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.festival-banner-cta{transition:none!important;transform:none!important}}.reduce-motion .festival-banner-cta{transition:none!important;transform:none!important}
 /* Keep the celebration inside the same responsive column as the home cards. */
 body.ui-system .festival-banner{box-sizing:border-box;width:min(var(--ui-content-max,1200px),calc(100% - 64px));max-width:var(--ui-content-max,1200px);margin-inline:auto;grid-template-columns:minmax(100px,160px) minmax(0,1fr) auto;min-width:0}
@@ -43,7 +43,7 @@ body.festival-page .festival-hunt-tile[data-miss=true]{border-color:var(--ui-dan
 #festival-hunt.is-cleared{animation:festival-reveal .35s ease-out;border-color:var(--festival-gold,#f0bf65)}
 @media(max-width:1023px){body.ui-system .festival-banner{width:calc(100% - 48px)}}
 @media(max-width:850px){body.ui-system .festival-banner{grid-template-columns:110px minmax(0,1fr)}body.ui-system .festival-banner-cta{grid-column:1/-1}}
-@media(max-width:639px){body.ui-system .festival-banner{width:calc(100% - 32px);grid-template-columns:80px minmax(0,1fr);padding:20px 16px;gap:14px}.festival-banner-copy h2{font-size:22px}.festival-banner-art>span{font-size:76px}.festival-banner-copy .festival-banner-kicker{font-size:8px;letter-spacing:.06em}.festival-hunt-grid{--hunt-columns:4;gap:8px}.festival-hunt-toolbar output{font-size:18px}body.festival-page .festival-hunt-tile{min-height:48px;font-size:20px}}
+@media(max-width:639px){body.ui-system .festival-banner{width:calc(100% - 32px);grid-template-columns:80px minmax(0,1fr);padding:20px 16px;gap:14px}.festival-banner-copy h2{font-size:22px}.festival-banner-art>span{font-size:76px}.festival-banner-copy .festival-banner-kicker{font-size:12px;letter-spacing:.06em}.festival-hunt-grid{--hunt-columns:4;gap:8px}.festival-hunt-toolbar output{font-size:18px}body.festival-page .festival-hunt-tile{min-height:48px;font-size:20px}}
 @media(prefers-reduced-motion:reduce){#festival-hunt.is-cleared{animation:none}}.reduce-motion #festival-hunt.is-cleared{animation:none}
 body.festival-page .festival-hunt-grid{width:100%;box-sizing:border-box;max-width:520px}body.festival-page .festival-hunt-tile{width:100%;font-size:22px}
 /* Small collectible markers sit in the flow, away from the normal controls. */

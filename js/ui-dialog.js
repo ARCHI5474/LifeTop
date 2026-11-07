@@ -1,17 +1,22 @@
-// Native dialogs provide modal focus containment; this module adds a shared lifecycle.
 export function openUIDialog(dialog, {onRequestClose = () => true} = {}) {
     const trigger = document.activeElement;
     const origin = trigger?.dataset?.cc ? {action: trigger.dataset.cc, id: trigger.dataset.id || ''} : null;
-    let closing = false;
-    async function requestClose() {
-        if (closing) return;
-        if (!await onRequestClose()) return;
-        closing = true;
-        dialog.dataset.state = 'closing';
-        const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('reduce-motion');
-        const exitDuration = reduced ? 0 : parseFloat(getComputedStyle(dialog).getPropertyValue('--ui-duration-fast')) || 0;
-        await new Promise(resolve => setTimeout(resolve, exitDuration));
-        dialog.close();
+    let closeRequest = null;
+    function requestClose() {
+        if (closeRequest) return closeRequest;
+        if (!dialog.open) return Promise.resolve();
+        closeRequest = Promise.resolve().then(async () => {
+            if (!await onRequestClose()) return;
+            dialog.dataset.state = 'closing';
+            const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('reduce-motion');
+            const exitDuration = reduced ? 0 : parseFloat(getComputedStyle(dialog).getPropertyValue('--ui-duration-fast')) || 0;
+            await new Promise(resolve => setTimeout(resolve, exitDuration));
+            if (dialog.open) await new Promise(resolve => {
+                dialog.addEventListener('close', resolve, {once:true});
+                dialog.close();
+            });
+        }).finally(() => { closeRequest = null; });
+        return closeRequest;
     }
     dialog.addEventListener('keydown', event => {
         if (event.key !== 'Tab') return;

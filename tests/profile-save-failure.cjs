@@ -1,0 +1,30 @@
+const assert=require('node:assert/strict');
+const {withApp}=require('./helpers/browser.cjs');
+withApp(async (page,context)=>{
+    await context.route(/\/js\/festival-config\.js(?:\?.*)?$/,route=>route.fulfill({contentType:'text/javascript',body:'export const festivalConfig={startAt:null,durationDays:10};'}));
+    await page.reload();
+    await page.locator('[aria-label="Quickパネル"]').click();
+    await page.locator('#settings-tab-profile').click();
+    await page.evaluate(()=>{
+        const original=Storage.prototype.setItem;
+        window.rejectProfileSave=true;
+        Storage.prototype.setItem=function(key,value){if(key==='lifetop_v1_0_data'&&window.rejectProfileSave)throw new DOMException('quota','QuotaExceededError');return original.call(this,key,value);};
+    });
+    await page.locator('[data-profile-icon=star]').click();
+    assert.equal(await page.locator('[data-profile-icon=person]').getAttribute('aria-pressed'),'true','failed selection must retain saved avatar');
+    assert.match(await page.locator('#profile-icon-status').innerText(),/保存できません/);
+    await page.evaluate(()=>window.rejectProfileSave=false);
+    await page.locator('[data-profile-icon=star]').click();
+    await page.evaluate(()=>window.rejectProfileSave=true);
+    await page.locator('#profile-icon-reset').click();
+    assert.equal(await page.locator('[data-profile-icon=star]').getAttribute('aria-pressed'),'true','failed reset retains previous avatar');
+    assert.match(await page.locator('#profile-icon-status').innerText(),/保存できません/);
+    await page.locator('#profile-icon-upload').setInputFiles({name:'avatar.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/r18AAAAASUVORK5CYII=','base64')});
+    await page.waitForFunction(()=>document.querySelector('#profile-icon-upload').value==='');
+    assert.equal(await page.locator('[data-profile-icon=star]').getAttribute('aria-pressed'),'true','failed image save restores the previous avatar');
+    await page.evaluate(()=>window.rejectProfileSave=false);
+    await page.locator('#profile-icon-reset').click();
+    await page.reload();
+    assert.equal(await page.locator('#user-badge [data-icon=person]').count(),1);
+    console.log('PASS: profile selection/reset/image quota failure rollback and retry');
+}).catch(error=>{console.error(error);process.exitCode=1;});

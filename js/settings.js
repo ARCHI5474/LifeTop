@@ -6,6 +6,15 @@ import { updateClock, updateGreeting } from "./clock.js?v=9.0";
 
 let settingsTrigger;
 let helpTrigger;
+let backgroundRevision = 0;
+
+function savePreferences(values) {
+    const previous = Object.fromEntries(Object.keys(values).map(key => [key, userConfig[key]]));
+    Object.assign(userConfig, values);
+    if (save()) return true;
+    Object.assign(userConfig, previous);
+    return false;
+}
 
 export function toggleHelp() {
     const modal = document.getElementById('help-modal') || document.getElementById('game-modal');
@@ -138,11 +147,9 @@ function initSettingsCategories() {
 export function setColorCombo(index) {
     const combo = colorCombos[index];
     if (!combo) return;
-    userConfig.bgType = combo.bgType;
-    userConfig.theme = combo.theme;
-    userConfig.bgImage = '';
+    backgroundRevision++;
+    if (!savePreferences({bgType:combo.bgType,theme:combo.theme,bgImage:''})) return;
     applyStyles();
-    save();
     renderColorCombos();
     renderBgPresets();
     document.getElementById('background-image-url').value = '';
@@ -152,11 +159,9 @@ export function setColorCombo(index) {
 export function setPresetWallpaper(index) {
     const preset = bgPresets[index];
     if (!preset) return;
-    userConfig.bgType = preset.bgType;
-    userConfig.theme = preset.theme;
-    userConfig.bgImage = preset.url;
+    backgroundRevision++;
+    if (!savePreferences({bgType:preset.bgType,theme:preset.theme,bgImage:preset.url})) return;
     applyStyles();
-    save();
     renderColorCombos();
     renderBgPresets();
     renderBgSelector();
@@ -168,18 +173,16 @@ export function setPresetWallpaper(index) {
 
 // 設定変更
 export function setTheme(c, element) {
-    userConfig.theme = c;
+    if (!savePreferences({theme:c})) return;
     applyStyles();
-    save();
     
     document.querySelectorAll('#theme-colors .color-dot').forEach(el => el.classList.remove('active'));
     if (element) element.classList.add('active');
 }
 
 export function setFontFamily(f, element) {
-    userConfig.fontFamily = f;
+    if (!savePreferences({fontFamily:f})) return;
     applyStyles();
-    save();
     
     document.querySelectorAll('#font-styles .font-btn').forEach(el => el.classList.remove('active'));
     if (element) element.classList.add('active');
@@ -191,32 +194,30 @@ export function saveUsername(val) {
         .trim()
         .slice(0, 20) || "ゲスト";
 
-    userConfig.username = nextName;
-    save();
+    savePreferences({username:nextName});
     updateGreeting();
 }
 
 export function toggleClock12h(checked) {
-    userConfig.clock12h = checked;
-    save();
+    savePreferences({clock12h:checked});
+    document.getElementById('clock-12h-toggle').checked = userConfig.clock12h;
     updateClock();
 }
 
 export function toggleClockSec(checked) {
-    userConfig.clockShowSec = checked;
-    save();
+    savePreferences({clockShowSec:checked});
+    document.getElementById('clock-show-sec-toggle').checked = userConfig.clockShowSec;
     
     const secEl = document.getElementById('clock-sec');
-    secEl.style.display = checked ? 'block' : 'none';
+    secEl.style.display = userConfig.clockShowSec ? 'block' : 'none';
     updateClock();
 }
 
 // 背景の選択
 export function setBg(type, element) {
-    userConfig.bgType = type;
-    userConfig.bgImage = '';
+    backgroundRevision++;
+    if (!savePreferences({bgType:type,bgImage:''})) return;
     applyStyles();
-    save();
     
     document.querySelectorAll('.bg-option').forEach(el => el.classList.remove('active'));
     if (element) {
@@ -227,27 +228,34 @@ export function setBg(type, element) {
 }
 
 function setBackgroundImageUrl(value) {
+    backgroundRevision++;
     const url = value.trim();
     let parsed;
     try { parsed = new URL(url); } catch { parsed = null; }
     if (parsed?.protocol !== 'https:' || !parsed.hostname) {
-        alert('HTTPSで始まる画像URLを入力してください。');
+        document.getElementById('background-image-status').textContent = 'HTTPSで始まる画像URLを入力してください。';
+        document.getElementById('background-image-url').setAttribute('aria-invalid', 'true');
+        document.getElementById('background-image-url').focus();
         return;
     }
+    document.getElementById('background-image-url').removeAttribute('aria-invalid');
     commitBackgroundImage(parsed.href);
 }
 
 function setBackgroundImageFile(file) {
     if (!file) return;
+    const revision = ++backgroundRevision;
     if (!['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(file.type) || file.size > 2 * 1024 * 1024) {
-        alert('PNG、JPEG、WebP、GIF形式の2MB以下の画像を選択してください。');
+        document.getElementById('background-image-status').textContent = 'PNG、JPEG、WebP、GIF形式の2MB以下の画像を選択してください。';
+        document.getElementById('background-image-upload').value = '';
         return;
     }
     const reader = new FileReader();
-    reader.onerror = () => alert('画像を読み込めませんでした。別の画像でお試しください。');
+    reader.onerror = () => { if (revision === backgroundRevision) document.getElementById('background-image-status').textContent = '画像を読み込めませんでした。別の画像でお試しください。'; };
     reader.onload = () => {
+        if (revision !== backgroundRevision) return;
         if (typeof reader.result !== 'string' || !reader.result.startsWith(`data:${file.type};base64,`)) {
-            alert('画像を読み込めませんでした。別の画像でお試しください。');
+            document.getElementById('background-image-status').textContent = '画像を読み込めませんでした。別の画像でお試しください。';
             return;
         }
         if (commitBackgroundImage(reader.result)) {
@@ -259,6 +267,7 @@ function setBackgroundImageFile(file) {
 }
 
 function commitBackgroundImage(image) {
+    backgroundRevision++;
     const previous = userConfig.bgImage;
     userConfig.bgImage = image;
     applyStyles();

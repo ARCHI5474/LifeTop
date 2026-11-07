@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import {iconAliases} from '../js/canvas-ui.js?v=10.0-ui8';
+import {iconAliases,uiButton} from '../js/canvas-ui.js?v=10.0-ui8';
 const root=new URL('../icons/material/',import.meta.url);
 const b=fs.readFileSync(new URL('material-symbols-outlined.ttf',root));
 assert.equal(b.readUInt32BE(0),0x00010000,'official subset is a TrueType font');
@@ -16,6 +16,9 @@ function glyph(cp){
  }return 0;
 }
 const glyphs=JSON.parse(fs.readFileSync(new URL('glyphs.json',root),'utf8'));
+assert.match(uiButton('ホームを編集','dashboard-edit','','quiet','tune'), />settings<\/span>/,
+ 'home customization resolves its dynamic icon to a bundled glyph');
+for(const [alias,name] of Object.entries(iconAliases))assert.ok(glyphs[name],`icon alias ${alias} resolves to a bundled glyph`);
 for(const [name,cp]of Object.entries(glyphs))assert.ok(glyph(parseInt(cp,16)),'official glyph exists: '+name);
 const projectRoot=new URL('../',import.meta.url),sources=[];
 for(const file of ['index.html','mini-apps.html','messages.html','festival.html'])sources.push([file,fs.readFileSync(new URL(file,projectRoot),'utf8')]);

@@ -388,11 +388,13 @@ function mergeUserConfig(parsed) {
     };
     
     if (Array.isArray(parsedHealthLog.medications)) {
-        // 保存された服薬状況がある場合は、マージ
-        mergedHealthLog.medications = defaultHealthLog.medications.map(defMed => {
-            const savedMed = parsedHealthLog.medications.find(m => m && m.id === defMed.id);
-            return savedMed ? { ...defMed, taken: Boolean(savedMed.taken) } : defMed;
-        });
+        mergedHealthLog.medications = parsedHealthLog.medications
+            .filter(m => m && typeof m === 'object' && !Array.isArray(m))
+            .map(savedMed => ({
+                ...defaultHealthLog.medications.find(m => m.id === savedMed.id),
+                ...savedMed,
+                taken: Boolean(savedMed.taken)
+            }));
     } else {
         mergedHealthLog.medications = [...defaultHealthLog.medications];
     }

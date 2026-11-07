@@ -1,9 +1,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const path = require('node:path');
-const { createRequire } = require('node:module');
-const runtimeRequire = createRequire(process.env.PLAYWRIGHT_MODULE_PATH || require.resolve('playwright'));
-const { chromium } = runtimeRequire('playwright');
+const { chromium } = require('./helpers/browser.cjs');
 
 (async () => {
     const browser = await chromium.launch({ headless: true, executablePath: process.env.BROWSER_PATH });
@@ -79,8 +77,12 @@ const { chromium } = runtimeRequire('playwright');
         await page.locator('[aria-label="Quickパネル"]').click();
         assert.equal(await page.locator('#settings-panel').evaluate(el => el.inert), false);
         await page.getByRole('tab', {name:'詳細',exact:true}).click();
-        assert.equal(await page.locator('.settings-about-version').innerText(), 'LifeTop v10.0');
-        assert.equal(await page.locator('.settings-about-codename').innerText(), 'コードネーム：Connected Canvas');
+        assert.equal(await page.locator('.settings-about-version').evaluate(el => {
+            const copy = el.cloneNode(true);
+            copy.querySelectorAll('.festival-secret').forEach(node => node.remove());
+            return copy.textContent;
+        }), 'LifeTop v10.0');
+        assert.equal(await page.locator('.settings-about-codename').innerText(), 'コードネーム：LifeTop10 Fes');
         assert.equal(await page.locator('#settings-category-advanced').evaluate(e => e.lastElementChild.matches('.settings-about')), true);
         assert.match(await page.locator('#notice-text').innerText(), /v10\.0/);
         await page.keyboard.press('Escape');

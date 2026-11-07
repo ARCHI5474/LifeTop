@@ -4,7 +4,7 @@ import {initUISystem} from './ui-system.js?v=10.0-ui5';
 import {messagesConfig as config} from './messages-config.js';
 import {cloudSyncConfig} from './firebase-config.js?v=9.0';
 const $=id=>document.getElementById(id),SDK='https://www.gstatic.com/firebasejs/13.1.0';
-let pendingInvite=new URLSearchParams(location.hash.slice(1)).get('invite'),auth,db,fs,call,roomId='',unwatch,unwatchRoom,notified=new Set(),initialized=false,appChecked=false;
+let pendingInvite=new URLSearchParams(location.hash.slice(1)).get('invite'),auth,db,fs,call,roomId='',unwatch,unwatchRoom,notified=new Set(),initialized=false,appChecked=false,pendingSend=null;
 if(pendingInvite)history.replaceState(null,'',location.pathname);
 const show=(id,on)=>$(id).hidden=!on;
 function status(message){$('messages-status').textContent=message;}
@@ -28,7 +28,16 @@ if(!config.enabled||!config.appCheckSiteKey){show('messages-setup',true);status(
  bind('messages-leave',async()=>{if(!confirm('このルームから退出しますか？管理者が退出すると次の参加者へ管理権限を引き継ぎます。'))return;await command('leave',{roomId});closeRoom();status('退出しました。');});
  bind('messages-delete-room',async()=>{if(!confirm('ルームを削除しますか？全員が閲覧できなくなり履歴は削除対象になります。'))return;await command('deleteRoom',{roomId});closeRoom();status('ルームを削除しました。');});
  bind('messages-notifications',async()=>{if(!('Notification'in window))throw Error('通知非対応のブラウザです。');status('通知: '+await Notification.requestPermission());});
- $('messages-send').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button');b.disabled=true;try{await command('send',{roomId,body:$('messages-body').value,nickname:nickname(),requestId:crypto.randomUUID()});$('messages-body').value='';}catch(error){status(error.message);}finally{b.disabled=false;}};
+ $('messages-send').onsubmit=async e=>{
+  e.preventDefault();const b=e.target.querySelector('button');if(b.disabled)return;b.disabled=true;
+  try{
+   const field=$('messages-body'),body=field.value,name=nickname();
+   if(!pendingSend||pendingSend.roomId!==roomId||pendingSend.body!==body||pendingSend.nickname!==name)pendingSend={roomId,body,nickname:name,requestId:crypto.randomUUID()};
+   const attempt=pendingSend;await command('send',attempt);
+   if(roomId===attempt.roomId&&field.value===attempt.body)field.value='';
+   if(pendingSend===attempt)pendingSend=null;
+  }catch(error){status(error.message);}finally{b.disabled=false;}
+ };
 }
 window.addEventListener('pagehide',()=>{unwatch?.();unwatchRoom?.();});
 

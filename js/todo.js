@@ -4,6 +4,13 @@ import { save } from "./storage.js?v=9.0";
 
 let deletedTodo = null;
 
+function saveTodos(before) {
+    if (save()) return true;
+    userConfig.todoList = before;
+    renderTodoList();
+    return false;
+}
+
 export function clearTodoUndo() {
     deletedTodo = null;
     document.getElementById('todo-undo').hidden = true;
@@ -84,14 +91,8 @@ export function addTodo() {
     const text = input.value.trim();
     if (!text) return;
 
-    // Undo retains deleted tasks, so reserve their IDs until they can no longer
-    // be restored. Reduce also avoids argument limits for large task lists.
-    const pendingTodos = deletedTodo?.batch?.map(entry => entry.todo)
-        || (deletedTodo?.todo ? [deletedTodo.todo] : []);
-    const nextId = [...(userConfig.todoList || []), ...pendingTodos]
-        .reduce((next, todo) => Math.max(next, todo.id + 1), Date.now());
     const newTodo = {
-        id: nextId,
+        id: nextTodoId(),
         text: text,
         completed: false,
         description: '', status: 'todo', due: '', projectId: '', fileId: '',
@@ -99,21 +100,33 @@ export function addTodo() {
     };
 
     if (!userConfig.todoList) userConfig.todoList = [];
+    const before = userConfig.todoList.slice();
     userConfig.todoList.push(newTodo);
-    save();
+    if (!saveTodos(before)) return;
     renderTodoList();
     input.value = "";
     input.focus();
 }
 
+export function nextTodoId() {
+    const pending = deletedTodo?.batch?.map(entry => entry.todo) || (deletedTodo?.todo ? [deletedTodo.todo] : []);
+    const todos = [...(userConfig.todoList || []), ...pending];
+    const used = new Set(todos.map(todo => todo.id));
+    let next = todos.reduce((value, todo) => Number.isSafeInteger(todo.id + 1)
+        ? Math.max(value, todo.id + 1) : value, Date.now());
+    while (used.has(next)) next = next === Number.MAX_SAFE_INTEGER ? 0 : next + 1;
+    return next;
+}
+
 export function toggleTodo(id) {
     const todo = userConfig.todoList.find(t => t.id === id);
     if (todo) {
+        const before = userConfig.todoList.map(t => ({ ...t }));
         todo.completed = !todo.completed;
         todo.status = todo.completed ? 'done' : 'todo';
         todo.updatedAt = Date.now();
         todo.completedAt = todo.completed ? Date.now() : null;
-        save();
+        if (!saveTodos(before)) return;
         renderTodoList();
         (document.querySelector(`#todo-item-${id} input`) || document.getElementById('todo-input')).focus();
     }
@@ -122,9 +135,11 @@ export function toggleTodo(id) {
 export function deleteTodo(id) {
     const index = userConfig.todoList.findIndex(todo => todo.id === id);
     if (index < 0) return;
-    deletedTodo = { todo: userConfig.todoList[index], index };
+    const pendingDelete = { todo: userConfig.todoList[index], index };
+    const before = userConfig.todoList;
     userConfig.todoList = userConfig.todoList.filter(t => t.id !== id);
-    save();
+    if (!saveTodos(before)) return;
+    deletedTodo = pendingDelete;
     renderTodoList();
     document.getElementById('todo-undo').hidden = false;
     document.querySelector('#todo-undo button')?.focus();
@@ -132,6 +147,7 @@ export function deleteTodo(id) {
 
 export function undoDeleteTodo() {
     if (!deletedTodo) return;
+    const before = userConfig.todoList.slice();
     let focusId = null;
     if (Array.isArray(deletedTodo.batch)) {
         for (const entry of deletedTodo.batch) {
@@ -143,9 +159,9 @@ export function undoDeleteTodo() {
         userConfig.todoList.splice(deletedTodo.index, 0, deletedTodo.todo);
         focusId = deletedTodo.todo.id;
     }
+    if (!saveTodos(before)) return;
     deletedTodo = null;
     document.getElementById('todo-undo').hidden = true;
-    save();
     renderTodoList();
     (document.querySelector(`#todo-item-${focusId} input`) || document.getElementById('todo-input')).focus();
 }

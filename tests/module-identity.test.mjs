@@ -4,8 +4,6 @@ import { readFileSync } from 'node:fs';
 // Browser module identity includes the query string. A second URL for the
 // same module silently splits shared state (and previously lost saved tasks).
 const root = new URL('../', import.meta.url);
-const html = readFileSync(new URL('index.html', root), 'utf8');
-const entry = html.match(/<script type="module" src="([^"]+)"/)[1];
 const visited = new Set();
 const identities = new Map();
 function inspect(url) {
@@ -21,8 +19,11 @@ function inspect(url) {
         inspect(new URL(specifier, url));
     }
 }
-inspect(new URL(entry, root));
-const miniHtml = readFileSync(new URL('mini-apps.html', root), 'utf8');
-inspect(new URL(miniHtml.match(/<script type="module" src="([^"]+)"/)[1], root));
+for (const page of ['index.html', 'mini-apps.html', 'festival.html', 'messages.html']) {
+    const html = readFileSync(new URL(page, root), 'utf8');
+    for (const [, entry] of html.matchAll(/<script type="module" src="([^"]+)"/g)) {
+        inspect(new URL(entry, root));
+    }
+}
 inspect(new URL('js/mini-pdf-worker.js', root));
 console.log('PASS: application module graph uses one URL per shared module');

@@ -44,9 +44,7 @@ export function switchClockToolTab(tool) {
     }
 }
 
-// ==========================================
 // タイマー機能
-// ==========================================
 export function setTimerPreset(minutes) {
     if (!Number.isFinite(minutes) || minutes <= 0) return;
     if (timerRunning) pauseTimer();
@@ -150,9 +148,7 @@ function onTimerComplete() {
     }
 }
 
-// ==========================================
 // Web Audio API アラーム音
-// ==========================================
 function prepareAudio() {
     try {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -227,9 +223,7 @@ export function stopAlarmSound() {
     banner?.classList.remove('active');
 }
 
-// ==========================================
 // ストップウォッチ機能
-// ==========================================
 export function toggleStopwatch() {
     if (swRunning) {
         pauseStopwatch();

@@ -27,6 +27,18 @@ export function initProfile() {
     const picker = document.getElementById('profile-icon-picker');
     const upload = document.getElementById('profile-icon-upload');
     const status = document.getElementById('profile-icon-status');
+    const persistIcon = (icon, message) => {
+        const previous = userConfig.profileIcon;
+        userConfig.profileIcon = icon;
+        if (!save()) {
+            userConfig.profileIcon = previous;
+            upload.value = '';
+            status.textContent = 'プロフィールアイコンを保存できませんでした。保存容量やブラウザの設定を確認して再試行してください。';
+        } else {
+            status.textContent = message;
+        }
+        renderProfile();
+    };
     for (const [key, label] of Object.entries(icons)) {
         const button = document.createElement('button');
         button.type = 'button';
@@ -39,11 +51,8 @@ export function initProfile() {
         button.append(symbol, caption);
         button.onclick = () => {
             uploadRevision++;
-            userConfig.profileIcon = key;
             upload.value = '';
-            status.textContent = 'プロフィールアイコンを変更しました。';
-            renderProfile();
-            save();
+            persistIcon(key, 'プロフィールアイコンを変更しました。');
         };
         picker.append(button);
     }
@@ -68,9 +77,7 @@ export function initProfile() {
                 canvas.width = canvas.height = 192;
                 const size = Math.min(image.naturalWidth, image.naturalHeight);
                 canvas.getContext('2d').drawImage(image, (image.naturalWidth - size) / 2, (image.naturalHeight - size) / 2, size, size, 0, 0, 192, 192);
-                userConfig.profileIcon = canvas.toDataURL('image/png');
-                renderProfile();
-                if (save()) status.textContent = 'プロフィール画像を保存しました。';
+                persistIcon(canvas.toDataURL('image/png'), 'プロフィール画像を保存しました。');
             };
             image.src = String(reader.result);
         };
@@ -78,11 +85,8 @@ export function initProfile() {
     };
     document.getElementById('profile-icon-reset').onclick = () => {
         uploadRevision++;
-        userConfig.profileIcon = 'person';
         upload.value = '';
-        renderProfile();
-        save();
-        status.textContent = 'プロフィールアイコンを初期値に戻しました。';
+        persistIcon('person', 'プロフィールアイコンを初期値に戻しました。');
     };
     document.getElementById('profile-icon-choose').onclick = () => upload.click();
     const nameInput = document.getElementById('username-input');

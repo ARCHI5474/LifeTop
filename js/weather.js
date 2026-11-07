@@ -11,6 +11,12 @@ let savedWeatherData = null;
 let weatherTrigger = null;
 let latestRequest = 0;
 
+function escapeWeatherText(value) {
+    return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+    })[character]);
+}
+
 export function weatherNumber(value, unit = '') {
     return typeof value === 'number' && Number.isFinite(value) ? `${Math.round(value)}${unit}` : '--';
 }
@@ -204,7 +210,9 @@ export function showWeatherDetail(refresh = false) {
     const current = savedWeatherData.current_weather;
     const hourly = savedWeatherData.hourly;
     const daily = savedWeatherData.daily || {};
-    if (!current || !hourly || !Array.isArray(hourly.time)) {
+    if (!current || typeof current.time !== 'string'
+        || (savedWeatherData.timezone != null && typeof savedWeatherData.timezone !== 'string')
+        || !hourly || !Array.isArray(hourly.time) || !hourly.time.every(time => typeof time === 'string')) {
         container.innerHTML = `
             <div class="weather-empty-state">
                 <span class="material-symbols-outlined" aria-hidden="true">cloud_off</span>
@@ -227,15 +235,9 @@ export function showWeatherDetail(refresh = false) {
     const apparentTemp = weatherNumber(hourly.apparent_temperature?.[observationIndex] ?? current.temperature, '°C');
     const wind = weatherNumber(current.windspeed, ' km/h');
 
-    const maxTemp = Array.isArray(daily.temperature_2m_max) && daily.temperature_2m_max[0] != null
-        ? `${Math.round(daily.temperature_2m_max[0])}°C`
-        : "--";
-    const minTemp = Array.isArray(daily.temperature_2m_min) && daily.temperature_2m_min[0] != null
-        ? `${Math.round(daily.temperature_2m_min[0])}°C`
-        : "--";
-    const uvMax = Array.isArray(daily.uv_index_max) && daily.uv_index_max[0] != null
-        ? Math.round(daily.uv_index_max[0])
-        : "--";
+    const maxTemp = weatherNumber(daily.temperature_2m_max?.[0], '°C');
+    const minTemp = weatherNumber(daily.temperature_2m_min?.[0], '°C');
+    const uvMax = weatherNumber(daily.uv_index_max?.[0]);
     const sunrise = formatTimeStr(daily.sunrise?.[0]);
     const sunset = formatTimeStr(daily.sunset?.[0]);
     const uvLevel = getUvLevel(uvMax);
@@ -277,7 +279,7 @@ export function showWeatherDetail(refresh = false) {
     const currentWeatherInfo = parseWeatherCode(current.weathercode);
     
     container.innerHTML = `
-        <p class="weather-data-time">観測 ${String(current.time || '').replace('T', ' ')} · 現地時刻 / ${savedWeatherData.timezone || '現地時間'}</p>
+        <p class="weather-data-time">観測 ${escapeWeatherText(String(current.time || '').replace('T', ' '))} · 現地時刻 / ${escapeWeatherText(savedWeatherData.timezone || '現地時間')}</p>
         <div class="weather-detail-main">
             <div class="weather-detail-icon-wrap">
                 <span class="material-symbols-outlined">${currentWeatherInfo.icon}</span>
@@ -349,7 +351,7 @@ export function showWeatherDetail(refresh = false) {
 }
 
 function formatTimeStr(isoStr) {
-    return typeof isoStr === 'string' && /T\d{2}:\d{2}/.test(isoStr) ? isoStr.slice(11, 16) : '--:--';
+    return typeof isoStr === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(isoStr) ? isoStr.slice(11, 16) : '--:--';
 }
 
 function getUvLevel(uv) {

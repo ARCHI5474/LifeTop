@@ -198,7 +198,7 @@ body #game-modal .dpad-btn { width: 44px; height: 44px; }
 :root { --ui-card-fill: color-mix(in srgb, var(--md-sys-color-surface-container-low) 78%, transparent); }
 body #game-modal .game-modal-card { background: linear-gradient(145deg, rgba(245, 250, 255, .05), transparent 55%), color-mix(in srgb, var(--panel-bg) 88%, transparent); backdrop-filter: blur(18px) saturate(135%); -webkit-backdrop-filter: blur(18px) saturate(135%); }
 body #game-modal .extra-board { grid-template-rows: repeat(9, minmax(0, 1fr)); }
-body #game-modal .extra-board button { min-height: 0; min-width: 0; padding: 0; line-height: 1; display: grid; place-items: center; font-size: clamp(10px, 7cqw, 24px); }
+body #game-modal .extra-board button { min-height: 0; min-width: 0; padding: 0; line-height: 1; display: grid; place-items: center; font-size: clamp(10px, min(7cqw, 9cqh), 24px); }
 .go-stone { display: block; width: 75%; height: 75%; aspect-ratio: 1; border-radius: 50%; box-sizing: border-box; }
 .go-stone-black { background: #111; border: 1px solid #000; }
 .go-stone-white { background: #f7f7f7; border: 1px solid #aaa; }

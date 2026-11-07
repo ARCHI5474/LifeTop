@@ -25,12 +25,10 @@ function saveGameStats() {
     } catch {}
 }
 
-let activeGame = 'snake'; // 'snake' | 'puzzle' | 'othello'
+let activeGame = 'snake';
 let gameModalTrigger = null;
 
-// =========================================================
 // Modal & Tab Management
-// =========================================================
 export function toggleGameModal(forceState) {
     const modal = document.getElementById('game-modal');
     const overlay = document.getElementById('game-overlay');
@@ -53,6 +51,7 @@ export function toggleGameModal(forceState) {
         if (!embedded) gameModalTrigger = document.activeElement;
         switchGameTab(activeGame);
         setTimeout(() => {
+            if (!modal.classList.contains('active') || (embedded && document.activeElement?.closest('.mini-popup-tabs'))) return;
             const picker = document.getElementById('gamebox-select');
             if (picker?.getClientRects().length) picker.focus({preventScroll:true});
             else modal.querySelector('.game-tab-btn.active')?.focus({ preventScroll: true });
@@ -120,9 +119,7 @@ export function switchGameTab(gameId) {
     }
 }
 
-// =========================================================
 // 1. SNAKE GAME (ヘビゲーム)
-// =========================================================
 const SNAKE_GRID = 20;
 const SNAKE_CANVAS_SIZE = 520;
 const SNAKE_CELL = SNAKE_CANVAS_SIZE / SNAKE_GRID;
@@ -531,9 +528,7 @@ function renderSnakeCanvas() {
     }
 }
 
-// =========================================================
 // 2. SLIDING PUZZLE (スライドパズル 3x3 / 4x4 / 5x5)
-// =========================================================
 let puzzleState = {
     size: 4, // 3, 4, 5
     tiles: [], // 1..N-1 and 0 for blank
@@ -775,9 +770,7 @@ function renderPuzzleBoard() {
     if (keepBoardFocus) board.focus({ preventScroll: true });
 }
 
-// =========================================================
 // 3. OTHELLO / REVERSI (オセロ 8x8 vs Smart AI / 2P)
-// =========================================================
 const OTHELLO_DIRS = [
     [-1, -1], [-1, 0], [-1, 1],
     [0, -1],           [0, 1],
@@ -1156,9 +1149,7 @@ function renderOthelloBoard() {
     if (keepBoardFocus) boardEl.focus({ preventScroll: true });
 }
 
-// =========================================================
 // Initialization & Global Keyboard / Swipe Listeners
-// =========================================================
 export function initGames() {
     resetSnakeState();
     initPuzzleBoard(4);

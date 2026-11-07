@@ -1,0 +1,14 @@
+{
+  "name": "lifetop",
+  "version": "10.0.0",
+  "private": true,
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node scripts/test.mjs",
+    "test:unit": "node scripts/test.mjs unit",
+    "test:browser": "node scripts/test.mjs browser"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

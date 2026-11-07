@@ -194,7 +194,7 @@ OSの `prefers-reduced-motion` とアプリの `reduce-motion` の両方を尊�
 7. 計算済みスタイルで光沢・影が有効か確かめ、画像でも見た目を確認する。
 8. モジュールURLの一貫性と保存・タスク・時計・ゲームの既存テストを通す。
 
-関連テスト：`tests/gummy-surfaces.cjs`、`tests/browser-smoke.cjs`、`tests/weather-games-layout.cjs`、`tests/module-identity.test.mjs`。
+関連テスト：`tests/unified-ui-browser.cjs`、`tests/browser-smoke.cjs`、`tests/weather-games-layout.cjs`、`tests/module-identity.test.mjs`。実行方法は `TESTING.md` を参照。
 
 ## 起動シーケンスとウィンドウ表示
 

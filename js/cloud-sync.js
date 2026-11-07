@@ -2,7 +2,7 @@ import { cloudSyncConfig } from './firebase-config.js?v=9.0';
 import { createFirebaseAdapter } from './firebase-adapter.js?v=9.0';
 import { createSyncEngine, SYNC_RECOVERY_KEY, SYNC_META_KEY } from './sync-engine.js?v=9.0';
 import { userConfig, STORAGE_KEY, DEFAULT_SETTINGS } from './config.js?v=9.0';
-import { onLocalSave, writeStoredConfig } from './storage.js?v=9.0';
+import { onLocalSave, writeStoredConfig, acceptStoredConfig } from './storage.js?v=9.0';
 import { createBackup, parseBackup } from './data-management.js?v=9.0';
 import { mergeInitialData } from './sync-migration.js?v=9.0';
 import { initSyncOnboarding } from './sync-onboarding.js?v=10.0-ui8';
@@ -82,6 +82,8 @@ export async function initCloudSync(refreshUI) {
         const raw = localStorage.getItem(STORAGE_KEY);
         return selectSyncData(raw ? JSON.parse(raw) : userConfig);
     };
+    const canRefreshUI = () => !document.activeElement?.matches('input, textarea, select, [contenteditable="true"]')
+        && !document.getElementById('bookmark-dialog')?.classList.contains('active');
     try {
         status.textContent = 'Googleアカウント同期を準備しています…';
         adapter = await createFirebaseAdapter(config);
@@ -98,8 +100,9 @@ export async function initCloudSync(refreshUI) {
                 const merged = {...(raw ? JSON.parse(raw) : userConfig), ...data};
                 writeStoredConfig(merged, false);
                 refreshUI(merged);
+                acceptStoredConfig(merged);
             },
-            canApplyCloud:() => !document.activeElement?.matches('input, textarea, select, [contenteditable="true"]') && !document.getElementById('bookmark-dialog')?.classList.contains('active'),
+            canApplyCloud:canRefreshUI,
             onState:render
         });
         adapter.onAuth(user => {
@@ -141,9 +144,16 @@ export async function initCloudSync(refreshUI) {
         window.addEventListener('storage', event => {
             if (event.key !== STORAGE_KEY || !event.newValue) return;
             try {
+                if (!canRefreshUI()) {
+                    status.textContent = '別のタブで更新されました。編集中の入力は維持しています。確認後に再読み込みしてください。';
+                    return;
+                }
                 // Keep the previous tab state recoverable before refreshing editors.
                 localStorage.setItem(SYNC_RECOVERY_KEY, JSON.stringify(selectSyncData(userConfig)));
-                refreshUI(JSON.parse(event.newValue)); configureWatch();explainTiming();if(automatic())schedule();else defer();
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return;
+                const next = JSON.parse(raw);
+                refreshUI(next); acceptStoredConfig(next); configureWatch();explainTiming();if(automatic())schedule();else defer();
             }
             catch { status.textContent = '別タブのデータを反映できません。再読み込みしてください。'; }
         });

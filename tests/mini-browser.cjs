@@ -2,9 +2,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const path=require('node:path');
 const http=require('node:http');
-const {createRequire}=require('node:module');
-const runtimeRequire=createRequire(process.env.PLAYWRIGHT_MODULE_PATH||require.resolve('playwright'));
-const {chromium}=runtimeRequire('playwright');
+const { chromium } = require('./helpers/browser.cjs');
 (async()=>{
     const root=path.resolve(__dirname,'..'),types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.ttf':'font/ttf'};
     const server=http.createServer(async(req,res)=>{try{const url=new URL(req.url,'http://localhost'),file=path.resolve(root,'.'+decodeURIComponent(url.pathname));if(!file.startsWith(root+path.sep))throw Error();res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream'});res.end(await fs.readFile(file));}catch{res.writeHead(404).end();}});

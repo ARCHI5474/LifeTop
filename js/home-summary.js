@@ -7,7 +7,7 @@ const key='lifetop-v10-horoscope';
 let current=null,request=0;
 
 function readCache(){
- try{return JSON.parse(localStorage.getItem(key)||'{}');}
+ try{const cache=JSON.parse(localStorage.getItem(key)||'{}');return cache&&typeof cache==='object'&&!Array.isArray(cache)?cache:{};}
  catch{return {};}
 }
 

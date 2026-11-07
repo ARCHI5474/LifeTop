@@ -2,7 +2,7 @@ import {initHomeSummary} from './home-summary.js?v=10.0-ui6';
 import {openMiniApps} from './mini-popup.js?v=10.0-ui8';
 import {userConfig,STORAGE_KEY} from './config.js?v=9.0';
 import {save,onLocalSave} from './storage.js?v=9.0';
-import {renderTodoList} from './todo.js?v=9.1';
+import {renderTodoList,nextTodoId} from './todo.js?v=9.1';
 import {syncMemoFromConfig} from './memo.js?v=9.0';
 import {readCanvas,commitCanvas,backupLegacy,previousCanvas,legacyBackup,normalizeTask,folderTargetValid,eventOccurrences,validateFlow,validateCanvas} from './canvas-model.js';
 import {escapeHTML as esc} from './mini-model.js?v=1';
@@ -12,7 +12,7 @@ import {uiButton,icon} from './canvas-ui.js?v=10.0-ui8';
 import {openUIDialog} from './ui-dialog.js';
 import {renderCalendar} from './canvas-calendar-ui.js?v=10.0-ui3';
 const titles={workspace:'ファイル',tasks:'Quickタスク',calendar:'カレンダー',search:'Smart Search',actions:'Quick Actions',flow:'Smart Flow',storage:'保存・復元'};
-let state,panel='workspace',project='',folder='',trash=false,calendarView='month',anchor=new Date(),editing=false,calendarOpenRequested=false,searchTimer,workspaceScope='files',workspaceQuery='',workspaceSort='updated',statusTimer;
+let state,panel='workspace',project='',folder='',trash=false,calendarView='month',anchor=new Date(),editing=false,calendarOpenRequested=false,searchTimer,workspaceScope='files',workspaceQuery='',statusTimer;
 const $=id=>document.getElementById(id),uid=()=>crypto.randomUUID();
 const renderLegacyTasks=()=>{if($('todo-list'))renderTodoList();};
 function localDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
@@ -26,7 +26,7 @@ function status(text,error=false){clearTimeout(statusTimer);$('cc-status').textC
 
 async function mutate(fn){const focused=document.activeElement;const focusKey=['dashboardVisible','dashboardSize','actionPin'].find(key=>focused?.dataset&&Object.hasOwn(focused.dataset,key));const focusValue=focusKey?focused.dataset[focusKey]:null;status('保存中…');const next=structuredClone(state);await fn(next);state=await commitCanvas(next,state.revision);render();dashboard();renderCanvasSettingsStorage();if(focusKey){const name=focusKey.replace(/[A-Z]/g,c=>'-'+c.toLowerCase());document.querySelector('[data-'+name+'="'+CSS.escape(focusValue)+'"]')?.focus({preventScroll:true});}status('保存済み');}
 function saveTasks(){if(!save())throw Error('タスクを保存できません。保存容量を確認してください。');renderLegacyTasks();render();dashboard();}
-function newTask(text,fields={}){return normalizeTask({id:(userConfig.todoList||[]).reduce((n,t)=>Math.max(n,Number(t.id)+1),Date.now()),text,completed:false,...fields});}
+function newTask(text,fields={}){return normalizeTask({id:nextTodoId(),text,completed:false,...fields});}
 function modalForm(title,fields,submit){
  const d=document.createElement('dialog');d.className='cc-dialog cc-form-dialog ui-scope'+(title.includes('フロー')?' cc-form-wide':'');d.dataset.theme=document.body.dataset.theme||'dark';
  d.innerHTML=`<form><header class="cc-form-header"><div><p class="cc-eyebrow">LIFETOP</p><h2>${esc(title)}</h2></div><button type="button" class="cc-control cc-icon" data-cancel aria-label="閉じる">${icon('close')}</button></header><div class="cc-form-fields">${fields}<p class="cc-form-error" role="alert" tabindex="-1"></p></div><footer class="cc-form-footer"><button type="button" class="cc-control cc-secondary-button" data-cancel>キャンセル</button><button class="cc-control cc-primary" type="submit">保存する</button></footer></form>`;
