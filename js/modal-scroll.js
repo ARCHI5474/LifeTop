@@ -2,7 +2,7 @@
 export function initModalScroll() {
     let locked = false, y = 0, previous;
     const sync = () => {
-        const open = !!document.querySelector('dialog[open],.settings-panel.active,.popup-modal.active,.help-modal.active,.weather-modal.active,.game-modal.active');
+        const open = !!document.querySelector('dialog[open],.settings-panel.active,.popup-modal.active,.help-modal.active,.weather-modal.active,.game-modal.active,.cc-dashboard-panel[role="dialog"]');
         if (open === locked) return;
         locked = open;
         if (open) {

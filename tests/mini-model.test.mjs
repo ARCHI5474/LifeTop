@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { apps,parseCSV,toCSV,evaluateCell,columnName,pageRange,statistics,convertUnit,wavBlob,lineDiff } from '../js/mini-model.js?v=1';
-assert.equal(apps.length,14);assert.equal(new Set(apps.map(a=>a.id)).size,14);
+assert.equal(apps.length,8);assert.equal(new Set(apps.map(a=>a.id)).size,8);
 const rows=[['名前','数値','改行'],['"引用",あり','12','前\n後'],['日本語','-4','']];assert.deepEqual(parseCSV(toCSV(rows)),rows);
 assert.deepEqual(parseCSV('a,b\r\n1,2\r\n'),[['a','b'],['1','2']]);assert.throws(()=>parseCSV('"unfinished'));
 const grid=[['2','3','=A1+B1*2'],['4','6','=SUM(A1:B2)'],['text','','=AVERAGE(A1:B2)']];
@@ -14,4 +14,4 @@ assert.equal(convertUnit(1,'length','km','m'),1000);assert.equal(convertUnit(32,
 assert.throws(()=>convertUnit(NaN,'mass','kg','g'));
 const diff=lineDiff('a\nb\nc','a\nx\nc');assert.deepEqual(diff.filter(d=>d.type==='removed').map(d=>d.text),['b']);assert.deepEqual(diff.filter(d=>d.type==='added').map(d=>d.text),['x']);assert.throws(()=>lineDiff('\n'.repeat(1001),''));
 const wav=wavBlob([new Float32Array([0,1,-1])],44100),bytes=await wav.arrayBuffer();assert.equal(bytes.byteLength,50);const view=new DataView(bytes);assert.equal(view.getUint32(24,true),44100);assert.equal(view.getInt16(46,true),32767);assert.equal(view.getInt16(48,true),-32768);
-console.log('PASS: 14 app registry, CSV round trip, safe spreadsheet formulas, references/cycles, PDF ranges, statistics, units, diffs and WAV encoding');
+console.log('PASS: 8 app registry, CSV round trip, safe spreadsheet formulas, references/cycles, PDF ranges, statistics, units, diffs and WAV encoding');

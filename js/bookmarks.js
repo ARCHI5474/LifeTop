@@ -358,7 +358,7 @@ export function renderBookmarks() {
             const folderId = String(b.id || '');
             const children = Array.isArray(b.children) ? b.children : [];
             const previewLetters = children.slice(0, 4).map(ch => escapeHtml(String(ch?.title || '•')[0])).join('');
-            const deleteBtnHtml = `
+            const deleteBtnHtml = !bookmarkEditMode ? "" : `
                 <button type="button" class="bookmark-delete-btn close-action" aria-label="フォルダ「${escapeHtml(folderTitle)}」を削除" onclick="deleteBookmark(${index}, event)">
                     <span class="material-symbols-outlined" aria-hidden="true">close</span>
                 </button>
@@ -404,7 +404,7 @@ export function renderBookmarks() {
            >`
         : `<span class="icon-letter">${escapeHtml(title[0])}</span>`;
             
-        const deleteBtnHtml = isFixed ? "" : `
+        const deleteBtnHtml = isFixed || !bookmarkEditMode ? "" : `
             <button type="button" class="bookmark-delete-btn close-action" aria-label="${escapeHtml(title)}を削除" onclick="deleteBookmark(${index}, event)">
                 <span class="material-symbols-outlined" aria-hidden="true">close</span>
             </button>
@@ -640,7 +640,6 @@ export function openBookmarkDialog(mode = 'link') {
     dialog.inert = false;
     overlay.classList.add('active');
     dialog.classList.add('active');
-    if (document.body?.style) document.body.style.overflow = 'hidden';
     setTimeout(() => {
         if (dialog.classList.contains('active')) document.getElementById('bookmark-title-input')?.focus({ preventScroll: true });
     }, 50);
@@ -661,7 +660,6 @@ export function closeBookmarkDialog(saved = false) {
     overlay.classList.remove('active');
     dialog.classList.remove('active');
     dialog.inert = true;
-    if (document.body?.style) document.body.style.overflow = '';
     const form = document.getElementById('bookmark-dialog-form');
     form?.reset();
     syncDialogModeUI('link');

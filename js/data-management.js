@@ -1,11 +1,11 @@
-import { userConfig, DEFAULT_SETTINGS, STORAGE_KEY, themes, colorCombos, fontStyles, bgGradients } from './config.js?v=9.0';
+import { APP_VERSION, userConfig, DEFAULT_SETTINGS, STORAGE_KEY, themes, colorCombos, fontStyles, clockDesigns, bgGradients } from './config.js?v=9.0';
 import { writeStoredConfig } from './storage.js?v=9.0';
 
 export const MAX_BACKUP_BYTES = 10 * 1024 * 1024;
 const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 
 export function createBackup(config = userConfig) {
-    return JSON.stringify({ format: 'lifetop-backup', version: 1, appVersion: '9.0', createdAt: new Date().toISOString(), data: config }, null, 2);
+    return JSON.stringify({ format: 'lifetop-backup', version: 1, appVersion: APP_VERSION, createdAt: new Date().toISOString(), data: config }, null, 2);
 }
 
 export function resetSettingsSnapshot(config = userConfig) {
@@ -27,13 +27,14 @@ export function parseBackup(text) {
     const data = backup.data;
     // Backups created before synchronization timing existed remain restorable.
     if (!Object.hasOwn(data, 'syncTiming')) data.syncTiming = DEFAULT_SETTINGS.syncTiming;
+    if (!Object.hasOwn(data, 'clockDesign')) data.clockDesign = DEFAULT_SETTINGS.clockDesign;
     for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
         if (typeof data[key] !== typeof value) throw new Error('設定データが不足しているか、形式が正しくありません。');
     }
     const choices = {textSize:['standard','large','larger'],searchShape:['pill','rounded','square'],searchEngine:['google','bing','duckduckgo','yahoo'],colorMode:['dark','light'],syncTiming:['every3','everyVisit','live','manual']};
     if (Object.entries(choices).some(([key, values]) => !values.includes(data[key])) ||
         ![...themes, ...colorCombos.map(combo => combo.theme)].includes(data.theme) ||
-        !fontStyles.some(font => font.family === data.fontFamily) || !Object.hasOwn(bgGradients, data.bgType)) {
+        !fontStyles.some(font => font.family === data.fontFamily) || !clockDesigns.some(design=>design.id===data.clockDesign) || !Object.hasOwn(bgGradients, data.bgType)) {
         throw new Error('対応していない設定値が含まれています。');
     }
     if (typeof data.memo !== 'string' || typeof data.memoHtml !== 'string' || !Array.isArray(data.todoList) || !Array.isArray(data.bookmarks)) {
@@ -106,7 +107,7 @@ export function initDataManagement() {
             const text = await file.text();
             if (request !== selection) return;
             pending = parseBackup(text);
-            status.textContent = `ブックマーク${pending.bookmarks.length}件・タスク${pending.todoList.length}件と、メモ・プロフィール・設定を復元します。現在の内容は置き換わります。必要なら先にバックアップを保存してください。`;
+            status.textContent = `ブックマーク${pending.bookmarks.length}件・タスク${pending.todoList.length}件と、メモ・プロフィール・設定を復元します。現在の内容は置き換わります。`;
             restore.hidden = cancel.hidden = false;
         } catch (error) { if (request === selection) status.textContent = error.message; }
     });

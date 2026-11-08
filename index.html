@@ -12,7 +12,7 @@
     <link rel="preload" href="icons/material/material-symbols-outlined.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="stylesheet" href="css/style.css?v=10.0-ui7"> <!-- バージョン番号は毎回更新すること -->
 <link rel="stylesheet" href="css/festival.css?v=10.1-hide1">
-<link rel="stylesheet" href="css/35-unified-ui.css?v=10.0-ui8"></head>
+<link rel="stylesheet" href="css/35-unified-ui.css?v=10.0-ui9"><link rel="stylesheet" href="css/36-glass-finish.css?v=11.0.0"></head>
 <body id="top" class="ui-system ui-scope">
 
 <!-- 起動時のブランドシーケンス -->
@@ -28,7 +28,7 @@
         <span class="loading-logo">LifeTop<span class="loading-logo-dot" aria-hidden="true">.</span></span>
         <p class="loading-tagline">全部ここで。</p>
         <div class="loading-status"><span class="loading-status-dot" aria-hidden="true"></span><span class="loading-label">あなたのスタートページを準備しています</span></div>
-        <p class="loading-release">v10.0 <span aria-hidden="true">/</span> LifeTop10 Fes</p>
+        <p class="loading-release">v11.0 <span aria-hidden="true">/</span> LifeTop 11</p>
     </div>
 </div>
 
@@ -264,20 +264,18 @@
 <!-- メインダッシュボード -->
 <div class="dashboard-content">
     <!-- ヒーローエリア（時計と検索） -->
-    <section class="weather-summary-row" aria-label="現在の天気">
-        <button type="button" id="weather-widget" class="weather-summary-card glass-card" onclick="showWeatherDetail()" title="天気の詳細を表示" aria-label="天気の詳細を表示">
-            <span class="material-symbols-outlined weather-summary-icon" id="weather-icon" aria-hidden="true">filter_drama</span>
-            <span class="weather-summary-copy"><span class="weather-summary-label">現在の天気</span><span class="weather-summary-values"><strong id="weather-temp">--°C</strong><span id="weather-desc">読込中...</span></span></span>
-            <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
-        </button>
-    </section>
     <section class="hero-section">
         <div class="hero-copy">
             <div id="date-display" class="animate-fade-in" style="animation-delay: 0.1s;">2026年7月10日 (金)</div>
             <div id="greeting" class="animate-fade-in" style="animation-delay: 0.2s;">ようこそ</div>
-            <div id="clock-container" class="animate-clock">
-                <div id="clock">00:00</div>
-                <div id="clock-sec">00</div>
+            <div class="clock-composition">
+                <div class="clock-caption"><span>LOCAL TIME</span><span id="clock-period">24H</span></div>
+                <div id="clock-container" class="animate-clock">
+                    <div id="clock" role="timer" aria-live="off" aria-label="現在時刻"><span class="clock-hours">00</span><span class="clock-colon" aria-hidden="true">:</span><span class="clock-minutes">00</span></div>
+                    <div id="clock-sec" aria-hidden="true">00</div>
+                </div>
+                <div class="clock-day-track" aria-hidden="true"><span id="clock-day-progress"></span></div>
+                <div class="clock-day-labels" aria-hidden="true"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div>
             </div>
         </div>
 
@@ -290,6 +288,14 @@
             </form>
             <div id="search-suggestions" class="search-suggestions" role="listbox" aria-label="検索候補"></div>
         </div>
+    </section>
+
+    <section class="weather-summary-row" aria-label="天気・占い・Messages・カレンダー">
+        <button type="button" id="weather-widget" class="weather-summary-card glass-card" onclick="showWeatherDetail()" title="天気の詳細を表示" aria-label="天気の詳細を表示">
+            <span class="material-symbols-outlined weather-summary-icon" id="weather-icon" aria-hidden="true">filter_drama</span>
+            <span class="weather-summary-copy"><span class="weather-summary-label">現在の天気</span><span class="weather-summary-values"><strong id="weather-temp">--°C</strong><span id="weather-desc">読込中...</span></span></span>
+            <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+        </button>
     </section>
 
     <!-- コンテンツグリッド -->
@@ -517,7 +523,6 @@
                         </button>
                     </div>
                 </div>
-                <p class="trends-subtitle">いまリアルタイムで検索されている急上昇キーワード（タップで検索）</p>
                 <div class="trends-list" id="trends-list" aria-live="polite"></div>
             </div>
 
@@ -644,13 +649,12 @@
 
         <!-- フォントスタイル -->
         <div class="settings-section" data-setting-category="clock">
-            <label class="settings-label">時計フォント</label>
-            <div class="picker font-picker" id="font-styles"></div>
+            <h4 class="settings-label" id="clock-design-label">時計デザイン</h4>
+            <div class="clock-design-picker" id="clock-designs" role="group" aria-labelledby="clock-design-label"></div>
         </div>
         <details class="settings-section advanced-settings" data-setting-category="advanced">
             <summary class="settings-label">高度な設定</summary>
             <div class="advanced-content">
-                <div class="toggle-wrapper"><label for="advanced-hideClockBackground">時計エリアの背景を消す</label><label class="switch"><input type="checkbox" role="switch" id="advanced-hideClockBackground" onchange="setAdvancedSetting('hideClockBackground',this.checked)"><span class="slider" aria-hidden="true"></span></label></div>
                 <div class="toggle-wrapper"><label for="clock-show-sec-toggle">時計の秒数表示</label><label class="switch"><input type="checkbox" role="switch" id="clock-show-sec-toggle" onchange="toggleClockSec(this.checked)"><span class="slider" aria-hidden="true"></span></label></div>
                 <div class="toggle-wrapper"><label for="advanced-reduceMotion">アニメーションを減らす</label><label class="switch"><input type="checkbox" role="switch" id="advanced-reduceMotion" onchange="setAdvancedSetting('reduceMotion',this.checked)"><span class="slider" aria-hidden="true"></span></label></div>
                 <div class="setting-choice"><h4 class="setting-choice-label" id="label-searchShape">検索枠の形状</h4><div id="advanced-searchShape" class="choice-group shape-choices" role="radiogroup" aria-labelledby="label-searchShape"><label class="choice-option"><input type="radio" name="searchShape" value="pill" onchange="setAdvancedSetting('searchShape',this.value)"><span class="choice-content"><span class="shape-preview shape-pill" aria-hidden="true"></span><span>カプセル</span><span class="choice-check" aria-hidden="true"></span></span></label><label class="choice-option"><input type="radio" name="searchShape" value="rounded" onchange="setAdvancedSetting('searchShape',this.value)"><span class="choice-content"><span class="shape-preview shape-rounded" aria-hidden="true"></span><span>角丸</span><span class="choice-check" aria-hidden="true"></span></span></label><label class="choice-option"><input type="radio" name="searchShape" value="square" onchange="setAdvancedSetting('searchShape',this.value)"><span class="choice-content"><span class="shape-preview shape-square" aria-hidden="true"></span><span>四角</span><span class="choice-check" aria-hidden="true"></span></span></label></div></div>
@@ -665,20 +669,26 @@
             <button type="button" class="tonal-btn stability-check-trigger" id="stability-check-open" aria-haspopup="dialog" aria-controls="stability-check"><span class="material-symbols-outlined" aria-hidden="true">check_circle</span>安定性チェックを開く</button>
         </section>
         <section class="settings-section" data-setting-category="advanced" aria-labelledby="data-management-title">
-            <h3 class="settings-label" id="data-management-title">バックアップと初期化</h3>
-            <p class="settings-help">設定・プロフィール・ブックマーク・タスク・メモをJSONファイルに保存し、別のブラウザでも復元できます。バックアップには入力した内容やアップロード画像が含まれます。</p>
+            <h3 class="settings-label" id="data-management-title">ホームのバックアップ</h3>
+            <p class="settings-help">設定・ブックマーク・タスク・メモ・プロフィールを保存します。壁紙画像も含みます。</p>
             <button type="button" class="tonal-btn" id="backup-download">バックアップを保存</button>
-            <label for="backup-upload">バックアップファイルを選ぶ（JSON・10MBまで）</label>
+            <details class="backup-restore-options">
+            <summary>バックアップから復元</summary>
+            <label for="backup-upload">保存したファイル（JSON・10MBまで）</label>
             <input id="backup-upload" type="file" accept=".json,application/json" aria-describedby="data-management-status">
-            <button type="button" class="primary-btn" id="backup-restore" hidden>この内容で復元して再読み込み</button>
-            <button type="button" class="tonal-btn" id="backup-cancel" hidden>復元をキャンセル</button>
-            <p class="settings-help" role="status" aria-live="polite" id="data-management-status">復元する前にファイルを確認します。設定の初期化ではブックマーク・タスク・メモは削除されません。</p>
-            <button type="button" class="tonal-btn" id="settings-reset-all">設定をすべてデフォルトに戻す</button>
+            <button type="button" class="primary-btn" id="backup-restore" hidden>復元して再読み込み</button>
+            <button type="button" class="tonal-btn" id="backup-cancel" hidden>キャンセル</button>
+            </details>
+            <p class="settings-help" role="status" aria-live="polite" id="data-management-status"></p>
+            <details><summary>設定の初期化</summary>
+            <p class="settings-help">ブックマーク・タスク・メモは残ります。</p>
+            <button type="button" class="tonal-btn" id="settings-reset-all">設定をデフォルトに戻す</button>
+            </details>
         </section>
         <section class="settings-about" aria-labelledby="settings-about-title" data-setting-category="advanced">
             <h3 id="settings-about-title">情報</h3>
-            <p class="settings-about-version">LifeTop <span>v10.0</span></p>
-            <p class="settings-about-codename">コードネーム：<span lang="en">LifeTop10 Fes</span></p>
+            <p class="settings-about-version">LifeTop <span>v11.0</span></p>
+            <p class="settings-about-codename">リリース：<span lang="en">LifeTop 11</span></p>
             <details class="environment-info" open>
                 <summary>推奨環境・対応環境</summary>
                 <p>推奨：Windows・macOSの最新版Chrome／Edge。PCでは幅1280px以上、スマートフォンでは幅390px以上が見やすい構成です。</p>
@@ -806,7 +816,7 @@
     </div>
 </div>
 
-<script type="module" src="./js/main.js?v=10.0-ui8"></script>
+<script type="module" src="./js/main.js?v=11.0.0"></script>
 
 
 </body>

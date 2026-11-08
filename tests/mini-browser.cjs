@@ -13,10 +13,11 @@ const { chromium } = require('./helpers/browser.cjs');
         page.on('pageerror',error=>errors.push(error.message));
         await page.addInitScript(()=>{window.showSaveFilePicker=undefined;});
         const base=`http://127.0.0.1:${server.address().port}`;
-        await page.goto(base+'/mini-apps.html');await page.locator('.mini-app-card').first().waitFor();assert.equal(await page.locator('.mini-app-card').count(),14);
+        await page.route('**/*',async route=>{const url=new URL(route.request().url());if(url.origin!==base)return route.abort();const file=path.resolve(root,'.'+decodeURIComponent(url.pathname));if(!file.startsWith(root+path.sep))return route.abort();try{await route.fulfill({body:await fs.readFile(file),contentType:types[path.extname(file)]||'application/octet-stream'});}catch{await route.fulfill({status:404,body:''});}});
+        await page.goto(base+'/mini-apps.html');await page.locator('.mini-app-card').first().waitFor();assert.equal(await page.locator('.mini-app-card').count(),8);
         await fs.mkdir(path.join(root,'test-artifacts'),{recursive:true});
         await page.screenshot({path:path.join(root,'test-artifacts/mini-home.png'),fullPage:true});
-        const open=async id=>{if(await page.locator('#mini-workspace').isVisible())await page.locator('#mini-home-button').click();await page.locator(`[data-app="${id}"]`).click();await page.waitForFunction(expected=>location.hash==='#'+expected,id);};
+        const open=async id=>{if(await page.locator('#mini-workspace').isVisible())await page.locator('#mini-home-button').click();if(await page.locator(`[data-app="${id}"]`).count())await page.locator(`[data-app="${id}"]`).click();else await page.goto(base+"/mini-apps.html#"+id);await page.waitForFunction(expected=>location.hash==='#'+expected,id);};
         await open('document');await page.locator('#editor').fill('保存テストの文書');await page.waitForTimeout(650);await page.reload();await page.locator('#editor').waitFor();assert.equal(await page.locator('#editor').innerText(),'保存テストの文書');
         let downloading=page.waitForEvent('download');await page.locator('#html-export').click();assert.match((await downloading).suggestedFilename(),/\.html$/);
         await open('sheet');await page.locator('[aria-label="A1"]').fill('2');await page.locator('[aria-label="B1"]').fill('3');await page.locator('[aria-label="C1"]').fill('=SUM(A1:B1)');assert.match(await page.locator('output[data-r="0"][data-c="2"]').innerText(),/5/);
@@ -43,6 +44,6 @@ const { chromium } = require('./helpers/browser.cjs');
         downloading=page.waitForEvent('download');await page.locator('#video-export').click();assert.match((await downloading).suggestedFilename(),/\.webm$/);
         await page.setViewportSize({width:390,height:844});for(const app of ['document','sheet','slides','pdf','video','diagram','data','draw']){await open(app);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),true,'mobile overflow: '+app);}
         await page.screenshot({path:path.join(root,'test-artifacts/mini-mobile.png'),fullPage:true});assert.deepEqual(errors,[]);
-        console.log('PASS: 14 mini apps, autosave reload, cross-app chart, office edits, image/PDF/audio/video output, drawing, submit checks, and mobile layouts');
+        console.log('PASS: eight-app catalog and legacy compatibility, autosave reload, cross-app chart, office edits, image/PDF/audio/video output, drawing, submit checks, and mobile layouts');
     }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(error=>{console.error(error);process.exitCode=1;});

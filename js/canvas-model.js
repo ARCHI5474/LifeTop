@@ -20,7 +20,7 @@ export function validateCanvas(data) {
     for(const item of [...data.projects,...data.folders,...data.files,...data.flows])if(typeof item.name!=='string'||!item.name.trim()||item.name.length>2000)throw Error('名前を確認してください。');
     for(const p of data.projects)if(!Number.isFinite(p.progress)||p.progress<0||p.progress>100||typeof p.description!=='string')throw Error('プロジェクトが不正です。');
     for(const f of data.folders)if(!data.projects.some(p=>p.id===f.projectId)||!folderTargetValid(data.folders,f.id,f.parentId,f.projectId,true))throw Error('フォルダ階層が不正です。');
-    for(const f of data.files)if(f.format!=='lifetop-mini'||f.version!==1||!['document','sheet','slides','image','pdf','video','audio','diagram','data','compare','text','units','draw','submit'].includes(f.app)||!f.state||typeof f.state!=='object'||Array.isArray(f.state))throw Error('Studioファイルの形式が不正です。');
+    for(const f of data.files)if(f.format!=='lifetop-mini'||f.version!==1||!['document','sheet','slides','image','pdf','video','audio','diagram','data','compare','text','units','draw','submit','diary','convert','browser','code'].includes(f.app)||!f.state||typeof f.state!=='object'||Array.isArray(f.state))throw Error('Studioファイルの形式が不正です。');
     for(const e of data.events)if(typeof e.title!=='string'||!e.title.trim()||!Number.isFinite(Date.parse(e.start))||!Number.isFinite(Date.parse(e.end))||Date.parse(e.end)<Date.parse(e.start)||!['none','daily','weekly','monthly'].includes(e.repeat))throw Error('予定の形式が不正です。');
     for(const f of data.flows)validateFlow(f.blocks);
     for(const run of data.runs)if(!run||typeof run.id!=='string'||typeof run.name!=='string'||typeof run.result!=='string'||!Number.isFinite(run.at))throw Error('実行履歴が不正です。');

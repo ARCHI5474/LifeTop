@@ -16,15 +16,31 @@ export function updateClock() {
     }
     
     const hourStr = hours.toString().padStart(2, '0');
-    document.getElementById('clock').innerText = `${hourStr}:${minutes}${ampm}`;
-    document.getElementById('clock-sec').innerText = seconds;
+    const clock = document.getElementById('clock');
+    const hourPart = clock.querySelector('.clock-hours');
+    const minutePart = clock.querySelector('.clock-minutes');
+    // Keep digit nodes stable so each tick does not recreate the clock face.
+    if (hourPart && minutePart) {
+        if (hourPart.textContent !== hourStr) hourPart.textContent = hourStr;
+        if (minutePart.textContent !== minutes) minutePart.textContent = minutes;
+    } else clock.innerText = `${hourStr}:${minutes}${ampm}`;
+    const label=`${hourStr}:${minutes}${userConfig.clockShowSec?':'+seconds:''}${ampm}`;
+    if(clock.getAttribute('aria-label')!==label)clock.setAttribute('aria-label',label);
+    const secondPart = document.getElementById('clock-sec');
+    if (secondPart.textContent !== seconds) secondPart.textContent = seconds;
+    const period = document.getElementById('clock-period');
+    if (period && period.textContent !== (ampm.trim() || '24H')) period.textContent = ampm.trim() || '24H';
+    const progress = document.getElementById('clock-day-progress');
+    if (progress) progress.style.width = `${((now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) / 86400) * 100}%`;
     
     const days = ['日', '月', '火', '水', '木', '金', '土'];
     const year = now.getFullYear();
     const month = now.getMonth() + 1;
     const date = now.getDate();
     const dayName = days[now.getDay()];
-    document.getElementById('date-display').innerText = `${year}年${month}月${date}日 (${dayName})`;
+    const dateLabel=`${year}年${month}月${date}日 (${dayName})`;
+    const dateDisplay=document.getElementById('date-display');
+    if(dateDisplay.textContent!==dateLabel)dateDisplay.textContent=dateLabel;
 }
 
 export function updateGreeting() {
@@ -42,8 +58,9 @@ export function updateGreeting() {
     
     const rawName = String(userConfig.username || "ゲスト").slice(0, 20).trim() || "ゲスト";
     const displayName = rawName.length > 12 ? `${rawName.slice(0, 12)}…` : rawName;
-    document.getElementById('greeting').innerText = greetingText;
+    const greeting=document.getElementById('greeting');
+    if(greeting.textContent!==greetingText)greeting.textContent=greetingText;
     const headerName = document.getElementById('header-user-name');
-    if (headerName) headerName.innerText = displayName;
+    if (headerName && headerName.textContent!==displayName) headerName.textContent = displayName;
 }
 

@@ -39,12 +39,10 @@ export function toggleGameModal(forceState) {
     modal.classList.toggle('active', shouldOpen);
     modal.inert = !shouldOpen;
     if (embedded) {
+        overlay?.classList.remove('active');
         modal.dispatchEvent(new CustomEvent('lifetop:game-modal-state', {bubbles:true, detail:{open:shouldOpen}}));
     } else {
         overlay?.classList.toggle('active', shouldOpen);
-    }
-    if (!embedded && document.body?.style) {
-        document.body.style.overflow = shouldOpen ? 'hidden' : '';
     }
 
     if (shouldOpen) {

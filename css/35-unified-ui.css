@@ -309,9 +309,9 @@ body.ui-system .ui-mode-toggle { flex: none; }
 /* Popup applications share the same tokens as the home screen. */
 body.ui-system .dashboard-header { display:flex; justify-content:space-between; }
 body.ui-system .header-right { margin-left:auto; }
-body.ui-system .dashboard-header .icon-btn { width:44px; height:44px; flex:0 0 44px; border:1px solid var(--ui-border); border-radius:14px; background:var(--ui-primary-soft); color:var(--ui-primary); box-shadow:none; backdrop-filter:none; -webkit-backdrop-filter:none; }
+body.ui-system .dashboard-header .header-right .icon-btn { width:44px; height:44px; flex:0 0 44px; border:1px solid var(--ui-border); border-radius:var(--ui-radius-sm); background:var(--ui-surface); color:var(--ui-text); box-shadow:none; backdrop-filter:none; -webkit-backdrop-filter:none; }
 body.ui-system .dashboard-header .icon-btn > .material-symbols-outlined { font-size:20px; }
-body.ui-system .dashboard-header .icon-btn:hover { background:var(--ui-primary-soft); color:var(--ui-primary); border-color:var(--ui-primary); box-shadow:none; transform:translateY(-1px); }
+body.ui-system .dashboard-header .header-right .icon-btn:hover { background:var(--ui-surface-muted); color:var(--ui-text); border-color:var(--ui-border); box-shadow:none; transform:translateY(-1px); }
 .mini-popup { width:min(1440px,calc(100vw - 64px)); height: min(940px,calc(100dvh - 64px)); max-height:calc(100dvh - 32px); padding:0; overflow:hidden; }
 .mini-popup[open] { display:flex; flex-direction:column; }
 .mini-popup-header { display:flex; align-items:center; gap:12px; padding:16px 24px; border-bottom:1px solid var(--ui-border); flex:none; }
@@ -357,6 +357,15 @@ body.ui-system.has-background-image :is(.glass-card,.hero-section,.mini-content,
   backdrop-filter: blur(10px) saturate(115%) !important;
   -webkit-backdrop-filter: blur(10px) saturate(115%) !important;
 }
+/* Keep the clock area transparent in every theme and background mode. */
+body.ui-system .hero-section,
+body.ui-system.has-background-image .hero-section {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
 html[data-theme="light"] body.ui-system.has-background-image .bg-overlay::after { background: rgb(16 24 32 / 24%); }
 /* Festival uses an independent celebratory palette and a ticket-like heading. */
 body.festival-page{--festival-gold:#f0bf65;background:radial-gradient(ellipse at top right,#684c7833,transparent 60%),var(--ui-bg)}
@@ -396,3 +405,200 @@ body #mini-app-dialog #game-modal .game-modal-card{height:100%;max-height:100%;m
 .settings-release-notes a>.material-symbols-outlined{flex-shrink:0;color:var(--ui-primary);font-size:20px}
 .settings-release-notes a:hover{background:var(--ui-primary-soft);border-color:var(--ui-primary)}
 .settings-release-notes a:focus-visible{outline:3px solid var(--ui-focus);outline-offset:3px}
+
+/* Dialog bounds follow the visible viewport, including the on-screen keyboard. */
+body.ui-system dialog.cc-dialog {
+  inset-block-start: var(--visual-top, 0px);
+  inset-block-end: calc(100dvh - var(--visual-top, 0px) - var(--visual-height, 100dvh));
+  max-width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right));
+  max-height: calc(var(--visual-height, 100dvh) - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overscroll-behavior: contain;
+}
+body.ui-system dialog.mini-popup { height: min(940px, calc(var(--visual-height, 100dvh) - 64px)); }
+body.ui-system dialog.cc-app-popup { height: min(900px, calc(var(--visual-height, 100dvh) - 64px)); }
+body.ui-system .settings-panel {
+  top: calc(var(--visual-top, 0px) + var(--visual-height, 100dvh) / 2);
+  height: min(760px, calc(var(--visual-height, 100dvh) - 24px));
+  max-height: calc(var(--visual-height, 100dvh) - 24px);
+}
+body.ui-system :is(.help-modal-card,.popup-modal-card,.weather-modal-content) { box-sizing: border-box; overflow-y: auto; overscroll-behavior: contain; scroll-padding-block: 16px; }
+body.ui-system :is(.cc-form-header,.cc-form-footer,.mini-popup-header,.cc-app-header) { min-width: 0; }
+body.ui-system :is(.cc-form-header,.mini-popup-header,.cc-app-header) > :is(button,[data-cancel]) { flex-shrink: 0; }
+body.ui-system :is(.cc-form-header,.cc-app-brand) :is(h1,h2) { overflow-wrap: anywhere; }
+body.ui-system .cc-form-fields :is(input,select,textarea) { min-width: 0; max-width: 100%; box-sizing: border-box; }
+body.ui-system .cc-form-footer { flex-wrap: wrap; }
+body.ui-system :is(input,textarea,select,button,a,summary):focus-visible { scroll-margin-block: 16px; }
+body.ui-system .backup-restore-options[open] { display: grid; gap: 12px; }
+body.ui-system :is(.backup-restore-options,details) > summary { cursor: pointer; min-height: 44px; align-content: center; line-height: 1.5; }
+body.ui-system #data-management-status:empty { display: none; }
+
+/* Embedded GameBox uses the Studio dialog's single frame and backdrop. */
+body.ui-system #mini-app-dialog #game-modal {
+  position: relative; inset: auto; height: 100%; width: 100%; min-width: 0;
+  padding: 0; background: transparent; z-index: auto;
+}
+body.ui-system #mini-app-dialog #game-modal .game-modal-card {
+  width: 100%; height: 100%; max-width: 100%; min-height: 0;
+  border: 0; border-radius: 0 !important; box-shadow: none !important;
+  background: transparent !important; transform: none; animation: none; transition: none;
+}
+body.ui-system #mini-app-dialog #game-modal .game-modal-header .game-header-title-wrap { display: none; }
+body.ui-system #mini-app-dialog #game-modal .game-header-actions .close-action { display: none; }
+@media(max-width:639px), (max-height:600px) {
+  body.ui-system dialog:is(.mini-popup,.cc-app-popup) {
+    height: var(--visual-height, 100dvh);
+    max-height: var(--visual-height, 100dvh);
+  }
+  body.ui-system .mini-popup-header { padding-top: max(8px,env(safe-area-inset-top)); padding-right: max(16px,env(safe-area-inset-right)); padding-left: max(16px,env(safe-area-inset-left)); }
+  body.ui-system .cc-form-fields { padding: 16px; }
+  body.ui-system .cc-form-header { padding: 16px; }
+}
+
+/* Theme-safe surfaces also cover controls inherited from the original dark UI. */
+body.ui-system { accent-color: var(--ui-primary); --ui-icon-fill: var(--ui-surface-muted); --ui-icon-color: var(--ui-text-muted); }
+body.ui-system :is(#todo-input,#memo-editor,#hit-input) { background: var(--ui-surface-muted); color: var(--ui-text); border-color: var(--ui-control-border); }
+body.ui-system .weather-summary-row { margin-bottom: 24px; }
+body.ui-system :is(.todo-input-wrapper,.memo-editor,.clock-display) { background: var(--ui-surface-muted); color: var(--ui-text); border-color: var(--ui-control-border); box-shadow: none; }
+body.ui-system :is(.bookmark-item,.todo-item,.memo-toolbar,.memo-footer) { background: var(--ui-surface); color: var(--ui-text); border-color: var(--ui-border); }
+body.ui-system :is(.bookmark-item,.todo-item):hover { background: var(--ui-surface-muted); border-color: var(--ui-control-border); box-shadow: none; }
+body.ui-system input::placeholder, body.ui-system textarea::placeholder { color: var(--ui-text-muted); opacity: 1; }
+html[data-theme="light"] body.ui-system.has-custom-background .bg-overlay::after { background: rgb(245 247 250 / 82%); }
+html.high-contrast body.ui-system { --ui-text-muted: var(--ui-text); --ui-border: #728096; --ui-control-border: #728096; }
+html.high-contrast[data-theme="light"] body.ui-system { --ui-text: #101820; --ui-border: #566576; --ui-control-border: #566576; }
+
+/* Search keeps a generous input area and a single, clearly bounded surface. */
+body.ui-system .search-container { max-width: 520px; }
+body.ui-system .search-form { gap: 4px; min-height: 60px; padding: 6px 8px 6px 12px; }
+body.ui-system .search-form:hover { border-color: var(--ui-primary); }
+body.ui-system .search-form:focus-within { border-color: var(--ui-primary); transform: none; }
+body.ui-system .search-form .search-icon { width: 28px; flex-basis: 28px; color: var(--ui-text-muted); }
+body.ui-system .search-form input[type=search] { width: 0; flex: 1 1 0; min-width: 0; padding: 8px 4px; font-size: 16px; }
+body.ui-system .search-form .search-button { flex: 0 0 44px; width: 44px; height: 44px; min-height: 44px; border-radius: var(--search-radius, var(--ui-radius-sm)); }
+body.ui-system .search-form .search-clear-btn { flex: 0 0 36px; width: 36px; min-width: 36px; height: 36px; min-height: 36px; margin: 0; padding: 6px; }
+body.ui-system .search-clear-btn[hidden] { display: none !important; }
+body.ui-system .search-suggestions { padding: 6px; border-radius: var(--ui-radius-md); background: var(--ui-surface); border-color: var(--ui-border); box-shadow: var(--ui-shadow-lg); }
+body.ui-system .search-suggestion { min-height: 44px; border-radius: var(--ui-radius-sm); color: var(--ui-text); }
+body.ui-system .search-suggestion:is(:hover,.active) { background: var(--ui-primary-soft); border-color: transparent; }
+
+/* Editing is the only place where bookmark removal is exposed. */
+body.ui-system .bookmark-card:not(.edit-mode) .bookmark-delete-btn { display: none !important; }
+body.ui-system .bookmark-card.edit-mode .bookmark-delete-btn { background: var(--ui-surface); border-color: var(--ui-border); color: var(--ui-danger); }
+
+/* Persistent category navigation with distinct, quiet setting groups. */
+body.ui-system .settings-header { padding: 20px 24px; gap: 16px; align-items: center; }
+body.ui-system .settings-header h2 { margin: 0; font-size: 22px; line-height: 1.4; }
+body.ui-system .settings-header .help-kicker { margin: 0 0 4px; color: var(--ui-text-muted); letter-spacing: .12em; }
+body.ui-system .settings-header .close-action { flex-shrink: 0; }
+body.ui-system .settings-body { gap: 16px; scroll-padding-top: 76px; }
+body.ui-system .settings-category-tabs { position: sticky; top: 0; z-index: 5; display: flex; overflow-x: auto; max-width: 100%; min-height: 52px; box-sizing: border-box; background: var(--ui-surface-muted); box-shadow: 0 4px 12px rgb(0 0 0 / .08); }
+body.ui-system .settings-category-tabs > button { flex: 1 0 auto; min-height: 44px; padding: 10px 12px; white-space: nowrap; }
+body.ui-system .settings-category-tabs > button[aria-selected=true] { background: var(--ui-surface); color: var(--ui-primary); box-shadow: inset 0 -2px var(--ui-primary); }
+body.ui-system .settings-category-panel { gap: 16px; }
+body.ui-system .settings-panel .settings-section { padding: 20px; min-width: 0; }
+body.ui-system .settings-section h3 { margin-top: 0; }
+body.ui-system .settings-section .toggle-wrapper { gap: 16px; padding-block: 12px; }
+body.ui-system .settings-section .toggle-wrapper > label:first-child { flex: 1; min-width: 0; }
+body.ui-system .settings-section .switch { flex-shrink: 0; }
+body.ui-system .settings-release-notes { margin: 0; }
+@media(max-width:639px) {
+  body.ui-system .search-container { max-width: none; margin-bottom: 0; }
+  body.ui-system .settings-header { padding: 16px; }
+  body.ui-system .settings-panel .settings-section { padding: 16px; }
+  body.ui-system .settings-category-tabs > button { padding-inline: 10px; }
+}
+
+/* Fullscreen popups share one viewport contract on desktop and mobile. */
+body.ui-system :is(dialog,#settings-panel,.cc-dashboard-panel) {
+  position: fixed !important;
+  inset: var(--visual-top,0px) 0 auto !important;
+  margin: 0 !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: var(--visual-height,100dvh) !important;
+  max-height: var(--visual-height,100dvh) !important;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 0 !important;
+  border-radius: 0 !important;
+  transform: none !important;
+  overscroll-behavior: contain;
+}
+body.ui-system :is(dialog.sync-guide,.cc-dashboard-panel) { padding: max(24px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left)); overflow: auto; }
+body.ui-system :is(.popup-modal,.help-modal,.weather-modal,#game-modal:not(.mini-popup #game-modal)) { padding: 0; box-sizing: border-box; width: 100vw; left: 0; right: auto; }
+body.ui-system :is(.popup-modal,.help-modal,.weather-modal) > :is(.popup-modal-card,.help-modal-card,.weather-modal-content),
+body.ui-system > #game-modal > .game-modal-card {
+  width: 100%; max-width: 100%; height: 100%; max-height: 100%;
+  margin: 0; border: 0; border-radius: 0 !important; transform: none !important;
+}
+body.ui-system .popup-modal-card { display: flex; flex-direction: column; }
+body.ui-system .bookmark-dialog-form { width: min(100%,680px); margin-inline: auto; box-sizing: border-box; }
+body.ui-system :is(.cc-form-fields,.weather-modal-body) { width: min(100%,1040px); margin-inline: auto; box-sizing: border-box; }
+body.ui-system :is(.cc-form-header,.mini-popup-header,.settings-header,.cc-app-header) { padding-top: max(16px,env(safe-area-inset-top)); padding-left: max(20px,env(safe-area-inset-left)); padding-right: max(20px,env(safe-area-inset-right)); }
+body.ui-system .cc-form-header { position: sticky; top: 0; z-index: 3; background: var(--ui-surface); }
+body.ui-system .cc-form-footer { padding-bottom: max(16px,env(safe-area-inset-bottom)); }
+body.ui-system.cc-dashboard-is-editing .dashboard-content { padding-right: 0; }
+body.ui-system .cc-dashboard-panel { z-index: 100002; }
+body.ui-system #game-rules { inset: var(--visual-top,0px) 0 auto; margin: 0; width: 100vw; max-width: 100vw; height: var(--visual-height,100dvh); max-height: var(--visual-height,100dvh); border-radius: 0 !important; box-sizing: border-box; padding: 24px; }
+
+/* Quick settings: navigation first, readable content, no narrow side-panel layout. */
+body.ui-system #settings-panel { background: var(--ui-surface) !important; }
+body.ui-system .settings-header { flex: none; border-bottom: 1px solid var(--ui-border); }
+body.ui-system .settings-body { width: 100%; max-width: 1040px; margin-inline: auto; box-sizing: border-box; padding: 16px 24px max(24px,env(safe-area-inset-bottom)); gap: 16px; }
+body.ui-system .settings-category-tabs { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); overflow: visible; flex-shrink: 0; }
+body.ui-system .settings-category-tabs > button { min-width: 0; padding: 12px 8px; white-space: normal; line-height: 1.4; }
+body.ui-system .settings-category-panel { min-width: 0; }
+body.ui-system .settings-panel .settings-section { margin: 0; border: 1px solid var(--ui-border); }
+body.ui-system .settings-body .notice-board { margin: 0; padding: 12px 16px; gap: 12px; flex-shrink: 0; }
+body.ui-system .settings-release-notes { flex-shrink: 0; }
+body.ui-system .settings-release-notes small { margin-top: 0; }
+
+/* Quick access: bounded tabs and predictable tiles prevent card overflow. */
+body.ui-system .dashboard-header { flex-direction: row; align-items: center; }
+body.ui-system .dashboard-header .header-left { width: auto; flex: 1 1 0; min-width: 0; justify-content: flex-start; }
+body.ui-system .dashboard-header .header-right { width: auto; flex: 0 0 auto; flex-wrap: nowrap; gap: 6px; }
+body.ui-system .header-user-name { max-width: clamp(40px,15vw,120px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body.ui-system .bookmark-card { min-width: 0; }
+body.ui-system .bookmark-card-header { align-items: center; gap: 12px; margin-bottom: 16px; }
+body.ui-system .bookmark-card-header h3 { min-width: 0; }
+body.ui-system .bookmark-tabs-container { width: 100%; min-width: 0; box-sizing: border-box; gap: 4px; margin-bottom: 16px; }
+body.ui-system .bookmark-tabs { min-width: 0; flex: 1 1 0; }
+body.ui-system .bookmark-tab-item { flex-shrink: 0; min-height: 44px; padding: 10px 14px; white-space: nowrap; }
+body.ui-system .tab-scroll-btn { flex: 0 0 32px; width: 32px; min-width: 32px; height: 44px; padding: 0; }
+body.ui-system .bookmark-grid { grid-template-columns: repeat(auto-fill,minmax(min(96px,100%),1fr)); gap: 10px; align-items: start; }
+body.ui-system .bookmark-item-wrapper { min-width: 0; }
+body.ui-system .bookmark-item { width: 100%; min-width: 0; min-height: 112px; box-sizing: border-box; padding: 14px 8px 12px; border-radius: 12px; }
+body.ui-system .bookmark-title { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.5; }
+body.ui-system .bookmark-actions-row { flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+body.ui-system .bookmark-actions-row > button { flex: 1 1 150px; min-width: 0; justify-content: center; }
+body.ui-system .bookmark-folder-bar { min-width: 0; flex-wrap: wrap; }
+
+/* Search remains easy to scan and keeps controls inside its rounded boundary. */
+body.ui-system .hero-section { align-items: center; }
+body.ui-system .search-container { max-width: 560px; min-width: 0; margin-block: 0; }
+body.ui-system .search-form { min-width: 0; min-height: 60px; padding: 6px; gap: 6px; box-sizing: border-box; }
+body.ui-system .search-form .search-icon { margin-left: 8px; }
+body.ui-system #search-input { min-height: 44px; padding: 8px 2px; line-height: 1.5; }
+body.ui-system #search-form .search-button { border-radius: var(--search-radius,999px); }
+body.ui-system .search-suggestions { top: calc(100% + 8px); max-height: min(360px,45dvh); }
+
+/* A compact celebration strip stays at the top without pushing search away. */
+body.ui-system .festival-banner { width: min(var(--ui-content-max),calc(100% - 64px)); max-width: var(--ui-content-max); box-sizing: border-box; grid-template-columns: 64px minmax(0,1fr) auto; gap: 20px; padding: 16px 24px; margin: 8px auto 16px; border-radius: 16px; border-color: #efc67e; box-shadow: 0 6px 24px #792a5f26; }
+body.ui-system .festival-banner-art > span { font-size: 64px; text-shadow: 2px 3px 0 #c77050,4px 5px 0 #381f4d; }
+body.ui-system .festival-banner-copy h2 { margin: 4px 0; font-size: 24px; line-height: 1.2; }
+body.ui-system .festival-banner-copy h2 em { font-size: 1em; }
+body.ui-system .festival-banner-copy .festival-banner-kicker { margin: 0; font-size: 12px; letter-spacing: .12em; }
+body.ui-system .festival-banner-copy .festival-banner-time { margin: 4px 0 0; font-size: 12px; }
+body.ui-system .festival-banner-cta { grid-column: auto; min-height: 44px; padding: 0 18px; gap: 12px; white-space: nowrap; }
+@media(max-width:639px) {
+  body.ui-system .header-user-name { max-width: 60px; }
+  body.ui-system .settings-body { padding: 12px 16px max(16px,env(safe-area-inset-bottom)); }
+  body.ui-system .settings-category-tabs > button { font-size: 12px; padding: 10px 4px; }
+  body.ui-system .hero-section { padding: 20px 0; gap: 24px; }
+  body.ui-system .festival-banner { width: calc(100% - 32px); grid-template-columns: 44px minmax(0,1fr); gap: 8px 14px; padding: 14px 16px; border-radius: 12px; }
+  body.ui-system .festival-banner-art { grid-column: 1; grid-row: 1; }
+  body.ui-system .festival-banner-art > span { font-size: 48px; }
+  body.ui-system .festival-banner-copy h2 { font-size: 18px; }
+  body.ui-system .festival-banner-copy .festival-banner-kicker { font-size: 12px; letter-spacing: .02em; }
+  body.ui-system .festival-banner-cta { grid-column: 1 / -1; min-height: 40px; padding: 8px 12px; box-shadow: none; }
+  body.ui-system .bookmark-card { padding: 16px; }
+}

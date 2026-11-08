@@ -24,8 +24,8 @@ export async function initFestivalEntry(){
  let banner;
  const home=document.querySelector('.hero-section');
  if(home){banner=document.createElement('section');banner.className='festival-banner';banner.setAttribute('aria-label','LifeTop v10.0 Festival 開催中');banner.hidden=true;
- banner.innerHTML='<div class="festival-banner-art" aria-hidden="true"><span>10</span><small>CELEBRATE VERSION 10</small></div><div class="festival-banner-copy"><p class="festival-banner-kicker">NOW CELEBRATING · 10 DAYS ONLY</p><h2>LifeTop v10.0<br><em>Festival!</em></h2><p>サイト中に隠れた「10」を探そう！ 10かくれんぼ開催中。</p><p class="festival-banner-time"></p></div><a class="festival-banner-cta" href="festival.html">お祝いに参加する <span aria-hidden="true">↗</span></a>';
- banner.querySelector('a').onclick=e=>{e.preventDefault();openFestival();};(document.querySelector('.weather-summary-row')||home).before(banner);}
+ banner.innerHTML='<div class="festival-banner-art" aria-hidden="true"><span>10</span></div><div class="festival-banner-copy"><p class="festival-banner-kicker">10 DAYS CELEBRATION</p><h2>LifeTop v10.0 <em>Festival!</em></h2><p class="festival-banner-time"></p></div><a class="festival-banner-cta" href="festival.html">参加する <span aria-hidden="true">↗</span></a>';
+ banner.querySelector('a').onclick=e=>{e.preventDefault();openFestival();};home.parentNode.prepend(banner);}
  async function refresh(){let w;try{w=eventWindow(festivalConfig);}catch{return;}if(banner){banner.hidden=w.phase!=='active';if(w.phase==='active'){const seconds=Math.max(0,Math.floor((w.end-Date.now())/1000));banner.querySelector('.festival-banner-time').textContent='終了まで '+Math.floor(seconds/86400)+'日 '+String(Math.floor(seconds/3600)%24).padStart(2,'0')+':'+String(Math.floor(seconds/60)%60).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0')+' · 無料 / 登録不要';}}
  if(w.phase!=='active'){for(const n of [...entries,...secrets])n.remove();document.getElementById('festival-pop')?.remove();active=false;return;}if(active)return;active=true;if(banner)confetti(banner,32);
  addSecret('.settings-about-version','version','X','バージョン10の秘密');addSecret('.mini-header','studio','1 + 0','Studioの10の秘密');

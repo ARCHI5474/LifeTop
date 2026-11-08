@@ -8,13 +8,12 @@ const engines = {
     duckduckgo: ['DuckDuckGo', 'https://duckduckgo.com/', 'q'],
     yahoo: ['Yahoo! JAPAN', 'https://search.yahoo.co.jp/search', 'p']
 };
-const defaults = { hideClockBackground: false, clockShowSec: false, reduceMotion: false, searchShape: 'pill', searchEngine: 'google', textSize: 'standard', highContrast: false, compactLayout: false, showNews: true };
+const defaults = { clockShowSec: false, reduceMotion: false, searchShape: 'pill', searchEngine: 'google', textSize: 'standard', highContrast: false, compactLayout: false, showNews: true };
 
 export function applyAdvancedSettings() {
     const root = document.documentElement;
     root.style.setProperty('--search-radius', { pill: '999px', rounded: '16px', square: '0px' }[userConfig.searchShape]);
     root.classList.toggle('reduce-motion', userConfig.reduceMotion);
-    root.classList.toggle('hide-clock-background', userConfig.hideClockBackground);
     root.dataset.textSize = userConfig.textSize;
     root.classList.toggle('high-contrast', userConfig.highContrast);
     root.classList.toggle('compact-layout', userConfig.compactLayout);
@@ -29,7 +28,7 @@ export function applyAdvancedSettings() {
             else control.value = userConfig[key];
         }
     }
-    for (const key of ['hideClockBackground', 'searchShape', 'reduceMotion', 'searchEngine']) {
+    for (const key of ['searchShape', 'reduceMotion', 'searchEngine']) {
         const control = document.getElementById('advanced-' + key);
         if (!control) continue;
         if (control.type === 'checkbox') control.checked = userConfig[key];
@@ -61,7 +60,7 @@ export function setAdvancedSetting(key, value) {
         if (!['pill', 'rounded', 'square'].includes(value)) return;
     } else if (key === 'searchEngine') {
         if (!Object.hasOwn(engines, value)) return;
-    } else if (['reduceMotion', 'hideClockBackground', 'highContrast', 'compactLayout', 'showNews'].includes(key)) {
+    } else if (['reduceMotion', 'highContrast', 'compactLayout', 'showNews'].includes(key)) {
         value = Boolean(value);
     } else return;
     const previous = userConfig[key];

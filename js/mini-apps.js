@@ -1,5 +1,6 @@
 import {initUISystem} from './ui-system.js?v=10.0-ui5';
-import { apps } from './mini-model.js?v=1';
+import { apps,legacyApps } from './mini-model.js?v=1';
+import {diaryApp,convertApp,browserApp,codeApp} from './studio-new.js';
 import {readCanvas,saveStudioFile} from './canvas-model.js';
 import {initFestivalEntry} from './festival-entry.js';
 import { makeContext,download,esc } from './mini-common.js?v=1';
@@ -7,7 +8,7 @@ import { documentApp,sheetApp,slidesApp } from './mini-office.js?v=1';
 import { imageApp,pdfApp,audioApp,videoApp } from './mini-media.js?v=1';
 import { dataApp,compareApp,textApp,unitsApp,diagramApp,drawApp,submitApp } from './mini-tools.js?v=1';
 
-const mounts={document:documentApp,sheet:sheetApp,slides:slidesApp,image:imageApp,pdf:pdfApp,audio:audioApp,video:videoApp,diagram:diagramApp,data:dataApp,compare:compareApp,text:textApp,units:unitsApp,draw:drawApp,submit:submitApp};
+const mounts={document:documentApp,sheet:sheetApp,slides:slidesApp,diary:diaryApp,convert:convertApp,browser:browserApp,code:codeApp,image:imageApp,pdf:pdfApp,audio:audioApp,video:videoApp,diagram:diagramApp,data:dataApp,compare:compareApp,text:textApp,units:unitsApp,draw:drawApp,submit:submitApp};
 const hasApp=id=>Object.hasOwn(mounts,id);
 const $=id=>document.getElementById(id),memory=new Map();
 let active=null,context=null,snapshot=null,timer=null,dbPromise=null,writeQueue=Promise.resolve(),opening=false;
@@ -15,7 +16,7 @@ const fileVersions=new Map();
 let workspaceUpdatedAt,workspaceFile=null,undoStack=[],redoStack=[],historyState=null,restoring=false;
 function historyRecord(){if(!snapshot||restoring)return;const next=JSON.stringify(snapshot());if(next!==historyState){if(historyState!==null)undoStack.push(historyState);if(undoStack.length>30)undoStack.shift();historyState=next;redoStack=[];}historyButtons();}
 function historyButtons(){$('studio-undo').disabled=!undoStack.length;$('studio-redo').disabled=!redoStack.length;}
-async function restoreHistory(redo=false){historyRecord();const source=redo?redoStack:undoStack,target=redo?undoStack:redoStack;if(!source.length||opening)return;if(['image','pdf','video','audio','submit'].includes(active)&&!confirm('設定を復元します。元の素材ファイルは選択し直す必要があります。続けますか？'))return;const value=source.pop();target.push(JSON.stringify(snapshot()));restoring=true;try{context?.dispose();context=makeContext($('mini-content'),notify,changed,()=>($('mini-name').value||'無題'));context.send=(id,state)=>openApp(id,state);snapshot=mounts[active](context,JSON.parse(value));historyState=value;context.root.addEventListener('input',changed);context.root.addEventListener('change',changed);await save();historyButtons();}finally{restoring=false;}}
+async function restoreHistory(redo=false){historyRecord();const source=redo?redoStack:undoStack,target=redo?undoStack:redoStack;if(!source.length||opening)return;if(['image','pdf','video','audio','submit','convert'].includes(active)&&!confirm('設定を復元します。元の素材ファイルは選択し直す必要があります。続けますか？'))return;const value=source.pop();target.push(JSON.stringify(snapshot()));restoring=true;try{context?.dispose();context=makeContext($('mini-content'),notify,changed,()=>($('mini-name').value||'無題'));context.send=(id,state)=>openApp(id,state);snapshot=mounts[active](context,JSON.parse(value));historyState=value;context.root.addEventListener('input',changed);context.root.addEventListener('change',changed);await save();historyButtons();}finally{restoring=false;}}
 const notify=(message,error=false)=>{ $('mini-status').textContent=message;$('mini-status').dataset.error=String(error); };
 function database() {
     if(!dbPromise)dbPromise=new Promise((resolve,reject)=>{if(!window.indexedDB){reject(new Error('端末内保存に対応していません。'));return;}const request=indexedDB.open('lifetop-mini-apps',2);request.onupgradeneeded=()=>{if(!request.result.objectStoreNames.contains('projects'))request.result.createObjectStore('projects',{keyPath:'app'});if(!request.result.objectStoreNames.contains('recovery'))request.result.createObjectStore('recovery',{keyPath:'app'});};request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);request.onblocked=()=>reject(new Error('ほかのタブを閉じてください。'));});
@@ -35,7 +36,8 @@ async function openApp(id,override) {
     try{
         if(!await save()){$('mini-picker').value=active;return false;}context?.dispose();context=null;snapshot=null;
         const project=override?{state:override,name:$('mini-name').value}:await read(id);
-        active=id;const info=apps.find(app=>app.id===id);
+        active=id;const info=apps.find(app=>app.id===id)||legacyApps.find(app=>app.id===id);
+        if(![...$('mini-picker').options].some(option=>option.value===id))$('mini-picker').add(new Option(info.name+'（旧アプリ）',id));
         if(!restoring){undoStack=[];redoStack=[];workspaceFile=null;}
         $('mini-home').hidden=true;$('mini-workspace').hidden=false;$('mini-title').textContent=info.name;$('mini-description').textContent=info.description;$('mini-picker').value=id;$('mini-name').value=project?.name||'無題';
         context=makeContext($('mini-content'),notify,changed,()=>($('mini-name').value.trim()||'無題').replace(/[<>:"/\\|?*]/g,'_'));
@@ -47,17 +49,12 @@ async function openApp(id,override) {
     }catch(error){context?.dispose();snapshot=null;$('mini-content').textContent='この作業を開けませんでした。作業ファイルの内容を確認してください。';notify(error.message,true);return false;}
     finally{opening=false;$('mini-content').hidden=false;}
 }
-$('mini-catalog').innerHTML=apps.map((app,index)=>`<button class="mini-app-card" data-app="${app.id}"><small>${String(index+1).padStart(2,'0')} / ${app.category}</small><strong>${app.name}</strong><span>${app.description}</span></button>`).join('');
+$('mini-catalog').innerHTML=apps.map((app,index)=>`<button class="mini-app-card" data-app="${app.id}"><small>${String(index+1).padStart(2,'0')} / ${app.category}</small><strong>${app.name.replace('（β版）','<span class="studio-beta">（β版）</span>')}</strong><span>${app.description}</span></button>`).join('');
 $('mini-picker').innerHTML=apps.map(app=>`<option value="${app.id}">${app.name}</option>`).join('');
 $('mini-catalog').addEventListener('click',event=>{const card=event.target.closest('[data-app]');if(card)void openApp(card.dataset.app);});
 $('mini-picker').addEventListener('change',()=>void openApp($('mini-picker').value));
-let catalogPage=0;
-const pager=document.createElement('nav');pager.className='studio-pager';pager.setAttribute('aria-label','アプリ一覧のページ');
-pager.innerHTML='<button type="button" class="tonal-btn">前へ</button><output aria-live="polite"></output><button type="button" class="tonal-btn">次へ</button>';
-$('mini-catalog').after(pager);
-function pageCatalog(){const query=$('mini-filter').value.trim().toLowerCase(),cards=[...$('mini-catalog').children],matched=cards.filter(c=>c.textContent.toLowerCase().includes(query));const embedded=new URLSearchParams(location.search).has('embedded'),size=embedded?(innerHeight<350?(innerWidth<640?2:3):innerWidth<640?4:6):cards.length,pages=Math.max(1,Math.ceil(matched.length/size));catalogPage=Math.min(catalogPage,pages-1);cards.forEach(c=>c.hidden=true);matched.slice(catalogPage*size,(catalogPage+1)*size).forEach(c=>c.hidden=false);pager.hidden=!embedded||pages===1;pager.querySelector('output').textContent=(catalogPage+1)+' / '+pages;pager.firstElementChild.disabled=catalogPage===0;pager.lastElementChild.disabled=catalogPage===pages-1;$('mini-no-results').hidden=matched.length>0;}
-pager.firstElementChild.onclick=()=>{catalogPage--;pageCatalog();};pager.lastElementChild.onclick=()=>{catalogPage++;pageCatalog();};
-$('mini-filter').addEventListener('input',()=>{catalogPage=0;pageCatalog();});window.addEventListener('resize',pageCatalog);pageCatalog();
+function filterCatalog(){const query=$('mini-filter').value.trim().toLowerCase();let matched=0;for(const card of $('mini-catalog').children){card.hidden=!card.textContent.toLowerCase().includes(query);if(!card.hidden)matched++;}$('mini-no-results').hidden=matched>0;}
+$('mini-filter').addEventListener('input',filterCatalog);filterCatalog();
 $('mini-name').addEventListener('input',changed);
 $('mini-home-button').addEventListener('click',async()=>{if(opening)return;if(!await save())return;context?.dispose();context=null;snapshot=null;active=null;$('mini-workspace').hidden=true;$('mini-home').hidden=false;history.replaceState(null,'',location.pathname);$('mini-filter').focus();notify('使いたいアプリを選んでください。');});
 $('mini-project-save').addEventListener('click',()=>{if(!active||!snapshot)return;const name=$('mini-name').value.trim()||'無題';download(JSON.stringify({format:'lifetop-mini',version:1,app:active,name,state:snapshot()},null,2),name.replace(/[<>:"/\\|?*]/g,'_')+'.lifetop.json','application/json');void save();});
@@ -75,6 +72,7 @@ $('studio-template').onchange=async()=>{try{const state=await readCanvas(),file=
 document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||!active)return;const key=e.key.toLowerCase();if(key==='s'){e.preventDefault();void save();}if(key==='z'&&!e.target.closest('input,textarea,[contenteditable=true]')){e.preventDefault();void restoreHistory(e.shiftKey).catch(e=>notify(e.message,true));}if(key==='y'&&!e.target.closest('input,textarea,[contenteditable=true]')){e.preventDefault();void restoreHistory(true).catch(e=>notify(e.message,true));}});
 async function startStudio(){try{await templates();}catch{}try{const fileId=new URLSearchParams(location.search).get('file');if(fileId){const data=await readCanvas(),file=data.files.find(f=>f.id===fileId&&!f.deletedAt&&!data.projects.find(p=>p.id===f.projectId)?.deletedAt);if(!file||!hasApp(file.app))throw Error('ファイルが見つかりません。');if(!await openApp(file.app,file.state))return;workspaceFile=file.id;workspaceUpdatedAt=file.updatedAt;fileVersions.set(file.id,file.updatedAt);$('mini-name').value=file.name;changed();}else if(hasApp(location.hash.slice(1)))await openApp(location.hash.slice(1));}catch(e){notify(e.message,true);}}
 void startStudio();
+window.addEventListener('hashchange',()=>{const id=location.hash.slice(1);if(id!==active&&hasApp(id))void openApp(id);});
 
 void initFestivalEntry();
 

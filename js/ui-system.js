@@ -1,4 +1,4 @@
-import {fontStyles,userConfig} from './config.js?v=9.0';
+import {clockDesigns,userConfig} from './config.js?v=9.0';
 import {onLocalSave,writeStoredConfig} from './storage.js?v=9.0';
 const storageKey='lifetop_v1_0_data';
 let initialized=false;
@@ -7,13 +7,14 @@ const rgb=hex=>hex.replace('#','').match(/../g).map(v=>parseInt(v,16));
 function luminance(values){const c=values.map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;});return c[0]*.2126+c[1]*.7152+c[2]*.0722;}
 function contrast(a,b){a=luminance(a);b=luminance(b);return(Math.max(a,b)+.05)/(Math.min(a,b)+.05);}
 function modeOf(config){return config?.colorMode==='light'?'light':'dark';}
-function setScopeTheme(scope,mode){scope.dataset.theme=mode;}
+function setScopeTheme(scope,mode){if(scope.dataset.theme!==mode)scope.dataset.theme=mode;}
 function updateControls(mode){
  document.querySelectorAll('#settings-panel [data-ui-mode]').forEach(button=>{const active=button.dataset.uiMode===mode;button.setAttribute('aria-pressed',String(active));button.classList.toggle('active',active);});
 }
 export function applyUISystemPreferences(config={}) {
  const root=document.documentElement,body=document.body;if(!body)return;const mode=modeOf(config);
  root.dataset.theme=mode;root.dataset.colorMode=mode;root.style.colorScheme=mode;
+ setScopeTheme(body,mode);
  document.querySelectorAll('.ui-scope').forEach(scope=>setScopeTheme(scope,mode));
  const names=['--ui-accent-override','--ui-accent-hover-override','--ui-accent-pressed-override','--ui-accent-soft-override'];
  names.forEach(name=>root.style.removeProperty(name));
@@ -30,7 +31,8 @@ export function applyUISystemPreferences(config={}) {
  const hasCustomBackground=Boolean(config.bgImage)||(Boolean(config.bgType)&&config.bgType!=='gradient-blue');
  body.classList.toggle('has-custom-background',hasCustomBackground);
  root.classList.toggle('reduce-motion',Boolean(config.reduceMotion));
- const font=fontStyles.find(item=>item.family===config.fontFamily);body.style.setProperty('--ui-clock-font',font&&font!==fontStyles[0]?font.family:'var(--ui-font)');
+ body.dataset.clockDesign=clockDesigns.some(design=>design.id===config.clockDesign)?config.clockDesign:'orbit';
+ body.style.setProperty('--ui-clock-font',body.dataset.clockDesign==='classic'?'Georgia, serif':body.dataset.clockDesign==='digital'||body.dataset.clockDesign==='blueprint'?'ui-monospace, Consolas, monospace':'var(--ui-font)');
  const primary=getComputedStyle(body).getPropertyValue('--ui-primary').trim();
  if(/^#[a-f0-9]{6}$/i.test(primary))root.style.setProperty('--ui-primary-rgb',rgb(primary).join(', '));
  root.style.backgroundColor=hasCustomBackground?'transparent':background;
@@ -57,9 +59,9 @@ export function initUISystem(){
  restorePreferences();
  if(!initialized){
   initialized=true;onLocalSave(restorePreferences);
-  window.addEventListener('storage',event=>{if(event.key===storageKey)restorePreferences();});
+  window.addEventListener('storage',event=>{if(event.key===storageKey||event.key===null)restorePreferences();});
   document.addEventListener('click',event=>{const option=event.target.closest('#settings-panel [data-ui-mode]');if(option)setMode(option.dataset.uiMode);});
-  new MutationObserver(records=>{const mode=document.body.dataset.theme;for(const record of records)for(const node of record.addedNodes){if(node.nodeType!==1)continue;if(node.matches('.ui-scope'))setScopeTheme(node,mode);node.querySelectorAll('.ui-scope').forEach(scope=>setScopeTheme(scope,mode));}}).observe(document.body,{childList:true,subtree:true});
+  new MutationObserver(records=>{const mode=document.documentElement.dataset.theme==='light'?'light':'dark';for(const record of records)for(const node of record.addedNodes){if(node.nodeType!==1)continue;if(node.matches('.ui-scope'))setScopeTheme(node,mode);node.querySelectorAll('.ui-scope').forEach(scope=>setScopeTheme(scope,mode));}}).observe(document.body,{childList:true,subtree:true});
  }
  document.querySelectorAll('label.mini-file-label, label.background-upload-btn').forEach(label=>{
   const input=label.querySelector('input[type=file]');if(!input||label.dataset.keyboardReady)return;label.dataset.keyboardReady='true';label.tabIndex=0;label.setAttribute('role','button');

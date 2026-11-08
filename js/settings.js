@@ -1,5 +1,5 @@
 /* LifeTop - settings panel controls */
-import { colorCombos, bgPresets, fontStyles, userConfig } from "./config.js?v=9.0";
+import { colorCombos, bgPresets, clockDesigns, userConfig } from "./config.js?v=9.0";
 import { applyStyles, renderColorCombos, renderBgPresets, renderBgSelector } from "./styles.js?v=9.0";
 import { save } from "./storage.js?v=9.0";
 import { updateClock, updateGreeting } from "./clock.js?v=9.0";
@@ -23,7 +23,6 @@ export function toggleHelp() {
     const isOpen = modal.classList.toggle('active');
     modal.inert = !isOpen;
     overlay?.classList.toggle('active', isOpen);
-    document.body.style.overflow = isOpen ? 'hidden' : '';
     if (isOpen) {
         helpTrigger = document.activeElement;
         modal.querySelector('button')?.focus();
@@ -35,6 +34,7 @@ export function toggleHelp() {
 function bindDialogFocusTrap(dialogEl) {
     if (!dialogEl) return;
     dialogEl.addEventListener('keydown', event => {
+        if (event.defaultPrevented || document.querySelector('dialog[open]')) return;
         if (event.key !== 'Tab') return;
         const controls = [...event.currentTarget.querySelectorAll('button, input, select, textarea, summary, a[href]')]
             .filter(control => !control.disabled && control.getClientRects().length && control.tabIndex >= 0);
@@ -59,11 +59,7 @@ export function initPickers() {
         bindDialogFocusTrap(document.getElementById(id));
     });
 
-    const fontsContainer = document.getElementById('font-styles');
-    fontsContainer.innerHTML = fontStyles.map(f => {
-        const activeClass = (f.family === userConfig.fontFamily) ? 'active' : '';
-        return `<button class="font-btn ${activeClass}" style="font-family:${f.family}" onclick="setFontFamily(${JSON.stringify(f.family).replace(/"/g, '&quot;')}, this)">${f.name}</button>`;
-    }).join('');
+    renderClockDesigns();
 
     const imageUrlInput = document.getElementById('background-image-url');
     const imageUpload = document.getElementById('background-image-upload');
@@ -132,7 +128,7 @@ function initSettingsCategories() {
             buttons[next].focus();
         });
     });
-    body.insertBefore(tabs, panels[0]);
+    body.prepend(tabs);
     const display = document.createElement('section');
     display.className = 'settings-section';
     display.innerHTML = `<h3 class="settings-label">見やすさと表示</h3>
@@ -186,6 +182,16 @@ export function setFontFamily(f, element) {
     
     document.querySelectorAll('#font-styles .font-btn').forEach(el => el.classList.remove('active'));
     if (element) element.classList.add('active');
+}
+
+export function renderClockDesigns() {
+    const picker=document.getElementById('clock-designs');
+    if(!picker)return;
+    picker.innerHTML=clockDesigns.map(design=>`<button type="button" class="clock-design-option" data-clock-design="${design.id}" aria-pressed="${userConfig.clockDesign===design.id}" onclick="setClockDesign('${design.id}')"><span class="clock-design-preview" aria-hidden="true">10:08</span><strong>${design.name}</strong><span>${design.description}</span></button>`).join('');
+}
+export function setClockDesign(id) {
+    if(!clockDesigns.some(design=>design.id===id)||!savePreferences({clockDesign:id}))return;
+    document.querySelectorAll('#clock-designs [data-clock-design]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.clockDesign===id)));
 }
 
 export function saveUsername(val) {
@@ -298,7 +304,6 @@ export function toggleSettings() {
     panel.inert = !isOpen;
     document.querySelector('[aria-label="Quickパネル"]')?.setAttribute('aria-expanded', String(isOpen));
     overlay?.classList.toggle('active', isOpen);
-    document.body.style.overflow = isOpen ? 'hidden' : '';
     if (isOpen) {
         settingsTrigger = document.activeElement;
         panel.querySelector('button')?.focus({ preventScroll: true });

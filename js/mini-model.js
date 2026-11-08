@@ -1,4 +1,4 @@
-export const apps = [
+export const legacyApps = [
     ['document','文書','レポート・表・書式・印刷PDF','Office'],
     ['sheet','表計算','数式・CSV・表の編集','Office'],
     ['slides','スライド','発表資料・全画面プレゼン','Office'],
@@ -14,6 +14,16 @@ export const apps = [
     ['draw','お絵描き','ペン・消しゴム・PNG保存','制作'],
     ['submit','提出チェック','形式・容量・ファイル名を確認','ファイル']
 ].map(([id,name,description,category]) => ({id,name,description,category}));
+export const apps = [
+    ['document','StoneTXT','文章を書く。文字の装飾や表を入れて、印刷・PDF保存。','Office'],
+    ['sheet','BlockSheet','表を作る。数式で計算して、CSVを読み込み・保存。','Office'],
+    ['slides','SlideSpark','発表用のスライドを作る。全画面で表示・印刷。','Office'],
+    ['diary','LineNote','日付ごとに日記を書く。過去の記録を読み返す。','ライフ'],
+    ['draw','FutureDraw','ペンや消しゴムで絵を描く。PNG画像で保存。','制作'],
+    ['convert','ChangePosition','画像の形式を変える。CSV・JSONも相互変換。','ファイル'],
+    ['browser','PaisdeaBrowser（β版）','URLを入力してWebを見る。表示できないサイトは別タブへ。','β版'],
+    ['code','PasideaCode（β版）','コードを書く。ファイル保存とHTMLのプレビュー。','β版']
+].map(([id,name,description,category])=>({id,name,description,category}));
 
 export const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 export function parseCSV(text) {

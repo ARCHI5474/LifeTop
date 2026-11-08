@@ -1,11 +1,12 @@
 
 /* ========================    
-LifeTop v10.0 Codename: "LifeTop10 Fes"
+LifeTop v11.0
    ======================== */
 const UPDATE_CONFIG = {
-    notice: "LifeTop v10.0 LifeTop10 Fes。10かくれんぼや記念ガチャでv10 Festivalをお祝い。Studio・GameBoxの表示とポップアップ操作も改善しました。",
-    tag: "LifeTop v10.0"
+    notice: "LifeTop v11.0。6種類の時計デザインと8つのStudioアプリ。v10 Festivalの開催期間は変更ありません。",
+    tag: "LifeTop v11.0"
 };
+export const APP_VERSION = '11.0.0';
 /* ========================================= */
 
 const STORAGE_KEY = 'lifetop_v1_0_data';
@@ -25,6 +26,14 @@ const fontStyles = [
     { name: 'Round', family: "'Comfortaa', sans-serif" }
 ];
 
+const clockDesigns = [
+    {id:'orbit',name:'Orbit',description:'円形目盛り'},
+    {id:'minimal',name:'Minimal',description:'余白と数字'},
+    {id:'split',name:'Split',description:'分割パネル'},
+    {id:'digital',name:'Digital',description:'デジタル表示'},
+    {id:'classic',name:'Classic',description:'クラシック'},
+    {id:'blueprint',name:'Blueprint',description:'設計図'}
+];
 const bgGradients = {
     'gradient-blue': '#203A52',
     'gradient-dark': '#292F3A',
@@ -346,8 +355,8 @@ let userConfig = {
     colorMode: "dark",
     clock12h: false,
     clockShowSec: false,
+    clockDesign: 'orbit',
     profileIcon: "person",
-    hideClockBackground: false,
     searchShape: "pill",
     reduceMotion: false,
     textSize: 'standard',
@@ -468,8 +477,8 @@ function mergeUserConfig(parsed) {
         colorMode: parsed.colorMode === 'light' ? 'light' : 'dark',
         clock12h: typeof parsed.clock12h === 'boolean' ? parsed.clock12h : userConfig.clock12h,
         clockShowSec: typeof parsed.clockShowSec === 'boolean' ? parsed.clockShowSec : userConfig.clockShowSec,
+        clockDesign: clockDesigns.some(design => design.id === parsed.clockDesign) ? parsed.clockDesign : 'orbit',
         profileIcon: typeof parsed.profileIcon === 'string' && (/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(parsed.profileIcon) || ['person','face','pets','eco','rocket_launch','favorite','star','sports_esports'].includes(parsed.profileIcon)) && parsed.profileIcon.length < 3000000 ? parsed.profileIcon : 'person',
-        hideClockBackground: parsed.hideClockBackground === true,
         searchShape: ["pill", "rounded", "square"].includes(parsed.searchShape) ? parsed.searchShape : "pill",
         reduceMotion: parsed.reduceMotion === true,
         textSize: ['standard', 'large', 'larger'].includes(parsed.textSize) ? parsed.textSize : 'standard',
@@ -495,6 +504,7 @@ export {
     STORAGE_KEY,
     themes,
     fontStyles,
+    clockDesigns,
     bgGradients,
     colorCombos,
     bgPresets,

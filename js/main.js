@@ -18,7 +18,7 @@ import { applyStyles, renderBgSelector, renderColorCombos, renderBgPresets } fro
 import { openMiniApps } from "./mini-popup.js?v=10.0-ui8";
 
 /* LifeTop - application entry point */
-import { userConfig, mergeUserConfig, fontStyles } from "./config.js?v=9.0";
+import { userConfig, mergeUserConfig } from "./config.js?v=9.0";
 import { loadData, save } from "./storage.js?v=9.0";
 import {
     initPickers,
@@ -26,6 +26,8 @@ import {
     setColorCombo,
     setPresetWallpaper,
     setFontFamily,
+    setClockDesign,
+    renderClockDesigns,
     saveUsername,
     toggleClock12h,
     toggleClockSec,
@@ -137,6 +139,7 @@ Object.assign(window, {
     setColorCombo,
     setPresetWallpaper,
     setFontFamily,
+    setClockDesign,
     saveUsername,
     toggleClock12h,
     toggleClockSec,
@@ -178,6 +181,7 @@ Object.assign(window, {
 document.addEventListener('keydown', event => {
     if (event.isComposing || event.keyCode === 229) return;
     if (event.key === 'Escape') {
+        if (event.defaultPrevented || document.querySelector('dialog[open]')) return;
         if (document.getElementById('game-rules')?.matches(':popover-open')) return;
         if (document.getElementById('weather-detail-modal')?.classList.contains('active')) {
             closeWeatherDetail();
@@ -241,7 +245,7 @@ window.addEventListener('DOMContentLoaded', () => {
         renderProfile();
         document.getElementById('username-input').value = userConfig.username;
         document.getElementById('clock-12h-toggle').checked = userConfig.clock12h;
-        document.querySelectorAll('#font-styles .font-btn').forEach((button, index) => button.classList.toggle('active', fontStyles[index].family === userConfig.fontFamily));
+        renderClockDesigns();
         document.getElementById('background-image-url').value = userConfig.bgImage.startsWith('https://') ? userConfig.bgImage : '';
         updateClock();
         updateGreeting();

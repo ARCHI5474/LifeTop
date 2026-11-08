@@ -28,7 +28,11 @@ export function openMiniApps(path='mini-apps.html') {
         dialog.querySelector('[data-cancel]').setAttribute('aria-label',games?'GameBoxを閉じる':'Studioを閉じる');
         tabs.forEach(tab=>{const selected=tab.dataset.view===view;tab.classList.toggle('is-active',selected);tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;});
     };
-    if(gameModal){gameHost.append(gameModal);gameModal.setAttribute('role','region');gameModal.setAttribute('aria-modal','false');}
+    if(gameModal){
+        window.toggleGameModal?.(false);
+        document.getElementById('game-overlay')?.classList.remove('active');
+        gameHost.append(gameModal);gameModal.setAttribute('role','region');gameModal.removeAttribute('aria-modal');
+    }
     const lifecycle=openUIDialog(dialog,{onRequestClose:async()=>{try{await frame.contentWindow?.flushMiniApp?.();return true;}catch{dialog.querySelector('[role=status]').hidden=false;dialog.querySelector('[role=status]').textContent='保存できませんでした。作業ファイルを保存してから閉じてください。';return false;}}});
     frame.addEventListener('load',()=>{
         dialog.querySelector('[role=status]').hidden=true;
@@ -46,10 +50,14 @@ export function openMiniApps(path='mini-apps.html') {
     setView('studio');
     dialog.addEventListener('close',()=>{
         if(gameModal){
+            // The shared close handler has already detached the outer dialog.
+            // Restore the game node before its document-based cleanup runs.
+            if(originalParent)originalParent.insertBefore(gameModal,originalNextSibling?.parentNode===originalParent?originalNextSibling:null);
             if(gameModal.classList.contains('active'))window.toggleGameModal?.(false);
+            gameModal.classList.remove('active');gameModal.inert=true;
+            document.getElementById('game-overlay')?.classList.remove('active');
             gameModal.setAttribute('role','dialog');
             gameModal.setAttribute('aria-modal','true');
-            if(originalParent)originalParent.insertBefore(gameModal,originalNextSibling?.parentNode===originalParent?originalNextSibling:null);
         }
         document.dispatchEvent(new Event('lifetop:files-updated'));
     });

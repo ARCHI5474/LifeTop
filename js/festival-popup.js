@@ -11,7 +11,7 @@ export function openFestival() {
     const lifecycle = openUIDialog(dialog);
     dialog.querySelector('iframe').addEventListener('load', event => {
         event.target.contentDocument?.addEventListener('keydown', e => {
-            if (e.key === 'Escape' && !e.isComposing && e.keyCode !== 229 && !e.defaultPrevented) { e.preventDefault(); void lifecycle.close(); }
+            if (e.key === 'Escape' && !e.isComposing && e.keyCode !== 229 && !e.defaultPrevented && !event.target.contentDocument.querySelector('dialog[open],:popover-open')) { e.preventDefault(); void lifecycle.close(); }
         });
     });
 }

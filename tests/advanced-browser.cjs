@@ -8,7 +8,8 @@ withApp(async page => {
     await page.locator('#advanced-searchEngine input[value=yahoo]').check();
     await page.locator('#advanced-searchShape input[value=square]').check();
     await page.locator('#advanced-reduceMotion').check();
-    await page.locator('#advanced-hideClockBackground').check();
+    assert.equal(await page.locator('#advanced-hideClockBackground').count(), 0);
+    assert.equal(await page.locator('.hero-section').evaluate(e => getComputedStyle(e).backgroundColor), 'rgba(0, 0, 0, 0)');
     await page.locator('#clock-show-sec-toggle').check();
     await page.locator('#settings-tab-profile').click();
     await page.locator('#username-input').fill('テストユーザー');
