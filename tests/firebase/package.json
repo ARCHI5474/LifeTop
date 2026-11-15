@@ -1,5 +1,10 @@
 {
   "name": "lifetop-firebase-rules-tests",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^6.0.0",
+    "firebase": "^13.3.0",
+    "firebase-tools": "^15.36.0"
+  }
 }

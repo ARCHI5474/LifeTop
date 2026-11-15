@@ -10,7 +10,9 @@ npm test
 
 - `npm run test:unit`: ロジック、保存・復元、同期、構文、HTML参照、モジュールの整合性を検査。
 - `npm run test:browser`: ホーム、設定、ファイル、カレンダー、Studio、GameBox、イベントの実操作を検査。
-- `npm test`: 上記を順に実行。失敗があっても残りを実行し、失敗時は終了コード1を返します。
+- `npm run test:messages`: Messagesの送信安全性とLiveの画面・在室・音入力のブラウザ検証（外部SDKは固定データ）。
+- `npm run test:firebase`: Java 21以降、`npm ci --prefix tests/firebase` の準備後、Auth・Firestore EmulatorでRulesと2人の実接続を検証。本番接続はしません。
+- `npm test`: 単体・ブラウザテストを順に実行。Firebase検証は別途実行。失敗があっても残りを実行し、失敗時は終了コード1を返します。
 
 結果と失敗ログは `test-artifacts/results-all.json`（個別実行時は `results-unit.json` / `results-browser.json`）に保存します。スクリーンショットも同ディレクトリに保存し、Gitには含めません。
 
@@ -23,6 +25,8 @@ npm test
 `offline-volume.cjs` は1000タスク・500ブックマーク・10万文字メモを扱います。オフライン中もテスト用ルートが静的ファイルを配信するため、PWAの実ネットワークからのオフライン起動を保証するテストではありません。単発の計測値は `test-artifacts/volume-measurements.json` に保存します。
 
 最新の再調査内容と未検証事項は [QA_REAUDIT.md](QA_REAUDIT.md)、初回の詳細は [QA_REPORT.md](QA_REPORT.md) を参照してください。
+
+v13の検証結果と、現在の本番接続状態は [RELEASE_V13.md](RELEASE_V13.md) に記載しています。本番のApp Check・課金設定・公開後2台での検証手順は [MESSAGES_SETUP.md](MESSAGES_SETUP.md) を参照してください。
 
 操作改善の一覧と追加回帰テストは [USABILITY_REVIEW.md](USABILITY_REVIEW.md) を参照してください。
 

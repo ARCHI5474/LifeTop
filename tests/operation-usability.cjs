@@ -3,7 +3,7 @@ const {withApp}=require('./helpers/browser.cjs');
 withApp(async(page,context)=>{
     await context.route(/\/js\/festival-config\.js(?:\?.*)?$/,route=>route.fulfill({contentType:'text/javascript',body:'export const festivalConfig={startAt:null,durationDays:10};'}));
     await page.reload();
-    await page.locator('.dashboard-header [aria-label="Studioを開く"]').click();
+    await require('./helpers/browser.cjs').quickTile(page,'studio');
     const studio=page.locator('#mini-app-dialog [data-view=studio]');
     await studio.focus();await page.keyboard.press('ArrowRight');
     assert.equal(await page.locator('#mini-app-dialog [data-view=games]').getAttribute('aria-selected'),'true','arrow key switches the Studio tabs');

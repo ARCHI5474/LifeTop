@@ -1,4 +1,4 @@
-import {openUIDialog} from './ui-dialog.js';
+import {openUIDialog} from './ui-dialog.js?v=13.0.1';
 
 export function openCamera(){
     if(document.getElementById('camera-dialog'))return;

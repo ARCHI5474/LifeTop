@@ -7,7 +7,7 @@ export async function createFirebaseAdapter(config, collection = 'lifetop') {
         import(`${SDK}/firebase-auth.js`),
         import(`${SDK}/firebase-firestore.js`)
     ]);
-    const app = appSDK.initializeApp(config, 'lifetop-sync');
+    const app = appSDK.getApps().find(app=>app.name==='lifetop-sync') || appSDK.initializeApp(config, 'lifetop-sync');
     const auth = authSDK.getAuth(app);
     auth.languageCode = 'ja';
     const db = dbSDK.getFirestore(app);

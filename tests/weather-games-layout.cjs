@@ -7,15 +7,16 @@ const assert=require('node:assert/strict');const fs=require('node:fs/promises');
  assert.equal(await page.evaluate(()=>document.fonts.check('24px "LifeTop Material Symbols"')),true);
  assert.equal(await page.locator('.dashboard-header #weather-widget').count(),0);
  assert.equal(await page.locator('.weather-summary-row #weather-widget').count(),1);
+ await require('./helpers/browser.cjs').openQuick(page);
  for(const selector of ['#weather-icon','#user-badge .user-avatar']){const r=await page.locator(selector).boundingBox();assert.ok(Math.abs(r.width-r.height)<.1,'square icon slot: '+selector);}
- const card=await page.locator('.glass-card').first().evaluate(e=>getComputedStyle(e).backgroundColor);
- assert.equal(await page.locator('#user-badge').evaluate(e=>getComputedStyle(e).backgroundColor),card);
+ const card=await page.locator('.bookmark-card').evaluate(e=>getComputedStyle(e).backgroundColor);
+ assert.equal(await page.locator('#user-badge').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)');
  await page.getByRole('button',{name:'ユーザープロフィールを開く'}).click();assert.equal(await page.locator('[data-profile-icon=person]').evaluate(e=>getComputedStyle(e,'::after').content),'none');
  await page.locator('#username-input').fill('長い名前でも丸い画像を維持します');
  await page.locator('#profile-icon-upload').setInputFiles({name:'avatar.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j5XkAAAAASUVORK5CYII=','base64')});
  await page.waitForFunction(()=>document.querySelector('#user-badge img'));
  await page.keyboard.press('Escape');
- const image=await page.locator('#user-badge img').boundingBox();assert.ok(Math.abs(image.width-image.height)<.1,'uploaded profile photo remains square before circular crop');
+ await require('./helpers/browser.cjs').openQuick(page);const image=await page.locator('#user-badge img').boundingBox();assert.ok(Math.abs(image.width-image.height)<.1,'uploaded profile photo remains square before circular crop');
  for(const [width,height]of [[320,568],[320,740],[390,844],[600,900],[768,1024],[1440,1000],[740,360]]){
   if(process.env.LAYOUT_WIDTH&&width!==Number(process.env.LAYOUT_WIDTH))continue;
   await page.setViewportSize({width,height});await openGames(page);await page.waitForTimeout(450);

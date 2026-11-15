@@ -1,7 +1,7 @@
-import {quickLinks} from './quick-links-data.js';
-import {userConfig} from './config.js?v=9.0';
-import {save} from './storage.js?v=9.0';
-import {openUIDialog} from './ui-dialog.js';
+import {quickLinks} from './quick-links-data.js?v=13.0.1';
+import {userConfig} from './config.js?v=13.0.1';
+import {save} from './storage.js?v=13.0.1';
+import {openUIDialog} from './ui-dialog.js?v=13.0.1';
 
 const key = value => new URL(value).href.replace(/\/$/,'');
 export function isQuickLinkPinned(item) {
@@ -58,5 +58,5 @@ export function openQuickLinks(category = '') {
 }
 export function initQuickLinks(){
     document.getElementById('quick-links-open')?.addEventListener('click',()=>openQuickLinks());
-    document.addEventListener('lifetop:quick-link-pinned',async()=>{const {renderBookmarks}=await import('./bookmarks.js?v=9.2');renderBookmarks();});
+    document.addEventListener('lifetop:quick-link-pinned',async()=>{const {renderBookmarks}=await import('./bookmarks.js?v=13.0.1');renderBookmarks();});
 }

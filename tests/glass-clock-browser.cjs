@@ -4,7 +4,7 @@ const { withApp } = require('./helpers/browser.cjs');
 withApp(async page => {
     for(const mode of ['light','dark']) {
         await page.locator('[aria-label="Quickパネル"]').click();
-        await page.locator('#settings-tab-appearance').click();
+        await require('./helpers/browser.cjs').quickDetails(page,'appearance');
         await page.locator(`[data-ui-mode=${mode}]`).click();
         const contrast=await page.evaluate(()=>{
             const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d'),style=getComputedStyle(document.body);
@@ -15,13 +15,13 @@ withApp(async page => {
         });
         assert.ok(Object.values(contrast).every(v=>v>=4.5), `${mode} text contrast ${JSON.stringify(contrast)}`);
         if(mode==='light') {
-            await page.waitForFunction(()=>getComputedStyle([...document.querySelectorAll('.color-combo')].at(-1)).backgroundColor==='rgb(247, 250, 255)');
+            assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
             await page.screenshot({path:'test-artifacts/glass-settings-light.png'});
         }
         await page.keyboard.press('Escape');
         await page.locator('#settings-panel').waitFor({state:'hidden'});
-        const card=await page.locator('.glass-card').first().evaluate(e=>{const s=getComputedStyle(e);return {image:s.backgroundImage,blur:s.backdropFilter};});
-        assert.match(card.image,/linear-gradient/);
+        const card=await page.locator('.bookmark-card').evaluate(e=>{const s=getComputedStyle(e);return {image:s.backgroundImage,blur:s.backdropFilter};});
+        assert.equal(card.image,'none');
         assert.match(card.blur,/blur/);
         for(const width of [320,390,768,1440]) {
             await page.setViewportSize({width,height:1000});
@@ -32,8 +32,8 @@ withApp(async page => {
         }
     }
     const result=await page.evaluate(async()=>{
-        const {userConfig}=await import('/js/config.js?v=9.0');
-        const {updateClock}=await import('/js/clock.js?v=9.0');
+        const {userConfig}=await import('/js/config.js?v=13.0.1');
+        const {updateClock}=await import('/js/clock.js?v=13.0.1');
         const OriginalDate=Date;
         const hour=document.querySelector('.clock-hours');
         try {

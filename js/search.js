@@ -1,4 +1,4 @@
-import { userConfig } from './config.js?v=9.0';
+import { userConfig } from './config.js?v=13.0.1';
 let activeIndex = -1;
 let suggestions = [];
 let lastRenderedSignature = '';

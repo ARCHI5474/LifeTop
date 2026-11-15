@@ -1,4 +1,4 @@
-import {openUIDialog} from './ui-dialog.js';
+import {openUIDialog} from './ui-dialog.js?v=13.0.1';
 
 export function openMiniApps(path='mini-apps.html') {
     const existing=document.getElementById('mini-app-dialog');

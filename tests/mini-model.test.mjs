@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { apps,parseCSV,toCSV,evaluateCell,columnName,pageRange,statistics,convertUnit,wavBlob,lineDiff } from '../js/mini-model.js?v=1';
+import { apps,parseCSV,toCSV,evaluateCell,columnName,pageRange,statistics,convertUnit,wavBlob,lineDiff } from '../js/mini-model.js?v=13.0.1';
 assert.equal(apps.length,8);assert.equal(new Set(apps.map(a=>a.id)).size,8);
 const rows=[['名前','数値','改行'],['"引用",あり','12','前\n後'],['日本語','-4','']];assert.deepEqual(parseCSV(toCSV(rows)),rows);
 assert.deepEqual(parseCSV('a,b\r\n1,2\r\n'),[['a','b'],['1','2']]);assert.throws(()=>parseCSV('"unfinished'));

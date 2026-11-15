@@ -1,5 +1,5 @@
-import {huntSpots} from './festival-hunt-spots.js';
-import {eventWindow,discoverEgg} from './festival-model.js';
+import {huntSpots} from './festival-hunt-spots.js?v=13.0.1';
+import {eventWindow,discoverEgg} from './festival-model.js?v=13.0.1';
 export function findHiddenTen(state,config,id,now=Date.now()) {
  if(eventWindow(config,now).phase!=='active')throw Error('10かくれんぼの開催期間外です。');
  if(!huntSpots.some(spot=>spot.id===id))throw Error('未対応の隠れた10です。');

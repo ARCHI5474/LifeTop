@@ -20,29 +20,125 @@ service cloud.firestore {
         && request.resource.data.revision == resource.data.revision + 1;
       allow delete: if false;
     }
-    match /messageRooms/{roomId} {
-      function member() {
-        return request.auth != null
-          && request.auth.token.firebase.sign_in_provider == 'anonymous'
-          && !resource.data.deleted
-          && request.auth.uid in resource.data.members
-          && resource.data.lastUsedAtMs >= request.time.toMillis() - 7776000000;
+
+    function google() { return request.auth != null && request.auth.token.firebase.sign_in_provider == 'google.com'; }
+    function chatRoom(id) { return get(/databases/$(database)/documents/chatRooms/$(id)).data; }
+    function chatAfter(id) { return getAfter(/databases/$(database)/documents/chatRooms/$(id)).data; }
+    function chatMember(id) { let r = chatRoom(id); return google() && !r.deleted && request.auth.uid in r.members; }
+    function chatAccount() { return getAfter(/databases/$(database)/documents/chatAccounts/$(request.auth.uid)).data; }
+    function intent(op,id) { let a=chatAccount(); return a.op==op && a.lastRoomId==id && a.at==request.time; }
+    function roomShape(r) {
+      return r.keys().hasOnly(['schema','name','owner','members','inviteHash','createdAt','updatedAt','deleted','messageCount'])
+        && r.keys().hasAll(['schema','name','owner','members','inviteHash','createdAt','updatedAt','deleted','messageCount'])
+        && r.schema==2 && r.name is string && r.name.size()>0 && r.name.size()<=80
+        && r.owner is string && r.members is list && r.members.size()<=20 && r.members.toSet().size()==r.members.size()
+        && r.inviteHash is string && r.inviteHash.matches('^[a-f0-9]{64}$')
+        && r.createdAt is timestamp && r.updatedAt==request.time && r.deleted is bool && r.messageCount is int && r.messageCount>=0 && r.messageCount<=10000;
+    }
+    function inviteMatches(r,id) { let i=getAfter(/databases/$(database)/documents/chatInvites/$(r.inviteHash)).data; return i.roomId==id && i.members==r.members; }
+    match /chatProfiles/{uid} {
+      allow get: if google() && uid==request.auth.uid;
+      allow create,update: if google() && uid==request.auth.uid && request.resource.data.keys().hasOnly(['at']) && request.resource.data.at==request.time;
+      allow list,delete: if false;
+    }
+    match /chatAccounts/{uid} {
+      function validAccount() {
+        let a=request.resource.data;
+        return google() && uid==request.auth.uid
+          && a.keys().hasOnly(['roomIds','op','lastRoomId','lastMessageId','at','windowStart','createdCount'])
+          && a.keys().hasAll(['roomIds','op','lastRoomId','lastMessageId','at','windowStart','createdCount'])
+          && a.roomIds is list && a.roomIds.size()<=10 && a.roomIds.toSet().size()==a.roomIds.size()
+          && a.lastRoomId is string && a.lastRoomId.matches('^[a-zA-Z0-9_-]{1,80}$')
+          && a.lastMessageId is string && a.lastMessageId.size()<=80 && a.at==request.time
+          && a.createdCount is int && a.createdCount>=0 && a.createdCount<=3 && a.windowStart is timestamp;
       }
-      allow get: if member();
-      allow list, write: if false;
-      match /messages/{messageId} {
-        function roomMember() {
-          let room = get(/databases/$(database)/documents/messageRooms/$(roomId)).data;
-          return request.auth != null
-            && request.auth.token.firebase.sign_in_provider == 'anonymous'
-            && !room.deleted && request.auth.uid in room.members
-            && room.lastUsedAtMs >= request.time.toMillis() - 7776000000;
+      function operation(before) {
+        let a=request.resource.data;
+        let path=/databases/$(database)/documents/chatRooms/$(a.lastRoomId);
+        let r=getAfter(path).data;
+        let old=get(path);
+        return (a.op=='create' && !exists(path) && r.owner==uid && r.members==[uid] && a.roomIds==before.concat([a.lastRoomId]))
+          || (a.op=='join' && exists(path) && !(uid in old.data.members) && uid in r.members && a.roomIds==before.concat([a.lastRoomId]))
+          || (a.op in ['leave','deleteRoom'] && a.lastRoomId in before && !(uid in r.members) && a.roomIds==before.removeAll([a.lastRoomId]))
+          || (a.op=='prune' && a.lastRoomId in before && (!exists(path) || old.data.deleted || !(uid in old.data.members)) && a.roomIds==before.removeAll([a.lastRoomId]))
+          || (a.op in ['send','rotate','deleteMessage'] && a.lastRoomId in before && a.roomIds==before && uid in r.members);
+      }
+      allow get: if google() && uid==request.auth.uid;
+      allow create: if validAccount() && request.resource.data.windowStart==request.time
+        && request.resource.data.createdCount==(request.resource.data.op=='create'?1:0) && operation([]);
+      allow update: if validAccount() && request.time>=resource.data.at+duration.value(1,'s')
+        && ((request.time>=resource.data.windowStart+duration.value(24,'h') && request.resource.data.windowStart==request.time && request.resource.data.createdCount==(request.resource.data.op=='create'?1:0))
+        || (request.resource.data.windowStart==resource.data.windowStart && request.resource.data.createdCount==resource.data.createdCount+(request.resource.data.op=='create'?1:0)))
+        && operation(resource.data.roomIds);
+      allow list,delete: if false;
+    }
+    match /chatRooms/{id} {
+      allow get: if chatMember(id);
+      allow list,delete: if false;
+      allow create: if google() && roomShape(request.resource.data) && request.resource.data.owner==request.auth.uid
+        && request.resource.data.members==[request.auth.uid] && !request.resource.data.deleted && request.resource.data.messageCount==0
+        && request.resource.data.createdAt==request.time && intent('create',id) && inviteMatches(request.resource.data,id);
+      function joinRoom() {
+        let d=request.resource.data;
+        return intent('join',id) && !(request.auth.uid in resource.data.members)
+          && d.diff(resource.data).affectedKeys().hasOnly(['members','updatedAt'])
+          && d.members==resource.data.members.concat([request.auth.uid]) && inviteMatches(d,id);
+      }
+      function leaveRoom() {
+        let d=request.resource.data; let next=resource.data.members.removeAll([request.auth.uid]);
+        return intent('leave',id) && request.auth.uid in resource.data.members
+          && d.diff(resource.data).affectedKeys().hasOnly(['members','owner','deleted','updatedAt']) && d.members==next
+          && d.owner==(resource.data.owner==request.auth.uid ? (next.size()>0?next[0]:request.auth.uid) : resource.data.owner)
+          && d.deleted==(next.size()==0) && (d.deleted || inviteMatches(d,id));
+      }
+      function sendMessage() {
+        let a=chatAccount(); let m=getAfter(/databases/$(database)/documents/chatRooms/$(id)/messages/$(a.lastMessageId)).data;
+        return chatMember(id) && intent('send',id) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['messageCount','updatedAt'])
+          && request.resource.data.messageCount==resource.data.messageCount+1 && m.sender==request.auth.uid && m.createdAt==request.time;
+      }
+      function ownerEdit() {
+        let d=request.resource.data;
+        return resource.data.owner==request.auth.uid && (
+          (intent('rotate',id) && d.diff(resource.data).affectedKeys().hasOnly(['inviteHash','updatedAt']) && d.inviteHash!=resource.data.inviteHash && inviteMatches(d,id))
+          || (intent('deleteRoom',id) && d.diff(resource.data).affectedKeys().hasOnly(['members','deleted','updatedAt']) && d.deleted && d.members.size()==0));
+      }
+      allow update: if google() && !resource.data.deleted && roomShape(request.resource.data) && (joinRoom() || leaveRoom() || sendMessage() || ownerEdit());
+      match /messages/{mid} {
+        allow get: if chatMember(id) && (!exists(/databases/$(database)/documents/chatRooms/$(id)/messages/$(mid)) || resource.data.createdAt>request.time-duration.value(90,'d'));
+        allow list: if chatMember(id) && request.query.limit!=null && request.query.limit<=100 && resource.data.createdAt>request.time-duration.value(90,'d');
+        allow create: if chatMember(id) && intent('send',id) && chatAccount().lastMessageId==mid && mid.matches('^[a-zA-Z0-9_-]{1,80}$')
+          && request.resource.data.keys().hasOnly(['body','sender','nickname','createdAt']) && request.resource.data.keys().hasAll(['body','sender','nickname','createdAt'])
+          && request.resource.data.body is string && request.resource.data.body.size()>0 && request.resource.data.body.size()<=2000
+          && request.resource.data.sender==request.auth.uid && request.resource.data.nickname==request.auth.token.get('name','ユーザー')
+          && request.resource.data.createdAt==request.time && chatAfter(id).messageCount==chatRoom(id).messageCount+1;
+        allow delete: if chatMember(id) && resource.data.sender==request.auth.uid && intent('deleteMessage',id) && chatAccount().lastMessageId==mid;
+        allow update: if false;
+      }
+      match /presence/{uid} {
+        function validStamp(values,index) { return values.size()<=index || (values[index] is timestamp && values[index]<=request.time && values[index]>request.time-duration.value(80,'s')); }
+        function presenceShape() {
+          let d=request.resource.data; let values=d.sessions.values();
+          return d.keys().hasOnly(['sessions','sessionId','nickname','updatedAt','ripple']) && d.keys().hasAll(['sessions','sessionId','nickname','updatedAt'])
+            && d.sessions is map && values.size()>0 && values.size()<=5 && d.sessionId is string && d.sessionId.matches('^[a-zA-Z0-9_-]{16,80}$')
+            && d.updatedAt==request.time && d.nickname==request.auth.token.get('name','ユーザー')
+            && validStamp(values,0) && validStamp(values,1) && validStamp(values,2) && validStamp(values,3) && validStamp(values,4)
+            && (!('ripple' in d) || (d.ripple.keys().hasOnly(['id','x','y','at']) && d.ripple.id is string && d.ripple.id.size()<=80 && d.ripple.x is number && d.ripple.x>=0 && d.ripple.x<=1 && d.ripple.y is number && d.ripple.y>=0 && d.ripple.y<=1 && d.ripple.at is timestamp && d.ripple.at<=request.time));
         }
-        allow get: if roomMember() && resource.data.expiresAt > request.time;
-        allow list: if roomMember() && request.query.limit != null && request.query.limit <= 100
-          && resource.data.expiresAt > request.time;
-        allow write: if false;
+        allow get: if chatMember(id);
+        allow list: if chatMember(id) && request.query.limit!=null && request.query.limit<=20;
+        allow create: if chatMember(id) && uid==request.auth.uid && presenceShape();
+        allow update: if chatMember(id) && uid==request.auth.uid && presenceShape() && request.time>=resource.data.updatedAt+duration.value(1,'s');
+        allow delete: if google() && uid==request.auth.uid;
       }
+    }
+    match /chatInvites/{hash} {
+      allow get: if google() && !chatRoom(resource.data.roomId).deleted && chatRoom(resource.data.roomId).inviteHash==hash;
+      allow list: if false;
+      function validInvite() { let d=request.resource.data; let r=chatAfter(d.roomId); return d.keys().hasOnly(['roomId','members']) && hash==r.inviteHash && !r.deleted && d.members==r.members; }
+      allow create: if google() && validInvite() && chatAfter(request.resource.data.roomId).owner==request.auth.uid;
+      allow update: if google() && validInvite() && request.resource.data.roomId==resource.data.roomId
+        && chatAfter(resource.data.roomId).members!=chatRoom(resource.data.roomId).members;
+      allow delete: if google() && (chatAfter(resource.data.roomId).deleted || chatAfter(resource.data.roomId).inviteHash!=hash);
     }
     match /{document=**} { allow read, write: if false; }
   }

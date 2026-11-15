@@ -7,7 +7,7 @@ withApp(async(page,context)=>{
         const original=Storage.prototype.setItem;window.rejectPreferences=true;
         Storage.prototype.setItem=function(key,value){if(key==='lifetop_v1_0_data'&&window.rejectPreferences)throw new DOMException('quota','QuotaExceededError');return original.call(this,key,value);};
     });
-    const state=()=>page.evaluate(async()=>structuredClone((await import('./js/config.js?v=9.0')).userConfig));
+    const state=()=>page.evaluate(async()=>structuredClone((await import('./js/config.js?v=13.0.1')).userConfig));
     const before=await state();
     await page.evaluate(()=>{window.setTheme('#ff0000');window.setFontFamily('unavailable-test-font');window.toggleClockSec(true);window.toggleClock12h(true);window.setAdvancedSetting('searchEngine','yahoo');window.setColorCombo(1);window.setPresetWallpaper(0);window.setBg('gradient-purple');window.saveUsername('保存できない名前');});
     let after=await state();
@@ -17,7 +17,7 @@ withApp(async(page,context)=>{
     assert.match(await page.locator('#advanced-reset-status').innerText(),/保存できません/);
     await page.evaluate(()=>window.rejectPreferences=false);
     await page.locator('[aria-label="Quickパネル"]').click();
-    await page.locator('#settings-tab-appearance').click();
+    await require('./helpers/browser.cjs').quickDetails(page,'appearance');
     await page.locator('#background-image-url').fill('javascript:alert(1)');
     await page.locator('#background-image-url-apply').click();
     assert.equal(await page.locator('#background-image-url').getAttribute('aria-invalid'),'true');

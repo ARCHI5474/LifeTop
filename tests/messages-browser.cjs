@@ -1,73 +1,21 @@
-const assert = require('node:assert/strict');
-const fs = require('node:fs/promises');
-const path = require('node:path');
-const { chromium } = require('./helpers/browser.cjs');
-
-const sdk = {
-    app: 'export const getApps=()=>[];export const initializeApp=()=>({});',
-    auth: `const auth={currentUser:{uid:'alice',isAnonymous:true},authStateReady:async()=>{}};export const getAuth=()=>auth;export const setPersistence=async()=>{};export const browserLocalPersistence={};export const signInAnonymously=async()=>{};`,
-    'app-check': 'export class ReCaptchaV3Provider{};export const initializeAppCheck=()=>{};',
-    functions: `export const getFunctions=()=>({});export const httpsCallable=()=>async input=>{
-      if(input.op==='list')return {data:{rooms:[{id:'a',name:'Room A',members:1},{id:'b',name:'Room B',members:1}]}};
-      if(input.op==='send'){window.sent.push(input);return new Promise((resolve,reject)=>{window.resolveSend=()=>resolve({data:{messageId:input.requestId}});window.rejectSend=()=>reject(Error('response lost'));});}
-      return {data:{}};
-    };`,
-    firestore: `export const getFirestore=()=>({});export const doc=(_db,_collection,id)=>({id});export const collection=(_db,_collection,id)=>({id,messages:true});export const where=()=>({});export const orderBy=()=>({});export const limit=()=>({});export const query=ref=>ref;export const Timestamp={fromMillis:value=>value};
-    export const onSnapshot=(ref,receive)=>{queueMicrotask(()=>receive(ref.messages?{docs:[]}:{exists:()=>true,data:()=>({name:'Room '+ref.id.toUpperCase(),members:['alice'],owner:'alice'})}));return ()=>{};};`,
-};
-
-(async () => {
-    const browser = await chromium.launch({headless:true,executablePath:process.env.BROWSER_PATH});
-    try {
-        const context = await browser.newContext();
-        const errors = [], failures = [];
-        context.on('page', page => page.on('pageerror', error => errors.push(error.message)));
-        await context.route('**/*', async route => {
-            const url = new URL(route.request().url());
-            if (url.hostname === 'www.gstatic.com') {
-                const name = url.pathname.match(/firebase-([^/]+)\.js$/)?.[1];
-                return sdk[name] ? route.fulfill({body:sdk[name],contentType:'text/javascript'}) : route.abort();
-            }
-            if (url.origin !== 'http://localhost') return route.abort();
-            if (url.pathname === '/js/messages-config.js') return route.fulfill({contentType:'text/javascript',body:"export const messagesConfig={enabled:true,region:'test',appCheckSiteKey:'fixture'};"});
-            const root = path.resolve(__dirname,'..');
-            const file = path.resolve(root,'.'+url.pathname);
-            if (!file.startsWith(root+path.sep)) return route.abort();
-            try { await route.fulfill({body:await fs.readFile(file),contentType:file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.ttf')?'font/ttf':'text/html'}); }
-            catch { await route.fulfill({status:404,body:''}); }
-        });
-        const page = await context.newPage();
-        async function connect() {
-            await page.goto('http://localhost/messages.html');
-            await page.evaluate(()=>{window.sent=[];});
-            await page.locator('#messages-nickname').fill('Alice');
-            await page.locator('#messages-connect').click();
-            await page.getByRole('button',{name:'Room A (1/20)',exact:true}).click();
-        }
-        await connect();
-        await page.locator('#messages-body').fill('first message');
-        await page.locator('#messages-send button').click();
-        await page.waitForFunction(()=>window.sent.length===1);
-        await page.locator('#messages-body').fill('new draft');
-        await page.evaluate(()=>window.resolveSend());
-        await page.waitForFunction(()=>!document.querySelector('#messages-send button').disabled);
-        if (await page.locator('#messages-body').inputValue() !== 'new draft') failures.push('send completion discarded edits made while sending');
-        await connect();
-        await page.locator('#messages-body').fill('retry safely');
-        await page.locator('#messages-send button').click();
-        await page.waitForFunction(()=>window.sent.length===1);
-        await page.evaluate(()=>window.rejectSend());
-        await page.locator('#messages-status').filter({hasText:'response lost'}).waitFor();
-        await page.locator('#messages-send button').click();
-        await page.waitForFunction(()=>window.sent.length===2);
-        if (!await page.evaluate(()=>window.sent[0].requestId===window.sent[1].requestId)) failures.push('lost-response retry used a new server idempotency key');
-        await page.getByRole('button',{name:'Room B (1/20)',exact:true}).click();
-        await page.locator('#messages-body').fill('Room B draft');
-        await page.evaluate(()=>window.resolveSend());
-        await page.waitForFunction(()=>!document.querySelector('#messages-send button').disabled);
-        if (await page.locator('#messages-body').inputValue() !== 'Room B draft') failures.push('send completion from another room discarded the current draft');
-        assert.deepEqual(failures,[],'Messages send safety');
-        assert.deepEqual(errors,[]);
-        console.log('PASS: pending send preserves later edits and room changes; lost-response retry reuses its idempotency key (local SDK fixture)');
-    } finally { await browser.close(); }
-})().catch(error=>{console.error(error);process.exitCode=1;});
+const assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path');
+const{chromium}=require('./helpers/browser.cjs');
+(async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_PATH});try{
+ const context=await browser.newContext({viewport:{width:1440,height:1000}}),errors=[];context.on('page',p=>p.on('pageerror',e=>errors.push(e.message)));
+ await context.route('**/*',async route=>{const u=new URL(route.request().url());if(u.origin!=='http://localhost')return route.abort();
+  if(u.pathname==='/js/google-session.js')return route.fulfill({contentType:'text/javascript',body:`const auth={currentUser:null};let watcher;const fs={onSnapshot(ref,receive){if(ref.kind==='room')queueMicrotask(()=>receive({exists:()=>true,data:()=>({name:'Room '+ref.id.toUpperCase(),members:['alice'],owner:'alice'})}));else{window.emitHistory=values=>receive({docs:values.map(v=>({id:v.id,data:()=>({...v,createdAt:{toMillis:()=>Date.now(),toDate:()=>new Date()}})}))});queueMicrotask(()=>receive({docs:[]}));}return()=>{};}};export async function googleSession(){return{auth,fs,db:{},watch(fn){watcher=fn;queueMicrotask(()=>fn(auth.currentUser));return()=>{};},async login(){auth.currentUser={uid:'alice',isAnonymous:false,displayName:'Alice',providerData:[{providerId:'google.com'}]};watcher(auth.currentUser);},async logout(){auth.currentUser=null;watcher(null);}};}`});
+  if(u.pathname==='/js/chat-service.js')return route.fulfill({contentType:'text/javascript',body:`export function createChatService(){return{calibrate:async()=>{},now:()=>Date.now(),roomRef:id=>({id,kind:'room'}),historyQuery:id=>({id,kind:'history'}),async command(op,input){if(op==='list')return{rooms:[{id:'a',name:'Room A',members:['alice']},{id:'b',name:'Room B',members:['alice']}]};if(op==='send'){window.sent.push(input);return new Promise((resolve,reject)=>{window.resolveSend=()=>resolve({messageId:input.requestId});window.rejectSend=()=>reject(Error('response lost'));});}return{};}}}`});
+  const root=path.resolve(__dirname,'..'),file=path.resolve(root,'.'+u.pathname);if(!file.startsWith(root+path.sep))return route.abort();try{await route.fulfill({body:await fs.readFile(file),contentType:{'.js':'text/javascript','.css':'text/css','.ttf':'font/ttf','.png':'image/png'}[path.extname(file)]||'text/html'});}catch{await route.fulfill({status:404,body:''});}
+ });
+ const p=await context.newPage();await p.goto('http://localhost/messages.html');await p.evaluate(()=>window.sent=[]);
+ await p.locator('#messages-connect:not(:disabled)').waitFor();assert.equal(await p.locator('#messages-controls').isVisible(),false);assert.equal(await p.locator('canvas').count(),0);assert.equal(await p.locator('#live-title').count(),0);
+ await p.locator('#messages-connect').click();await p.locator('#messages-room-title').filter({hasText:'Room A'}).waitFor();
+ await p.locator('#messages-body').fill('first');await p.locator('#messages-send button').click();await p.waitForFunction(()=>sent.length===1);await p.locator('#messages-body').fill('new draft');await p.evaluate(()=>resolveSend());await p.waitForFunction(()=>!document.querySelector('#messages-send button').disabled);assert.equal(await p.locator('#messages-body').inputValue(),'new draft');
+ await p.locator('#messages-body').fill('retry after room change');await p.locator('#messages-send button').click();await p.waitForFunction(()=>sent.length===2);await p.evaluate(()=>rejectSend());await p.locator('#messages-status').filter({hasText:'response lost'}).waitFor();
+ await p.getByRole('button',{name:'Room B',exact:true}).click();await p.locator('#messages-body').fill('other');await p.locator('#messages-send button').click();await p.waitForFunction(()=>sent.length===3);await p.evaluate(()=>resolveSend());await p.waitForFunction(()=>!document.querySelector('#messages-send button').disabled);
+ await p.getByRole('button',{name:'Room A',exact:true}).click();await p.locator('#messages-send button').click();await p.waitForFunction(()=>sent.length===4);assert.equal(await p.evaluate(()=>sent[1].requestId===sent[3].requestId),true);await p.getByRole('button',{name:'Room B',exact:true}).click();await p.locator('#messages-body').fill('protected');await p.evaluate(()=>resolveSend());await p.waitForFunction(()=>!document.querySelector('#messages-send button').disabled);assert.equal(await p.locator('#messages-body').inputValue(),'protected');
+ await p.evaluate(()=>emitHistory([{id:'x',nickname:'Bob',sender:'bob',body:'<img src=x onerror="window.injected=true">'}]));assert.equal(await p.locator('#messages-history img').count(),0);assert.match(await p.locator('#messages-history').textContent(),/<img/);
+ for(const mode of ['light','dark']){await p.evaluate(async mode=>{const{applyUISystemPreferences}=await import('/js/ui-system.js?v=13.0.1');applyUISystemPreferences({colorMode:mode});},mode);for(const[width,height]of[[320,568],[390,844],[768,900],[1440,1000],[844,350]]){await p.setViewportSize({width,height});assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);const send=await p.locator('#messages-send button').boundingBox();assert.ok(send.y+send.height<=height+1,JSON.stringify({send,width,height}));if(width===390||width===1440)await p.screenshot({path:`test-artifacts/messages-v13-${mode}-${width}.png`});}}
+ await p.locator('#messages-logout').click();assert.equal(await p.locator('#messages-controls').isVisible(),false);assert.equal(await p.locator('#messages-history li').count(),0);assert.deepEqual(errors,[]);
+ console.log('PASS: Google login gate, minimal chat without Live, account isolation, text safety, draft preservation, room-specific retry IDs and responsive composer 320–1440px/landscape');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

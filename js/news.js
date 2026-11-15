@@ -760,7 +760,7 @@ function formatRelativeTime(dateInput) {
 function formatClockTime(timestamp) {
     if (!timestamp) return '';
     const d = new Date(timestamp);
-    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+    return `${d.getHours()}時${d.getMinutes().toString().padStart(2, '0')}分`;
 }
 
 function updateFeedStatusUI(statusId, btnId, text, isSpinning = false) {
@@ -939,14 +939,14 @@ export async function loadNews(category = currentCategory, forceManual = false) 
 
     if (cached && !forceManual && now - cached.timestamp < NEWS_FRESH_TTL_MS) {
         renderNewsItems(cached.items);
-        updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (キャッシュ)`);
+        updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
         return;
     }
 
     if (cached && forceManual && now - cached.timestamp < MANUAL_COOLDOWN_MS) {
         const remainMin = Math.max(1, Math.ceil((MANUAL_COOLDOWN_MS - (now - cached.timestamp)) / 60000));
         renderNewsItems(cached.items);
-        updateFeedStatusUI('news-status-text', 'news-refresh-btn', `最新キャッシュ表示中（再取得は${remainMin}分後）`);
+        updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
         return;
     }
 
@@ -956,7 +956,7 @@ export async function loadNews(category = currentCategory, forceManual = false) 
     const reqKey = `news:${category}`;
     const rateCheck = canMakeExternalRequest(reqKey, Boolean(cached));
     if (!rateCheck.allowed) {
-        if (cached) updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (${rateCheck.reason})`);
+        if (cached) updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
         else { renderNewsItems([]); updateFeedStatusUI('news-status-text', 'news-refresh-btn', rateCheck.reason); }
         return;
     }
@@ -970,7 +970,7 @@ export async function loadNews(category = currentCategory, forceManual = false) 
     // キャッシュが既に存在する時のみ他タブのロックを尊重し、未キャッシュ時はデッドロックを防いで即取得
     if (!acquireCrossTabLock(reqKey, !cached)) {
         if (cached) {
-            updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(cached.timestamp)} 取得`);
+            updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
             return;
         }
     }
@@ -983,12 +983,12 @@ export async function loadNews(category = currentCategory, forceManual = false) 
             setBucketCache(NEWS_CACHE_KEY, category, result.items, result.provider);
             if (currentCategory === category) {
                 renderNewsItems(result.items);
-                updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(Date.now())} 更新`);
+                updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(Date.now())}取得`);
             }
         } catch {
             if (cached && currentCategory === category) {
                 renderNewsItems(cached.items);
-                updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (キャッシュ保護)`);
+                updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
             } else if (currentCategory === category) {
                 renderNewsItems([]);
                 updateFeedStatusUI('news-status-text', 'news-refresh-btn', '取得できませんでした');
@@ -1013,14 +1013,14 @@ export async function loadTrends(forceManual = false) {
 
     if (cached && !forceManual && now - cached.timestamp < TRENDS_FRESH_TTL_MS) {
         renderTrendItems(cached.items);
-        updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (キャッシュ)`);
+        updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
         return;
     }
 
     if (cached && forceManual && now - cached.timestamp < MANUAL_COOLDOWN_MS) {
         const remainMin = Math.max(1, Math.ceil((MANUAL_COOLDOWN_MS - (now - cached.timestamp)) / 60000));
         renderTrendItems(cached.items);
-        updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `最新キャッシュ表示中（再取得は${remainMin}分後）`);
+        updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
         return;
     }
 
@@ -1029,7 +1029,7 @@ export async function loadTrends(forceManual = false) {
 
     const rateCheck = canMakeExternalRequest('trends:jp', Boolean(cached));
     if (!rateCheck.allowed) {
-        if (cached) updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (${rateCheck.reason})`);
+        if (cached) updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
         else { renderTrendItems([]); updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', rateCheck.reason); }
         return;
     }
@@ -1043,7 +1043,7 @@ export async function loadTrends(forceManual = false) {
 
     if (!acquireCrossTabLock(reqKey, !cached)) {
         if (cached) {
-            updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(cached.timestamp)} 取得`);
+            updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
             return;
         }
     }
@@ -1055,11 +1055,11 @@ export async function loadTrends(forceManual = false) {
             const result = await fetchTrendsFromNetwork();
             setBucketCache(TRENDS_CACHE_KEY, subKey, result.items, result.provider);
             renderTrendItems(result.items);
-            updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(Date.now())} 更新`);
+            updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(Date.now())}取得`);
         } catch {
             if (cached) {
                 renderTrendItems(cached.items);
-                updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (キャッシュ保護)`);
+                updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
             } else {
                 renderTrendItems([]);
                 updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', '取得できませんでした');
@@ -1088,14 +1088,14 @@ export async function loadYoutube(ytCategory = currentYtCategory, forceManual = 
 
     if (cached && !forceManual && now - cached.timestamp < YT_FRESH_TTL_MS) {
         renderYoutubeItems(cached.items);
-        updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (キャッシュ)`);
+        updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
         return;
     }
 
     if (cached && forceManual && now - cached.timestamp < MANUAL_COOLDOWN_MS) {
         const remainMin = Math.max(1, Math.ceil((MANUAL_COOLDOWN_MS - (now - cached.timestamp)) / 60000));
         renderYoutubeItems(cached.items);
-        updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `最新キャッシュ表示中（再取得は${remainMin}分後）`);
+        updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
         return;
     }
 
@@ -1105,7 +1105,7 @@ export async function loadYoutube(ytCategory = currentYtCategory, forceManual = 
     const reqKey = `yt:${ytCategory}`;
     const rateCheck = canMakeExternalRequest(reqKey, Boolean(cached));
     if (!rateCheck.allowed) {
-        if (cached) updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (${rateCheck.reason})`);
+        if (cached) updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
         else { renderYoutubeItems([]); updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', rateCheck.reason); }
         return;
     }
@@ -1118,7 +1118,7 @@ export async function loadYoutube(ytCategory = currentYtCategory, forceManual = 
 
     if (!acquireCrossTabLock(reqKey, !cached)) {
         if (cached) {
-            updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(cached.timestamp)} 取得`);
+            updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
             return;
         }
     }
@@ -1131,12 +1131,12 @@ export async function loadYoutube(ytCategory = currentYtCategory, forceManual = 
             setBucketCache(YT_CACHE_KEY, ytCategory, result.items, result.provider);
             if (currentYtCategory === ytCategory) {
                 renderYoutubeItems(result.items);
-                updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(Date.now())} 更新`);
+                updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(Date.now())}取得`);
             }
         } catch {
             if (cached && currentYtCategory === ytCategory) {
                 renderYoutubeItems(cached.items);
-                updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (キャッシュ保護)`);
+                updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
             } else if (currentYtCategory === ytCategory) {
                 renderYoutubeItems([]);
                 updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', '取得できませんでした');
@@ -1218,19 +1218,19 @@ export function initNews() {
                 const cached = getBucketCache(NEWS_CACHE_KEY, currentCategory);
                 if (cached) {
                     renderNewsItems(cached.items);
-                    updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (同期)`);
+                    updateFeedStatusUI('news-status-text', 'news-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
                 }
             } else if (event.key === TRENDS_CACHE_KEY) {
                 const cached = getBucketCache(TRENDS_CACHE_KEY, 'jp');
                 if (cached) {
                     renderTrendItems(cached.items);
-                    updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (同期)`);
+                    updateFeedStatusUI('trends-status-text', 'trends-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
                 }
             } else if (event.key === YT_CACHE_KEY) {
                 const cached = getBucketCache(YT_CACHE_KEY, currentYtCategory);
                 if (cached) {
                     renderYoutubeItems(cached.items);
-                    updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(cached.timestamp)} 取得 (同期)`);
+                    updateFeedStatusUI('yt-status-text', 'yt-refresh-btn', `${formatClockTime(cached.timestamp)}取得`);
                 }
             }
         });

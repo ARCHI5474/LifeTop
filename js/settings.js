@@ -1,8 +1,8 @@
 /* LifeTop - settings panel controls */
-import { colorCombos, bgPresets, clockDesigns, userConfig } from "./config.js?v=9.0";
-import { applyStyles, renderColorCombos, renderBgPresets, renderBgSelector } from "./styles.js?v=9.0";
-import { save } from "./storage.js?v=9.0";
-import { updateClock, updateGreeting } from "./clock.js?v=9.0";
+import { colorCombos, bgPresets, clockDesigns, userConfig } from "./config.js?v=13.0.1";
+import { applyStyles, renderColorCombos, renderBgPresets, renderBgSelector } from "./styles.js?v=13.0.1";
+import { save } from "./storage.js?v=13.0.1";
+import { updateClock, updateGreeting } from "./clock.js?v=13.0.1";
 
 let settingsTrigger;
 let helpTrigger;
@@ -157,6 +157,7 @@ export function setPresetWallpaper(index) {
     if (!preset) return;
     backgroundRevision++;
     if (!savePreferences({bgType:preset.bgType,theme:preset.theme,bgImage:preset.url})) return;
+    const live=document.getElementById('live-home-enabled');if(live?.checked)live.click();
     applyStyles();
     renderColorCombos();
     renderBgPresets();
@@ -286,6 +287,7 @@ function commitBackgroundImage(image) {
     renderBgPresets();
     renderBgSelector();
     const status = document.getElementById('background-image-status');
+    const live=document.getElementById('live-home-enabled');if(image&&live?.checked)live.click();
     if (status) status.textContent = image ? '壁紙を設定しました。カードとパネルに透過を適用しています。' : '画像の壁紙を解除しました。';
     return true;
 }
@@ -302,10 +304,11 @@ export function toggleSettings() {
     const overlay = document.getElementById('settings-overlay');
     const isOpen = panel.classList.toggle('active');
     panel.inert = !isOpen;
-    document.querySelector('[aria-label="Quickパネル"]')?.setAttribute('aria-expanded', String(isOpen));
+
     overlay?.classList.toggle('active', isOpen);
     if (isOpen) {
         settingsTrigger = document.activeElement;
+        if(document.getElementById('quick-panel')?.classList.contains('active'))window.toggleQuickPanel();
         panel.querySelector('button')?.focus({ preventScroll: true });
     } else {
         settingsTrigger?.focus({ preventScroll: true });

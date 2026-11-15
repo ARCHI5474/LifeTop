@@ -3,7 +3,7 @@ const { withApp } = require('./helpers/browser.cjs');
 
 withApp(async page => {
     await page.evaluate(async () => {
-        const m = await import('./js/canvas-model.js');
+        const m = await import('./js/canvas-model.js?v=13.0.1');
         const state = await m.readCanvas();
         state.files = Array.from({length:48}, (_,i) => ({id:'file'+i,format:'lifetop-mini',version:1,kind:'studio',app:'document',name:i===0?'日本語とEnglish'.repeat(12):'制作資料 '+i,state:{html:'<p>本文</p>'},createdAt:Date.now(),updatedAt:Date.now()}));
         await m.commitCanvas(state,state.revision);
@@ -11,7 +11,7 @@ withApp(async page => {
     await page.reload();
     for (const width of [375,768,1440]) {
         await page.setViewportSize({width,height:1000});
-        await page.locator('.dashboard-header [aria-label="ファイル"]').click();
+        await require('./helpers/browser.cjs').quickTile(page,'files');
         assert.equal(await page.locator('.cc-saved-files .cc-row').count(),48);
         assert.equal(await page.locator('.cc-app-main').evaluate(e => e.scrollWidth <= e.clientWidth+1),true);
         await page.locator('#cc-workspace-query').fill('English');
@@ -20,7 +20,7 @@ withApp(async page => {
         await page.keyboard.press('Escape');
         await page.locator('#cc-dialog').waitFor({state:'detached'});
     }
-    await page.locator('.dashboard-header [aria-label="ファイル"]').click();
+    await require('./helpers/browser.cjs').quickTile(page,'files');
     await page.locator('[data-cc=file-rename]').first().click();
     const form = page.locator('dialog.cc-form-dialog form');
     await form.locator('[name=name]').fill('変更を維持');

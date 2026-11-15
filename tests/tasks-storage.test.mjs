@@ -18,9 +18,9 @@ globalThis.localStorage = {
     getItem: () => saved,
     setItem: (_key, value) => { saved = value; },
 };
-const { userConfig } = await import('../js/config.js?v=9.0');
-const tasks = await import('../js/todo.js?v=9.0');
-const storage = await import('../js/storage.js?v=9.0');
+const { userConfig } = await import('../js/config.js?v=13.0.1');
+const tasks = await import('../js/todo.js?v=13.0.1');
+const storage = await import('../js/storage.js?v=13.0.1');
 userConfig.todoList = [];
 const originalNow = Date.now;
 Date.now = () => 1000;

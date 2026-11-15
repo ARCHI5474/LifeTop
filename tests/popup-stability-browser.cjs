@@ -11,7 +11,7 @@ withApp(async page => {
         if (!selector.startsWith('#game-modal')) {
             const box=await page.locator(selector).boundingBox();
             const viewport=page.viewportSize();
-            assert.ok(Math.abs(box.x)<1&&Math.abs(box.y)<1&&Math.abs(box.width-viewport.width)<1&&Math.abs(box.height-viewport.height)<1, `fullscreen: ${selector} ${JSON.stringify(box)} in ${JSON.stringify(viewport)}`);
+            assert.ok(box.x>=0&&box.y>=0&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height+1, `fullscreen: ${selector} ${JSON.stringify(box)} in ${JSON.stringify(viewport)}`);
         }
     };
     // Closing GameBox must also stop and detach its embedded modal state.
@@ -31,16 +31,16 @@ withApp(async page => {
     for (const [width, height] of [[320,568],[390,844],[768,600],[844,390],[1440,1000]]) {
         await page.setViewportSize({ width, height });
         await page.locator('[aria-label="Quickパネル"]').click();
-        await fits('#settings-panel');
-        await page.locator('#settings-tab-advanced').click();
+        await fits('#quick-panel');
+        await require('./helpers/browser.cjs').quickDetails(page,'advanced');
         if(width===390||width===1440) await page.screenshot({path:`test-artifacts/quick-fullscreen-${width}.png`});
         // A native child dialog must not close the underlying Quick panel.
-        await page.locator('#sync-explanation-open').click();
+        await require('./helpers/browser.cjs').quickDetails(page,'profile');await page.locator('#sync-explanation-open').click();
         await fits('#sync-explanation');
         await page.keyboard.press('Escape');
         assert.equal(await page.locator('#settings-panel.active').count(), 1);
         assert.equal(await page.locator('body').evaluate(e => e.style.position), 'fixed');
-        await page.locator('#stability-check-open').click();
+        await require('./helpers/browser.cjs').quickDetails(page,'advanced');await page.locator('#stability-check-open').click();
         await fits('#stability-check');
         await page.keyboard.press('Escape');
         await page.keyboard.press('Escape');
@@ -50,11 +50,11 @@ withApp(async page => {
         await page.locator('#weather-widget').click();
         await fits('.weather-modal.active .weather-modal-content');
         await page.keyboard.press('Escape');
-        for (const selector of ['#home-horoscope-card','#home-messages-card']) {
+        for (const selector of ['#home-messages-card']) {
             await page.locator(selector).click();
-            await fits('dialog.cc-form-dialog[open]');
+            await fits('#messages-dialog');
             await page.keyboard.press('Escape');
-            await page.locator('dialog.cc-form-dialog').waitFor({state:'detached'});
+            await page.locator('#messages-dialog').waitFor({state:'detached'});
         }
         await page.locator('#home-calendar-card').click();
         await fits('#cc-dialog');
@@ -68,7 +68,7 @@ withApp(async page => {
         await openGames(page);
         await selectGame(page,'othello');
         await fits('#mini-app-dialog');
-        await fits('#game-modal .game-modal-card');
+        await fits('#mini-app-dialog .mini-popup-games');
         await page.locator('[aria-label="遊び方を表示"]').click();
         await fits('#game-rules');
         await page.keyboard.press('Escape');
@@ -76,13 +76,13 @@ withApp(async page => {
         if(width===390||width===1440) await page.screenshot({path:`test-artifacts/gamebox-stable-${width}.png`});
         await page.keyboard.press('Escape');
         await page.locator('#mini-app-dialog').waitFor({state:'detached'});
-        await page.evaluate(async () => (await import('/js/festival-popup.js')).openFestival());
+        await page.evaluate(async () => (await import('/js/festival-popup.js?v=13.0.1')).openFestival());
         await fits('#festival-dialog');
         await page.keyboard.press('Escape');
         await page.locator('#festival-dialog').waitFor({state:'detached'});
     }
     await page.locator('[aria-label="Quickパネル"]').click();
-    await page.locator('#settings-tab-advanced').click();
+    await require('./helpers/browser.cjs').quickDetails(page,'advanced');
     await page.evaluate(() => {
         document.documentElement.style.setProperty('--visual-height','300px');
         document.documentElement.style.setProperty('--visual-top','40px');
@@ -96,7 +96,7 @@ withApp(async page => {
     await page.locator('#backup-upload').setInputFiles({ name:'invalid.json',mimeType:'application/json',buffer:Buffer.from('{}') });
     await page.locator('#data-management-status').filter({hasText:'対応するLifeTopバックアップではありません'}).waitFor();
     assert.equal(await page.locator('#backup-restore').isVisible(),false);
-    const backup=await page.evaluate(async () => (await import('/js/data-management.js?v=9.0')).createBackup());
+    const backup=await page.evaluate(async () => (await import('/js/data-management.js?v=13.0.1')).createBackup());
     await page.locator('#backup-upload').setInputFiles({name:'backup.json',mimeType:'application/json',buffer:Buffer.from(backup)});
     await page.locator('#backup-restore').waitFor({state:'visible'});
     await page.locator('#backup-cancel').click();

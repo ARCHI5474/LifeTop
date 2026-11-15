@@ -1,12 +1,12 @@
-import {initUISystem} from './ui-system.js?v=10.0-ui5';
-import { apps,legacyApps } from './mini-model.js?v=1';
-import {diaryApp,convertApp,browserApp,codeApp} from './studio-new.js';
-import {readCanvas,saveStudioFile} from './canvas-model.js';
-import {initFestivalEntry} from './festival-entry.js';
-import { makeContext,download,esc } from './mini-common.js?v=1';
-import { documentApp,sheetApp,slidesApp } from './mini-office.js?v=1';
-import { imageApp,pdfApp,audioApp,videoApp } from './mini-media.js?v=1';
-import { dataApp,compareApp,textApp,unitsApp,diagramApp,drawApp,submitApp } from './mini-tools.js?v=1';
+import {initUISystem} from './ui-system.js?v=13.0.1';
+import { apps,legacyApps } from './mini-model.js?v=13.0.1';
+import {diaryApp,convertApp,browserApp,codeApp} from './studio-new.js?v=13.0.1';
+import {readCanvas,saveStudioFile} from './canvas-model.js?v=13.0.1';
+import {initFestivalEntry} from './festival-entry.js?v=13.0.1';
+import { makeContext,download,esc } from './mini-common.js?v=13.0.1';
+import { documentApp,sheetApp,slidesApp } from './mini-office.js?v=13.0.1';
+import { imageApp,pdfApp,audioApp,videoApp } from './mini-media.js?v=13.0.1';
+import { dataApp,compareApp,textApp,unitsApp,diagramApp,drawApp,submitApp } from './mini-tools.js?v=13.0.1';
 
 const mounts={document:documentApp,sheet:sheetApp,slides:slidesApp,diary:diaryApp,convert:convertApp,browser:browserApp,code:codeApp,image:imageApp,pdf:pdfApp,audio:audioApp,video:videoApp,diagram:diagramApp,data:dataApp,compare:compareApp,text:textApp,units:unitsApp,draw:drawApp,submit:submitApp};
 const hasApp=id=>Object.hasOwn(mounts,id);

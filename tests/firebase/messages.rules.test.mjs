@@ -9,6 +9,11 @@ try{
  await assertSucceeds(getDoc(doc(alice,'messageRooms/r')));for(const db of [outsider,google,guest]){await assertFails(getDoc(doc(db,'messageRooms/r')));await assertFails(getDoc(doc(db,'messageRooms/r/messages/m')));}
  await assertFails(getDocs(collection(alice,'messageRooms')));await assertFails(getDoc(doc(alice,'messageInvites/secret')));await assertFails(setDoc(doc(alice,'messageRooms/r'),{members:['alice','outsider']}));await assertFails(setDoc(doc(alice,'messageRooms/r/messages/new'),{body:'bad'}));await assertFails(deleteDoc(doc(alice,'messageRooms/r/messages/m')));await assertFails(getDoc(doc(alice,'messageRooms/r/messages/old')));
  const messages=collection(alice,'messageRooms/r/messages');await assertFails(getDocs(query(messages,limit(101))));await assertFails(getDocs(messages));await assertSucceeds(getDocs(query(messages,where('expiresAt','>',Timestamp.fromMillis(Date.now()+60000)),orderBy('expiresAt','desc'),limit(100))));
+ const presence=collection(alice,'messageRooms/r/presence');
+ await assertFails(setDoc(doc(alice,'messageRooms/r/presence/alice'),{expiresAtMs:Date.now()+80000}));
+ await assertFails(getDocs(presence));await assertFails(getDocs(query(presence,limit(21))));
+ await assertSucceeds(getDocs(query(presence,orderBy('updatedAtMs','desc'),limit(20))));
+ await assertFails(getDocs(query(collection(outsider,'messageRooms/r/presence'),limit(20))));
  const canvas=doc(google,'users/alice/canvas/state');await assertSucceeds(setDoc(canvas,{schema:1,revision:1,payload:'{}',updatedAt:serverTimestamp()}));await assertFails(getDoc(doc(alice,'users/alice/canvas/state')));await assertFails(getDoc(doc(outsider,'users/alice/canvas/state')));
  await env.withSecurityRulesDisabled(c=>setDoc(doc(c.firestore(),'messageRooms/r'),{deleted:true,members:[],lastUsedAtMs:0},{merge:true}));await assertFails(getDoc(doc(alice,'messageRooms/r/messages/m')));
  console.log('PASS: Messages membership, expiry, read limits, direct-write denial, deletion, private invites; Canvas Google-owner isolation');

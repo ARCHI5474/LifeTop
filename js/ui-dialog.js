@@ -1,4 +1,4 @@
-import {applyPasidea} from './pasidea.js';
+import {applyPasidea} from './pasidea.js?v=13.0.1';
 
 export function openUIDialog(dialog, {onRequestClose = () => true} = {}) {
     applyPasidea(dialog);

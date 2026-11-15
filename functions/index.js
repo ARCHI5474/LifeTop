@@ -2,10 +2,18 @@ import {initializeApp} from 'firebase-admin/app';
 import {getFirestore,Timestamp} from 'firebase-admin/firestore';
 import {onCall,HttpsError} from 'firebase-functions/v2/https';
 import {onSchedule} from 'firebase-functions/v2/scheduler';
-import {createMessagesService,DAY} from './messages-service.js';
+import {createMessagesService,DAY} from './messages-service.js?v=13.0.1';
+import {createLiveService} from './live-service.js?v=13.0.1';
 initializeApp();const db=getFirestore(),service=createMessagesService(db,Timestamp);
-export const messagesCommand=onCall({region:'asia-northeast1',enforceAppCheck:true,maxInstances:3,timeoutSeconds:30},async request=>{
- if(!request.auth||request.auth.token.firebase?.sign_in_provider!=='anonymous')throw new HttpsError('unauthenticated','匿名認証が必要です。');
+const liveService=createLiveService(db);
+// Only the Firebase local emulator skips App Check; deployed functions always enforce it.
+const enforceAppCheck=process.env.FUNCTIONS_EMULATOR!=='true';
+export const liveCommand=onCall({region:'asia-northeast1',enforceAppCheck,maxInstances:3,timeoutSeconds:30},async request=>{
+ if(!request.auth||request.auth.token.firebase?.sign_in_provider!=='google.com')throw new HttpsError('unauthenticated','Google認証が必要です。');
+ try{return await liveService(request.auth.uid,request.data);}catch(e){throw new HttpsError('failed-precondition',e.message||'Liveに接続できませんでした。');}
+});
+export const messagesCommand=onCall({region:'asia-northeast1',enforceAppCheck,maxInstances:3,timeoutSeconds:30},async request=>{
+ if(!request.auth||request.auth.token.firebase?.sign_in_provider!=='google.com')throw new HttpsError('unauthenticated','Google認証が必要です。');
  try{return await service(request.auth.uid,request.data);}catch(e){if(e.code==='resource-exhausted')throw new HttpsError('resource-exhausted','少し待って再試行してください。');throw new HttpsError('failed-precondition',e.message||'操作できませんでした。');}
 });
 export const cleanupMessages=onSchedule({schedule:'every 24 hours',region:'asia-northeast1',maxInstances:1,timeoutSeconds:540},async()=>{

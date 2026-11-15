@@ -10,7 +10,7 @@ withApp(async page=>{
  await page.screenshot({path:'test-artifacts/pasidea-game-popup.png'});
  await page.locator('#mini-app-dialog > header [data-cancel]').click();
  await page.locator('#mini-app-dialog').waitFor({state:'detached'});
- await page.locator('.dashboard-header [aria-label="ファイル"]').click();
+ await require('./helpers/browser.cjs').quickTile(page,'files');
  await page.locator('#cc-dialog').waitFor();
  const files=await page.locator('#cc-dialog').boundingBox();
  assert.ok(files.width>1000&&files.width>files.height,'landscape Files popup');

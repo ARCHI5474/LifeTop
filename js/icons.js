@@ -97,7 +97,10 @@ const glyphs = {
   "wb_twilight": "e1c6",
   "weather_snowy": "e2cd"
 };
+const outlinePaths={photo_camera:'M8 5l1.5-2h5L16 5h4v15H4V5z M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0',forum:'M4 4h16v12H9l-5 4z M8 8h8 M8 12h6',calendar_month:'M4 5h16v15H4z M8 3v4 M16 3v4 M4 10h16 M8 14h2 M14 14h2',fullscreen:'M8 3H3v5 M16 3h5v5 M21 16v5h-5 M8 21H3v-5',auto_awesome:'m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z M20 2v4 M18 4h4',celebration:'m3 21 4-13 9 9z M13 3l1 4 M19 5l-3 4 M21 11l-4 1 M9 3l1 2'};
+export function outlineIcon(name){return outlinePaths[name]?`<svg class="cc-icon-svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${outlinePaths[name]}"/></svg>`:'';}
 export function createMaterialIcon(name) {
+    if(outlinePaths[name]){const holder=document.createElement('span');holder.className='ui-outline-icon';holder.innerHTML=outlineIcon(name);holder.setAttribute('aria-hidden','true');return holder;}
     const icon = document.createElement('span');
     icon.className = 'material-symbols-outlined';
     icon.setAttribute('aria-hidden', 'true');

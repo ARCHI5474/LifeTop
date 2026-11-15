@@ -3,7 +3,7 @@ const { withApp } = require('./helpers/browser.cjs');
 
 withApp(async page => {
     await page.locator('[aria-label="Quickパネル"]').click();
-    await page.locator('#settings-tab-appearance').click();
+    await require('./helpers/browser.cjs').quickDetails(page,'appearance');
     for (const mode of ['light', 'dark', 'light']) {
         await page.locator(`[data-ui-mode="${mode}"]`).click();
         assert.equal(await page.locator('html').getAttribute('data-theme'), mode);
@@ -15,7 +15,7 @@ withApp(async page => {
     await page.locator('#loading-screen').waitFor({ state: 'detached' });
     assert.equal(await page.locator('body').getAttribute('data-theme'), 'light');
     assert.equal(await page.locator('body').evaluate(e => getComputedStyle(e).backgroundColor), 'rgb(245, 247, 250)');
-    assert.equal(await page.locator('#todo-input').evaluate(e => getComputedStyle(e).backgroundColor), 'rgb(247, 250, 255)');
+    assert.equal(await page.locator('#todo-input').evaluate(e => getComputedStyle(e).backgroundColor), 'rgb(255, 255, 255)');
     assert.equal(await page.locator('.weather-summary-icon').evaluate(e => getComputedStyle(e).backgroundColor), 'rgb(230, 238, 247)');
     assert.equal(await page.locator('.hero-section + .weather-summary-row').count(), 1);
     // Scopes inserted with an old theme must follow the current page theme.
@@ -27,9 +27,9 @@ withApp(async page => {
     await page.waitForFunction(() => document.querySelector('#theme-probe').dataset.theme === 'light');
     await page.locator('#theme-probe').evaluate(e => e.remove());
     await page.evaluate(async () => {
-        const { userConfig } = await import('/js/config.js?v=9.0');
-        const { applyStyles } = await import('/js/styles.js?v=9.0');
-        const { applyUISystemPreferences } = await import('/js/ui-system.js');
+        const { userConfig } = await import('/js/config.js?v=13.0.1');
+        const { applyStyles } = await import('/js/styles.js?v=13.0.1');
+        const { applyUISystemPreferences } = await import('/js/ui-system.js?v=13.0.1');
         userConfig.bgType = 'gradient-purple'; userConfig.highContrast = true;
         applyStyles(); applyUISystemPreferences(userConfig);
         document.documentElement.classList.add('high-contrast');
@@ -39,17 +39,17 @@ withApp(async page => {
         return [s.getPropertyValue('--ui-text').trim(), s.getPropertyValue('--ui-text-muted').trim()];
     });
     assert.deepEqual(colors, ['#101820', '#101820']);
-    await page.waitForFunction(() => getComputedStyle(document.querySelector('#bg-overlay'), '::after').backgroundColor === 'rgba(242, 248, 255, 0.12)');
+    await require('./helpers/browser.cjs').quickDetails(page,'appearance');await page.locator('#live-home-enabled').uncheck();await page.keyboard.press('Escape');
     for (const width of [320, 390, 768, 1440]) {
         await page.setViewportSize({ width, height: 1000 });
         const search = await page.locator('#search-form').boundingBox();
         const cards = await page.locator('.weather-summary-row').boundingBox();
         assert.ok(cards.y >= search.y + search.height, 'summary cards below search');
-        assert.equal(await page.locator('.weather-summary-row > button').count(), 4);
+        assert.equal(await page.locator('.weather-summary-row > button').count(), 3);
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true);
     }
     await page.locator('[aria-label="Quickパネル"]').click();
-    await page.locator('#settings-tab-appearance').click();
+    await require('./helpers/browser.cjs').quickDetails(page,'appearance');
     assert.equal(await page.locator('[data-ui-mode=light]').getAttribute('aria-pressed'), 'true');
     await page.keyboard.press('Escape');
     const welcome = page.locator('.festival-pop button').filter({ hasText: '閉じる' });

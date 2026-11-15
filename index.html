@@ -12,7 +12,7 @@
     <link rel="preload" href="icons/material/material-symbols-outlined.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="stylesheet" href="css/style.css?v=10.0-ui7"> <!-- バージョン番号は毎回更新すること -->
 <link rel="stylesheet" href="css/festival.css?v=10.1-hide1">
-<link rel="stylesheet" href="css/35-unified-ui.css?v=10.0-ui9"><link rel="stylesheet" href="css/36-glass-finish.css?v=11.0.0"><link rel="stylesheet" href="css/37-pasidea.css?v=12.0.0"><link rel="stylesheet" href="css/38-v12.css?v=12.0.0"></head>
+<link rel="stylesheet" href="css/35-unified-ui.css?v=10.0-ui9"><link rel="stylesheet" href="css/36-glass-finish.css?v=11.0.0"><link rel="stylesheet" href="css/37-pasidea.css?v=12.0.0"><link rel="stylesheet" href="css/38-v12.css?v=12.0.0"><link rel="stylesheet" href="css/39-live.css?v=13.0.0"><link rel="stylesheet" href="css/40-v13-system.css?v=13.0.1"></head>
 <body id="top" class="ui-system ui-scope">
 
 <!-- 起動時のブランドシーケンス -->
@@ -28,7 +28,7 @@
         <span class="loading-logo">LifeTop<span class="loading-logo-dot" aria-hidden="true">.</span></span>
         <p class="loading-tagline">全部ここで。</p>
         <div class="loading-status"><span class="loading-status-dot" aria-hidden="true"></span><span class="loading-label">あなたのスタートページを準備しています</span></div>
-        <p class="loading-release">v12.0 <span aria-hidden="true">/</span> LifeTop 12</p>
+        <p class="loading-release">v13.0 <span aria-hidden="true">/</span> LifeTop Live</p>
     </div>
 </div>
 
@@ -36,25 +36,7 @@
 <div class="bg-overlay" id="bg-overlay"></div>
 
 <!-- ヘッダーエリア：天気とコントロール -->
-<header class="dashboard-header">
-    <div class="header-left">
-    
-        
-        <button type="button" class="user-badge animate-fade-in" id="user-badge" onclick="openUsernameSettings()" title="ユーザープロフィールを開く" aria-label="ユーザープロフィールを開く">
-            <span class="user-avatar" aria-hidden="true">
-                <span class="material-symbols-outlined">person</span>
-            </span>
-            <span class="header-user-name" id="header-user-name">ゲスト</span>
-        </button>
-    </div>
-    <div class="header-right">
-        <button type="button" class="icon-btn" data-cc="panel" data-id="workspace" title="ファイル" aria-label="ファイル"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span></button>
-        <button type="button" class="icon-btn" onclick="openMiniApps()" title="Studio" aria-label="Studioを開く"><span class="material-symbols-outlined" aria-hidden="true">grid_view</span></button>
-        <!-- 設定トリガー -->
-        <button type="button" class="icon-btn" id="camera-open" title="カメラ" aria-label="カメラを開く" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 5l1.5-2h5L16 5h4a1 1 0 011 1v13a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z"/><circle cx="12" cy="12" r="4"/></svg></button>
-        <button type="button" class="icon-btn animate-fade-in" onclick="toggleSettings()" title="Quickパネル" aria-label="Quickパネル" aria-controls="settings-panel" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">settings</span></button>
-    </div>
-</header>
+<header class="dashboard-header"><button type="button" class="quick-handle icon-btn" id="quick-panel-open" onclick="toggleQuickPanel()" aria-label="Quickパネル" aria-controls="quick-panel" aria-expanded="false" title="Quickパネル"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></header>
 
 <div class="modal-overlay" id="settings-overlay" onclick="toggleSettings()"></div>
 
@@ -291,7 +273,7 @@
         </div>
     </section>
 
-    <section class="weather-summary-row" aria-label="天気・占い・Messages・カレンダー">
+    <section class="weather-summary-row" aria-label="天気・Messages・カレンダー">
         <button type="button" id="weather-widget" class="weather-summary-card glass-card" onclick="showWeatherDetail()" title="天気の詳細を表示" aria-label="天気の詳細を表示">
             <span class="material-symbols-outlined weather-summary-icon" id="weather-icon" aria-hidden="true">filter_drama</span>
             <span class="weather-summary-copy"><span class="weather-summary-label">現在の天気</span><span class="weather-summary-values"><strong id="weather-temp">--°C</strong><span id="weather-desc">読込中...</span></span></span>
@@ -534,16 +516,22 @@
 </div>
 
 <!-- 設定サイドパネル -->
+<div class="modal-overlay" id="quick-overlay" onclick="toggleQuickPanel()"></div><section id="quick-panel" class="settings-panel quick-panel" role="dialog" aria-modal="true" aria-labelledby="quick-title" inert><header class="settings-header"><h2 id="quick-title">Quickパネル</h2><button type="button" class="icon-btn close-action" aria-label="Quickパネルを閉じる" onclick="toggleQuickPanel()"></button></header>    <div id="quick-overview" class="quick-overview"><div class="quick-account"><button type="button" class="user-badge animate-fade-in" id="user-badge" onclick="openUsernameSettings()" title="ユーザープロフィールを開く" aria-label="ユーザープロフィールを開く">
+            <span class="user-avatar" aria-hidden="true">
+                <span class="material-symbols-outlined">person</span>
+            </span>
+            <span class="header-user-name" id="header-user-name">ゲスト</span>
+        </button><button type="button" class="text-btn" id="quick-edit" aria-pressed="false">編集</button></div><div id="quick-tiles" class="quick-tiles"></div><div id="quick-tile-editor" hidden></div><p id="quick-status" role="status" aria-live="polite"></p></div></section>
 <div class="settings-panel" id="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title" inert>
     <div class="settings-header popup-modal-header">
         <div>
-            <p class="help-kicker">CUSTOMIZE</p>
-            <h2 id="settings-title">Quickパネル</h2>
+
+            <h2 id="settings-title">設定</h2>
         </div>
         <button type="button" class="icon-btn close-action" aria-label="設定を閉じる" title="閉じる" onclick="toggleSettings()"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
     </div>
 
-    <div class="settings-body">
+<div class="settings-body">
         <!-- お知らせ -->
         <div class="notice-board" id="notice-area">
             <span class="notice-tag">INFO</span>
@@ -557,7 +545,7 @@
             </a>
         </nav>
 
-        <section class="settings-section cloud-sync-section" data-setting-category="advanced" aria-labelledby="cloud-sync-title">
+        <section class="settings-section cloud-sync-section" data-setting-category="profile" aria-labelledby="cloud-sync-title">
             <span class="cloud-save-badge" id="cloud-save-mode">この端末に保存中</span>
             <h3 class="settings-label" id="cloud-sync-title">Googleで、いつものLifeTopを</h3>
             <p class="settings-help">ログインすると、この端末の設定・ブックマーク・タスク・メモを自動で引き継ぎ、ほかの端末でも使えます。</p>
@@ -638,7 +626,15 @@
             <p id="background-image-status" class="settings-help" role="status" aria-live="polite"></p>
         </div>
 
-        <!-- 時計表示設定 -->
+        <div class="settings-section" data-setting-category="appearance">
+            <label class="settings-label" for="live-home-enabled">Liveの壁紙</label>
+            <label class="toggle-wrapper"><span>今の空と天気をホームに映す</span><input type="checkbox" id="live-home-enabled"></label>
+            <p class="settings-help">端末ごとの設定です。Liveで選んだ場所と景色に連動し、オフにすると元の壁紙に戻ります。</p>
+            <p id="live-home-status" class="settings-help" role="status"></p>
+            <button type="button" class="tonal-btn" onclick="openPagePopup('messages.html','Messages')">Messagesを開く</button>
+        </div>
+
+        <div class="settings-section" data-setting-category="appearance" id="live-home-options"><h3 class="settings-label">Live</h3><div class="quick-live-fields"><label>景色<select id="live-home-scene"><option value="aurora">Aurora</option><option value="ripple">Ripple</option></select></label><label>場所<select id="live-home-location"><option value="tokyo">東京</option><option value="london">ロンドン</option><option value="newyork">ニューヨーク</option><option value="current">現在地</option></select></label></div><div class="mini-tools"><button type="button" class="tonal-btn" id="live-home-mic">マイク</button><label class="mini-file-label">音声ファイル<input id="live-home-audio-file" type="file" accept="audio/*" hidden></label><button type="button" class="text-btn" id="live-home-audio-stop" disabled>停止</button></div><p class="settings-help" id="live-home-audio-status" role="status"></p><p id="live-home-people" class="settings-help" role="status"></p></div><!-- 時計表示設定 -->
         <div class="settings-section" data-setting-category="clock">
             <label class="settings-label">時計の設定</label>
             <div class="toggle-wrapper">
@@ -692,8 +688,8 @@
             <p class="settings-help">Festivalは今後も不定期に開催します。開催のお知らせをお楽しみに。過去のFestivalで獲得した記念品や記録は、いつでも見返せます。</p>
             <a class="tonal-btn" href="festival.html#memories" data-festival-memories aria-haspopup="dialog">FestivalMemoriesを見る</a>
             <h3 id="settings-about-title">情報</h3>
-            <p class="settings-about-version">LifeTop <span id="app-version-label">v12.0</span></p>
-            <p class="settings-about-codename">リリース：<span lang="en">LifeTop 12</span></p>
+            <p class="settings-about-version">LifeTop <span id="app-version-label">v13.0</span></p>
+            <p class="settings-about-codename">リリース：<span lang="en">LifeTop Live</span></p>
             <details class="environment-info" open>
                 <summary>推奨環境・対応環境</summary>
                 <p>推奨：Windows・macOSの最新版Chrome／Edge。PCでは幅1280px以上、スマートフォンでは幅390px以上が見やすい構成です。</p>
@@ -704,7 +700,7 @@
                     <dt>端末内保存・オフライン</dt><dd>読み込み済みの画面では、タスク・メモ・設定を端末内に保存できます。ブラウザのデータ削除で端末の保存内容も消えます。オフラインでの初回起動や、画面の再読み込みは保証されません。天気・ニュースの更新には通信が必要です。</dd>
                     <dt>容量とバックアップ</dt><dd>クラウド同期は合計900KBまで、JSONバックアップの保存・復元は10MBまで。アップロード画像も容量に含まれます。ブラウザ側の保存容量が不足すると端末保存も失敗するため、保存エラーの表示をご確認ください。</dd>
                     <dt>制限がある環境</dt><dd>プライベートブラウズではログインや保存内容が終了時に失われることがあります。SNSなどのアプリ内ブラウザでは通常のChromeやSafariで開き直してください。古いブラウザ、Internet Explorer、JavaScript無効、サイトデータ保存禁止、file://での直接起動は対象外です。</dd>
-                    <dt>操作と見やすさ</dt><dd>キーボード・マウス・タッチ操作に対応。Quickパネルで文字サイズ・コントラスト・動きを減らす設定を変更できます。音声読み上げの動作はブラウザと支援技術によって異なります。</dd>
+                    <dt>操作と見やすさ</dt><dd>キーボード・マウス・タッチ操作に対応。設定で文字サイズ・コントラスト・動きを減らす設定を変更できます。音声読み上げの動作はブラウザと支援技術によって異なります。</dd>
                 </dl>
                 <p class="settings-help">上記は設計上の対応対象です。すべてのOS・端末の組み合わせで実機検証済みという意味ではありません。</p>
                 <a href="https://firebase.google.com/docs/web/environments-js-sdk" target="_blank" rel="noopener noreferrer">Google同期で使用するFirebaseの対応環境</a>
@@ -713,7 +709,7 @@
     </div>
 </div>
 
-<footer class="app-footer"><span class="footer-brand"><img class="footer-brand-icon" src="icons/icon-192.png" alt="" width="20" height="20" decoding="async">LifeTop</span><span>全部ここで。</span></footer>
+<footer class="app-footer">LifeTop <span id="footer-version">v13.0</span></footer>
 <div id="storage-status" class="storage-status" role="status" hidden></div>
 
 <dialog id="stability-check" class="sync-guide stability-check" aria-labelledby="stability-check-title" aria-describedby="stability-check-description">
@@ -821,7 +817,7 @@
     </div>
 </div>
 
-<script type="module" src="./js/main.js?v=12.0.0"></script>
+<script type="module" src="./js/main.js?v=13.0.1"></script>
 
 
 </body>

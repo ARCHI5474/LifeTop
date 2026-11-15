@@ -20,13 +20,13 @@ withApp(async page => {
         const input = await page.locator('#search-input').boundingBox();
         assert.ok(input.width >= 100, `usable search input at ${width}px`);
         await page.locator('[aria-label="Quickパネル"]').click();
-        await page.locator('#settings-tab-advanced').click();
+        await require('./helpers/browser.cjs').quickDetails(page,'advanced');
         await page.locator('.settings-body').evaluate(e => { e.scrollTop = 240; });
         const tabs = await page.locator('.settings-category-tabs').boundingBox();
         const body = await page.locator('.settings-body').boundingBox();
         assert.ok(tabs.y >= body.y - 1, 'category navigation remains in view');
         assert.equal(await page.locator('.settings-body').evaluate(e => e.scrollWidth <= e.clientWidth + 1), true);
-        await page.locator('#settings-tab-profile').click();
+        await require('./helpers/browser.cjs').quickDetails(page,'profile');
         assert.equal(await page.locator('#settings-category-profile').isVisible(), true);
         if (width === 390) await page.screenshot({ path: 'test-artifacts/quick-panel-mobile.png' });
         await page.keyboard.press('Escape');

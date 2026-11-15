@@ -1,9 +1,12 @@
 /* LifeTop - clock and greeting */
-import { userConfig } from "./config.js?v=9.0";
+import { userConfig } from "./config.js?v=13.0.1";
 
 // 挨拶と時計の更新
 export function updateClock() {
     const now = new Date();
+    const composition=document.querySelector?.('.clock-composition');
+    if(composition&&!composition.querySelector('.clock-analog'))composition.insertAdjacentHTML('beforeend','<svg class="clock-analog" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="94"/><path class="clock-analog-hour" d="M100 100V51"/><path class="clock-analog-minute" d="M100 100V25"/><path class="clock-analog-second" d="M100 112V20"/><circle cx="100" cy="100" r="3"/></svg>');
+    if(composition){composition.style.setProperty('--hand-hour',((now.getHours()%12)*30+now.getMinutes()*.5)+'deg');composition.style.setProperty('--hand-minute',(now.getMinutes()*6+now.getSeconds()*.1)+'deg');composition.style.setProperty('--hand-second',(now.getSeconds()*6)+'deg');composition.querySelector('.clock-analog-second').style.display=userConfig.clockShowSec?'':'none';}
     let hours = now.getHours();
     const minutes = now.getMinutes().toString().padStart(2, '0');
     const seconds = now.getSeconds().toString().padStart(2, '0');

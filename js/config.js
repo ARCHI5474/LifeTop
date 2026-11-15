@@ -1,13 +1,13 @@
-import {fixedBookmarks} from './quick-links-data.js';
+import {fixedBookmarks} from './quick-links-data.js?v=13.0.1';
 
 /* ========================    
-LifeTop v12.0
+LifeTop v13.0
    ======================== */
 const UPDATE_CONFIG = {
-    notice: "LifeTop v12.0。カメラと1000件のQuickアクセスを追加。FestivalMemoriesはQuickパネルの詳細から。Festivalは今後も不定期開催します。",
-    tag: "LifeTop v12.0"
+    notice: "LifeTop v13.0。上から開くQuickパネル、ホームのLive、Googleアカウントで使うMessages。",
+    tag: "LifeTop v13.0"
 };
-export const APP_VERSION = '12.0.0';
+export const APP_VERSION = '13.0.0';
 /* ========================================= */
 
 const STORAGE_KEY = 'lifetop_v1_0_data';
@@ -33,7 +33,11 @@ const clockDesigns = [
     {id:'split',name:'Split',description:'分割パネル'},
     {id:'digital',name:'Digital',description:'デジタル表示'},
     {id:'classic',name:'Classic',description:'クラシック'},
-    {id:'blueprint',name:'Blueprint',description:'設計図'}
+    {id:'blueprint',name:'Blueprint',description:'設計図'},
+    {id:'bloom',name:'Bloom',description:'まるく、かわいく'},
+    {id:'editorial',name:'Editorial',description:'雑誌のような佇まい'},
+    {id:'terminal',name:'Terminal',description:'端正な等幅数字'},
+    {id:'analog',name:'Analog',description:'針で感じる時間'}
 ];
 const bgGradients = {
     'gradient-blue': '#203A52',
@@ -79,7 +83,17 @@ const colorCombos = [
     { name: 'サイバー', bgType: 'gradient-neon', theme: '#22B4BA' },
     { name: 'ミッドナイト', bgType: 'gradient-midnight', theme: '#4962A8' },
     { name: 'サンライズ', bgType: 'gradient-sunrise', theme: '#C27339' },
-    { name: 'チェリー', bgType: 'gradient-cherry', theme: '#B53957' }
+    { name: 'チェリー', bgType: 'gradient-cherry', theme: '#B53957' },
+    {name:'スレート',bgType:'gradient-dark',theme:'#546E7A'},
+    {name:'コーラル',bgType:'gradient-sunset',theme:'#B95048'},
+    {name:'アクア',bgType:'gradient-teal',theme:'#167D9A'},
+    {name:'セージ',bgType:'gradient-leaf',theme:'#5A7860'},
+    {name:'ピオニー',bgType:'gradient-rose',theme:'#A44277'},
+    {name:'アメジスト',bgType:'gradient-lavender',theme:'#7D50A5'},
+    {name:'ハニー',bgType:'gradient-citrus',theme:'#946B16'},
+    {name:'オーシャン',bgType:'gradient-deepsea',theme:'#246AA2'},
+    {name:'テラコッタ',bgType:'gradient-cocoa',theme:'#A45238'},
+    {name:'ムーンライト',bgType:'gradient-midnight',theme:'#6277AD'}
 ];
 
 const bgPresets = [
@@ -146,7 +160,9 @@ const bgPresets = [
         thumb: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?auto=format&fit=crop&w=360&q=75',
         bgType: 'gradient-deepsea',
         theme: '#A94D68'
-    }
+    },
+    {id:'quiet-dunes',name:'砂丘の余白',url:'assets/wallpapers/quiet-dunes.svg',thumb:'assets/wallpapers/quiet-dunes.svg',bgType:'gradient-sunrise',theme:'#A45238'},
+    {id:'paper-garden',name:'ペーパーガーデン',url:'assets/wallpapers/paper-garden.svg',thumb:'assets/wallpapers/paper-garden.svg',bgType:'gradient-leaf',theme:'#5A7860'}
 ];
 
 
@@ -272,7 +288,7 @@ function mergeUserConfig(parsed) {
             }))
         : userConfig.todoList;
     const safeBackgroundImage = typeof parsed.bgImage === 'string' && (
-        /^https:\/\/.+/i.test(parsed.bgImage) ||
+        bgPresets.some(p=>p.url===parsed.bgImage) || /^https:\/\/.+/i.test(parsed.bgImage) ||
         /^data:image\/(?:png|jpe?g|webp|gif);base64,/i.test(parsed.bgImage)
     ) ? parsed.bgImage : '';
 

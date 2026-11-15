@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const { withApp } = require('./helpers/browser.cjs');
 withApp(async page => {
     await page.evaluate(async () => {
-        const {openUIDialog} = await import('./js/ui-dialog.js');
+        const {openUIDialog} = await import('./js/ui-dialog.js?v=13.0.1');
         const dialog = document.createElement('dialog');
         dialog.id = 'close-style-test';
         dialog.className = 'cc-dialog ui-scope';

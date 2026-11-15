@@ -1,12 +1,14 @@
 {
   "name": "lifetop",
-  "version": "12.0.0",
+  "version": "13.0.0",
   "private": true,
   "engines": { "node": ">=22" },
   "scripts": {
     "test": "node scripts/test.mjs",
     "test:unit": "node scripts/test.mjs unit",
-    "test:browser": "node scripts/test.mjs browser"
+    "test:browser": "node scripts/test.mjs browser",
+    "test:messages": "node tests/messages-browser.cjs && node tests/live-browser.cjs",
+    "test:firebase": "node tests/firebase/node_modules/firebase-tools/lib/bin/firebase.js emulators:exec --config firebase.messages.json --project demo-lifetop --only auth,firestore \"node tests/firebase/run.mjs\""
   },
   "devDependencies": {
     "playwright": "1.62.1"

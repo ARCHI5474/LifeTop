@@ -29,7 +29,7 @@ withApp(async page => {
     await page.locator('#editor').waitFor();
     assert.equal(await page.locator('#editor').innerText(), '保存に失敗した重要な追記');
     await page.goto('http://localhost/');
-    await page.locator('.dashboard-header [aria-label="Studioを開く"]').click();
+    await require('./helpers/browser.cjs').quickTile(page,'studio');
     const frame = page.frameLocator('#mini-app-dialog iframe');
     await frame.locator('[data-app=document]').click();
     await frame.locator('#editor').fill('ポップアップ内の未保存追記');

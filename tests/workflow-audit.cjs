@@ -15,7 +15,7 @@ await page.locator('#search-input').press('ArrowDown');await page.locator('#sear
 assert.ok(await page.evaluate(()=>window.lastSearch?.includes('q=')));
 await page.locator('#search-clear-btn').click();assert.equal(await page.locator('#search-input').inputValue(),'');
 await openGames(page);await page.keyboard.press('/');assert.notEqual(await page.evaluate(()=>document.activeElement.id),'search-input','game modal owns keyboard');
-await page.getByRole('tab',{name:'オセロ',exact:true}).click();
+await require('./helpers/browser.cjs').selectGame(page,'othello');
 await page.locator('#othello-board .is-playable').first().click();
 await page.evaluate(()=>window.initOthelloGame());await page.waitForTimeout(450);
 assert.equal(await page.locator('#othello-black-count').innerText(),'2');assert.equal(await page.locator('#othello-white-count').innerText(),'2','old AI result cannot mutate a new game');
@@ -33,6 +33,7 @@ assert.ok(await page.locator('.folder-back-btn').isVisible());await page.locator
 await page.locator('[data-tab=memo]').click();await page.locator('#memo-editor').fill('監査メモを保存');
 await page.reload();await page.locator('#loading-screen').waitFor({state:'detached'});await page.locator('[data-tab=memo]').click();assert.equal(await page.locator('#memo-editor').innerText(),'監査メモを保存');
 await page.getByRole('button',{name:'Quickパネル',exact:true}).click();
+await require('./helpers/browser.cjs').quickDetails(page,'profile');
 await page.locator('#username-input').dispatchEvent('keydown',{key:'Escape',isComposing:true});assert.equal(await page.locator('#settings-panel').evaluate(e=>e.classList.contains('active')),true,'IME Escape does not close settings');
 await page.keyboard.press('Escape');
 await page.locator('#weather-widget').click();assert.equal(await page.locator('#weather-detail-modal').evaluate(e=>e.inert),false);

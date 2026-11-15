@@ -3,17 +3,23 @@ const { chromium: engine } = createRequire(process.env.PLAYWRIGHT_MODULE_PATH ||
 
 exports.chromium = {
     async launch(options) {
+        if (!options.executablePath && process.platform === 'win32') {
+            const {existsSync}=require('node:fs');
+            options={...options,executablePath:['C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find(existsSync)};
+        }
         const browser = await engine.launch(options);
         const newContext = browser.newContext.bind(browser);
         browser.newContext = async options => {
             const context = await newContext(options);
             context.setDefaultTimeout(10_000);
+            context.setDefaultNavigationTimeout(30_000);
             return context;
         };
         const newPage = browser.newPage.bind(browser);
         browser.newPage = async options => {
             const page = await newPage(options);
             page.setDefaultTimeout(10_000);
+            page.setDefaultNavigationTimeout(30_000);
             return page;
         };
         return browser;
@@ -36,7 +42,7 @@ exports.withApp = async function withApp(test) {
             const file = path.resolve(root, '.' + (url.pathname === '/' ? '/index.html' : decodeURIComponent(url.pathname)));
             if (!file.startsWith(root + path.sep)) return route.abort();
             try {
-                const contentType = { '.js': 'text/javascript', '.css': 'text/css', '.ttf': 'font/ttf', '.png': 'image/png' }[path.extname(file)] || 'text/html';
+                const contentType = { '.js': 'text/javascript', '.css': 'text/css', '.ttf': 'font/ttf', '.png': 'image/png', '.svg':'image/svg+xml' }[path.extname(file)] || 'text/html';
                 await route.fulfill({ body: await fs.readFile(file), contentType });
             } catch {
                 missing.push(url.pathname);
@@ -56,10 +62,13 @@ exports.withApp = async function withApp(test) {
 };
 
 exports.openGames = async function openGames(page) {
-    await page.locator('.dashboard-header [aria-label="Studioを開く"]').click();
+    await exports.quickTile(page, 'studio');
     await page.locator('#mini-app-dialog [data-view=games]').click();
     await page.locator('#game-modal.active').waitFor();
 };
+exports.openQuick = async function(page) { if(!await page.locator('#quick-panel.active').count()) await page.locator('[aria-label="Quickパネル"]').click(); };
+exports.quickDetails = async function(page, category='appearance') { if(!await page.locator('#settings-panel.active').count()){await exports.openQuick(page);await page.locator('[data-quick-tile=settings]').click();} await page.locator('#settings-tab-'+category).click(); };
+exports.quickTile = async function(page,id) { await exports.openQuick(page);await page.locator('[data-quick-tile="'+id+'"]').click(); };
 
 exports.selectGame = async function selectGame(page, game) {
     const picker = page.locator('#gamebox-select');

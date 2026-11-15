@@ -1,8 +1,8 @@
-import {initFestivalHunt} from './festival-hunt.js?v=10.1-hide1';
-import {initUISystem} from './ui-system.js?v=10.0-ui5';
-import {festivalConfig} from './festival-config.js';
-import {eventWindow,japanDate,collectionNames,eggNames,readFestival,updateFestival,participate,drawCollection,challengeResult,saveChallenge,discoverEgg,validateFestival} from './festival-model.js';
-import {download} from './mini-common.js?v=1';
+import {initFestivalHunt} from './festival-hunt.js?v=13.0.1';
+import {initUISystem} from './ui-system.js?v=13.0.1';
+import {festivalConfig} from './festival-config.js?v=13.0.1';
+import {eventWindow,japanDate,collectionNames,eggNames,readFestival,updateFestival,participate,drawCollection,challengeResult,saveChallenge,discoverEgg,validateFestival} from './festival-model.js?v=13.0.1';
+import {download} from './mini-common.js?v=13.0.1';
 const $=id=>document.getElementById(id);let state,running=false,started=0,frame=0,lastPhase='';
 function status(message,error=false){$('festival-status').textContent=message;$('festival-status').dataset.error=error;}
 function windowState(){return eventWindow(festivalConfig);}

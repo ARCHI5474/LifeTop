@@ -1,5 +1,5 @@
-import { esc,download,fileText,printHTML,sanitizeDocument,canvasBlob } from './mini-common.js?v=1';
-import { parseCSV,toCSV,evaluateCell,columnName } from './mini-model.js?v=1';
+import { esc,download,fileText,printHTML,sanitizeDocument,canvasBlob } from './mini-common.js?v=13.0.1';
+import { parseCSV,toCSV,evaluateCell,columnName } from './mini-model.js?v=13.0.1';
 
 export function documentApp(ctx,state={}) {
     ctx.root.innerHTML=`<div class="mini-tools"><button class="tonal-btn" data-format="bold">太字</button><button class="tonal-btn" data-format="italic">斜体</button><button class="tonal-btn" data-format="insertUnorderedList">箇条書き</button><button class="tonal-btn" id="heading">見出し</button><button class="tonal-btn" id="table">表を挿入</button><label>テキストを読み込む<input id="text-file" type="file" accept=".txt,.md"></label><button class="tonal-btn" id="text-export">TXT保存</button><button class="tonal-btn" id="html-export">HTML保存</button><button class="primary-btn" id="print">印刷・PDF保存</button></div><p id="doc-count" class="mini-note"></p><div id="editor" class="mini-paper" contenteditable="true" role="textbox" aria-label="文書本文" aria-multiline="true"></div>`;

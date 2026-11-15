@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict');const{withApp,quickDetails}=require('./helpers/browser.cjs');
+withApp(async page=>{
+ await page.locator('#live-home-canvas').waitFor({state:'attached'});await quickDetails(page,'appearance');
+ await page.locator('#live-home-scene').selectOption('ripple');await page.locator('#live-home-enabled').uncheck();assert.equal(await page.locator('#live-home-canvas').count(),0);await page.locator('#live-home-enabled').check();
+ await page.reload();await page.locator('#loading-screen').waitFor({state:'detached'});await quickDetails(page,'appearance');assert.equal(await page.locator('#live-home-scene').inputValue(),'ripple');
+ await page.evaluate(()=>{window.stops=0;const c=new AudioContext(),osc=c.createOscillator(),dest=c.createMediaStreamDestination();osc.connect(dest);osc.start();for(const track of dest.stream.getTracks()){const stop=track.stop.bind(track);track.stop=()=>{stops++;stop();osc.stop();void c.close();};}Object.defineProperty(navigator,'mediaDevices',{configurable:true,value:{getUserMedia:async()=>dest.stream}});});
+ await page.locator('#live-home-mic').click();await page.locator('#live-home-audio-status').filter({hasText:'マイクに反応中'}).waitFor();await page.locator('#live-home-audio-stop').click();assert.equal(await page.evaluate(()=>stops),1);
+ await page.evaluate(()=>{navigator.mediaDevices.getUserMedia=async()=>{throw new DOMException('denied','NotAllowedError');};});await page.locator('#live-home-mic').click();await page.locator('#live-home-audio-status').filter({hasText:'許可されませんでした'}).waitFor();
+ await page.evaluate(()=>{navigator.mediaDevices.getUserMedia=()=>new Promise(resolve=>window.late=resolve);});await page.locator('#live-home-mic').click();await page.waitForFunction(()=>typeof late==='function');await page.evaluate(()=>{Object.defineProperty(document,'hidden',{value:true,configurable:true});document.dispatchEvent(new Event('visibilitychange'));window.lateStops=0;late({getTracks:()=>[{stop:()=>lateStops++}]});});await page.waitForFunction(()=>lateStops===1);
+ await page.evaluate(()=>{Object.defineProperty(document,'hidden',{value:false,configurable:true});document.dispatchEvent(new Event('visibilitychange'));});
+ await page.keyboard.press('Escape');await page.locator('#settings-panel').waitFor({state:'hidden'});assert.equal(await page.locator('body').evaluate(n=>getComputedStyle(n).isolation),'isolate');
+ console.log('PASS: Live is on home, wallpaper persistence/restore, mic lifecycle/denial/late permission, reduced-visibility behavior and protected background stacking');
+}).catch(e=>{console.error(e);process.exitCode=1;});

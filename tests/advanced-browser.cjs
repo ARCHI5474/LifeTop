@@ -3,7 +3,7 @@ const { withApp, openGames, selectGame } = require('./helpers/browser.cjs');
 
 withApp(async page => {
     await page.locator('[aria-label="Quickパネル"]').click();
-    await page.locator('#settings-tab-advanced').click();
+    await require('./helpers/browser.cjs').quickDetails(page,'advanced');
     await page.locator('.advanced-settings summary').click();
     await page.locator('#advanced-searchEngine input[value=yahoo]').check();
     await page.locator('#advanced-searchShape input[value=square]').check();
@@ -11,7 +11,7 @@ withApp(async page => {
     assert.equal(await page.locator('#advanced-hideClockBackground').count(), 0);
     assert.equal(await page.locator('.hero-section').evaluate(e => getComputedStyle(e).backgroundColor), 'rgba(0, 0, 0, 0)');
     await page.locator('#clock-show-sec-toggle').check();
-    await page.locator('#settings-tab-profile').click();
+    await require('./helpers/browser.cjs').quickDetails(page,'profile');
     await page.locator('#username-input').fill('テストユーザー');
     await page.locator('[data-profile-icon=star]').click();
     await page.reload();
@@ -21,9 +21,9 @@ withApp(async page => {
     assert.equal(await page.locator('#search-form').evaluate(e => getComputedStyle(e).borderRadius), '0px');
     assert.equal(await page.locator('html').evaluate(e => e.classList.contains('reduce-motion')), true);
     assert.equal(await page.locator('#clock-sec').isVisible(), true);
-    assert.equal(await page.locator('#header-user-name').innerText(), 'テストユーザー');
+    assert.equal(await page.locator('#header-user-name').textContent(), 'テストユーザー');
     await page.locator('[aria-label="Quickパネル"]').click();
-    await page.locator('#settings-tab-advanced').click();
+    await require('./helpers/browser.cjs').quickDetails(page,'advanced');
     await page.locator('.advanced-settings summary').click();
     await page.locator('#advanced-reset').click();
     assert.equal(await page.locator('#advanced-searchEngine input:checked').inputValue(), 'google');

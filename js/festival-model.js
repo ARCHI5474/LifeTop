@@ -1,4 +1,4 @@
-import {huntSpots} from './festival-hunt-spots.js';
+import {huntSpots} from './festival-hunt-spots.js?v=13.0.1';
 export const FESTIVAL_DB='lifetop-festival-v10';
 export const DAY_MS=86400000;
 export const collectionNames=Object.freeze(['LifeTop Beginner','LifeTop Explorer','LifeTop Creator','LifeTop Challenger','LifeTop Dreamer','LifeTop Innovator','LifeTop Partner','LifeTop Pioneer','LifeTop Master','LifeTop Legend']);

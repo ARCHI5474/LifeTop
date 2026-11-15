@@ -26,9 +26,9 @@ withApp(async page => {
             await page.waitForFunction(selector => document.querySelector(selector).inert,selector);
         }
         await page.locator('[aria-label="Quickパネル"]').click();
-        assert.equal(await page.locator('#settings-panel').evaluate(e => e.inert), false);
+        assert.equal(await page.locator('#quick-panel').evaluate(e => e.inert), false);
         await page.keyboard.press('Escape');
-        await page.waitForFunction(() => document.querySelector('#settings-panel').inert);
+        await page.waitForFunction(() => document.querySelector('#quick-panel').inert);
     }
     console.log('PASS: immediate startup, native and legacy modal lifecycle, nested instructions and reduced motion');
 }).catch(error => {console.error(error);process.exitCode=1;});

@@ -1,5 +1,5 @@
-import {download,canvasBlob} from './mini-common.js?v=1';
-import {parseCSV,toCSV} from './mini-model.js?v=1';
+import {download,canvasBlob} from './mini-common.js?v=13.0.1';
+import {parseCSV,toCSV} from './mini-model.js?v=13.0.1';
 
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 export function diaryApp(ctx,state={}) {

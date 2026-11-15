@@ -10,7 +10,7 @@ withApp(async page => {
             return original.call(this, key, value);
         };
     });
-    const tasks = () => page.evaluate(async () => structuredClone((await import('./js/config.js?v=9.0')).userConfig.todoList));
+    const tasks = () => page.evaluate(async () => structuredClone((await import('./js/config.js?v=13.0.1')).userConfig.todoList));
     const before = await tasks();
     await page.locator('#todo-input').fill('保存失敗でも入力を維持');
     await page.locator('#todo-input').press('Enter');
@@ -38,7 +38,7 @@ withApp(async page => {
     await page.locator('#bookmark-title-input').fill('保存失敗リンク');
     await page.locator('#bookmark-url-input').fill('https://example.com/failure');
     await page.evaluate(() => window.rejectHomeSave = true);
-    const bookmarkState = () => page.evaluate(async () => structuredClone((await import('./js/config.js?v=9.0')).userConfig.bookmarks));
+    const bookmarkState = () => page.evaluate(async () => structuredClone((await import('./js/config.js?v=13.0.1')).userConfig.bookmarks));
     const originalBookmarks = await bookmarkState();
     await page.locator('#bookmark-dialog [type=submit]').click();
     assert.equal(await page.locator('#bookmark-title-input').inputValue(), '保存失敗リンク');

@@ -1,5 +1,5 @@
-import { esc,download,fileText,canvasBlob } from './mini-common.js?v=1';
-import { parseCSV,toCSV,statistics,unitGroups,convertUnit,evaluateCell,lineDiff } from './mini-model.js?v=1';
+import { esc,download,fileText,canvasBlob } from './mini-common.js?v=13.0.1';
+import { parseCSV,toCSV,statistics,unitGroups,convertUnit,evaluateCell,lineDiff } from './mini-model.js?v=13.0.1';
 
 export function dataApp(ctx,state={}) {
     ctx.root.innerHTML=`<div class="mini-tools"><label>CSVファイル<input type="file" id="data-file" accept=".csv,text/csv"></label><label>ラベル列（1から）<input type="number" id="label-col" min="1" value="1"></label><label>数値列（1から）<input type="number" id="value-col" min="1" value="2"></label><label><input type="checkbox" id="has-header" checked>先頭行は見出し</label><button class="primary-btn" id="chart-build">集計する</button><button class="tonal-btn" id="chart-save">グラフSVG保存</button><button class="tonal-btn" id="chart-sheet">表計算へ</button></div><label>CSVデータ<textarea id="data-csv" spellcheck="false"></textarea></label><div id="stats" class="mini-metrics"></div><div id="chart" class="mini-stage"></div><p class="mini-note">空欄・数値でない行は集計から除外。棒グラフは先頭60件を表示します。</p>`;

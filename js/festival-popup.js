@@ -1,4 +1,4 @@
-import {openUIDialog} from './ui-dialog.js';
+import {openUIDialog} from './ui-dialog.js?v=13.0.1';
 
 export function openFestival() {
     if (document.getElementById('festival-dialog')) return;

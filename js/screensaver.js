@@ -1,0 +1,10 @@
+import {userConfig} from './config.js?v=13.0.1';
+import {openUIDialog} from './ui-dialog.js?v=13.0.1';
+export function openScreensaver(){
+ if(document.getElementById('screensaver-dialog'))return;
+ const dialog=document.createElement('dialog');dialog.id='screensaver-dialog';dialog.className='cc-dialog ui-scope screensaver-dialog';dialog.setAttribute('aria-label','スクリーンセーバー');
+ dialog.innerHTML='<button type="button" class="icon-btn close-action saver-exit" data-cancel aria-label="スクリーンセーバーを閉じる"></button><div class="saver-clock"><span class="saver-date"></span><div class="saver-time" aria-live="off"></div><span class="saver-seconds"></span><svg class="saver-analog" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="94"/><path class="saver-hour" d="M100 100V51"/><path class="saver-minute" d="M100 100V25"/><path class="saver-second" d="M100 112V20"/><circle cx="100" cy="100" r="3"/></svg></div>';
+ dialog.dataset.design=userConfig.clockDesign;const face=dialog.querySelector('.saver-clock');
+ const tick=()=>{const now=new Date();let h=now.getHours();const period=userConfig.clock12h?(h>=12?' PM':' AM'):'';if(userConfig.clock12h)h=h%12||12;dialog.querySelector('.saver-time').textContent=String(h).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+period;dialog.querySelector('.saver-date').textContent=new Intl.DateTimeFormat('ja-JP',{month:'long',day:'numeric',weekday:'long'}).format(now);dialog.querySelector('.saver-seconds').textContent=userConfig.clockShowSec?String(now.getSeconds()).padStart(2,'0'):'';dialog.querySelector('.saver-second').style.display=userConfig.clockShowSec?'':'none';face.style.setProperty('--hand-hour',((now.getHours()%12)*30+now.getMinutes()*.5)+'deg');face.style.setProperty('--hand-minute',(now.getMinutes()*6+now.getSeconds()*.1)+'deg');face.style.setProperty('--hand-second',(now.getSeconds()*6)+'deg');};
+ document.body.append(dialog);openUIDialog(dialog);tick();const timer=setInterval(tick,1000);dialog.addEventListener('close',()=>clearInterval(timer),{once:true});
+}

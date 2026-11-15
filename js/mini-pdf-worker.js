@@ -1,5 +1,5 @@
-import './vendor/pdf-lib.min.js';
-import { pageRange } from './mini-model.js?v=1';
+import './vendor/pdf-lib.min.js?v=13.0.1';
+import { pageRange } from './mini-model.js?v=13.0.1';
 self.onmessage=async event=>{
     const {id,mode,files,pages}=event.data;
     try {

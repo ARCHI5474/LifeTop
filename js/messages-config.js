@@ -1,3 +1,2 @@
-// Enable only after server deployment, Rules tests, Anonymous Auth and App Check setup.
-// Never change or sign out the existing Google authentication instance.
-export const messagesConfig={enabled:false,region:'asia-northeast1',appCheckSiteKey:''};
+// Public configuration. Messages uses Google Auth and atomic Firestore writes, not callable Functions.
+export const messagesConfig={transport:'firestore',appCheckProvider:'recaptcha-enterprise',appCheckSiteKey:'6Lf0mSEuAAAAAAnzNekxwTOUe7CsKFfNw4u1_Pjw'};

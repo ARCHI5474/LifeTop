@@ -7,6 +7,6 @@ export const huntSpots=Object.freeze([
  {id:'about',selector:'.settings-about',hint:'LifeTopの名前とバージョン。'},
  {id:'studio',selector:'#mini-home .mini-kicker',hint:'小さな道具が集まる場所。'},
  {id:'creator',selector:'.mini-workspace-header',hint:'Studioで道具をひとつ開いてみよう。'},
- {id:'messages',selector:'.messages-page .mini-main',hint:'メッセージを交わす入口。'},
+ {id:'messages',selector:'#festival-hunt',hint:'会場のかくれんぼを見返す場所。'},
  {id:'ticket',selector:'#ticket-title',hint:'お祝いの記念チケット。'}
 ]);

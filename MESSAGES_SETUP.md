@@ -1,0 +1,27 @@
+# Messages の接続と運用
+
+Firebase プロジェクトは lifetop-fc51c。Messages は Google ログイン必須です。匿名認証・Cloud Functions・Blaze プランは不要です。Firestore トランザクションと firestore.rules で権限と整合性を検証します。
+
+Google プロバイダーは有効。本番ドメイン lifetop.pasidea.space と localhost は承認済みです。ローカル確認は http://localhost:5503/ を使用します。Messages の名前付きアプリ lifetop-messages-google は既存の Google 同期と認証セッションを分離し、チャットのログインだけでタスクやメモの同期を開始しません。
+
+reCAPTCHA Enterprise 公開サイトキーは js/messages-config.js に設定済み、App Check 登録済み。本番ドメインで初期化します。本番キーに localhost は追加しません。本番 Firestore Rules と静的サイトは未公開です。旧 functions/ は前案の実装で、現行フロントエンドは使用しません。
+
+## 制限と保存
+
+招待制ルームは最大20人、1人10室、作成は24時間で3室。本文2000文字、1室10000件まで。コマンド間隔は最低1秒。招待は32バイトの乱数を使い、データベースには SHA-256 ハッシュを保存します。再発行で古いリンクを失効させます。本文と名前は HTML として実行しません。
+
+履歴表示は90日以内の直近100件。期限外は Rules で読み取りを拒否しますが、自動で物理削除する仕組みはありません。ルーム削除もアクセスを失効させる論理削除です。物理削除・TTL・バックアップ方針は運用側で別途設定してください。
+
+Live はホーム背景に適用します。選択中の Messages ルームの在室と波紋をホームで共有します。在室確認30秒、有効期限80秒、同一アカウントは1室5画面まで。オフラインやキャッシュだけで接続中とは表示しません。即時切断検出や音声通話ではありません。
+
+マイク・ローカル音声は端末内で解析し、相手へ送りません。天気取得先には選択地点の座標を送ります。Live の景色・場所・有効状態は端末内に保存します。
+
+## 検証
+
+Node 22以降、Java 21以降を用意し、npm ci、npm ci --prefix tests/firebase を実行します。
+
+- npm run test:unit
+- npm run test:messages
+- npm run test:firebase
+
+Firebase 検証は demo-lifetop の Auth・Firestore Emulator に限定。Google 認証2人の招待・送受信・重複防止・削除・在室・波紋・招待失効・退出を確認し、匿名ユーザー・未参加者・名前の偽装を拒否します。既存 Google 同期も検証します。本番 App Check と実端末2台の確認は別途必要です。

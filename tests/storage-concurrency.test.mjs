@@ -11,8 +11,8 @@ globalThis.localStorage = {
     getItem:()=>raw,
     setItem:(_key,value)=>{if(quota)throw Error('quota');raw=value;},
 };
-const config = await import('../js/config.js?v=9.0');
-const storage = await import('../js/storage.js?v=9.0');
+const config = await import('../js/config.js?v=13.0.1');
+const storage = await import('../js/storage.js?v=13.0.1');
 const defaults = structuredClone(config.userConfig);
 const reset = () => {raw=JSON.stringify(defaults);quota=false;storage.loadData();};
 const originalError = console.error;

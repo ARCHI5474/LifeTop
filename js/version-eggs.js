@@ -1,8 +1,8 @@
-import {APP_VERSION} from './config.js?v=9.0';
-import {openUIDialog} from './ui-dialog.js';
+import {APP_VERSION} from './config.js?v=13.0.1';
+import {openUIDialog} from './ui-dialog.js?v=13.0.1';
 
 const storageKey='lifetop_version_eggs_v1';
-export const versionEggs=Object.freeze({'12.0':{name:'Twelve Lights',count:12}});
+export const versionEggs=Object.freeze({'12.0':{name:'Twelve Lights',count:12},'13.0':{name:'Thirteen Signals',count:13}});
 export function eggVersion(version){const match=/^(\d+)\.0(?:\.\d+)?$/.exec(version);return match&&Number(match[1])>=12?match[1]+'.0':null;}
 export function readVersionEggs(storage=localStorage){
     const raw=storage.getItem(storageKey);if(raw===null)return {schema:1,versions:{}};
@@ -19,17 +19,17 @@ export function openVersionEgg(version){
     const egg=versionEggs[version];if(!egg||document.getElementById('version-egg-dialog'))return;
     const dialog=document.createElement('dialog');dialog.id='version-egg-dialog';dialog.className='cc-dialog v12-dialog version-egg-dialog ui-scope';
     dialog.setAttribute('aria-labelledby','version-egg-title');
-    dialog.innerHTML='<header class="v12-dialog-header"><div><p>LifeTop '+version+'</p><h2 id="version-egg-title">Twelve Lights</h2></div><button type="button" class="cc-control cc-icon" data-cancel aria-label="記念品を閉じる"></button></header><div class="version-egg-content"><p>12個の光を灯して、このバージョンの記念品を見つけよう。</p><div class="version-egg-lights"></div><p id="version-egg-status" role="status" aria-live="polite">0 / 12</p><button type="button" class="tonal-btn" id="version-egg-save" hidden>記録の保存を再試行</button><p class="v12-caption">Easter Eggは12.0から、整数のメジャーバージョンごとに登場します。発見記録はこのブラウザに保存されます。</p></div>';
+    dialog.innerHTML='<header class="v12-dialog-header"><div><p>LifeTop '+version+'</p><h2 id="version-egg-title">'+egg.name+'</h2></div><button type="button" class="cc-control cc-icon" data-cancel aria-label="記念品を閉じる"></button></header><div class="version-egg-content"><p>'+egg.count+'個の光を灯して、このバージョンの記念品を見つけよう。</p><div class="version-egg-lights"></div><p id="version-egg-status" role="status" aria-live="polite">0 / '+egg.count+'</p><button type="button" class="tonal-btn" id="version-egg-save" hidden>記録の保存を再試行</button><p class="v12-caption">Easter Eggは12.0から、整数のメジャーバージョンごとに登場します。発見記録はこのブラウザに保存されます。</p></div>';
     const status=dialog.querySelector('[role=status]'),retry=dialog.querySelector('#version-egg-save');
     let owned=false;try{owned=Boolean(readVersionEggs().versions[version]);}catch(error){status.textContent=error.message;}
-    const lights=new Set();const complete=()=>{try{saveVersionEgg(version);status.textContent='Twelve Lightsを発見！ v'+version+'の記念品を保存しました。';retry.hidden=true;}catch(error){status.textContent='発見しましたが記録を保存できません。'+error.message;retry.hidden=false;}};
+    const lights=new Set();const complete=()=>{try{saveVersionEgg(version);status.textContent=egg.name+'を発見！ v'+version+'の記念品を保存しました。';retry.hidden=true;}catch(error){status.textContent='発見しましたが記録を保存できません。'+error.message;retry.hidden=false;}};
     for(let i=0;i<egg.count;i++){
         const button=document.createElement('button');button.type='button';button.className='version-egg-light';button.textContent=String(i+1).padStart(2,'0');button.setAttribute('aria-label','光 '+(i+1));button.setAttribute('aria-pressed',String(owned));
         if(owned)lights.add(i);
-        button.onclick=()=>{if(lights.has(i))return;lights.add(i);button.setAttribute('aria-pressed','true');status.textContent=lights.size+' / 12';if(lights.size===egg.count)complete();};
+        button.onclick=()=>{if(lights.has(i))return;lights.add(i);button.setAttribute('aria-pressed','true');status.textContent=lights.size+' / '+egg.count;if(lights.size===egg.count)complete();};
         dialog.querySelector('.version-egg-lights').append(button);
     }
-    if(owned)status.textContent='発見済み · Twelve Lights / v'+version;
+    if(owned)status.textContent='発見済み · '+egg.name+' / v'+version;
     retry.onclick=complete;document.body.append(dialog);openUIDialog(dialog);
 }
 export function initVersionEggs(){

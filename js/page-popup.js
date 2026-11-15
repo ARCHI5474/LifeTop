@@ -1,4 +1,4 @@
-import {openUIDialog} from './ui-dialog.js';
+import {openUIDialog} from './ui-dialog.js?v=13.0.1';
 
 // Internal destinations stay in the home context and share one dialog shell.
 export function openPagePopup(path, title) {
@@ -25,6 +25,7 @@ export function openPagePopup(path, title) {
     header.append(heading, close);
     const frame = document.createElement('iframe');
     frame.title = title;
+    if (id === 'messages-dialog') frame.allow = 'microphone; display-capture';
     url.searchParams.set('embedded', '1');
     frame.src = url.href;
     dialog.append(header, frame);

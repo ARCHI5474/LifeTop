@@ -4,7 +4,7 @@ withApp(async (page,context)=>{
     await context.route(/\/js\/festival-config\.js(?:\?.*)?$/,route=>route.fulfill({contentType:'text/javascript',body:'export const festivalConfig={startAt:null,durationDays:10};'}));
     await page.reload();
     await page.locator('[aria-label="Quickパネル"]').click();
-    await page.locator('#settings-tab-profile').click();
+    await require('./helpers/browser.cjs').quickDetails(page,'profile');
     await page.evaluate(()=>{
         const original=Storage.prototype.setItem;
         window.rejectProfileSave=true;

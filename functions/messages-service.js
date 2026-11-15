@@ -25,7 +25,7 @@ export function createMessagesService(db,Timestamp){
    if(op==='create'){
     const name=text(input.name,80,'ルーム名'),date=new Date(now).toISOString().slice(0,10),count=account.createdDay===date?account.createdCount:0;
     if(account.roomIds.length>=MAX_ROOMS||count>=3)throw Error('ルーム作成の上限です（参加10室・作成1日3室）。');
-    const bs=await tx.get(budgetRef),budget=bs.exists?bs.data():{rooms:0,messages:0};if(budget.rooms>=100)throw Error('本日のルーム作成上限です。');
+    const bs=await tx.get(budgetRef),budget={rooms:0,messages:0,...(bs.exists?bs.data():{})};if(budget.rooms>=100)throw Error('本日のルーム作成上限です。');
     const hash=tokenHash(token),room={name,owner:uid,members:[uid],nicknames:{[uid]:nickname},inviteHash:hash,createdAt:Timestamp.fromMillis(now),lastUsedAtMs:now,deleted:false,messageCount:0};
     tx.create(generated,room);tx.create(inviteRef(hash),{roomId:generated.id});tx.set(budgetRef,{...budget,rooms:budget.rooms+1});finish({roomIds:[...account.roomIds,generated.id],createdDay:date,createdCount:count+1});return {roomId:generated.id,token};
    }
@@ -37,13 +37,13 @@ export function createMessagesService(db,Timestamp){
    if(op==='send'){
     const body=text(input.body,2000,'メッセージ'),requestId=text(input.requestId,80,'送信ID');if(!/^[a-zA-Z0-9_-]+$/.test(requestId))throw Error('送信IDが不正です。');
     const messageRef=ref.collection('messages').doc(requestId),existing=await tx.get(messageRef);if(existing.exists){if(existing.data().sender!==uid)throw Error('送信IDが重複しています。');return {messageId:requestId};}
-    if(now-account.lastSentAt<1000||room.messageCount>=10000)throw Error('送信上限です（毎秒1件・ルーム10000件）。');const bs=await tx.get(budgetRef),budget=bs.exists?bs.data():{rooms:0,messages:0};if(budget.messages>=20000)throw Error('本日の送信上限です。');
+    if(now-account.lastSentAt<1000||room.messageCount>=10000)throw Error('送信上限です（毎秒1件・ルーム10000件）。');const bs=await tx.get(budgetRef),budget={rooms:0,messages:0,...(bs.exists?bs.data():{})};if(budget.messages>=20000)throw Error('本日の送信上限です。');
     tx.create(messageRef,{sender:uid,nickname,body,createdAt:Timestamp.fromMillis(now),expiresAt:Timestamp.fromMillis(now+90*DAY)});tx.update(ref,{lastUsedAtMs:now,messageCount:room.messageCount+1});tx.set(budgetRef,{...budget,messages:budget.messages+1});finish({lastSentAt:now});return {messageId:requestId};
    }
    if(op==='deleteMessage'){
     const messageId=text(input.messageId,80,'メッセージID');if(!/^[a-zA-Z0-9_-]+$/.test(messageId))throw Error('メッセージIDが不正です。');const mr=ref.collection('messages').doc(messageId),ms=await tx.get(mr);if(!ms.exists||ms.data().sender!==uid)throw Error('自分のメッセージだけ削除できます。');tx.delete(mr);finish({});return {};
    }
-   if(op==='leave'){const members=room.members.filter(x=>x!==uid),nicknames={...room.nicknames};delete nicknames[uid];tx.update(ref,{members,nicknames,owner:room.owner===uid?(members[0]||''):room.owner,deleted:!members.length,lastUsedAtMs:members.length?now:0});if(!members.length)tx.delete(inviteRef(room.inviteHash));finish({roomIds:account.roomIds.filter(x=>x!==roomId)});return {};}
+   if(op==='leave'){const members=room.members.filter(x=>x!==uid),nicknames={...room.nicknames};delete nicknames[uid];tx.update(ref,{members,nicknames,owner:room.owner===uid?(members[0]||''):room.owner,deleted:!members.length,lastUsedAtMs:members.length?now:0});tx.delete(ref.collection('presence').doc(uid));if(!members.length)tx.delete(inviteRef(room.inviteHash));finish({roomIds:account.roomIds.filter(x=>x!==roomId)});return {};}
    if(room.owner!==uid)throw Error('管理者だけが実行できます。');
    if(op==='rotate'){const hash=tokenHash(token);tx.delete(inviteRef(room.inviteHash));tx.create(inviteRef(hash),{roomId});tx.update(ref,{inviteHash:hash,lastUsedAtMs:now});finish({});return {roomId,token};}
    if(op==='deleteRoom'){tx.update(ref,{deleted:true,members:[],lastUsedAtMs:0});tx.delete(inviteRef(room.inviteHash));finish({roomIds:account.roomIds.filter(x=>x!==roomId)});return {};}

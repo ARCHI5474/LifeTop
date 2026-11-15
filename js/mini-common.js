@@ -1,4 +1,4 @@
-export { escapeHTML as esc } from './mini-model.js?v=1';
+export { escapeHTML as esc } from './mini-model.js?v=13.0.1';
 export function download(data,name,type='text/plain;charset=utf-8') {
     const blob=data instanceof Blob?data:new Blob([data],{type});
     const url=URL.createObjectURL(blob), a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);

@@ -5,14 +5,14 @@ const {withApp}=require('./helpers/browser.cjs');
 withApp(async(page,context)=>{
     assert.equal(await page.locator('.trends-subtitle').count(),0);
     await page.locator('[aria-label="Quickパネル"]').click();
-    await page.locator('#settings-tab-clock').click();
-    assert.equal(await page.locator('#clock-designs button').count(),6);
+    await require('./helpers/browser.cjs').quickDetails(page,'clock');
+    assert.equal(await page.locator('#clock-designs button').count(),10);
     assert.equal(await page.locator('#font-styles').count(),0);
     const designs=await page.locator('#clock-designs button').evaluateAll(nodes=>nodes.map(n=>n.dataset.clockDesign));
-    await page.locator('#settings-tab-advanced').click();
+    await require('./helpers/browser.cjs').quickDetails(page,'advanced');
     await page.locator('.advanced-settings summary').click();
     await page.locator('#clock-show-sec-toggle').check();
-    await page.locator('#settings-tab-clock').click();
+    await require('./helpers/browser.cjs').quickDetails(page,'clock');
     for(const design of designs){
         await page.locator(`[data-clock-design="${design}"].clock-design-option`).click();
         assert.equal(await page.locator('body').getAttribute('data-clock-design'),design);
@@ -21,8 +21,8 @@ withApp(async(page,context)=>{
         for(const width of [320,1440]){
             await page.setViewportSize({width,height:1000});
             const positions=await page.evaluate(async()=>{
-                const {updateClock}=await import('/js/clock.js?v=9.0');
-                const {userConfig}=await import('/js/config.js?v=9.0');
+                const {updateClock}=await import('/js/clock.js?v=13.0.1');
+                const {userConfig}=await import('/js/config.js?v=13.0.1');
                 const old12h=userConfig.clock12h;
                 const OriginalDate=Date,results=[];
                 try{
@@ -40,10 +40,10 @@ withApp(async(page,context)=>{
             if(width===1440)await page.locator('.hero-section').screenshot({path:`test-artifacts/clock-design-${design}.png`});
         }
         await page.locator('[aria-label="Quickパネル"]').click();
-        await page.locator('#settings-tab-clock').click();
+        await require('./helpers/browser.cjs').quickDetails(page,'clock');
     }
     await page.reload();await page.locator('#loading-screen').waitFor({state:'detached'});
-    assert.equal(await page.locator('body').getAttribute('data-clock-design'),'blueprint');
+    assert.equal(await page.locator('body').getAttribute('data-clock-design'),designs.at(-1));
     await page.goto('http://localhost/mini-apps.html');
     await page.locator('.mini-app-card').first().waitFor();
     assert.deepEqual(await page.locator('.mini-app-card strong').allTextContents(),['StoneTXT','BlockSheet','SlideSpark','LineNote','FutureDraw','ChangePosition','PaisdeaBrowser（β版）','PasideaCode（β版）']);

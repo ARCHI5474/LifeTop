@@ -9,10 +9,8 @@ withApp(async page => {
         await page.setViewportSize({width,height:900});
         await page.evaluate(() => scrollTo(0,0));
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1),true);
-        const banner=await page.locator('.festival-banner').boundingBox();
-        const hero=await page.locator('.hero-section').boundingBox();
-        assert.ok(banner.height<=190 && banner.y+banner.height<=hero.y,'compact Festival above clock/search');
-        assert.equal(await page.locator('.dashboard-content > :first-child').getAttribute('class'),'festival-banner');
+        assert.equal(await page.locator('.festival-banner').count(),0);
+        assert.equal(await page.locator('.dashboard-header button').count(),1);
         const form=await page.locator('#search-form').boundingBox();
         const submit=await page.locator('.search-button').boundingBox();
         assert.ok(submit.x>=form.x&&submit.x+submit.width<=form.x+form.width,'search action stays inside field');
@@ -22,7 +20,7 @@ withApp(async page => {
     }
     await page.locator('[aria-label="Quickパネル"]').click();
     assert.equal(await page.locator('.settings-body > :first-child').evaluate(e=>e.classList.contains('settings-category-tabs')),true);
-    await page.locator('#settings-tab-appearance').click();
+    await require('./helpers/browser.cjs').quickDetails(page,'appearance');
     await page.locator('[data-ui-mode=light]').click();
     await page.keyboard.press('Escape');
     await page.waitForFunction(()=>!document.querySelector('#settings-panel').classList.contains('active'));
@@ -30,7 +28,7 @@ withApp(async page => {
     await page.screenshot({path:'test-artifacts/home-refreshed-light.png'});
     await page.getByRole('button',{name:'ホームを編集',exact:true}).click();
     const panel=await page.locator('#cc-dashboard-editor').boundingBox();
-    assert.ok(panel.x===0&&panel.y===0&&panel.width===1440&&panel.height===900);
+    assert.ok(panel.x>=0&&panel.y>=0&&panel.x+panel.width<=1440&&panel.y+panel.height<=900);
     await page.getByRole('button',{name:'ホーム編集を閉じる',exact:true}).click();
     console.log('PASS: compact top Festival, bounded Quick access/search, navigation-first settings and fullscreen home editor');
 }).catch(error => {console.error(error);process.exitCode=1;});

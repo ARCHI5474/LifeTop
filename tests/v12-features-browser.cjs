@@ -2,7 +2,7 @@ const assert=require('node:assert/strict');
 const {withApp}=require('./helpers/browser.cjs');
 withApp(async(page)=>{
  await page.locator('[aria-label="Quickパネル"]').click();
- await page.locator('#settings-tab-advanced').click();
+ await require('./helpers/browser.cjs').quickDetails(page,'advanced');
  const memories=page.locator('[data-festival-memories]');await memories.click();
  await page.frameLocator('#festival-dialog iframe').locator('#festival-title').filter({hasText:'Memories'}).waitFor();
  assert.match(await page.locator('#settings-panel').textContent(),/不定期/);
@@ -31,7 +31,7 @@ withApp(async(page)=>{
  await page.reload();await page.locator('#loading-screen').waitFor({state:'detached'});
  assert.equal(await page.locator('#bookmark-grid a').filter({hasText:'Photopea'}).count(),1);
  await page.evaluate(async()=>{
-  const {switchBookmarkTab}=await import('./js/bookmarks.js?v=9.2');switchBookmarkTab('ニュース・新聞');
+  const {switchBookmarkTab}=await import('./js/bookmarks.js?v=13.0.1');switchBookmarkTab('ニュース・新聞');
  });
  assert.ok(await page.locator('#bookmark-grid .bookmark-item').count()<=12);
  await page.locator('#bookmark-grid .quick-links-more').click();
@@ -49,8 +49,8 @@ withApp(async(page)=>{
    return stream;
   }}});
  });
- const position=await page.locator('#camera-open').evaluate(n=>n.nextElementSibling.getAttribute('aria-label'));assert.equal(position,'Quickパネル');
- await page.locator('#camera-open').click();await page.locator('#camera-capture:not(:disabled)').waitFor();
+ assert.equal(await page.locator('[data-quick-tile=camera]').evaluate(n=>!!n.closest('#quick-tiles')),true);
+ await require('./helpers/browser.cjs').quickTile(page,'camera');await page.locator('#camera-capture:not(:disabled)').waitFor();
  await page.locator('#camera-capture').click();await page.locator('#camera-photo:not([hidden]) img').waitFor();
  const download=page.waitForEvent('download');await page.locator('#camera-download').click();assert.match((await download).suggestedFilename(),/LifeTop-.*\.png/);
  await page.locator('#camera-switch').click();await page.locator('#camera-capture:not(:disabled)').waitFor();
@@ -59,13 +59,13 @@ withApp(async(page)=>{
  await page.keyboard.press('Escape');await page.locator('#camera-dialog').waitFor({state:'detached'});
  assert.equal(await page.evaluate(()=>cameraStops),2,'switch and close stop both streams');
  await page.evaluate(()=>{navigator.mediaDevices.getUserMedia=async()=>{throw new DOMException('Denied','NotAllowedError');};});
- await page.locator('#camera-open').click();await page.locator('#camera-status').filter({hasText:'許可されていません'}).waitFor();
+ await require('./helpers/browser.cjs').quickTile(page,'camera');await page.locator('#camera-status').filter({hasText:'許可されていません'}).waitFor();
  assert.equal(await page.locator('#camera-retry').isVisible(),true);
  await page.keyboard.press('Escape');await page.locator('#camera-dialog').waitFor({state:'detached'});
  await page.evaluate(()=>{
   navigator.mediaDevices.getUserMedia=()=>new Promise(resolve=>{window.resolveCamera=resolve;});
  });
- await page.locator('#camera-open').click();
+ await require('./helpers/browser.cjs').quickTile(page,'camera');
  await page.waitForFunction(()=>typeof window.resolveCamera==='function');
  await page.keyboard.press('Escape');await page.locator('#camera-dialog').waitFor({state:'detached'});
  await page.evaluate(()=>{window.lateCameraStops=0;window.resolveCamera({getTracks:()=>[{stop:()=>lateCameraStops++}]});});

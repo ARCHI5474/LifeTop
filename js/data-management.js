@@ -1,5 +1,5 @@
-import { APP_VERSION, userConfig, DEFAULT_SETTINGS, STORAGE_KEY, themes, colorCombos, fontStyles, clockDesigns, bgGradients } from './config.js?v=9.0';
-import { writeStoredConfig } from './storage.js?v=9.0';
+import { APP_VERSION, userConfig, DEFAULT_SETTINGS, STORAGE_KEY, themes, colorCombos, fontStyles, clockDesigns, bgGradients } from './config.js?v=13.0.1';
+import { writeStoredConfig } from './storage.js?v=13.0.1';
 
 export const MAX_BACKUP_BYTES = 10 * 1024 * 1024;
 const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);

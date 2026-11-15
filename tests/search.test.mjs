@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { initSearchSuggestions } from '../js/search.js?v=9.0';
+import { initSearchSuggestions } from '../js/search.js?v=13.0.1';
 
 class Element {
     listeners = {}; attributes = {}; children = []; value = ''; hidden = false;

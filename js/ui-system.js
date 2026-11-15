@@ -1,6 +1,6 @@
-import {clockDesigns,userConfig} from './config.js?v=9.0';
-import {onLocalSave,writeStoredConfig} from './storage.js?v=9.0';
-import {applyPasidea} from './pasidea.js';
+import {clockDesigns,userConfig} from './config.js?v=13.0.1';
+import {onLocalSave,writeStoredConfig} from './storage.js?v=13.0.1';
+import {applyPasidea} from './pasidea.js?v=13.0.1';
 const storageKey='lifetop_v1_0_data';
 let initialized=false;
 const hex=rgb=>'#'+rgb.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
@@ -22,7 +22,8 @@ export function applyUISystemPreferences(config={}) {
  const palette=getComputedStyle(body),background=palette.getPropertyValue('--ui-bg').trim(),surface=palette.getPropertyValue('--ui-surface').trim();
  if(typeof config.theme==='string'&&/^#[a-f0-9]{6}$/i.test(config.theme)&&config.theme.toLowerCase()!=='#2f75a8'){
   let primary=rgb(config.theme);const light=mode==='light';
-  for(let i=0;i<50&&contrast(primary,rgb(background))<4.5;i++)primary=primary.map(v=>light?v*.93:v+(255-v)*.07);
+  const worst=rgb(surface).map(value=>Math.round(value*.88+(light?0:255)*.12));
+  for(let i=0;i<50&&Math.min(contrast(primary,rgb(background)),contrast(primary,worst))<4.5;i++)primary=primary.map(v=>light?v*.93:v+(255-v)*.07);
   primary=primary.map(Math.round);const color=hex(primary);
   root.style.setProperty('--ui-accent-override',color);
   root.style.setProperty('--ui-accent-hover-override',hex(primary.map(v=>light?v*.9:v+(255-v)*.2)));

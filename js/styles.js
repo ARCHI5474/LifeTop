@@ -1,5 +1,5 @@
 /* LifeTop - visual style application */
-import { bgGradients, colorCombos, bgPresets, userConfig } from "./config.js?v=9.0";
+import { bgGradients, colorCombos, bgPresets, userConfig } from "./config.js?v=13.0.1";
 
 
 export function applyStyles() {
@@ -22,8 +22,9 @@ export function applyStyles() {
 
     const paletteColor = bgGradients[userConfig.bgType] || bgGradients['gradient-blue'];
 
-    const background = userConfig.bgImage
-        ? `url("${userConfig.bgImage.replace(/["\\]/g, '\\$&')}") center / cover no-repeat, ${paletteColor}`
+    const imageUrl=userConfig.bgImage.startsWith('assets/')?new URL('../'+userConfig.bgImage,import.meta.url).href:userConfig.bgImage;
+    const background = imageUrl
+        ? `url("${imageUrl.replace(/["\\]/g, '\\$&')}") center / cover no-repeat, ${paletteColor}`
         : paletteColor;
     root.style.setProperty('--bg-gradient', background);
     root.style.setProperty('--bg-size', 'cover');
@@ -66,7 +67,7 @@ export function renderBgSelector() {
     
     const html = Object.keys(bgGradients).map(key => {
         const activeClass = (!userConfig.bgImage && userConfig.bgType === key) ? 'active' : '';
-        return `<div class="bg-option ${activeClass}" style="background: ${bgGradients[key]}" onclick="setBg('${key}', this)"></div>`;
+        return `<button type="button" aria-label="背景カラー ${key.replace('gradient-','')}" aria-pressed="${Boolean(activeClass)}" class="bg-option ${activeClass}" style="background: ${bgGradients[key]}" onclick="setBg('${key}', this)"></button>`;
     }).join('');
 
     container.innerHTML = html;
