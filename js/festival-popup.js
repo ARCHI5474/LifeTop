@@ -6,7 +6,7 @@ export function openFestival() {
     dialog.id = 'festival-dialog';
     dialog.className = 'cc-dialog mini-popup ui-scope';
     dialog.setAttribute('aria-label', 'LifeTop v10.0 Festival');
-    dialog.innerHTML = '<header class="mini-popup-header"><h2>LifeTop v10.0 Festival</h2><button type="button" class="cc-control" data-cancel aria-label="Festivalを閉じる">×</button></header><iframe title="Festival会場" src="festival.html?embedded=1"></iframe>';
+    dialog.innerHTML = '<header class="mini-popup-header"><h2>LifeTop v10.0 Festival</h2><button type="button" class="cc-control cc-icon" data-cancel aria-label="Festivalを閉じる">×</button></header><iframe title="Festival会場" src="festival.html?embedded=1"></iframe>';
     document.body.append(dialog);
     const lifecycle = openUIDialog(dialog);
     dialog.querySelector('iframe').addEventListener('load', event => {

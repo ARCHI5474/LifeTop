@@ -1,6 +1,7 @@
 /* LifeTop - bookmarks (with folder management, drag-and-drop & touch reordering) */
 import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=9.0";
 import { save } from "./storage.js?v=9.0";
+import {openQuickLinks} from './quick-links.js';
 
 let bookmarkEditMode = false;
 let currentBookmarkTab = "ブックマーク";
@@ -314,7 +315,7 @@ export function renderBookmarks() {
         isFixed = true;
     }
 
-    const indexedEntries = bookmarksToRender.map((item, originalIndex) => ({ item, originalIndex }));
+    const indexedEntries = bookmarksToRender.slice(0, isFixed ? 12 : bookmarksToRender.length).map((item, originalIndex) => ({ item, originalIndex }));
 
     if (indexedEntries.length === 0) {
         const emptyText = activeFolder
@@ -427,6 +428,13 @@ export function renderBookmarks() {
             </div>
         `;
     }).join('');
+    if (isFixed) {
+        const more = document.createElement('button');
+        more.type = 'button'; more.className = 'tonal-btn quick-links-more';
+        more.textContent = `もっと見る・検索（${bookmarksToRender.length}件）`;
+        more.onclick = () => openQuickLinks(currentBookmarkTab);
+        grid.append(more);
+    }
 }
 
 // フォルダを開く・閉じる・名前変更

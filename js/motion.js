@@ -9,7 +9,10 @@ export function initMotion() {
         if (!(target instanceof Element)) return null;
         if (target.closest('.puzzle-board, .othello-board, .extra-board, [contenteditable], .ui-scope')) return null;
         const control = target.closest('button, a.bookmark-item, .background-upload-btn, .choice-option, .switch');
+        if (control?.matches('.pasidea-interactive')) return null;
         if (!control || control.matches(':disabled, [aria-disabled="true"]') || control.querySelector('input:disabled')) return null;
+        // Close controls share CSS feedback with dialogs, including new UI scopes.
+        if (control.matches('.close-action, .cc-icon[data-cancel]')) return null;
         return control.matches('.choice-option') ? control.querySelector('.choice-content') : control.matches('.switch') ? control.querySelector('.slider') : control;
     };
     const animate = (element, frames, options) => {
@@ -24,41 +27,40 @@ export function initMotion() {
             if (options.fill !== 'forwards' && running.get(element) === animation) running.delete(element);
         }).catch(() => {});
     };
-    const release = (element, bounce) => {
-        animate(element, bounce ? [
-            { scale: '.97 .95', offset: 0 },
-            { scale: '1.025 1.015', offset: .5 },
-            { scale: '.997 .998', offset: .78 },
-            { scale: '1', offset: 1 }
-        ] : [{ scale: getComputedStyle(element).scale }, { scale: '1' }],
-        { duration: bounce ? 110 : 60, easing: 'cubic-bezier(.2,.8,.2,1)' });
+    const duration = (element, token, fallback) => {
+        const value = getComputedStyle(element).getPropertyValue?.(token)?.trim();
+        return value ? parseFloat(value) * (value.endsWith('ms') ? 1 : 1000) : fallback;
+    };
+    const release = element => {
+        animate(element, [{ scale: getComputedStyle(element).scale }, { scale: '1' }],
+            { duration: duration(element, '--ui-duration-fast', 140), easing: 'cubic-bezier(.2,0,0,1)' });
     };
     document.addEventListener('pointerdown', event => {
         if (!event.isPrimary || event.button !== 0 || reduced()) return;
         const element = targetFor(event.target);
         if (!element) return;
         presses.set(event.pointerId, { element, x: event.clientX, y: event.clientY });
-        animate(element, [{ scale: '1' }, { scale: '.97 .95' }], { duration: 35, fill: 'forwards', easing: 'ease-out' });
+        animate(element, [{ scale: '1' }, { scale: '.98' }], { duration: duration(element, '--ui-duration-instant', 80), fill: 'forwards', easing: 'cubic-bezier(.2,0,0,1)' });
     }, { passive: true });
     document.addEventListener('pointermove', event => {
         const press = presses.get(event.pointerId);
         if (press && Math.hypot(event.clientX - press.x, event.clientY - press.y) > 10) {
             presses.delete(event.pointerId);
-            release(press.element, false);
+            release(press.element);
         }
     }, { passive: true });
     const finish = event => {
         const press = presses.get(event.pointerId);
         if (!press) return;
         presses.delete(event.pointerId);
-        release(press.element, event.type === 'pointerup' && targetFor(event.target) === press.element);
+        release(press.element);
     };
     document.addEventListener('pointerup', finish, { passive: true });
     document.addEventListener('pointercancel', finish, { passive: true });
     document.addEventListener('click', event => {
         if (event.detail !== 0 || reduced()) return;
         const element = targetFor(event.target);
-        if (element) release(element, true);
+        if (element) release(element);
     }, true);
     const reset = () => {
         if (!reduced()) return;
@@ -69,7 +71,7 @@ export function initMotion() {
     preference.addEventListener('change', reset);
     new MutationObserver(reset).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     window.addEventListener('blur', () => {
-        presses.forEach(({ element }) => release(element, false));
+        presses.forEach(({ element }) => release(element));
         presses.clear();
     });
 }

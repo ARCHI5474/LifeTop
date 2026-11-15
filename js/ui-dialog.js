@@ -1,4 +1,7 @@
+import {applyPasidea} from './pasidea.js';
+
 export function openUIDialog(dialog, {onRequestClose = () => true} = {}) {
+    applyPasidea(dialog);
     const trigger = document.activeElement;
     const origin = trigger?.dataset?.cc ? {action: trigger.dataset.cc, id: trigger.dataset.id || ''} : null;
     let closeRequest = null;

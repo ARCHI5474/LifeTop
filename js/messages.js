@@ -44,3 +44,8 @@ window.addEventListener('pagehide',()=>{unwatch?.();unwatchRoom?.();});
 initUISystem();
 
 initHiddenTens(festivalConfig);
+
+if(new URLSearchParams(location.search).has('embedded')) {
+ document.body.classList.add('mini-embedded');
+ document.querySelector('.mini-header')?.remove();
+}

@@ -1,0 +1,1796 @@
+{
+  "ニュース・新聞": [
+    {
+      "title": "NHKニュース",
+      "url": "https://www3.nhk.or.jp/news/"
+    },
+    {
+      "title": "Yahoo!ニュース",
+      "url": "https://news.yahoo.co.jp"
+    },
+    {
+      "title": "朝日新聞",
+      "url": "https://www.asahi.com"
+    },
+    {
+      "title": "読売新聞",
+      "url": "https://www.yomiuri.co.jp"
+    },
+    {
+      "title": "毎日新聞",
+      "url": "https://mainichi.jp"
+    },
+    {
+      "title": "日本経済新聞",
+      "url": "https://www.nikkei.com"
+    },
+    {
+      "title": "産経ニュース",
+      "url": "https://www.sankei.com"
+    },
+    {
+      "title": "東京新聞",
+      "url": "https://www.tokyo-np.co.jp"
+    },
+    {
+      "title": "共同通信",
+      "url": "https://www.kyodonews.jp"
+    },
+    {
+      "title": "時事ドットコム",
+      "url": "https://www.jiji.com"
+    },
+    {
+      "title": "ロイター",
+      "url": "https://jp.reuters.com"
+    },
+    {
+      "title": "BBCニュース",
+      "url": "https://www.bbc.com/japanese"
+    },
+    {
+      "title": "CNN.co.jp",
+      "url": "https://www.cnn.co.jp"
+    },
+    {
+      "title": "ハフポスト日本版",
+      "url": "https://www.huffingtonpost.jp"
+    },
+    {
+      "title": "ITmedia",
+      "url": "https://www.itmedia.co.jp"
+    },
+    {
+      "title": "Impress Watch",
+      "url": "https://www.watch.impress.co.jp"
+    },
+    {
+      "title": "GIGAZINE",
+      "url": "https://gigazine.net"
+    },
+    {
+      "title": "ねとらぼ",
+      "url": "https://nlab.itmedia.co.jp"
+    },
+    {
+      "title": "ナタリー",
+      "url": "https://natalie.mu"
+    },
+    {
+      "title": "ORICON NEWS",
+      "url": "https://www.oricon.co.jp"
+    },
+    {
+      "title": "映画.com",
+      "url": "https://eiga.com"
+    },
+    {
+      "title": "シネマトゥデイ",
+      "url": "https://www.cinematoday.jp"
+    },
+    {
+      "title": "音楽ナタリー",
+      "url": "https://natalie.mu/music"
+    },
+    {
+      "title": "Forbes JAPAN",
+      "url": "https://forbesjapan.com"
+    },
+    {
+      "title": "東洋経済オンライン",
+      "url": "https://toyokeizai.net"
+    },
+    {
+      "title": "ダイヤモンド・オンライン",
+      "url": "https://diamond.jp"
+    },
+    {
+      "title": "プレジデントオンライン",
+      "url": "https://president.jp"
+    },
+    {
+      "title": "文春オンライン",
+      "url": "https://bunshun.jp"
+    },
+    {
+      "title": "デイリーポータルZ",
+      "url": "https://dailyportalz.jp"
+    },
+    {
+      "title": "オモコロ",
+      "url": "https://omocoro.jp"
+    }
+  ],
+  "料理・食事": [
+    {
+      "title": "クックパッド",
+      "url": "https://cookpad.com"
+    },
+    {
+      "title": "クラシル",
+      "url": "https://www.kurashiru.com"
+    },
+    {
+      "title": "デリッシュキッチン",
+      "url": "https://delishkitchen.tv"
+    },
+    {
+      "title": "白ごはん.com",
+      "url": "https://www.sirogohan.com"
+    },
+    {
+      "title": "きょうの料理",
+      "url": "https://www.kyounoryouri.jp"
+    },
+    {
+      "title": "レタスクラブ",
+      "url": "https://www.lettuceclub.net"
+    },
+    {
+      "title": "オレンジページ",
+      "url": "https://www.orangepage.net"
+    },
+    {
+      "title": "E・レシピ",
+      "url": "https://erecipe.woman.excite.co.jp"
+    },
+    {
+      "title": "味の素パーク",
+      "url": "https://park.ajinomoto.co.jp"
+    },
+    {
+      "title": "キッコーマン",
+      "url": "https://www.kikkoman.co.jp"
+    },
+    {
+      "title": "ミツカン",
+      "url": "https://www.mizkan.co.jp"
+    },
+    {
+      "title": "キユーピー",
+      "url": "https://www.kewpie.co.jp"
+    },
+    {
+      "title": "ハウス食品",
+      "url": "https://housefoods.jp"
+    },
+    {
+      "title": "S&B食品",
+      "url": "https://www.sbfoods.co.jp"
+    },
+    {
+      "title": "macaroni",
+      "url": "https://macaro-ni.jp"
+    },
+    {
+      "title": "ぐるなび",
+      "url": "https://www.gnavi.co.jp"
+    },
+    {
+      "title": "ホットペッパーグルメ",
+      "url": "https://www.hotpepper.jp"
+    },
+    {
+      "title": "Retty",
+      "url": "https://retty.me"
+    },
+    {
+      "title": "一休.comレストラン",
+      "url": "https://restaurant.ikyu.com"
+    },
+    {
+      "title": "出前館",
+      "url": "https://demae-can.com"
+    },
+    {
+      "title": "Uber Eats",
+      "url": "https://www.ubereats.com"
+    },
+    {
+      "title": "食べチョク",
+      "url": "https://www.tabechoku.com"
+    },
+    {
+      "title": "Oisix",
+      "url": "https://www.oisix.com"
+    },
+    {
+      "title": "ポケットマルシェ",
+      "url": "https://poke-m.com"
+    }
+  ],
+  "旅行・おでかけ": [
+    {
+      "title": "じゃらん",
+      "url": "https://www.jalan.net"
+    },
+    {
+      "title": "楽天トラベル",
+      "url": "https://travel.rakuten.co.jp"
+    },
+    {
+      "title": "一休.com",
+      "url": "https://www.ikyu.com"
+    },
+    {
+      "title": "JTB",
+      "url": "https://www.jtb.co.jp"
+    },
+    {
+      "title": "HIS",
+      "url": "https://www.his-j.com"
+    },
+    {
+      "title": "日本旅行",
+      "url": "https://www.nta.co.jp"
+    },
+    {
+      "title": "近畿日本ツーリスト",
+      "url": "https://www.knt.co.jp"
+    },
+    {
+      "title": "るるぶ",
+      "url": "https://rurubu.jp"
+    },
+    {
+      "title": "ことりっぷ",
+      "url": "https://co-trip.jp"
+    },
+    {
+      "title": "トラベルコ",
+      "url": "https://www.tour.ne.jp"
+    },
+    {
+      "title": "エアトリ",
+      "url": "https://www.airtrip.jp"
+    },
+    {
+      "title": "スカイスキャナー",
+      "url": "https://www.skyscanner.jp"
+    },
+    {
+      "title": "Booking.com",
+      "url": "https://www.booking.com"
+    },
+    {
+      "title": "Agoda",
+      "url": "https://www.agoda.com"
+    },
+    {
+      "title": "Expedia",
+      "url": "https://www.expedia.co.jp"
+    },
+    {
+      "title": "Hotels.com",
+      "url": "https://jp.hotels.com"
+    },
+    {
+      "title": "Airbnb",
+      "url": "https://www.airbnb.jp"
+    },
+    {
+      "title": "Tripadvisor",
+      "url": "https://www.tripadvisor.jp"
+    },
+    {
+      "title": "Klook",
+      "url": "https://www.klook.com"
+    },
+    {
+      "title": "アソビュー",
+      "url": "https://www.asoview.com"
+    },
+    {
+      "title": "いこーよ",
+      "url": "https://iko-yo.net"
+    },
+    {
+      "title": "ウォーカープラス",
+      "url": "https://www.walkerplus.com"
+    },
+    {
+      "title": "東京ディズニーリゾート",
+      "url": "https://www.tokyodisneyresort.jp"
+    },
+    {
+      "title": "ユニバーサル・スタジオ・ジャパン",
+      "url": "https://www.usj.co.jp"
+    },
+    {
+      "title": "富士急ハイランド",
+      "url": "https://www.fujiq.jp"
+    },
+    {
+      "title": "レゴランド・ジャパン",
+      "url": "https://www.legoland.jp"
+    },
+    {
+      "title": "ナガシマリゾート",
+      "url": "https://www.nagashima-onsen.co.jp"
+    },
+    {
+      "title": "サンリオピューロランド",
+      "url": "https://www.puroland.jp"
+    },
+    {
+      "title": "東京スカイツリー",
+      "url": "https://www.tokyo-skytree.jp"
+    },
+    {
+      "title": "東京タワー",
+      "url": "https://www.tokyotower.co.jp"
+    },
+    {
+      "title": "東京国立博物館",
+      "url": "https://www.tnm.jp"
+    },
+    {
+      "title": "国立科学博物館",
+      "url": "https://www.kahaku.go.jp"
+    },
+    {
+      "title": "国立新美術館",
+      "url": "https://www.nact.jp"
+    },
+    {
+      "title": "国立西洋美術館",
+      "url": "https://www.nmwa.go.jp"
+    },
+    {
+      "title": "京都国立博物館",
+      "url": "https://www.kyohaku.go.jp"
+    },
+    {
+      "title": "奈良国立博物館",
+      "url": "https://www.narahaku.go.jp"
+    },
+    {
+      "title": "大英博物館",
+      "url": "https://www.britishmuseum.org"
+    },
+    {
+      "title": "ルーヴル美術館",
+      "url": "https://www.louvre.fr"
+    },
+    {
+      "title": "メトロポリタン美術館",
+      "url": "https://www.metmuseum.org"
+    },
+    {
+      "title": "Google Arts & Culture",
+      "url": "https://artsandculture.google.com"
+    }
+  ],
+  "学習・語学": [
+    {
+      "title": "NHKゴガク",
+      "url": "https://www.nhk.or.jp/gogaku"
+    },
+    {
+      "title": "NHK for School",
+      "url": "https://www.nhk.or.jp/school"
+    },
+    {
+      "title": "スタディサプリ",
+      "url": "https://studysapuri.jp"
+    },
+    {
+      "title": "Z会",
+      "url": "https://www.zkai.co.jp"
+    },
+    {
+      "title": "進研ゼミ",
+      "url": "https://www.benesse.co.jp"
+    },
+    {
+      "title": "Try IT",
+      "url": "https://www.try-it.jp"
+    },
+    {
+      "title": "学研キッズネット",
+      "url": "https://kids.gakken.co.jp"
+    },
+    {
+      "title": "学研キッズ",
+      "url": "https://www.gakken.co.jp"
+    },
+    {
+      "title": "旺文社",
+      "url": "https://www.obunsha.co.jp"
+    },
+    {
+      "title": "ちびむすドリル",
+      "url": "https://happylilac.net"
+    },
+    {
+      "title": "ぷりんときっず",
+      "url": "https://print-kids.net"
+    },
+    {
+      "title": "eboard",
+      "url": "https://www.eboard.jp"
+    },
+    {
+      "title": "Duolingo",
+      "url": "https://www.duolingo.com"
+    },
+    {
+      "title": "Busuu",
+      "url": "https://www.busuu.com"
+    },
+    {
+      "title": "Memrise",
+      "url": "https://www.memrise.com"
+    },
+    {
+      "title": "Quizlet",
+      "url": "https://quizlet.com"
+    },
+    {
+      "title": "AnkiWeb",
+      "url": "https://ankiweb.net"
+    },
+    {
+      "title": "英検",
+      "url": "https://www.eiken.or.jp"
+    },
+    {
+      "title": "TOEIC",
+      "url": "https://www.iibc-global.org"
+    },
+    {
+      "title": "DMM英会話",
+      "url": "https://eikaiwa.dmm.com"
+    },
+    {
+      "title": "レアジョブ英会話",
+      "url": "https://www.rarejob.com"
+    },
+    {
+      "title": "Cambly",
+      "url": "https://www.cambly.com"
+    },
+    {
+      "title": "italki",
+      "url": "https://www.italki.com"
+    },
+    {
+      "title": "Preply",
+      "url": "https://preply.com"
+    },
+    {
+      "title": "Coursera",
+      "url": "https://www.coursera.org"
+    },
+    {
+      "title": "edX",
+      "url": "https://www.edx.org"
+    },
+    {
+      "title": "Udemy",
+      "url": "https://www.udemy.com"
+    },
+    {
+      "title": "Khan Academy",
+      "url": "https://www.khanacademy.org"
+    },
+    {
+      "title": "MIT OpenCourseWare",
+      "url": "https://ocw.mit.edu"
+    },
+    {
+      "title": "OpenLearn",
+      "url": "https://www.open.edu/openlearn"
+    },
+    {
+      "title": "放送大学",
+      "url": "https://www.ouj.ac.jp"
+    },
+    {
+      "title": "JMOOC",
+      "url": "https://www.jmooc.jp"
+    },
+    {
+      "title": "gacco",
+      "url": "https://gacco.org"
+    },
+    {
+      "title": "Schoo",
+      "url": "https://schoo.jp"
+    },
+    {
+      "title": "Progate",
+      "url": "https://prog-8.com"
+    },
+    {
+      "title": "ドットインストール",
+      "url": "https://dotinstall.com"
+    },
+    {
+      "title": "paizaラーニング",
+      "url": "https://paiza.jp"
+    },
+    {
+      "title": "AtCoder",
+      "url": "https://atcoder.jp"
+    },
+    {
+      "title": "Scratch",
+      "url": "https://scratch.mit.edu"
+    },
+    {
+      "title": "Code.org",
+      "url": "https://code.org"
+    },
+    {
+      "title": "freeCodeCamp",
+      "url": "https://www.freecodecamp.org"
+    },
+    {
+      "title": "Codecademy",
+      "url": "https://www.codecademy.com"
+    },
+    {
+      "title": "Brilliant",
+      "url": "https://brilliant.org"
+    },
+    {
+      "title": "Desmos",
+      "url": "https://www.desmos.com"
+    },
+    {
+      "title": "GeoGebra",
+      "url": "https://www.geogebra.org"
+    },
+    {
+      "title": "Wolfram Alpha",
+      "url": "https://www.wolframalpha.com"
+    },
+    {
+      "title": "Symbolab",
+      "url": "https://www.symbolab.com"
+    },
+    {
+      "title": "Mathway",
+      "url": "https://www.mathway.com"
+    }
+  ],
+  "読書・マンガ": [
+    {
+      "title": "青空文庫",
+      "url": "https://www.aozora.gr.jp"
+    },
+    {
+      "title": "国立国会図書館デジタルコレクション",
+      "url": "https://dl.ndl.go.jp"
+    },
+    {
+      "title": "Project Gutenberg",
+      "url": "https://www.gutenberg.org"
+    },
+    {
+      "title": "Internet Archive",
+      "url": "https://archive.org"
+    },
+    {
+      "title": "Open Library",
+      "url": "https://openlibrary.org"
+    },
+    {
+      "title": "BOOK WALKER",
+      "url": "https://bookwalker.jp"
+    },
+    {
+      "title": "ebookjapan",
+      "url": "https://ebookjapan.yahoo.co.jp"
+    },
+    {
+      "title": "コミックシーモア",
+      "url": "https://www.cmoa.jp"
+    },
+    {
+      "title": "honto",
+      "url": "https://honto.jp"
+    },
+    {
+      "title": "紀伊國屋書店",
+      "url": "https://www.kinokuniya.co.jp"
+    },
+    {
+      "title": "丸善ジュンク堂",
+      "url": "https://www.maruzenjunkudo.co.jp"
+    },
+    {
+      "title": "読書メーター",
+      "url": "https://bookmeter.com"
+    },
+    {
+      "title": "ブクログ",
+      "url": "https://booklog.jp"
+    },
+    {
+      "title": "少年ジャンプ＋",
+      "url": "https://shonenjumpplus.com"
+    },
+    {
+      "title": "マガポケ",
+      "url": "https://pocket.shonenmagazine.com"
+    },
+    {
+      "title": "サンデーうぇぶり",
+      "url": "https://www.sunday-webry.com"
+    },
+    {
+      "title": "マンガワン",
+      "url": "https://manga-one.com"
+    },
+    {
+      "title": "となりのヤングジャンプ",
+      "url": "https://tonarinoyj.jp"
+    },
+    {
+      "title": "カクヨム",
+      "url": "https://kakuyomu.jp"
+    },
+    {
+      "title": "小説家になろう",
+      "url": "https://syosetu.com"
+    },
+    {
+      "title": "エブリスタ",
+      "url": "https://estar.jp"
+    },
+    {
+      "title": "アルファポリス",
+      "url": "https://www.alphapolis.co.jp"
+    }
+  ],
+  "音楽・動画・配信": [
+    {
+      "title": "Apple Music",
+      "url": "https://music.apple.com"
+    },
+    {
+      "title": "Amazon Music",
+      "url": "https://music.amazon.co.jp"
+    },
+    {
+      "title": "AWA",
+      "url": "https://awa.fm"
+    },
+    {
+      "title": "LINE MUSIC",
+      "url": "https://music.line.me"
+    },
+    {
+      "title": "SoundCloud",
+      "url": "https://soundcloud.com"
+    },
+    {
+      "title": "Bandcamp",
+      "url": "https://bandcamp.com"
+    },
+    {
+      "title": "Audiomack",
+      "url": "https://audiomack.com"
+    },
+    {
+      "title": "TuneIn",
+      "url": "https://tunein.com"
+    },
+    {
+      "title": "ラジオNIKKEI",
+      "url": "https://www.radionikkei.jp"
+    },
+    {
+      "title": "らじる★らじる",
+      "url": "https://www.nhk.or.jp/radio"
+    },
+    {
+      "title": "Audible",
+      "url": "https://www.audible.co.jp"
+    },
+    {
+      "title": "audiobook.jp",
+      "url": "https://audiobook.jp"
+    },
+    {
+      "title": "Voicy",
+      "url": "https://voicy.jp"
+    },
+    {
+      "title": "stand.fm",
+      "url": "https://stand.fm"
+    },
+    {
+      "title": "Podcast Addict",
+      "url": "https://podcastaddict.com"
+    },
+    {
+      "title": "Vimeo",
+      "url": "https://vimeo.com"
+    },
+    {
+      "title": "Dailymotion",
+      "url": "https://www.dailymotion.com"
+    },
+    {
+      "title": "Twitch",
+      "url": "https://www.twitch.tv"
+    },
+    {
+      "title": "ツイキャス",
+      "url": "https://twitcasting.tv"
+    },
+    {
+      "title": "SHOWROOM",
+      "url": "https://www.showroom-live.com"
+    },
+    {
+      "title": "OPENREC.tv",
+      "url": "https://www.openrec.tv"
+    },
+    {
+      "title": "Lemino",
+      "url": "https://lemino.docomo.ne.jp"
+    },
+    {
+      "title": "FOD",
+      "url": "https://fod.fujitv.co.jp"
+    },
+    {
+      "title": "Hulu",
+      "url": "https://www.hulu.jp"
+    },
+    {
+      "title": "WOWOW",
+      "url": "https://www.wowow.co.jp"
+    },
+    {
+      "title": "TELASA",
+      "url": "https://www.telasa.jp"
+    },
+    {
+      "title": "BANDAI CHANNEL",
+      "url": "https://www.b-ch.com"
+    },
+    {
+      "title": "dアニメストア",
+      "url": "https://animestore.docomo.ne.jp"
+    },
+    {
+      "title": "Crunchyroll",
+      "url": "https://www.crunchyroll.com"
+    }
+  ],
+  "買い物・生活用品": [
+    {
+      "title": "Qoo10",
+      "url": "https://www.qoo10.jp"
+    },
+    {
+      "title": "au PAYマーケット",
+      "url": "https://wowma.jp"
+    },
+    {
+      "title": "SHOPLIST",
+      "url": "https://shop-list.com"
+    },
+    {
+      "title": "MAGASEEK",
+      "url": "https://www.magaseek.com"
+    },
+    {
+      "title": "BAYCREW’S STORE",
+      "url": "https://baycrews.jp"
+    },
+    {
+      "title": "オンワード・クローゼット",
+      "url": "https://crosset.onward.co.jp"
+    },
+    {
+      "title": "ベルメゾン",
+      "url": "https://www.bellemaison.jp"
+    },
+    {
+      "title": "ニッセン",
+      "url": "https://www.nissen.co.jp"
+    },
+    {
+      "title": "ベルーナ",
+      "url": "https://belluna.jp"
+    },
+    {
+      "title": "ディノス",
+      "url": "https://www.dinos.co.jp"
+    },
+    {
+      "title": "フェリシモ",
+      "url": "https://www.felissimo.co.jp"
+    },
+    {
+      "title": "IKEA",
+      "url": "https://www.ikea.com/jp/ja"
+    },
+    {
+      "title": "Francfranc",
+      "url": "https://francfranc.com"
+    },
+    {
+      "title": "ACTUS",
+      "url": "https://www.actus-interior.com"
+    },
+    {
+      "title": "LOWYA",
+      "url": "https://www.low-ya.com"
+    },
+    {
+      "title": "カインズ",
+      "url": "https://www.cainz.com"
+    },
+    {
+      "title": "コーナン",
+      "url": "https://www.kohnan-eshop.com"
+    },
+    {
+      "title": "コメリ",
+      "url": "https://www.komeri.com"
+    },
+    {
+      "title": "DCMオンライン",
+      "url": "https://www.dcm-ekurashi.com"
+    },
+    {
+      "title": "ケーズデンキ",
+      "url": "https://www.ksdenki.com"
+    },
+    {
+      "title": "ヤマダウェブコム",
+      "url": "https://www.yamada-denkiweb.com"
+    },
+    {
+      "title": "Joshin web",
+      "url": "https://joshinweb.jp"
+    },
+    {
+      "title": "エディオン",
+      "url": "https://www.edion.com"
+    },
+    {
+      "title": "ノジマオンライン",
+      "url": "https://online.nojima.co.jp"
+    },
+    {
+      "title": "ソフマップ",
+      "url": "https://www.sofmap.com"
+    },
+    {
+      "title": "ドスパラ",
+      "url": "https://www.dospara.co.jp"
+    },
+    {
+      "title": "パソコン工房",
+      "url": "https://www.pc-koubou.jp"
+    },
+    {
+      "title": "ツクモ",
+      "url": "https://shop.tsukumo.co.jp"
+    },
+    {
+      "title": "サウンドハウス",
+      "url": "https://www.soundhouse.co.jp"
+    },
+    {
+      "title": "島村楽器",
+      "url": "https://www.shimamura.co.jp"
+    },
+    {
+      "title": "石橋楽器",
+      "url": "https://www.ishibashi.co.jp"
+    },
+    {
+      "title": "タワーレコード",
+      "url": "https://tower.jp"
+    },
+    {
+      "title": "HMV&BOOKS",
+      "url": "https://www.hmv.co.jp"
+    },
+    {
+      "title": "駿河屋",
+      "url": "https://www.suruga-ya.jp"
+    },
+    {
+      "title": "BOOKOFF",
+      "url": "https://www.bookoff.co.jp"
+    },
+    {
+      "title": "まんだらけ",
+      "url": "https://www.mandarake.co.jp"
+    },
+    {
+      "title": "アニメイト",
+      "url": "https://www.animate-onlineshop.jp"
+    },
+    {
+      "title": "ハンズ",
+      "url": "https://hands.net"
+    },
+    {
+      "title": "Creema",
+      "url": "https://www.creema.jp"
+    },
+    {
+      "title": "minne",
+      "url": "https://minne.com"
+    },
+    {
+      "title": "BASE",
+      "url": "https://thebase.com"
+    },
+    {
+      "title": "STORES",
+      "url": "https://stores.jp"
+    }
+  ],
+  "住まい・仕事": [
+    {
+      "title": "SUUMO",
+      "url": "https://suumo.jp"
+    },
+    {
+      "title": "LIFULL HOME’S",
+      "url": "https://www.homes.co.jp"
+    },
+    {
+      "title": "アットホーム",
+      "url": "https://www.athome.co.jp"
+    },
+    {
+      "title": "CHINTAI",
+      "url": "https://www.chintai.net"
+    },
+    {
+      "title": "UR賃貸住宅",
+      "url": "https://www.ur-net.go.jp"
+    },
+    {
+      "title": "引越し侍",
+      "url": "https://hikkoshizamurai.jp"
+    },
+    {
+      "title": "くらしのマーケット",
+      "url": "https://curama.jp"
+    },
+    {
+      "title": "ミツモア",
+      "url": "https://meetsmore.com"
+    },
+    {
+      "title": "Indeed",
+      "url": "https://jp.indeed.com"
+    },
+    {
+      "title": "求人ボックス",
+      "url": "https://xn--pckua2a7gp15o89zb.com"
+    },
+    {
+      "title": "リクナビNEXT",
+      "url": "https://next.rikunabi.com"
+    },
+    {
+      "title": "マイナビ転職",
+      "url": "https://tenshoku.mynavi.jp"
+    },
+    {
+      "title": "doda",
+      "url": "https://doda.jp"
+    },
+    {
+      "title": "エン転職",
+      "url": "https://employment.en-japan.com"
+    },
+    {
+      "title": "Wantedly",
+      "url": "https://www.wantedly.com"
+    },
+    {
+      "title": "Green",
+      "url": "https://www.green-japan.com"
+    },
+    {
+      "title": "ビズリーチ",
+      "url": "https://www.bizreach.jp"
+    },
+    {
+      "title": "YOUTRUST",
+      "url": "https://youtrust.jp"
+    },
+    {
+      "title": "クラウドワークス",
+      "url": "https://crowdworks.jp"
+    },
+    {
+      "title": "ランサーズ",
+      "url": "https://www.lancers.jp"
+    },
+    {
+      "title": "ココナラ",
+      "url": "https://coconala.com"
+    },
+    {
+      "title": "タイミー",
+      "url": "https://timee.co.jp"
+    },
+    {
+      "title": "シェアフル",
+      "url": "https://sharefull.com"
+    },
+    {
+      "title": "Workship",
+      "url": "https://goworkship.com"
+    },
+    {
+      "title": "Peatix",
+      "url": "https://peatix.com"
+    },
+    {
+      "title": "connpass",
+      "url": "https://connpass.com"
+    },
+    {
+      "title": "Doorkeeper",
+      "url": "https://www.doorkeeper.jp"
+    },
+    {
+      "title": "Eventbrite",
+      "url": "https://www.eventbrite.com"
+    }
+  ],
+  "天気・地図・防災": [
+    {
+      "title": "tenki.jp",
+      "url": "https://tenki.jp"
+    },
+    {
+      "title": "ウェザーニュース",
+      "url": "https://weathernews.jp"
+    },
+    {
+      "title": "Windy",
+      "url": "https://www.windy.com"
+    },
+    {
+      "title": "雨雲レーダー",
+      "url": "https://www.jma.go.jp/bosai/nowc"
+    },
+    {
+      "title": "国土地理院地図",
+      "url": "https://maps.gsi.go.jp"
+    },
+    {
+      "title": "OpenStreetMap",
+      "url": "https://www.openstreetmap.org"
+    },
+    {
+      "title": "Mapion",
+      "url": "https://www.mapion.co.jp"
+    },
+    {
+      "title": "MapFan",
+      "url": "https://mapfan.com"
+    },
+    {
+      "title": "ゼンリン地図",
+      "url": "https://www.zenrin.co.jp"
+    },
+    {
+      "title": "防災科学技術研究所",
+      "url": "https://www.bosai.go.jp"
+    },
+    {
+      "title": "地震調査研究推進本部",
+      "url": "https://www.jishin.go.jp"
+    },
+    {
+      "title": "東京都防災ホームページ",
+      "url": "https://www.bousai.metro.tokyo.lg.jp"
+    },
+    {
+      "title": "東京消防庁",
+      "url": "https://www.tfd.metro.tokyo.lg.jp"
+    },
+    {
+      "title": "消防庁",
+      "url": "https://www.fdma.go.jp"
+    },
+    {
+      "title": "日本赤十字社",
+      "url": "https://www.jrc.or.jp"
+    },
+    {
+      "title": "ハザードマップポータル",
+      "url": "https://disaportal.gsi.go.jp"
+    },
+    {
+      "title": "川の防災情報",
+      "url": "https://www.river.go.jp"
+    },
+    {
+      "title": "海の安全情報",
+      "url": "https://www6.kaiho.mlit.go.jp"
+    }
+  ],
+  "スポーツ・ゲーム": [
+    {
+      "title": "スポーツナビ",
+      "url": "https://sports.yahoo.co.jp"
+    },
+    {
+      "title": "日刊スポーツ",
+      "url": "https://www.nikkansports.com"
+    },
+    {
+      "title": "スポニチ",
+      "url": "https://www.sponichi.co.jp"
+    },
+    {
+      "title": "Number Web",
+      "url": "https://number.bunshun.jp"
+    },
+    {
+      "title": "Jリーグ",
+      "url": "https://www.jleague.jp"
+    },
+    {
+      "title": "NPB",
+      "url": "https://npb.jp"
+    },
+    {
+      "title": "B.LEAGUE",
+      "url": "https://www.bleague.jp"
+    },
+    {
+      "title": "DAZN",
+      "url": "https://www.dazn.com"
+    },
+    {
+      "title": "NBA",
+      "url": "https://www.nba.com"
+    },
+    {
+      "title": "MLB",
+      "url": "https://www.mlb.com"
+    },
+    {
+      "title": "FIFA",
+      "url": "https://www.fifa.com"
+    },
+    {
+      "title": "Olympics",
+      "url": "https://olympics.com"
+    },
+    {
+      "title": "Steam",
+      "url": "https://store.steampowered.com"
+    },
+    {
+      "title": "Epic Games",
+      "url": "https://store.epicgames.com"
+    },
+    {
+      "title": "GOG",
+      "url": "https://www.gog.com"
+    },
+    {
+      "title": "itch.io",
+      "url": "https://itch.io"
+    },
+    {
+      "title": "Nintendo",
+      "url": "https://www.nintendo.com/jp"
+    },
+    {
+      "title": "PlayStation",
+      "url": "https://www.playstation.com/ja-jp"
+    },
+    {
+      "title": "Xbox",
+      "url": "https://www.xbox.com/ja-JP"
+    },
+    {
+      "title": "ポケモン",
+      "url": "https://www.pokemon.co.jp"
+    },
+    {
+      "title": "GameWith",
+      "url": "https://gamewith.jp"
+    },
+    {
+      "title": "Game8",
+      "url": "https://game8.jp"
+    },
+    {
+      "title": "ファミ通",
+      "url": "https://www.famitsu.com"
+    },
+    {
+      "title": "4Gamer",
+      "url": "https://www.4gamer.net"
+    },
+    {
+      "title": "電ファミニコゲーマー",
+      "url": "https://news.denfaminicogamer.jp"
+    },
+    {
+      "title": "Chess.com",
+      "url": "https://www.chess.com"
+    },
+    {
+      "title": "Lichess",
+      "url": "https://lichess.org"
+    },
+    {
+      "title": "将棋ウォーズ",
+      "url": "https://shogiwars.heroz.jp"
+    },
+    {
+      "title": "将棋倶楽部24",
+      "url": "https://www.shogidojo.net"
+    },
+    {
+      "title": "囲碁クエスト",
+      "url": "https://igoquest.com"
+    },
+    {
+      "title": "Board Game Arena",
+      "url": "https://boardgamearena.com"
+    }
+  ],
+  "便利なWebアプリ": [
+    {
+      "title": "DeepL Write",
+      "url": "https://www.deepl.com/write"
+    },
+    {
+      "title": "LanguageTool",
+      "url": "https://languagetool.org"
+    },
+    {
+      "title": "Grammarly",
+      "url": "https://www.grammarly.com"
+    },
+    {
+      "title": "Hemingway Editor",
+      "url": "https://hemingwayapp.com"
+    },
+    {
+      "title": "Canva Docs",
+      "url": "https://www.canva.com/docs"
+    },
+    {
+      "title": "Excalidraw",
+      "url": "https://excalidraw.com"
+    },
+    {
+      "title": "diagrams.net",
+      "url": "https://app.diagrams.net"
+    },
+    {
+      "title": "tldraw",
+      "url": "https://www.tldraw.com"
+    },
+    {
+      "title": "Miro",
+      "url": "https://miro.com"
+    },
+    {
+      "title": "FigJam",
+      "url": "https://www.figma.com/figjam"
+    },
+    {
+      "title": "Whimsical",
+      "url": "https://whimsical.com"
+    },
+    {
+      "title": "Coggle",
+      "url": "https://coggle.it"
+    },
+    {
+      "title": "MindMeister",
+      "url": "https://www.mindmeister.com"
+    },
+    {
+      "title": "Xmind",
+      "url": "https://xmind.app"
+    },
+    {
+      "title": "Lucidchart",
+      "url": "https://www.lucidchart.com"
+    },
+    {
+      "title": "draw.io",
+      "url": "https://www.drawio.com"
+    },
+    {
+      "title": "Trello",
+      "url": "https://trello.com"
+    },
+    {
+      "title": "Asana",
+      "url": "https://asana.com"
+    },
+    {
+      "title": "Todoist",
+      "url": "https://todoist.com"
+    },
+    {
+      "title": "TickTick",
+      "url": "https://ticktick.com"
+    },
+    {
+      "title": "ClickUp",
+      "url": "https://clickup.com"
+    },
+    {
+      "title": "monday.com",
+      "url": "https://monday.com"
+    },
+    {
+      "title": "Airtable",
+      "url": "https://www.airtable.com"
+    },
+    {
+      "title": "Coda",
+      "url": "https://coda.io"
+    },
+    {
+      "title": "ClickUp Calendar",
+      "url": "https://clickup.com/calendar"
+    },
+    {
+      "title": "Calendly",
+      "url": "https://calendly.com"
+    },
+    {
+      "title": "Doodle",
+      "url": "https://doodle.com"
+    },
+    {
+      "title": "When2meet",
+      "url": "https://www.when2meet.com"
+    },
+    {
+      "title": "調整さん",
+      "url": "https://chouseisan.com"
+    },
+    {
+      "title": "TimeTree",
+      "url": "https://timetreeapp.com"
+    },
+    {
+      "title": "Slack",
+      "url": "https://slack.com"
+    },
+    {
+      "title": "Microsoft Teams",
+      "url": "https://teams.microsoft.com"
+    },
+    {
+      "title": "Google Meet",
+      "url": "https://meet.google.com"
+    },
+    {
+      "title": "Zoom",
+      "url": "https://zoom.us"
+    },
+    {
+      "title": "Jitsi Meet",
+      "url": "https://meet.jit.si"
+    },
+    {
+      "title": "Whereby",
+      "url": "https://whereby.com"
+    },
+    {
+      "title": "WeTransfer",
+      "url": "https://wetransfer.com"
+    },
+    {
+      "title": "Send Anywhere",
+      "url": "https://send-anywhere.com"
+    },
+    {
+      "title": "SwissTransfer",
+      "url": "https://www.swisstransfer.com"
+    },
+    {
+      "title": "SendGB",
+      "url": "https://www.sendgb.com"
+    },
+    {
+      "title": "TransferNow",
+      "url": "https://www.transfernow.net"
+    },
+    {
+      "title": "Box",
+      "url": "https://www.box.com"
+    },
+    {
+      "title": "pCloud",
+      "url": "https://www.pcloud.com"
+    },
+    {
+      "title": "MEGA",
+      "url": "https://mega.nz"
+    },
+    {
+      "title": "Proton Drive",
+      "url": "https://drive.proton.me"
+    },
+    {
+      "title": "Proton Mail",
+      "url": "https://mail.proton.me"
+    },
+    {
+      "title": "Tuta Mail",
+      "url": "https://tuta.com"
+    },
+    {
+      "title": "Fastmail",
+      "url": "https://www.fastmail.com"
+    },
+    {
+      "title": "Zoho Mail",
+      "url": "https://www.zoho.com/mail"
+    },
+    {
+      "title": "PDF24 Tools",
+      "url": "https://tools.pdf24.org"
+    },
+    {
+      "title": "PDF Candy",
+      "url": "https://pdfcandy.com"
+    },
+    {
+      "title": "Sejda",
+      "url": "https://www.sejda.com"
+    },
+    {
+      "title": "PDFescape",
+      "url": "https://www.pdfescape.com"
+    },
+    {
+      "title": "DocHub",
+      "url": "https://www.dochub.com"
+    },
+    {
+      "title": "Xodo",
+      "url": "https://xodo.com"
+    },
+    {
+      "title": "Squoosh",
+      "url": "https://squoosh.app"
+    },
+    {
+      "title": "TinyPNG",
+      "url": "https://tinypng.com"
+    },
+    {
+      "title": "Compressor.io",
+      "url": "https://compressor.io"
+    },
+    {
+      "title": "iLoveIMG",
+      "url": "https://www.iloveimg.com"
+    },
+    {
+      "title": "Remove.bg",
+      "url": "https://www.remove.bg"
+    },
+    {
+      "title": "Cleanup.pictures",
+      "url": "https://cleanup.pictures"
+    },
+    {
+      "title": "WatermarkRemover.io",
+      "url": "https://www.watermarkremover.io"
+    },
+    {
+      "title": "Upscale.media",
+      "url": "https://www.upscale.media"
+    },
+    {
+      "title": "Adobe Color",
+      "url": "https://color.adobe.com"
+    },
+    {
+      "title": "Realtime Colors",
+      "url": "https://www.realtimecolors.com"
+    },
+    {
+      "title": "Color Hunt",
+      "url": "https://colorhunt.co"
+    },
+    {
+      "title": "Paletton",
+      "url": "https://paletton.com"
+    },
+    {
+      "title": "Happy Hues",
+      "url": "https://www.happyhues.co"
+    },
+    {
+      "title": "Khroma",
+      "url": "https://www.khroma.co"
+    },
+    {
+      "title": "Haikei",
+      "url": "https://haikei.app"
+    },
+    {
+      "title": "Blobmaker",
+      "url": "https://www.blobmaker.app"
+    },
+    {
+      "title": "Get Waves",
+      "url": "https://getwaves.io"
+    },
+    {
+      "title": "CSS Gradient",
+      "url": "https://cssgradient.io"
+    },
+    {
+      "title": "Animista",
+      "url": "https://animista.net"
+    },
+    {
+      "title": "Keyframes",
+      "url": "https://keyframes.app"
+    },
+    {
+      "title": "SVGOMG",
+      "url": "https://jakearchibald.github.io/svgomg"
+    },
+    {
+      "title": "SVG Repo",
+      "url": "https://www.svgrepo.com"
+    },
+    {
+      "title": "Lucide",
+      "url": "https://lucide.dev"
+    },
+    {
+      "title": "Heroicons",
+      "url": "https://heroicons.com"
+    },
+    {
+      "title": "Tabler Icons",
+      "url": "https://tabler.io/icons"
+    },
+    {
+      "title": "Phosphor Icons",
+      "url": "https://phosphoricons.com"
+    },
+    {
+      "title": "Font Awesome",
+      "url": "https://fontawesome.com"
+    },
+    {
+      "title": "Flaticon",
+      "url": "https://www.flaticon.com"
+    },
+    {
+      "title": "The Noun Project",
+      "url": "https://thenounproject.com"
+    },
+    {
+      "title": "Iconfinder",
+      "url": "https://www.iconfinder.com"
+    },
+    {
+      "title": "Icons8",
+      "url": "https://icons8.com"
+    },
+    {
+      "title": "Freesound",
+      "url": "https://freesound.org"
+    },
+    {
+      "title": "Pixabay",
+      "url": "https://pixabay.com"
+    },
+    {
+      "title": "Pexels",
+      "url": "https://www.pexels.com"
+    },
+    {
+      "title": "Mixkit",
+      "url": "https://mixkit.co"
+    },
+    {
+      "title": "Videvo",
+      "url": "https://www.videvo.net"
+    },
+    {
+      "title": "Coverr",
+      "url": "https://coverr.co"
+    },
+    {
+      "title": "Openverse",
+      "url": "https://openverse.org"
+    },
+    {
+      "title": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org"
+    },
+    {
+      "title": "Flickr",
+      "url": "https://www.flickr.com"
+    },
+    {
+      "title": "500px",
+      "url": "https://500px.com"
+    },
+    {
+      "title": "Behance",
+      "url": "https://www.behance.net"
+    },
+    {
+      "title": "Dribbble",
+      "url": "https://dribbble.com"
+    },
+    {
+      "title": "ArtStation",
+      "url": "https://www.artstation.com"
+    },
+    {
+      "title": "DeviantArt",
+      "url": "https://www.deviantart.com"
+    },
+    {
+      "title": "Lottiefiles",
+      "url": "https://lottiefiles.com"
+    },
+    {
+      "title": "Rive",
+      "url": "https://rive.app"
+    },
+    {
+      "title": "Spline",
+      "url": "https://spline.design"
+    },
+    {
+      "title": "Vectary",
+      "url": "https://www.vectary.com"
+    },
+    {
+      "title": "Tinkercad",
+      "url": "https://www.tinkercad.com"
+    },
+    {
+      "title": "Sketchfab",
+      "url": "https://sketchfab.com"
+    },
+    {
+      "title": "Onshape",
+      "url": "https://www.onshape.com"
+    },
+    {
+      "title": "Womp",
+      "url": "https://womp.com"
+    },
+    {
+      "title": "PhotoRoom",
+      "url": "https://www.photoroom.com"
+    },
+    {
+      "title": "Polarr",
+      "url": "https://www.polarr.com"
+    },
+    {
+      "title": "Fotor",
+      "url": "https://www.fotor.com"
+    },
+    {
+      "title": "BeFunky",
+      "url": "https://www.befunky.com"
+    },
+    {
+      "title": "Kapwing",
+      "url": "https://www.kapwing.com"
+    },
+    {
+      "title": "VEED",
+      "url": "https://www.veed.io"
+    },
+    {
+      "title": "Clipchamp",
+      "url": "https://clipchamp.com"
+    },
+    {
+      "title": "CapCut",
+      "url": "https://www.capcut.com"
+    },
+    {
+      "title": "Descript",
+      "url": "https://www.descript.com"
+    },
+    {
+      "title": "Clipchamp",
+      "url": "https://app.clipchamp.com"
+    },
+    {
+      "title": "123apps",
+      "url": "https://123apps.com"
+    },
+    {
+      "title": "AudioMass",
+      "url": "https://audiomass.co"
+    },
+    {
+      "title": "TwistedWave",
+      "url": "https://twistedwave.com/online"
+    },
+    {
+      "title": "BandLab",
+      "url": "https://www.bandlab.com"
+    },
+    {
+      "title": "Soundtrap",
+      "url": "https://www.soundtrap.com"
+    },
+    {
+      "title": "Audiotool",
+      "url": "https://www.audiotool.com"
+    },
+    {
+      "title": "Chrome Music Lab",
+      "url": "https://musiclab.chromeexperiments.com"
+    },
+    {
+      "title": "Chrome Canvas",
+      "url": "https://canvas.apps.chrome"
+    },
+    {
+      "title": "Kleki",
+      "url": "https://kleki.com"
+    },
+    {
+      "title": "Aggie.io",
+      "url": "https://aggie.io"
+    },
+    {
+      "title": "Magma",
+      "url": "https://magma.com"
+    },
+    {
+      "title": "Witeboard",
+      "url": "https://witeboard.com"
+    },
+    {
+      "title": "AutoDraw",
+      "url": "https://www.autodraw.com"
+    }
+  ]
+}

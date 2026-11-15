@@ -7,7 +7,7 @@ export function eventWindow(config,now=Date.now()){
  const startAt=config.startAt??config.releaseAt;
  if(startAt===undefined||startAt===null||startAt==='')return {phase:'unconfigured',start:null,end:null};
  if(typeof startAt!=='string'||!/(?:Z|[+-]\d{2}:\d{2})$/.test(startAt)||!Number.isFinite(Date.parse(startAt))||config.durationDays!==10)throw Error('Festivalの公開日時設定を確認してください。');
- const start=Date.parse(startAt),end=start+10*DAY_MS;return {phase:now<start?'before':now<end?'active':'ended',start,end};
+ const start=Date.parse(startAt),end=config.endAt ? Math.min(start+10*DAY_MS,Date.parse(config.endAt)) : start+10*DAY_MS;return {phase:now<start?'before':now<end?'active':'ended',start,end};
 }
 export function japanDate(now){return new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(now));}
 export function emptyFestival(){return {schema:1,ticket:null,draws:[],eggs:{},best:null,welcomeSeen:false};}

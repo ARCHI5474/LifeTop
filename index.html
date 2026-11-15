@@ -12,7 +12,7 @@
     <link rel="preload" href="icons/material/material-symbols-outlined.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="stylesheet" href="css/style.css?v=10.0-ui7"> <!-- バージョン番号は毎回更新すること -->
 <link rel="stylesheet" href="css/festival.css?v=10.1-hide1">
-<link rel="stylesheet" href="css/35-unified-ui.css?v=10.0-ui9"><link rel="stylesheet" href="css/36-glass-finish.css?v=11.0.0"></head>
+<link rel="stylesheet" href="css/35-unified-ui.css?v=10.0-ui9"><link rel="stylesheet" href="css/36-glass-finish.css?v=11.0.0"><link rel="stylesheet" href="css/37-pasidea.css?v=12.0.0"><link rel="stylesheet" href="css/38-v12.css?v=12.0.0"></head>
 <body id="top" class="ui-system ui-scope">
 
 <!-- 起動時のブランドシーケンス -->
@@ -28,7 +28,7 @@
         <span class="loading-logo">LifeTop<span class="loading-logo-dot" aria-hidden="true">.</span></span>
         <p class="loading-tagline">全部ここで。</p>
         <div class="loading-status"><span class="loading-status-dot" aria-hidden="true"></span><span class="loading-label">あなたのスタートページを準備しています</span></div>
-        <p class="loading-release">v11.0 <span aria-hidden="true">/</span> LifeTop 11</p>
+        <p class="loading-release">v12.0 <span aria-hidden="true">/</span> LifeTop 12</p>
     </div>
 </div>
 
@@ -51,6 +51,7 @@
         <button type="button" class="icon-btn" data-cc="panel" data-id="workspace" title="ファイル" aria-label="ファイル"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span></button>
         <button type="button" class="icon-btn" onclick="openMiniApps()" title="Studio" aria-label="Studioを開く"><span class="material-symbols-outlined" aria-hidden="true">grid_view</span></button>
         <!-- 設定トリガー -->
+        <button type="button" class="icon-btn" id="camera-open" title="カメラ" aria-label="カメラを開く" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 5l1.5-2h5L16 5h4a1 1 0 011 1v13a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z"/><circle cx="12" cy="12" r="4"/></svg></button>
         <button type="button" class="icon-btn animate-fade-in" onclick="toggleSettings()" title="Quickパネル" aria-label="Quickパネル" aria-controls="settings-panel" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">settings</span></button>
     </div>
 </header>
@@ -306,6 +307,7 @@
             <div class="card glass-card bookmark-card">
                 <div class="card-header bookmark-card-header">
                     <h3><span class="material-symbols-outlined" aria-hidden="true">bookmarks</span> Quickアクセス</h3>
+                    <button type="button" class="tonal-btn" id="quick-links-open" aria-haspopup="dialog">1000件から探す</button>
                     <div class="bookmark-header-controls">
                         <button type="button" class="icon-btn-small" id="edit-bookmarks-btn" aria-pressed="false" onclick="toggleBookmarkEditMode()" title="ブックマークを編集" aria-label="ブックマークを編集">
                             <span class="material-symbols-outlined" aria-hidden="true">edit</span>
@@ -686,9 +688,12 @@
             </details>
         </section>
         <section class="settings-about" aria-labelledby="settings-about-title" data-setting-category="advanced">
+            <h3>FestivalMemories</h3>
+            <p class="settings-help">Festivalは今後も不定期に開催します。開催のお知らせをお楽しみに。過去のFestivalで獲得した記念品や記録は、いつでも見返せます。</p>
+            <a class="tonal-btn" href="festival.html#memories" data-festival-memories aria-haspopup="dialog">FestivalMemoriesを見る</a>
             <h3 id="settings-about-title">情報</h3>
-            <p class="settings-about-version">LifeTop <span>v11.0</span></p>
-            <p class="settings-about-codename">リリース：<span lang="en">LifeTop 11</span></p>
+            <p class="settings-about-version">LifeTop <span id="app-version-label">v12.0</span></p>
+            <p class="settings-about-codename">リリース：<span lang="en">LifeTop 12</span></p>
             <details class="environment-info" open>
                 <summary>推奨環境・対応環境</summary>
                 <p>推奨：Windows・macOSの最新版Chrome／Edge。PCでは幅1280px以上、スマートフォンでは幅390px以上が見やすい構成です。</p>
@@ -816,7 +821,7 @@
     </div>
 </div>
 
-<script type="module" src="./js/main.js?v=11.0.0"></script>
+<script type="module" src="./js/main.js?v=12.0.0"></script>
 
 
 </body>

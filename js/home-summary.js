@@ -1,5 +1,6 @@
 import {icon} from './canvas-ui.js?v=10.0-ui8';
 import {openUIDialog} from './ui-dialog.js';
+import {openPagePopup} from './page-popup.js';
 
 const signs=['aries','taurus','gemini','cancer','leo','virgo','libra','scorpio','sagittarius','capricorn','aquarius','pisces'];
 const names=['牡羊座','牡牛座','双子座','蟹座','獅子座','乙女座','天秤座','蠍座','射手座','山羊座','水瓶座','魚座'];
@@ -24,12 +25,7 @@ async function fetchDaily(sign,date){
 }
 
 function showMessages(){
- const d=document.createElement('dialog');
- d.className='cc-dialog cc-form-dialog ui-scope';
- d.dataset.theme=document.body.dataset.theme;
- d.innerHTML='<header class="cc-form-header"><h2>Messages</h2><button class="cc-control cc-icon" data-cancel aria-label="閉じる">×</button></header><div class="cc-form-fields"><p>近日実装</p></div>';
- document.body.append(d);
- openUIDialog(d);
+ openPagePopup('messages.html', 'Messages');
 }
 
 export function initHomeSummary(){

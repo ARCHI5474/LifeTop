@@ -1,0 +1,431 @@
+/* ==========================================================================
+   PasideaDesignSystem 2.0 (Final) - Complete Tokens & Unified Components
+   ========================================================================== */
+
+:root {
+  /* --- Brand & Surface Colors (Light Theme) --- */
+  --pasidea-primary: #2b5bb5;
+  --pasidea-on-primary: #ffffff;
+  --pasidea-primary-container: #d3e3fd;
+  --pasidea-on-primary-container: #041e49;
+
+  /* --- Semantic Status Colors --- */
+  --pasidea-success: #1e6e43;
+  --pasidea-success-container: #d7f2e3;
+  --pasidea-warning: #8a5300;
+  --pasidea-warning-container: #ffddb3;
+  --pasidea-error: #b3261e;
+  --pasidea-on-error: #ffffff;
+  --pasidea-error-container: #f9dedc;
+
+  /* --- Neutral Surfaces & Text --- */
+  --pasidea-surface: #f8f9fc;
+  --pasidea-surface-container-low: #f0f3f9;
+  --pasidea-surface-container: #e7ecf5;
+  --pasidea-on-surface: #181c22;
+  --pasidea-on-surface-variant: #44474f;
+  --pasidea-outline-variant: #c4c6d0;
+
+  /* --- Typography --- */
+  --pasidea-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  --pasidea-text-title: 1.375rem;    /* 22px */
+  --pasidea-text-heading: 1.0625rem; /* 17px */
+  --pasidea-text-body: 0.9375rem;    /* 15px */
+  --pasidea-text-caption: 0.75rem;   /* 12px */
+
+  /* --- Radius (4段階 + 正円固定) --- */
+  --pasidea-radius-sm: 8px;
+  --pasidea-radius-md: 16px;
+  --pasidea-radius-lg: 24px;
+  --pasidea-radius-xl: 32px;
+  --pasidea-radius-full: 9999px;
+
+  /* --- Spacing (8pxグリッド) --- */
+  --pasidea-space-1: 8px;
+  --pasidea-space-2: 16px;
+  --pasidea-space-3: 24px;
+  --pasidea-space-4: 32px;
+  --pasidea-space-6: 48px;
+
+  /* --- Layout, Control Size & Z-Index --- */
+  --pasidea-container-max: 960px;
+  --pasidea-control-height: 44px;
+  --pasidea-z-base: 1;
+  --pasidea-z-sticky: 100;
+  --pasidea-z-modal: 1000;
+  --pasidea-z-toast: 2000;
+
+  /* --- Motion (60fps 軽量スプリング) --- */
+  --pasidea-spring: cubic-bezier(0.2, 0.9, 0.3, 1.1);
+  --pasidea-ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --pasidea-duration-hover: 150ms;
+  --pasidea-duration-press: 80ms;
+  --pasidea-duration-release: 220ms;
+
+  /* --- Gummy Sheen & Elevation --- */
+  --pasidea-sheen: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  --pasidea-shadow-card: 0 2px 8px rgba(24, 28, 34, 0.05);
+  --pasidea-shadow-overlay: 0 12px 32px rgba(24, 28, 34, 0.14);
+}
+
+/* ダークテーマ自動対応（.dark-theme クラスでも切替可） */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light-theme):not([data-theme="light"]) {
+    --pasidea-primary: #a8c7fa;
+    --pasidea-on-primary: #062e6f;
+    --pasidea-primary-container: #0842a0;
+    --pasidea-on-primary-container: #d3e3fd;
+
+    --pasidea-success: #81c995;
+    --pasidea-success-container: #0d3b22;
+    --pasidea-warning: #ffb951;
+    --pasidea-warning-container: #4d2c00;
+    --pasidea-error: #f2b8b5;
+    --pasidea-on-error: #601410;
+    --pasidea-error-container: #601410;
+
+    --pasidea-surface: #111318;
+    --pasidea-surface-container-low: #191c22;
+    --pasidea-surface-container: #232730;
+    --pasidea-on-surface: #e2e6ee;
+    --pasidea-on-surface-variant: #c4c6d0;
+    --pasidea-outline-variant: #44474f;
+    --pasidea-sheen: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* ==========================================================================
+   ベースリセット・スクロールバー・ページレイアウト
+   ========================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--pasidea-font-sans);
+  font-size: var(--pasidea-text-body);
+  line-height: 1.6;
+  background-color: var(--pasidea-surface);
+  color: var(--pasidea-on-surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 控えめで統一感のあるカスタムスクロールバー */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.3);
+  border-radius: var(--pasidea-radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.5);
+}
+
+.pasidea-page-container {
+  width: 100%;
+  max-width: var(--pasidea-container-max);
+  margin: 0 auto;
+  padding: var(--pasidea-space-3);
+}
+
+@media (max-width: 600px) {
+  .pasidea-page-container {
+    padding: var(--pasidea-space-2);
+  }
+}
+
+/* レスポンシブ自動折り返しグリッド（カード一覧用） */
+.pasidea-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--pasidea-space-2);
+}
+
+/* 横並びアクションバー（ボタン群用） */
+.pasidea-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pasidea-space-1);
+}
+
+/* タイポグラフィ統一クラス */
+.pasidea-title {
+  margin: 0;
+  font-size: var(--pasidea-text-title);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.pasidea-heading {
+  margin: 0;
+  font-size: var(--pasidea-text-heading);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.pasidea-caption {
+  margin: 0;
+  font-size: var(--pasidea-text-caption);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--pasidea-on-surface-variant);
+}
+
+/* ==========================================================================
+   共通インタラクション基盤（Gummy Tactility & Disabled / マルチデバイス対応）
+   ========================================================================== */
+
+.pasidea-interactive {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--pasidea-duration-release) var(--pasidea-spring),
+    background-color var(--pasidea-duration-hover) var(--pasidea-ease-out),
+    opacity var(--pasidea-duration-hover) var(--pasidea-ease-out);
+}
+
+@media (hover: hover) {
+  .pasidea-interactive:not(:disabled):not([aria-disabled="true"]):hover {
+    opacity: 0.9;
+  }
+}
+
+.pasidea-interactive:not(:disabled):not([aria-disabled="true"]):active {
+  transform: scale(0.96);
+  transition-duration: var(--pasidea-duration-press);
+}
+
+.pasidea-interactive:focus-visible {
+  outline: 2px solid var(--pasidea-primary);
+  outline-offset: 2px;
+}
+
+/* 操作不能（Disabled）状態の統一表現 */
+.pasidea-interactive:disabled,
+.pasidea-interactive[aria-disabled="true"],
+.pasidea-input:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ==========================================================================
+   統一パーツ 1: 閉じる（✕）ボタン（どこに置いても完全同一サイズ・挙動）
+   ========================================================================== */
+
+.pasidea-close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--pasidea-control-height);
+  height: var(--pasidea-control-height);
+  min-width: var(--pasidea-control-height);
+  min-height: var(--pasidea-control-height);
+  padding: 0;
+  border: none;
+  border-radius: var(--pasidea-radius-full);
+  background-color: transparent;
+  color: var(--pasidea-on-surface-variant);
+}
+
+@media (hover: hover) {
+  .pasidea-close-btn:not(:disabled):hover {
+    background-color: rgba(128, 128, 128, 0.12);
+    color: var(--pasidea-on-surface);
+    opacity: 1;
+  }
+}
+
+.pasidea-close-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   統一パーツ 2: 標準ボタン・入力欄・ステータスバッジ
+   ========================================================================== */
+
+.pasidea-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pasidea-space-1);
+  height: var(--pasidea-control-height);
+  min-height: var(--pasidea-control-height);
+  padding: 0 var(--pasidea-space-3);
+  border: none;
+  border-radius: var(--pasidea-radius-lg);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: var(--pasidea-text-body);
+  line-height: 1;
+  background-color: var(--pasidea-primary);
+  color: var(--pasidea-on-primary);
+  box-shadow: var(--pasidea-sheen);
+}
+
+.pasidea-btn-secondary {
+  background-color: var(--pasidea-primary-container);
+  color: var(--pasidea-on-primary-container);
+  box-shadow: none;
+}
+
+.pasidea-btn-danger {
+  background-color: var(--pasidea-error);
+  color: var(--pasidea-on-error);
+}
+
+.pasidea-input {
+  width: 100%;
+  height: var(--pasidea-control-height);
+  min-height: var(--pasidea-control-height);
+  padding: 0 var(--pasidea-space-2);
+  border: 1px solid var(--pasidea-outline-variant);
+  border-radius: var(--pasidea-radius-md);
+  font-family: inherit;
+  font-size: var(--pasidea-text-body);
+  background-color: var(--pasidea-surface-container);
+  color: var(--pasidea-on-surface);
+  transition: border-color var(--pasidea-duration-hover) var(--pasidea-ease-out);
+}
+
+.pasidea-input:focus {
+  outline: none;
+  border-color: var(--pasidea-primary);
+  box-shadow: 0 0 0 2px rgba(43, 91, 181, 0.2);
+}
+
+/* ステータスバッジ（成功・警告・エラー統一） */
+.pasidea-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px var(--pasidea-space-1);
+  border-radius: var(--pasidea-radius-sm);
+  font-size: var(--pasidea-text-caption);
+  font-weight: 600;
+  line-height: 1.2;
+}
+.pasidea-badge-success {
+  background-color: var(--pasidea-success-container);
+  color: var(--pasidea-success);
+}
+.pasidea-badge-warning {
+  background-color: var(--pasidea-warning-container);
+  color: var(--pasidea-warning);
+}
+.pasidea-badge-error {
+  background-color: var(--pasidea-error-container);
+  color: var(--pasidea-error);
+}
+
+/* ==========================================================================
+   統一パーツ 3: 情報カード・メディア・モーダルコンテナ
+   ========================================================================== */
+
+.pasidea-card {
+  position: relative;
+  z-index: var(--pasidea-z-base);
+  padding: var(--pasidea-space-3);
+  border-radius: var(--pasidea-radius-lg);
+  background-color: var(--pasidea-surface-container-low);
+  color: var(--pasidea-on-surface);
+  box-shadow: var(--pasidea-shadow-card);
+  border: 1px solid rgba(196, 198, 208, 0.3);
+}
+
+.pasidea-media {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+  border-radius: var(--pasidea-radius-md);
+}
+
+.pasidea-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--pasidea-z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--pasidea-space-2);
+  background-color: rgba(17, 19, 24, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.pasidea-modal {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  padding: var(--pasidea-space-3);
+  border-radius: var(--pasidea-radius-xl);
+  background-color: var(--pasidea-surface);
+  color: var(--pasidea-on-surface);
+  box-shadow: var(--pasidea-shadow-overlay);
+}
+
+/* コンテナ右上の閉じるボタン標準配置 */
+.pasidea-container-close {
+  position: absolute;
+  top: var(--pasidea-space-2);
+  right: var(--pasidea-space-2);
+}
+
+@media (max-width: 600px) {
+  .pasidea-card,
+  .pasidea-modal {
+    padding: var(--pasidea-space-2);
+  }
+}
+
+/* ==========================================================================
+   アクセシビリティ: 省モーション設定の強制適用
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .pasidea-interactive,
+  .pasidea-interactive:active {
+    transform: none !important;
+    transition: opacity 150ms linear, background-color 150ms linear !important;
+  }
+}
+
+:root.dark-theme, :root[data-theme="dark"] {
+    --pasidea-primary: #a8c7fa;
+    --pasidea-on-primary: #062e6f;
+    --pasidea-primary-container: #0842a0;
+    --pasidea-on-primary-container: #d3e3fd;
+
+    --pasidea-success: #81c995;
+    --pasidea-success-container: #0d3b22;
+    --pasidea-warning: #ffb951;
+    --pasidea-warning-container: #4d2c00;
+    --pasidea-error: #f2b8b5;
+    --pasidea-on-error: #601410;
+    --pasidea-error-container: #601410;
+
+    --pasidea-surface: #111318;
+    --pasidea-surface-container-low: #191c22;
+    --pasidea-surface-container: #232730;
+    --pasidea-on-surface: #e2e6ee;
+    --pasidea-on-surface-variant: #c4c6d0;
+    --pasidea-outline-variant: #44474f;
+    --pasidea-sheen: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+

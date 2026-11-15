@@ -3,16 +3,16 @@ const fs=require('node:fs/promises');
 const {withApp}=require('./helpers/browser.cjs');
 
 withApp(async page=>{
-    assert.equal(JSON.parse(await fs.readFile('package.json','utf8')).version,'11.0.0');
-    assert.equal(JSON.parse(await fs.readFile('package-lock.json','utf8')).packages[''].version,'11.0.0');
-    assert.match(await page.locator('.settings-about-version').textContent(),/v11\.0/);
+    assert.equal(JSON.parse(await fs.readFile('package.json','utf8')).version,'12.0.0');
+    assert.equal(JSON.parse(await fs.readFile('package-lock.json','utf8')).packages[''].version,'12.0.0');
+    assert.match(await page.locator('.settings-about-version').textContent(),/v12\.0/);
     const release=await page.evaluate(async()=>{
         const config=await import('/js/config.js?v=9.0');
         const {createBackup}=await import('/js/data-management.js?v=9.0');
         const {festivalConfig}=await import('/js/festival-config.js');
         return {version:config.APP_VERSION,backup:JSON.parse(createBackup()).appVersion,start:festivalConfig.startAt,days:festivalConfig.durationDays};
     });
-    assert.deepEqual(release,{version:'11.0.0',backup:'11.0.0',start:'2026-11-07T14:11:54+09:00',days:10});
+    assert.deepEqual(release,{version:'12.0.0',backup:'12.0.0',start:'2026-11-07T14:11:54+09:00',days:10});
     assert.match(await page.locator('.festival-banner h2').textContent(),/v10\.0/);
     assert.match(await page.locator('.dashboard-header .material-symbols-outlined').first().evaluate(e=>getComputedStyle(e).fontFamily),/LifeTop Material Symbols/);
     const welcome=page.locator('#festival-pop button');if(await welcome.isVisible())await welcome.click();
@@ -45,5 +45,5 @@ withApp(async page=>{
     }
     await page.locator('#mini-filter').fill('LineNote');assert.equal(await page.locator('.mini-app-card:not([hidden])').count(),1);
     await page.locator('#mini-filter').fill('');assert.equal(await page.locator('.mini-app-card:not([hidden])').count(),8);
-    console.log('PASS: v11 metadata/backups, unchanged v10 Festival, retained Material Icons, visible wallpaper and all eight explained Studio apps across mobile/desktop/landscape');
+    console.log('PASS: v12 metadata/backups, unchanged v10 Festival, retained Material Icons, visible wallpaper and all eight explained Studio apps across mobile/desktop/landscape');
 }).catch(error=>{console.error(error);process.exitCode=1;});

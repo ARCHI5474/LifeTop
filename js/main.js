@@ -3,6 +3,10 @@ import { initIcons } from './icons.js?v=9.0';
 import {initUISystem} from './ui-system.js?v=10.0-ui5';
 import {initCanvas} from './connected-canvas.js?v=10.0-ui8';
 import {initFestivalEntry} from './festival-entry.js';
+import {initCamera} from './camera.js';
+import {initQuickLinks} from './quick-links.js';
+import {initVersionEggs} from './version-eggs.js';
+import {openPagePopup} from './page-popup.js';
 import { initMotion } from './motion.js?v=10.0-ui2';
 import { initLoading } from './loading.js?v=9.0';
 import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=9.0';
@@ -210,6 +214,10 @@ window.addEventListener('DOMContentLoaded', () => {
     initMotion();
     loadData();
     initUISystem();
+    initCamera();
+    initQuickLinks();
+    initVersionEggs();
+    document.querySelector('[data-festival-memories]')?.addEventListener('click',event=>{event.preventDefault();openPagePopup('festival.html#memories','FestivalMemories');});
     void initCanvas();
     void initFestivalEntry();
 

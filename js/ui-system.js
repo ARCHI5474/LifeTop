@@ -1,5 +1,6 @@
 import {clockDesigns,userConfig} from './config.js?v=9.0';
 import {onLocalSave,writeStoredConfig} from './storage.js?v=9.0';
+import {applyPasidea} from './pasidea.js';
 const storageKey='lifetop_v1_0_data';
 let initialized=false;
 const hex=rgb=>'#'+rgb.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
@@ -57,11 +58,15 @@ function setMode(mode){
 
 export function initUISystem(){
  restorePreferences();
+ applyPasidea();
  if(!initialized){
   initialized=true;onLocalSave(restorePreferences);
+  document.addEventListener('click',event=>{
+   if(event.target.closest('[aria-disabled="true"]')){event.preventDefault();event.stopImmediatePropagation();}
+  },true);
   window.addEventListener('storage',event=>{if(event.key===storageKey||event.key===null)restorePreferences();});
   document.addEventListener('click',event=>{const option=event.target.closest('#settings-panel [data-ui-mode]');if(option)setMode(option.dataset.uiMode);});
-  new MutationObserver(records=>{const mode=document.documentElement.dataset.theme==='light'?'light':'dark';for(const record of records)for(const node of record.addedNodes){if(node.nodeType!==1)continue;if(node.matches('.ui-scope'))setScopeTheme(node,mode);node.querySelectorAll('.ui-scope').forEach(scope=>setScopeTheme(scope,mode));}}).observe(document.body,{childList:true,subtree:true});
+  new MutationObserver(records=>{const mode=document.documentElement.dataset.theme==='light'?'light':'dark';for(const record of records)for(const node of record.addedNodes){if(node.nodeType!==1)continue;applyPasidea(node);if(node.matches('.ui-scope'))setScopeTheme(node,mode);node.querySelectorAll('.ui-scope').forEach(scope=>setScopeTheme(scope,mode));}}).observe(document.body,{childList:true,subtree:true});
  }
  document.querySelectorAll('label.mini-file-label, label.background-upload-btn').forEach(label=>{
   const input=label.querySelector('input[type=file]');if(!input||label.dataset.keyboardReady)return;label.dataset.keyboardReady='true';label.tabIndex=0;label.setAttribute('role','button');
