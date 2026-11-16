@@ -4,7 +4,9 @@ Firebase プロジェクトは lifetop-fc51c。Messages は Google ログイン�
 
 Google プロバイダーは有効。本番ドメイン lifetop.pasidea.space と localhost は承認済みです。ローカル確認は http://localhost:5503/ を使用します。Messages の名前付きアプリ lifetop-messages-google は既存の Google 同期と認証セッションを分離し、チャットのログインだけでタスクやメモの同期を開始しません。
 
-reCAPTCHA Enterprise 公開サイトキーは js/messages-config.js に設定済み、App Check 登録済み。本番ドメインで初期化します。本番キーに localhost は追加しません。本番 Firestore Rules と静的サイトは未公開です。旧 functions/ は前案の実装で、現行フロントエンドは使用しません。
+reCAPTCHA Enterprise 公開サイトキーは js/messages-config.js に設定済み、App Check 登録済み。本番ドメインで初期化します。本番キーに localhost は追加しません。2026-11-16 JST、本番 Firestore Rules と v13 サイトの公開済み状態を確認しました。公開 Rules はローカル検証版と全文一致しています。旧 functions/ は前案の実装で、現行フロントエンドは使用しません。
+
+本番の Google ログイン済みセッションで、新規ルーム作成、メッセージ送信、別タブでのリアルタイム受信、再読み込み後の履歴取得に成功しました。ホーム Live も「1人が接続中」を確認しています。同じアカウントの2タブでの確認であり、別アカウント・別端末2台の本番検証とは区別します。確認用ルーム「動作確認 v13」とテストメッセージ1件を残しています。
 
 ## 制限と保存
 

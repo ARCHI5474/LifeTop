@@ -14,7 +14,9 @@
 
 2026-11-16 JST: Google 認証は有効、本番ドメインと localhost は認証許可済み。reCAPTCHA Enterprise キー作成と App Check 登録は完了。Spark プランのままです。
 
-新しい Firestore Rules はローカル検証済みですが本番公開は未実施。静的サイトも未公開で、本番の Messages 接続成功とは扱っていません。新 Rules は既存の Google 所有データ同期を維持し、Google 認証済みの参加者だけに自分のルームの読み書きを追加します。
+2026-11-16 JST の実確認で、新しい Firestore Rules と v13 サイトは公開済みでした。管理画面の公開 Rules はローカル検証版と全文一致しています。既存の Google 所有データ同期を維持し、Google 認証済みの参加者だけが自分のルームを読み書きできます。
+
+公開サイト https://lifetop.pasidea.space/messages.html で Google ログイン済みセッションを使い、新規ルーム作成・送信・別タブへのリアルタイム受信・再読み込み後の履歴保存を確認しました。ホーム側でも Live の「1人が接続中」を確認しています。確認前の Live オフ設定は復元しました。公開済みの状態を検証したもので、今回新たにサイトや Rules を再公開したものではありません。
 
 Cloud Functions は現行フロントエンドでは使いません。保存期限は読み取り制限であり、自動物理削除はありません。詳細は MESSAGES_SETUP.md を参照してください。
 
@@ -29,6 +31,6 @@ Cloud Functions は現行フロントエンドでは使いません。保存期�
 - 320/390/768/844/1440px と横向き、ライト／ダーク、フォーカス、縮小された visual viewport を確認。透明なカードの最も不利な背景条件でも本文・補助文字・主色のコントラスト比4.5以上を検査。
 - git diff --check 成功。
 
-単体結果は test-artifacts/results-unit.json。固定データのUI検証と本番接続は区別しています。実ブラウザで SDK 読み込みと Google のアカウント選択画面の起動まで確認済み。本番 Rules の草案は管理画面へ配置し、ローカル検証版との全文一致を確認しました。公開ボタンは押していません。
+単体結果は test-artifacts/results-unit.json。固定データのUI検証と本番接続は区別しています。本番の送受信・保存確認画面は test-artifacts/messages-production-verified.jpg、Live 確認画面は test-artifacts/live-production-verified.jpg に保存しました。確認用の「動作確認 v13」ルームとメッセージ1件は残しています。
 
-本番 App Check 強制時の実接続、実端末2台、実機マイク・位置情報は未検証です。
+今回の本番確認は同じ Google アカウントの2タブです。別アカウント・実端末2台、ログアウト状態からの新規 Google 認証フロー、本番 App Check 強制設定の変更、実機マイク・位置情報は今回の検証対象外です。
