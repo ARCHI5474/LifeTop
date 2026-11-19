@@ -18,10 +18,25 @@ function command(op,data={}){
  });queue=request.catch(()=>{});return request;
 }
 function selectSharedRoom(id){try{localStorage.setItem('lifetop_live_room_v13',id);const channel=new BroadcastChannel('lifetop-room');channel.postMessage({roomId:id});channel.close();}catch{}if(parent!==window)parent.postMessage({type:'lifetop:messages-room',roomId:id},location.origin);}
-function closeRoom(){roomEpoch++;if(roomId)drafts.set(roomId,$('messages-body').value);unwatch?.();unwatchRoom?.();unwatch=unwatchRoom=null;roomId='';show('messages-room',false);$('messages-history').replaceChildren();$('messages-body').value='';$('messages-invite').replaceChildren();}
+function closeRoom(){
+ roomEpoch++;
+ if(roomId)drafts.set(roomId,$('messages-body').value);
+ unwatch?.();
+ unwatchRoom?.();
+ unwatch=unwatchRoom=null;
+ roomId='';
+ show('messages-room',false);
+ document.querySelector('#messages-room details').open=false;
+ show('messages-rotate',false);
+ show('messages-delete-room',false);
+ document.querySelector('#messages-rooms [aria-current="true"]')?.setAttribute('aria-current','false');
+ for(const id of ['messages-room-title','messages-members','messages-history','messages-invite'])$(id).replaceChildren();
+ $('messages-body').value='';
+}
 async function rooms(){const epoch=authEpoch,{rooms}=await command('list');if(epoch!==authEpoch)return;$('messages-rooms').replaceChildren();for(const room of rooms){const b=document.createElement('button');b.type='button';b.className='text-btn';b.textContent=room.name;b.dataset.roomId=room.id;b.setAttribute('aria-current',String(roomId===room.id));b.onclick=()=>openRoom(room.id);$('messages-rooms').append(b);}if(!rooms.length)$('messages-rooms').textContent='ルームはありません。';status();return rooms;}
 function invitation(token){const link=new URL('messages.html',location.href);link.hash='invite='+token;const a=document.createElement('a');a.href=link.href;a.textContent=link.href;$('messages-invite').replaceChildren(a);}
 function openRoom(id){
+ if(roomId===id)return;
  closeRoom();roomId=id;const epoch=roomEpoch;show('messages-room',true);$('messages-body').value=drafts.get(id)||'';selectSharedRoom(id);
  document.querySelectorAll('#messages-rooms button').forEach(b=>b.setAttribute('aria-current',String(b.dataset.roomId===id)));
  const {fs,db,auth}=session;

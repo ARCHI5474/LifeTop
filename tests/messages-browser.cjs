@@ -4,18 +4,49 @@ const{chromium}=require('./helpers/browser.cjs');
  const context=await browser.newContext({viewport:{width:1440,height:1000}}),errors=[];context.on('page',p=>p.on('pageerror',e=>errors.push(e.message)));
  await context.route('**/*',async route=>{const u=new URL(route.request().url());if(u.origin!=='http://localhost')return route.abort();
   if(u.pathname==='/js/google-session.js')return route.fulfill({contentType:'text/javascript',body:`const auth={currentUser:null};let watcher;const fs={onSnapshot(ref,receive){if(ref.kind==='room')queueMicrotask(()=>receive({exists:()=>true,data:()=>({name:'Room '+ref.id.toUpperCase(),members:['alice'],owner:'alice'})}));else{window.emitHistory=values=>receive({docs:values.map(v=>({id:v.id,data:()=>({...v,createdAt:{toMillis:()=>Date.now(),toDate:()=>new Date()}})}))});queueMicrotask(()=>receive({docs:[]}));}return()=>{};}};export async function googleSession(){return{auth,fs,db:{},watch(fn){watcher=fn;queueMicrotask(()=>fn(auth.currentUser));return()=>{};},async login(){auth.currentUser={uid:'alice',isAnonymous:false,displayName:'Alice',providerData:[{providerId:'google.com'}]};watcher(auth.currentUser);},async logout(){auth.currentUser=null;watcher(null);}};}`});
-  if(u.pathname==='/js/chat-service.js')return route.fulfill({contentType:'text/javascript',body:`export function createChatService(){return{calibrate:async()=>{},now:()=>Date.now(),roomRef:id=>({id,kind:'room'}),historyQuery:id=>({id,kind:'history'}),async command(op,input){if(op==='list')return{rooms:[{id:'a',name:'Room A',members:['alice']},{id:'b',name:'Room B',members:['alice']}]};if(op==='send'){window.sent.push(input);return new Promise((resolve,reject)=>{window.resolveSend=()=>resolve({messageId:input.requestId});window.rejectSend=()=>reject(Error('response lost'));});}return{};}}}`});
+  if(u.pathname==='/js/chat-service.js')return route.fulfill({contentType:'text/javascript',body:`export function createChatService(){return{calibrate:async()=>{},now:()=>Date.now(),roomRef:id=>({id,kind:'room'}),historyQuery:id=>({id,kind:'history'}),async command(op,input){if(op==='list')return{rooms:[{id:'a',name:'Room A',members:['alice']},{id:'b',name:'Room B',members:['alice']}]};if(op==='rotate')return{token:'test-invite'};if(op==='send'){window.sent.push(input);return new Promise((resolve,reject)=>{window.resolveSend=()=>resolve({messageId:input.requestId});window.rejectSend=()=>reject(Error('response lost'));});}return{};}}}`});
   const root=path.resolve(__dirname,'..'),file=path.resolve(root,'.'+u.pathname);if(!file.startsWith(root+path.sep))return route.abort();try{await route.fulfill({body:await fs.readFile(file),contentType:{'.js':'text/javascript','.css':'text/css','.ttf':'font/ttf','.png':'image/png'}[path.extname(file)]||'text/html'});}catch{await route.fulfill({status:404,body:''});}
  });
  const p=await context.newPage();await p.goto('http://localhost/messages.html');await p.evaluate(()=>window.sent=[]);
  await p.locator('#messages-connect:not(:disabled)').waitFor();assert.equal(await p.locator('#messages-controls').isVisible(),false);assert.equal(await p.locator('canvas').count(),0);assert.equal(await p.locator('#live-title').count(),0);
  await p.locator('#messages-connect').click();await p.locator('#messages-room-title').filter({hasText:'Room A'}).waitFor();
+ await p.locator('#messages-room summary').click();
+ p.once('dialog', dialog=>dialog.accept());
+ await p.locator('#messages-rotate').click();
+ const invite=p.locator('#messages-invite a');
+ await invite.waitFor();
+ await p.getByRole('button',{name:'Room A',exact:true}).click();
+ assert.equal(await invite.isVisible(),true,'reselecting the current room preserves its invite');
+ await p.getByRole('button',{name:'Room B',exact:true}).click();
+ assert.equal(await p.locator('#messages-room details').getAttribute('open'),null,'room actions close when switching rooms');
+ await p.getByRole('button',{name:'Room A',exact:true}).click();
  await p.locator('#messages-body').fill('first');await p.locator('#messages-send button').click();await p.waitForFunction(()=>sent.length===1);await p.locator('#messages-body').fill('new draft');await p.evaluate(()=>resolveSend());await p.waitForFunction(()=>!document.querySelector('#messages-send button').disabled);assert.equal(await p.locator('#messages-body').inputValue(),'new draft');
  await p.locator('#messages-body').fill('retry after room change');await p.locator('#messages-send button').click();await p.waitForFunction(()=>sent.length===2);await p.evaluate(()=>rejectSend());await p.locator('#messages-status').filter({hasText:'response lost'}).waitFor();
  await p.getByRole('button',{name:'Room B',exact:true}).click();await p.locator('#messages-body').fill('other');await p.locator('#messages-send button').click();await p.waitForFunction(()=>sent.length===3);await p.evaluate(()=>resolveSend());await p.waitForFunction(()=>!document.querySelector('#messages-send button').disabled);
  await p.getByRole('button',{name:'Room A',exact:true}).click();await p.locator('#messages-send button').click();await p.waitForFunction(()=>sent.length===4);assert.equal(await p.evaluate(()=>sent[1].requestId===sent[3].requestId),true);await p.getByRole('button',{name:'Room B',exact:true}).click();await p.locator('#messages-body').fill('protected');await p.evaluate(()=>resolveSend());await p.waitForFunction(()=>!document.querySelector('#messages-send button').disabled);assert.equal(await p.locator('#messages-body').inputValue(),'protected');
- await p.evaluate(()=>emitHistory([{id:'x',nickname:'Bob',sender:'bob',body:'<img src=x onerror="window.injected=true">'}]));assert.equal(await p.locator('#messages-history img').count(),0);assert.match(await p.locator('#messages-history').textContent(),/<img/);
- for(const mode of ['light','dark']){await p.evaluate(async mode=>{const{applyUISystemPreferences}=await import('/js/ui-system.js?v=13.0.1');applyUISystemPreferences({colorMode:mode});},mode);for(const[width,height]of[[320,568],[390,844],[768,900],[1440,1000],[844,350]]){await p.setViewportSize({width,height});assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);const send=await p.locator('#messages-send button').boundingBox();assert.ok(send.y+send.height<=height+1,JSON.stringify({send,width,height}));if(width===390||width===1440)await p.screenshot({path:`test-artifacts/messages-v13-${mode}-${width}.png`});}}
+ await p.evaluate(()=>emitHistory([{id:'x',nickname:'Bob',sender:'bob',body:'<img src=x onerror="window.injected=true">'},{id:'own',nickname:'Alice',sender:'alice',body:'Own message'}]));assert.equal(await p.locator('#messages-history img').count(),0);assert.match(await p.locator('#messages-history').textContent(),/<img/);
+ const viewports=[[320,568],[390,844],[768,900],[1440,1000],[844,350],[568,320]];
+ const controls=['#messages-refresh','#messages-rooms button','#messages-room summary','.messages-sidebar summary',
+  '#messages-history li>button','#messages-logout','.messages-home'];
+ for(const mode of ['light','dark']){
+  await p.evaluate(async mode=>{
+   const{applyUISystemPreferences}=await import('/js/ui-system.js?v=13.0.1');
+   applyUISystemPreferences({colorMode:mode});
+  },mode);
+  for(const[width,height]of viewports){
+   await p.setViewportSize({width,height});
+   assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+   for(const selector of controls){
+    const target=await p.locator(selector).first().boundingBox();
+    assert.ok(target.height>=44&&target.width>=44,JSON.stringify({selector,target,width,height}));
+   }
+   const padding=await p.locator('.messages-shell').evaluate(n=>getComputedStyle(n).paddingInlineStart);
+   assert.equal(padding,width<=600?'16px':'24px');
+   const send=await p.locator('#messages-send button').boundingBox();
+   assert.ok(send.y+send.height<=height+1,JSON.stringify({send,width,height}));
+   if(width===390||width===1440)await p.screenshot({path:'test-artifacts/messages-v13-'+mode+'-'+width+'.png'});
+  }
+ }
  await p.locator('#messages-logout').click();assert.equal(await p.locator('#messages-controls').isVisible(),false);assert.equal(await p.locator('#messages-history li').count(),0);assert.deepEqual(errors,[]);
  console.log('PASS: Google login gate, minimal chat without Live, account isolation, text safety, draft preservation, room-specific retry IDs and responsive composer 320–1440px/landscape');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
