@@ -34,13 +34,49 @@ const { chromium } = require('./helpers/browser.cjs');
         await page.locator('#pdf-files').setInputFiles([{name:'one.pdf',mimeType:'application/pdf',buffer:pdfBytes},{name:'two.pdf',mimeType:'application/pdf',buffer:pdfBytes}]);await page.locator('#pdf-mode').selectOption('merge');downloading=page.waitForEvent('download');await page.locator('#pdf-run').click();await downloading;await page.locator('#mini-status').filter({hasText:'2ページ'}).waitFor();
         await page.locator('#pdf-mode').selectOption('extract');await page.locator('#pdf-pages').fill('1');downloading=page.waitForEvent('download');await page.locator('#pdf-run').click();await downloading;
         await open('submit');await page.locator('#submit-files').setInputFiles({name:'report.txt',mimeType:'text/plain',buffer:Buffer.from('test')});await page.locator('#submit-ext').fill('pdf');await page.locator('#submit-run').click();assert.equal(await page.locator('#submit-results [data-ok="false"]').count(),1);
-        await open('audio');const wav=await page.evaluate(async()=>{const {wavBlob}=await import('./js/mini-model.js?v=13.0.1');return [...new Uint8Array(await wavBlob([Float32Array.from({length:8000},(_,i)=>Math.sin(i/10)*.1)],8000).arrayBuffer())];});await page.locator('#audio-file').setInputFiles({name:'tone.wav',mimeType:'audio/wav',buffer:Buffer.from(wav)});await page.waitForFunction(()=>document.querySelector('#audio').duration===1);await page.locator('#audio-end').fill('0.5');downloading=page.waitForEvent('download');await page.locator('#audio-save').click();assert.match((await downloading).suggestedFilename(),/\.wav$/);
+        await open('audio');
+        await page.locator('#audio-gain').fill('0');
+        await page.evaluate(()=>window.flushMiniApp());
+        await page.reload();
+        await page.locator('#audio-gain').waitFor();
+        assert.equal(await page.locator('#audio-gain').inputValue(),'0','muted gain survives a Studio reload');
+        await page.evaluate(()=>{
+            window.originalStudioMic=navigator.mediaDevices.getUserMedia;
+            navigator.mediaDevices.getUserMedia=()=>new Promise(resolve=>{window.resolveStudioMic=resolve;});
+        });
+        const mediaAfterRestore = await page.evaluate(async()=>{
+            document.querySelector('#record').click();
+            window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}));
+            window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}));
+            let stopped=0;
+            window.resolveStudioMic({getTracks:()=>[{stop:()=>stopped++}]});
+            await Promise.resolve();
+            return stopped;
+        });
+        assert.equal(mediaAfterRestore,1,'permission received after navigation is released');
+        await page.evaluate(()=>{navigator.mediaDevices.getUserMedia=window.originalStudioMic;});
+        const wav=await page.evaluate(async()=>{const {wavBlob}=await import('./js/mini-model.js?v=13.0.1');return [...new Uint8Array(await wavBlob([Float32Array.from({length:8000},(_,i)=>Math.sin(i/10)*.1)],8000).arrayBuffer())];});await page.locator('#audio-file').setInputFiles({name:'tone.wav',mimeType:'audio/wav',buffer:Buffer.from(wav)});await page.waitForFunction(()=>document.querySelector('#audio').duration===1);await page.locator('#audio-end').fill('0.5');downloading=page.waitForEvent('download');await page.locator('#audio-save').click();assert.match((await downloading).suggestedFilename(),/\.wav$/);
         await page.locator('#record').click();await page.waitForFunction(()=>document.querySelector('#record').disabled&& !document.querySelector('#record-stop').disabled);await page.waitForTimeout(900);await page.locator('#record-stop').click();await page.waitForFunction(()=>!document.querySelector('#record').disabled&&Number.isFinite(document.querySelector('#audio').duration));assert.ok(+(await page.locator('#audio-end').inputValue())>0);
         await open('video');
         await page.evaluate(async()=>{const canvas=document.createElement('canvas');canvas.width=160;canvas.height=90;const stream=canvas.captureStream(15),recorder=new MediaRecorder(stream,{mimeType:'video/webm'}),chunks=[];recorder.ondataavailable=e=>chunks.push(e.data);const finished=new Promise(resolve=>recorder.onstop=resolve);recorder.start();const g=canvas.getContext('2d');for(let i=0;i<20;i++){g.fillStyle=i%2?'red':'blue';g.fillRect(0,0,160,90);await new Promise(r=>setTimeout(r,70));}recorder.stop();await finished;stream.getTracks().forEach(t=>t.stop());const file=new File(chunks,'clip.webm',{type:'video/webm'}),dt=new DataTransfer();dt.items.add(file);const input=document.querySelector('#video-file');input.files=dt.files;input.dispatchEvent(new Event('change',{bubbles:true}));});
         await page.waitForFunction(()=>document.querySelector('#video').readyState>=2);
         await page.waitForFunction(()=>Number.isFinite(document.querySelector('#video').duration));
         await page.locator('#video-start').fill('0');await page.locator('#video-end').fill('0.6');await page.locator('#video-caption').fill('テスト字幕');await page.locator('#clip-add').click();
+        await page.evaluate(()=>{
+            window.originalVideoPicker=window.showSaveFilePicker;
+            window.videoWriters=0;
+            window.showSaveFilePicker=()=>new Promise(resolve=>{window.resolveVideoPicker=resolve;});
+        });
+        await page.locator('#video-export').click();
+        await page.waitForFunction(()=>typeof window.resolveVideoPicker==='function');
+        await page.evaluate(()=>{
+            window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}));
+            window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}));
+            window.resolveVideoPicker({createWritable:async()=>{window.videoWriters++;}});
+            window.showSaveFilePicker=window.originalVideoPicker;
+        });
+        await page.waitForFunction(()=>!document.querySelector('#video-export').disabled);
+        assert.equal(await page.evaluate(()=>window.videoWriters),0,'a late save picker must not start a cancelled export');
         downloading=page.waitForEvent('download');await page.locator('#video-export').click();assert.match((await downloading).suggestedFilename(),/\.webm$/);
         await page.setViewportSize({width:390,height:844});for(const app of ['document','sheet','slides','pdf','video','diagram','data','draw']){await open(app);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),true,'mobile overflow: '+app);}
         await page.screenshot({path:path.join(root,'test-artifacts/mini-mobile.png'),fullPage:true});assert.deepEqual(errors,[]);

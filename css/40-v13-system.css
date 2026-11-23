@@ -1,41 +1,32 @@
-/* Canonical tokens: DesignSystem/UI_UX_DESIGN_SYSTEM.md. v13 supersedes decorative layers. */
-html:root body.ui-system.ui-system,html:root body.ui-system.ui-system .ui-scope {
- --ui-font:Inter,"Noto Sans JP",system-ui,-apple-system,"Segoe UI",sans-serif;
- --ui-bg:#f5f7fa;--ui-surface:#fff;--ui-surface-muted:#eef2f6;--ui-text:#182431;--ui-text-muted:#506172;--ui-border:#ccd6e0;
- --ui-primary:var(--ui-accent-override,#245d8f);--ui-primary-hover:var(--ui-accent-hover-override,#1b4d78);--ui-primary-pressed:var(--ui-accent-pressed-override,#153c5e);--ui-primary-soft:var(--ui-accent-soft-override,#e8f1f8);--ui-on-primary:#fff;--ui-focus:#3b82f6;--ui-danger:#b42332;
- --ui-radius-sm:8px;--ui-radius-md:12px;--ui-radius-lg:16px;--ui-radius-xl:24px;--pasidea-text-heading:16px;--pasidea-text-body:14px;
- --ui-duration-fast:140ms;--ui-duration-normal:220ms;--ui-ease-standard:cubic-bezier(.2,0,0,1);
- --pasidea-primary:var(--ui-primary);--pasidea-on-primary:var(--ui-on-primary);--pasidea-primary-container:var(--ui-primary-soft);--pasidea-on-primary-container:var(--ui-primary);--pasidea-surface:var(--ui-bg);--pasidea-surface-container-low:var(--ui-surface);--pasidea-surface-container:var(--ui-surface-muted);--pasidea-on-surface:var(--ui-text);--pasidea-on-surface-variant:var(--ui-text-muted);--pasidea-outline-variant:var(--ui-border);--pasidea-font-sans:var(--ui-font);
- font-family:var(--ui-font);color:var(--ui-text);background-color:var(--ui-bg);font-size:14px;line-height:1.6;
-}
-html:root body.ui-system.ui-system[data-theme=dark],html:root body.ui-system.ui-system[data-theme=dark] .ui-scope {
- --ui-bg:#101820;--ui-surface:#1b2732;--ui-surface-muted:#253443;--ui-text:#edf3f8;--ui-text-muted:#b1bfcb;--ui-border:#495b6b;
- --ui-primary:var(--ui-accent-override,#83b7e2);--ui-primary-hover:var(--ui-accent-hover-override,#a2cdf0);--ui-primary-pressed:var(--ui-accent-pressed-override,#c4e0f7);--ui-primary-soft:var(--ui-accent-soft-override,#263f55);--ui-on-primary:#10202f;--ui-focus:#9bcaff;--ui-danger:#ff8894;
+/* LifeTop v13 layouts use the shared Pasidea tokens. */
+html:root body.ui-system.ui-system, html:root body.ui-system.ui-system .ui-scope {
+  --ui-primary: var(--ui-accent-override, var(--pasidea-primary));
+  --ui-primary-hover: var(--ui-accent-hover-override, var(--pasidea-primary));
+  --ui-primary-pressed: var(--ui-accent-pressed-override, var(--pasidea-primary));
+  --ui-primary-soft: var(--ui-accent-soft-override, var(--pasidea-primary-container));
+  color: var(--ui-text);
 }
 html:root body.ui-system.ui-system *{box-sizing:border-box}
-html:root body.ui-system.ui-system :is(button,input,select,textarea){font-family:var(--ui-font);font-size:14px}
-html:root body.ui-system.ui-system :is(button,a,input,select,textarea,summary):focus-visible{outline:3px solid var(--ui-focus)!important;outline-offset:3px}
-html:root body.ui-system.ui-system :is(.primary-btn,.tonal-btn,.text-btn,.cc-control,.pasidea-btn,.ctrl-btn){min-height:40px;border-radius:var(--ui-radius-sm)!important;font-weight:600;box-shadow:none!important;transition:background-color var(--ui-duration-fast),border-color var(--ui-duration-fast)!important;letter-spacing:normal}
-html:root body.ui-system.ui-system :is(.primary-btn,.cc-primary,.search-button){background:var(--ui-primary)!important;color:var(--ui-on-primary)!important;border:1px solid transparent}
-html:root body.ui-system.ui-system :is(.tonal-btn,.cc-secondary,.pasidea-btn-secondary,.ctrl-btn){background:var(--ui-surface-muted)!important;color:var(--ui-text)!important;border:1px solid var(--ui-border)}
+html:root body.ui-system.ui-system :is(button,input,select,textarea){font-family:var(--ui-font);font-size:var(--pasidea-text-body)}
+html:root body.ui-system.ui-system :is(button,a,input,select,textarea,summary):focus-visible{outline:2px solid var(--ui-focus)!important;outline-offset:2px}
+html:root body.ui-system.ui-system :is(.primary-btn,.tonal-btn,.text-btn,.cc-control,.pasidea-btn,.ctrl-btn){min-height:var(--pasidea-control-height);border-radius:var(--pasidea-radius-lg)!important;font-weight:600;letter-spacing:normal}
+html:root body.ui-system.ui-system :is(.primary-btn,.cc-primary,.search-button){background:var(--ui-primary)!important;color:var(--ui-on-primary)!important;border:1px solid transparent;box-shadow:var(--pasidea-sheen)!important}
+html:root body.ui-system.ui-system :is(.tonal-btn,.cc-secondary,.pasidea-btn-secondary,.ctrl-btn){background:var(--ui-primary-soft)!important;color:var(--pasidea-on-primary-container)!important;border:1px solid transparent}
 html:root body.ui-system.ui-system :is(.text-btn,.cc-quiet){background:transparent!important;color:var(--ui-primary)!important;border:1px solid transparent}
 html:root body.ui-system.ui-system :is(.icon-btn,.cc-icon){width:44px;min-width:44px;height:44px;border-radius:var(--ui-radius-sm)!important;background:var(--ui-surface-muted)!important;color:var(--ui-text)!important;box-shadow:none!important}
-html:root body.ui-system.ui-system :is(.primary-btn,.cc-primary):hover:not(:disabled){background:var(--ui-primary-hover)!important}
-html:root body.ui-system.ui-system :is(.tonal-btn,.text-btn,.cc-quiet):hover:not(:disabled){background:var(--ui-primary-soft)!important}
-html:root body.ui-system.ui-system :is(:disabled,[aria-disabled=true]):is(:hover,:active,:not(:hover)){opacity:.5!important;cursor:not-allowed}
-html:root body.ui-system.ui-system .pasidea-btn:not(.pasidea-close-btn):is(:hover,:not(:hover)){border-radius:var(--ui-radius-sm)!important}
-html:root body.ui-system.ui-system :is(button.close-action:not(.search-clear-btn),button.cc-icon[data-cancel]):is(:hover,:not(:hover)){border-radius:var(--ui-radius-sm)!important}
-html:root body.ui-system.ui-system :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea){border-radius:var(--ui-radius-sm)!important;background:var(--ui-surface)!important;color:var(--ui-text)!important;border:1px solid var(--ui-border)!important;min-width:0}
-html:root body.ui-system.ui-system :is(.glass-card,.mini-app-card,.settings-section,.cc-settings-section,.clock-tool-card){border:1px solid var(--ui-border);border-radius:var(--ui-radius-md)!important;box-shadow:none!important;background:color-mix(in srgb,var(--ui-surface) 88%,transparent)!important;backdrop-filter:blur(12px)!important}
+@media (hover: hover) {
+  html:root body.ui-system.ui-system :is(.primary-btn,.cc-primary):hover:not(:disabled,[aria-disabled=true]){background:var(--ui-primary-hover)!important}
+  html:root body.ui-system.ui-system :is(.tonal-btn,.text-btn,.cc-quiet):hover:not(:disabled,[aria-disabled=true]){background:var(--ui-primary-soft)!important}
+}
+html:root body.ui-system.ui-system :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea){border-radius:var(--pasidea-radius-md)!important;background:var(--ui-surface-muted)!important;color:var(--ui-text)!important;border:1px solid var(--ui-border)!important;min-width:0}
+html:root body.ui-system.ui-system :is(.glass-card,.mini-app-card,.settings-section,.cc-settings-section,.clock-tool-card){border:1px solid var(--ui-border);border-radius:var(--pasidea-radius-lg)!important;box-shadow:var(--pasidea-shadow-card)!important;background:var(--ui-surface)!important;backdrop-filter:none!important}
 html:root body.ui-system.ui-system .hero-section{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important}
-html:root body.ui-system.ui-system .dashboard-header{position:relative!important;display:flex!important;justify-content:center!important;align-items:center;height:64px;min-height:64px;padding:8px!important;width:100%;max-width:1200px;margin:auto;background:transparent!important;border:0;z-index:20}
+html:root body.ui-system.ui-system .dashboard-header{position:relative!important;display:flex!important;justify-content:center!important;align-items:center;height:64px;min-height:64px;padding:8px!important;max-width:var(--pasidea-container-max);margin:auto;background:transparent!important;border:0;z-index:20}
 html:root body.ui-system.ui-system .quick-handle{width:64px;min-width:64px;border-radius:var(--ui-radius-pill)!important;background:color-mix(in srgb,var(--ui-surface) 90%,transparent)!important;border:1px solid var(--ui-border)}
 html:root body.ui-system.ui-system #settings-panel{position:fixed!important;top:calc(var(--visual-top,0px) + 12px)!important;bottom:auto!important;left:50%!important;right:auto!important;width:min(800px,calc(100vw - 32px))!important;height:auto!important;max-height:calc(var(--visual-height,100dvh) - 24px)!important;margin:0!important;border-radius:var(--ui-radius-xl)!important;border:1px solid var(--ui-border);background:color-mix(in srgb,var(--ui-surface) 96%,transparent)!important;backdrop-filter:blur(20px)!important;display:flex!important;flex-direction:column;overflow:hidden!important;opacity:0;visibility:hidden;transform:translate(-50%,-12px)!important;transition:opacity 140ms,transform 220ms var(--ui-ease-standard),visibility 140ms!important;pointer-events:none}
 html:root body.ui-system.ui-system #settings-panel.active{opacity:1;visibility:visible;transform:translate(-50%,0)!important;pointer-events:auto}
 #settings-panel .settings-header{flex:none;display:flex;justify-content:space-between;align-items:center;padding:16px 24px!important;background:transparent!important;border:0!important}
-#settings-title{font-size:20px!important;line-height:1.4!important}
-html:root body.ui-system.ui-system #settings-panel .settings-header .close-action{border-radius:var(--ui-radius-sm)!important;background:transparent!important;width:44px;height:44px}
-html:root body.ui-system.ui-system .pasidea-close-btn{border-radius:var(--ui-radius-sm)!important;background:transparent!important;width:44px!important;height:44px!important}
+#settings-title{font-size:var(--pasidea-text-title)!important;line-height:1.35!important}
 #settings-panel .settings-body{display:none!important;overflow:auto!important;min-height:0;padding:0 24px 24px!important;overscroll-behavior:contain}
 #settings-panel.quick-details-open .settings-body{display:block!important}
 #settings-panel.quick-details-open #quick-overview{display:none}
@@ -98,8 +89,8 @@ html:root body.ui-system.ui-system #messages-body{width:100%;min-height:64px!imp
 #messages-invite{font-size:12px;overflow-wrap:anywhere;margin:0}
 #messages-invite:empty{display:none}
 .messages-page.mini-embedded .messages-home{display:none}
-@media(max-width:1023px){.quick-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-content{max-width:100%;padding-inline:24px!important}}
-@media(max-width:639px){html:root body.ui-system.ui-system #settings-panel{top:calc(var(--visual-top,0px) + 8px)!important;width:calc(100vw - 16px)!important;max-height:calc(var(--visual-height,100dvh) - 16px)!important}.quick-overview{padding:0 16px 16px}#settings-panel .settings-header{padding:16px!important}.quick-tile{min-height:72px}.dashboard-content{padding-inline:16px!important}html:root body.ui-system.ui-system .weather-summary-row{grid-template-columns:1fr}.weather-summary-card{height:auto!important}.messages-shell{padding:12px;gap:12px}.messages-content{grid-template-columns:1fr;gap:12px}.messages-sidebar{border-right:0;border-bottom:1px solid var(--ui-border);padding:0 0 12px;max-height:180px}#messages-rooms{display:flex;gap:8px;overflow:auto;margin:8px 0}#messages-rooms button{width:auto;min-width:100px;white-space:nowrap}.messages-sidebar details{display:inline-block}.messages-header-actions{gap:4px}.messages-header-actions button{font-size:12px}.messages-room-actions{gap:4px}.messages-room-actions button{font-size:12px}#messages-history li{max-width:95%}.quick-live-fields{grid-template-columns:1fr}.quick-tile{font-size:14px!important}}
+@media(max-width:1023px){.quick-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:639px){html:root body.ui-system.ui-system #settings-panel{top:calc(var(--visual-top,0px) + 8px)!important;width:calc(100vw - 16px)!important;max-height:calc(var(--visual-height,100dvh) - 16px)!important}.quick-overview{padding:0 16px 16px}#settings-panel .settings-header{padding:16px!important}.quick-tile{min-height:72px}html:root body.ui-system.ui-system .weather-summary-row{grid-template-columns:1fr}.weather-summary-card{height:auto!important}.messages-shell{padding:12px;gap:12px}.messages-content{grid-template-columns:1fr;gap:12px}.messages-sidebar{border-right:0;border-bottom:1px solid var(--ui-border);padding:0 0 12px;max-height:180px}#messages-rooms{display:flex;gap:8px;overflow:auto;margin:8px 0}#messages-rooms button{width:auto;min-width:100px;white-space:nowrap}.messages-sidebar details{display:inline-block}.messages-header-actions{gap:4px}.messages-header-actions button{font-size:12px}.messages-room-actions{gap:4px}.messages-room-actions button{font-size:12px}#messages-history li{max-width:95%}.quick-live-fields{grid-template-columns:1fr}.quick-tile{font-size:14px!important}}
 @media(prefers-reduced-motion:reduce){html:root body.ui-system.ui-system *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 html.reduce-motion body.ui-system *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 @media(forced-colors:active){.quick-tile[aria-pressed=true]{outline:2px solid Highlight}.glass-card{background:Canvas!important;backdrop-filter:none!important}}
@@ -217,3 +208,9 @@ html:root body.ui-system.ui-system #quick-panel{max-width:none!important}
 html:root body.ui-system.ui-system #settings-panel{max-width:min(800px,calc(100vw - 32px))!important}
 #quick-panel .quick-tile>span:last-child{overflow-wrap:normal;word-break:normal}
 html:root body.ui-system.ui-system :is(#quick-panel,#settings-panel){left:50vw!important}
+
+/* The inner container already provides the responsive side gutters. */
+html:root body.ui-system.ui-system .dashboard-content {
+  max-width: none;
+  padding-inline: 0 !important;
+}

@@ -87,6 +87,6 @@ $('messages-send').onsubmit=async e=>{
 };
 window.addEventListener('offline',()=>status('オフラインです。接続後に再試行してください。'));window.addEventListener('online',()=>status());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)document.title='Messages | LifeTop';});
-window.addEventListener('pagehide',()=>{unwatch?.();unwatchRoom?.();});
+window.addEventListener('pagehide',event=>{if(!event.persisted){unwatch?.();unwatchRoom?.();}});
 if(new URLSearchParams(location.search).has('embedded'))document.body.classList.add('mini-embedded');
 initUISystem();initResponsiveUI();void initialize();

@@ -12,12 +12,10 @@ const sameValue = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const isRecord = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 let configBaseline = snapshot(userConfig);
 let storedBaseline = {};
-let storageReadable = true;
 export function acceptStoredConfig(config) {
     if (!isRecord(config)) throw Error('保存データの形式が不正です。');
     configBaseline = snapshot(userConfig);
     storedBaseline = snapshot(config);
-    storageReadable = true;
 }
 export function onLocalSave(listener) {
     saveListeners.add(listener);
@@ -40,10 +38,8 @@ export function writeStoredConfig(config, notify = true) {
 }
 
 export function loadData() {
-    let readSucceeded = false;
     try {
         const saved = localStorage.getItem(STORAGE_KEY);
-        readSucceeded = true;
         if (saved) {
             const parsed = JSON.parse(saved);
             if (!isRecord(parsed)) throw Error('保存データの形式が不正です。');
@@ -52,9 +48,7 @@ export function loadData() {
         } else {
             storedBaseline = {};
         }
-        storageReadable = true;
     } catch (e) {
-        storageReadable = readSucceeded;
         console.error("Failed to load settings", e);
         showStorageStatus('保存データを読み込めませんでした。ブラウザの保存設定を確認してください。');
     }
@@ -74,15 +68,9 @@ export function loadData() {
 
 export function save() {
     try {
-        let latest;
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            latest = raw ? JSON.parse(raw) : {};
-            if (!isRecord(latest)) throw Error('保存データの形式が不正です。');
-        } catch (error) {
-            if (storageReadable) throw error;
-            latest = snapshot(userConfig);
-        }
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const latest = raw === null ? {} : JSON.parse(raw);
+        if (!isRecord(latest)) throw Error('保存データの形式が不正です。');
         const changed = new Set([...Object.keys(configBaseline), ...Object.keys(userConfig)]
             .filter(key => !sameValue(userConfig[key], configBaseline[key])));
         if (changed.has('memo') || changed.has('memoHtml')) {

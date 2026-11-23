@@ -30,14 +30,54 @@ export function pdfApp(ctx,state={}) {
 }
 
 export function audioApp(ctx,state={}) {
-    let source=null,recorder=null,mic=null;
-    ctx.root.innerHTML=`<div class="mini-tools"><label>音声ファイル<input id="audio-file" type="file" accept="audio/*"></label><button class="tonal-btn" id="record">マイクで録音</button><button class="tonal-btn" id="record-stop" disabled>録音終了</button></div><audio id="audio" controls style="width:100%"></audio><div class="mini-tools"><label>開始秒<input id="audio-start" type="number" min="0" step=".1" value="${Number(state.start)||0}"></label><label>終了秒<input id="audio-end" type="number" min="0" step=".1" value="${Number(state.end)||0}"></label><label>音量倍率<input id="audio-gain" type="number" min="0" max="4" step=".1" value="${Number(state.gain)||1}"></label><label>フェード秒<input id="audio-fade" type="number" min="0" max="10" step=".1" value="${Number(state.fade)||0}"></label><button class="primary-btn" id="audio-save">区間をWAV保存</button></div><p class="mini-note">録音にはマイクの許可が必要です。切り出し時に音声全体を展開するため、長い音声はメモリを多く使います。元ファイルは変更しません。</p>`;
+    let source=null,recorder=null,mic=null,recordingAttempt=0;
+    const savedGain = Number.parseFloat(state.gain);
+    const gainValue = Number.isFinite(savedGain) && savedGain >= 0 && savedGain <= 4 ? savedGain : 1;
+    ctx.root.innerHTML=`<div class="mini-tools"><label>音声ファイル<input id="audio-file" type="file" accept="audio/*"></label><button class="tonal-btn" id="record">マイクで録音</button><button class="tonal-btn" id="record-stop" disabled>録音終了</button></div><audio id="audio" controls style="width:100%"></audio><div class="mini-tools"><label>開始秒<input id="audio-start" type="number" min="0" step=".1" value="${Number(state.start)||0}"></label><label>終了秒<input id="audio-end" type="number" min="0" step=".1" value="${Number(state.end)||0}"></label><label>音量倍率<input id="audio-gain" type="number" min="0" max="4" step=".1" value="${gainValue}"></label><label>フェード秒<input id="audio-fade" type="number" min="0" max="10" step=".1" value="${Number(state.fade)||0}"></label><button class="primary-btn" id="audio-save">区間をWAV保存</button></div><p class="mini-note">録音にはマイクの許可が必要です。切り出し時に音声全体を展開するため、長い音声はメモリを多く使います。元ファイルは変更しません。</p>`;
     const player=ctx.$('#audio');let probing=false;const load=file=>{source=file;player.src=ctx.url(file);};player.addEventListener('loadedmetadata',()=>{if(Number.isFinite(player.duration))ctx.$('#audio-end').value=player.duration.toFixed(2);else{probing=true;player.currentTime=1e10;}});player.addEventListener('durationchange',()=>{if(probing&&Number.isFinite(player.duration)){probing=false;ctx.$('#audio-end').value=player.duration.toFixed(2);player.currentTime=0;}});
     ctx.action('#audio-file',()=>{const file=ctx.$('#audio-file').files[0];if(file)load(file);},'change');
-    ctx.action('#record',async()=>{if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder)throw new Error('このブラウザでは録音できません。');mic=await navigator.mediaDevices.getUserMedia({audio:true});if(!ctx.alive){mic.getTracks().forEach(t=>t.stop());return;}const chunks=[];try{recorder=new MediaRecorder(mic);}catch(error){mic.getTracks().forEach(t=>t.stop());throw error;}recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};recorder.onstop=()=>{mic?.getTracks().forEach(t=>t.stop());if(ctx.alive){load(new Blob(chunks,{type:recorder.mimeType}));ctx.$('#record-stop').disabled=true;ctx.$('#record').disabled=false;ctx.$('#record').dataset.busy='false';ctx.notify('録音を読み込みました。範囲を選んでWAV保存できます。');}};recorder.start(1000);ctx.$('#record').dataset.busy='true';ctx.$('#record-stop').disabled=false;ctx.notify('録音中…');});
+    const stopCapture = () => {
+        recordingAttempt++;
+        if (recorder?.state === 'recording') recorder.stop();
+        mic?.getTracks().forEach(track => track.stop());
+        mic = null;
+    };
+    const suspendAudio = () => { player.pause(); stopCapture(); };
+    window.addEventListener('pagehide', suspendAudio);
+    ctx.action('#record',async()=>{
+        if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder)throw Error('このブラウザでは録音できません。');
+        const attempt=++recordingAttempt;
+        const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+        if(!ctx.alive||attempt!==recordingAttempt){stream.getTracks().forEach(track=>track.stop());return;}
+        mic=stream;
+        const chunks=[];
+        try{
+            const capture=new MediaRecorder(stream);
+            recorder=capture;
+            capture.ondataavailable=event=>{if(event.data.size)chunks.push(event.data);};
+            capture.onstop=()=>{
+                if(mic===stream){stream.getTracks().forEach(track=>track.stop());mic=null;}
+                if(!ctx.alive)return;
+                if(chunks.length)load(new Blob(chunks,{type:capture.mimeType}));
+                ctx.$('#record-stop').disabled=true;
+                ctx.$('#record').disabled=false;
+                ctx.$('#record').dataset.busy='false';
+                if(chunks.length)ctx.notify('録音を読み込みました。範囲を選んでWAV保存できます。');
+            };
+            capture.start(1000);
+        }catch(error){stopCapture();throw error;}
+        ctx.$('#record').dataset.busy='true';
+        ctx.$('#record-stop').disabled=false;
+        ctx.notify('録音中…');
+    });
     ctx.action('#record-stop',()=>{if(recorder?.state==='recording')recorder.stop();});
     ctx.action('#audio-save',async()=>{if(!source)throw new Error('音声を読み込むか録音してください。');const ac=new AudioContext();try{const buffer=await ac.decodeAudioData(await source.arrayBuffer());if(!ctx.alive)return;const start=+ctx.$('#audio-start').value,end=+ctx.$('#audio-end').value,gain=+ctx.$('#audio-gain').value,fade=+ctx.$('#audio-fade').value;if(![start,end,gain,fade].every(Number.isFinite)||start<0||end<=start||end>buffer.duration+.05||gain<0||gain>4||fade<0||fade>10)throw new Error('開始・終了秒と音量を確認してください。');const first=Math.floor(start*buffer.sampleRate),last=Math.min(buffer.length,Math.floor(end*buffer.sampleRate)),length=last-first,fadeSamples=Math.min(fade*buffer.sampleRate,length/2),channels=[];for(let c=0;c<buffer.numberOfChannels;c++){const channel=buffer.getChannelData(c).slice(first,last);for(let i=0;i<channel.length;i++)channel[i]*=gain*(fadeSamples?Math.min(1,i/fadeSamples,(length-1-i)/fadeSamples):1);channels.push(channel);}download(wavBlob(channels,buffer.sampleRate),ctx.name()+'.wav');ctx.notify('WAVを書き出しました。');}finally{await ac.close();}});
-    ctx.onDispose(()=>{player.pause();player.removeAttribute('src');player.load();if(recorder?.state==='recording')recorder.stop();mic?.getTracks().forEach(t=>t.stop());});return ()=>({start:ctx.$('#audio-start').value,end:ctx.$('#audio-end').value,gain:ctx.$('#audio-gain').value,fade:ctx.$('#audio-fade').value});
+    ctx.onDispose(()=>{
+        window.removeEventListener('pagehide',suspendAudio);
+        suspendAudio();
+        player.removeAttribute('src');
+        player.load();
+    });return ()=>({start:ctx.$('#audio-start').value,end:ctx.$('#audio-end').value,gain:ctx.$('#audio-gain').value,fade:ctx.$('#audio-fade').value});
 }
 
 export function videoApp(ctx,state={}) {
@@ -61,32 +101,41 @@ export function videoApp(ctx,state={}) {
     ctx.action('#frame-preview',()=>{range();resize();paint();});
     const seek=time=>new Promise((resolve,reject)=>{if(Math.abs(video.currentTime-time)<.02&&video.readyState>=2){resolve();return;}const ready=()=>{clearTimeout(timer);resolve();},timer=setTimeout(()=>{video.removeEventListener('seeked',ready);reject(new Error('動画の位置移動が完了しませんでした。'));},15000);video.addEventListener('seeked',ready,{once:true});video.currentTime=time;});
     let cancelled=false,resolveSegment=null;
-    const stop=()=>{cancelled=true;recording=false;video.pause();cancelAnimationFrame(raf);resolveSegment?.();resolveSegment=null;if(recorder&&recorder.state!=='inactive')recorder.stop();};
+    const stop=()=>{cancelled=true;video.pause();cancelAnimationFrame(raf);resolveSegment?.();resolveSegment=null;if(recorder&&recorder.state!=='inactive')recorder.stop();};
     ctx.action('#video-cancel',()=>stop());
     ctx.action('#video-export',async()=>{
         if(recording)throw new Error('書き出し中です。');range();const ranges=clips.length?clips.map(c=>({...c})):[range()];if(ranges.some(c=>c.end>video.duration+.05))throw new Error('保存した区間が元動画の長さを超えています。元動画を確認してください。');
         if(!window.MediaRecorder||!canvas.captureStream)throw new Error('このブラウザでは動画書き出しに対応していません。');const mime=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error('WebM書き出しに対応していません。');const rate=+ctx.$('#video-rate').value;if(!Number.isFinite(rate)||rate<.5||rate>20)throw new Error('映像Mbpsは0.5〜20で指定してください。');
         let stream=null,queue=Promise.resolve(),writeError=null;
+        cancelled=false;recording=true;
+        const checkActive=()=>{if(cancelled||!ctx.alive)throw new DOMException('書き出しを中止しました。','AbortError');};
         try {
-            if(window.showSaveFilePicker){const handle=await window.showSaveFilePicker({suggestedName:ctx.name()+'.webm',types:[{description:'WebM動画',accept:{'video/webm':['.webm']}}]});writer=await handle.createWritable();}
-            cancelled=false;recording=true;chunks=[];ctx.$('#video-cancel').disabled=false;video.controls=false;ctx.$('#video-file').disabled=true;resize();
+            if(window.showSaveFilePicker){
+                const handle=await window.showSaveFilePicker({suggestedName:ctx.name()+'.webm',types:[{description:'WebM動画',accept:{'video/webm':['.webm']}}]});
+                checkActive();
+                writer=await handle.createWritable();
+            }
+            checkActive();
+            chunks=[];ctx.$('#video-cancel').disabled=false;video.controls=false;ctx.$('#video-file').disabled=true;resize();
             const total=ranges.reduce((sum,c)=>sum+c.end-c.start,0);ctx.notify(`書き出し中。約${Math.ceil(total)}秒かかります。${writer?'ファイルへ直接保存しています。':'出力はメモリに保持します。'}`);
-            ac ||= new AudioContext();await ac.resume();mediaSource ||= ac.createMediaElementSource(video);mediaSource.disconnect();const gain=ac.createGain(),destination=ac.createMediaStreamDestination();gain.gain.value=+ctx.$('#video-volume').value/100;mediaSource.connect(gain);gain.connect(destination);
+            ac ||= new AudioContext();await ac.resume();checkActive();mediaSource ||= ac.createMediaElementSource(video);mediaSource.disconnect();const gain=ac.createGain(),destination=ac.createMediaStreamDestination();gain.gain.value=+ctx.$('#video-volume').value/100;mediaSource.connect(gain);gain.connect(destination);
             stream=canvas.captureStream(30);destination.stream.getAudioTracks().forEach(track=>stream.addTrack(track));recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:rate*1e6});
             recorder.ondataavailable=e=>{if(!e.data.size)return;if(writer)queue=queue.then(()=>writer.write(e.data)).catch(error=>{writeError=error;stop();});else chunks.push(e.data);};
             const completed=new Promise((resolve,reject)=>{recorder.onstop=resolve;recorder.onerror=e=>{stop();reject(e.error||new Error('書き出しが停止しました。'));};});completed.catch(()=>{});
             let elapsed=0;
-            await seek(ranges[0].start);paint();recorder.start(1000);
+            await seek(ranges[0].start);checkActive();paint();recorder.start(1000);
             for(let i=0;i<ranges.length&&!cancelled;i++){
-                const clip=ranges[i];if(i>0){recorder.pause();await seek(clip.start);paint();recorder.resume();}
+                const clip=ranges[i];if(i>0){recorder.pause();await seek(clip.start);checkActive();paint();recorder.resume();}
                 await video.play();
                 await new Promise(resolve=>{resolveSegment=resolve;const tick=()=>{if(cancelled||!ctx.alive||video.currentTime>=clip.end||video.ended){video.pause();resolveSegment=null;resolve();return;}paint();ctx.$('#video-progress').value=Math.min(1,(elapsed+video.currentTime-clip.start)/total);raf=requestAnimationFrame(tick);};tick();});elapsed+=clip.end-clip.start;
             }
             if(recorder.state!=='inactive')recorder.stop();await completed;await queue;if(writeError)throw writeError;
             if(cancelled){await writer?.abort();if(ctx.alive)ctx.notify('書き出しを中止しました。');}else{if(writer)await writer.close();else download(new Blob(chunks,{type:recorder.mimeType}),ctx.name()+'.webm');ctx.$('#video-progress').value=1;ctx.notify('WebMを書き出しました。');}
-        } catch(error){stop();try{await writer?.abort();}catch{}if(error.name!=='AbortError')throw error;}
+        } catch(error){stop();try{await writer?.abort();}catch{}if(error.name!=='AbortError')throw error;if(ctx.alive)ctx.notify('書き出しを中止しました。');}
         finally{recording=false;writer=null;chunks=[];stream?.getTracks().forEach(t=>t.stop());mediaSource?.disconnect();if(ctx.alive){mediaSource?.connect(ac.destination);video.controls=true;ctx.$('#video-file').disabled=false;ctx.$('#video-cancel').disabled=true;}}
     });
-    ctx.onDispose(()=>{stop();video.removeAttribute('src');video.load();if(writer)void writer.abort().catch(()=>{});void ac?.close();});
+    const suspendVideo = () => { if(recording)stop();else video.pause(); };
+    window.addEventListener('pagehide',suspendVideo);
+    ctx.onDispose(()=>{window.removeEventListener('pagehide',suspendVideo);stop();video.removeAttribute('src');video.load();if(writer)void writer.abort().catch(()=>{});void ac?.close();});
     return ()=>({clips,caption:ctx.$('#video-caption').value,size:ctx.$('#video-size').value,rate:ctx.$('#video-rate').value,volume:ctx.$('#video-volume').value});
 }

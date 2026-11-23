@@ -1,4 +1,4 @@
-@import url('./pasidea-base.css?v=2.0.0');
+@import url('./pasidea-base.css?v=2.0.1');
 
 /* Pasidea 2.0 compatibility layer for existing and dynamically created UI. */
 html:root body.ui-system.ui-system, html:root body.ui-system.ui-system .ui-scope {

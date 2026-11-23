@@ -9,6 +9,7 @@ export function initLiveHome(){
  let scene,weather,canvas,settings={};try{const s=JSON.parse(localStorage.getItem('lifetop_live_v1')||'{}');if(s&&typeof s==='object')settings=s;toggle.checked=localStorage.getItem('lifetop_live_home_v1')!=='false';}catch{toggle.checked=true;}
  const audio=createLiveAudio(bands=>scene?.setBands(bands),(text,running)=>{$('live-home-audio-status').textContent=text;$('live-home-audio-stop').disabled=!running;});
  let session,client,roomId='',members=[],rows=[],unwatch,unwatchRoom,authWatch,timer,expiry,epoch=0,ack=0,ready=false,lastWrite=0,busy=false;
+ let sharedGeneration=0;
  const seen=new Set();let sessionId='';
  function people(){
   const connected=roomId&&ready&&ack>Date.now()-45000&&!document.hidden&&navigator.onLine;
@@ -27,10 +28,32 @@ export function initLiveHome(){
    void pulse();timer=setInterval(pulse,30000);expiry=setInterval(people,1000);
   }catch{if(e===epoch)detach();}
  }
- async function shared(id){if(id&&!/^[a-zA-Z0-9_-]{1,80}$/.test(id))return;if(!id){detach();return;}try{session=await googleSession();client=createChatService(session.db,session.auth,session.fs);authWatch?.();authWatch=session.watch(user=>{if(user&&!user.isAnonymous&&user.providerData.some(p=>p.providerId==='google.com'))void attach(id);else detach();});}catch{$('live-home-people').textContent='接続できません。';}}
+ function stopSharing(){
+  sharedGeneration++;
+  authWatch?.();
+  authWatch=null;
+  detach();
+ }
+ async function shared(id){
+  if(id&&!/^[a-zA-Z0-9_-]{1,80}$/.test(id))return;
+  stopSharing();
+  if(!id||!scene)return;
+  const generation=sharedGeneration;
+  try{
+   const nextSession=await googleSession();
+   if(generation!==sharedGeneration)return;
+   session=nextSession;
+   client=createChatService(session.db,session.auth,session.fs);
+   authWatch=session.watch(user=>{
+    if(generation!==sharedGeneration)return;
+    if(user&&!user.isAnonymous&&user.providerData.some(p=>p.providerId==='google.com'))void attach(id);
+    else detach();
+   });
+  }catch{if(generation===sharedGeneration)$('live-home-people').textContent='接続できません。';}
+ }
  function save(){try{localStorage.setItem('lifetop_live_v1',JSON.stringify(settings));}catch{$('live-home-status').textContent='設定を保存できませんでした。';}}
  function apply(){
-  detach();audio.stop('');scene?.destroy();weather?.destroy();canvas?.remove();scene=weather=canvas=null;document.body.classList.toggle('live-home-enabled',toggle.checked);document.dispatchEvent(new Event('lifetop:live-change'));
+  stopSharing();audio.stop('');scene?.destroy();weather?.destroy();canvas?.remove();scene=weather=canvas=null;document.body.classList.toggle('live-home-enabled',toggle.checked);document.dispatchEvent(new Event('lifetop:live-change'));
   if(!toggle.checked)return;
   canvas=document.createElement('canvas');canvas.id='live-home-canvas';canvas.setAttribute('aria-hidden','true');background.append(canvas);
   scene=createLiveScene(canvas,{home:true,reduced:()=>document.documentElement.classList.contains('reduce-motion')});scene.setScene(settings.scene||'aurora');
@@ -40,14 +63,18 @@ export function initLiveHome(){
  toggle.onchange=()=>{try{localStorage.setItem('lifetop_live_home_v1',String(toggle.checked));apply();}catch{toggle.checked=!toggle.checked;$('live-home-status').textContent='設定を保存できませんでした。';}};
  $('live-home-scene').value=settings.scene||'aurora';$('live-home-scene').onchange=e=>{settings.scene=e.target.value;scene?.setScene(settings.scene);save();};
  $('live-home-location').onchange=e=>void weather?.select(e.target.value);
- $('live-home-mic').onclick=()=>{if(!toggle.checked)toggle.click();void audio.start('mic');};
- $('live-home-audio-file').onchange=e=>{if(e.target.files[0]){if(!toggle.checked)toggle.click();void audio.start('file',e.target.files[0]);}e.target.value='';};
+ $('live-home-mic').onclick=()=>{if(!toggle.checked)toggle.click();if(toggle.checked)void audio.start('mic');};
+ $('live-home-audio-file').onchange=e=>{if(e.target.files[0]){if(!toggle.checked)toggle.click();if(toggle.checked)void audio.start('file',e.target.files[0]);}e.target.value='';};
  $('live-home-audio-stop').onclick=()=>audio.stop('');
  document.addEventListener('click',e=>{if(e.target.closest('button,a,input,textarea,select,dialog,.settings-panel,.glass-card'))return;if(e.target===document.body||e.target.closest('.hero-section'))void wave(Math.min(1,e.clientX/innerWidth),Math.min(1,e.clientY/innerHeight));});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){audio.stop('');ack=0;if(roomId)void client.presence(roomId,sessionId,true).catch(()=>{});people();}else void pulse();});
  window.addEventListener('offline',()=>{ack=0;people();});window.addEventListener('online',()=>void pulse());
  let channel;try{channel=new BroadcastChannel('lifetop-room');channel.onmessage=e=>{if(toggle.checked)void shared(e.data.roomId);};}catch{}
  window.addEventListener('message',e=>{if(e.origin===location.origin&&e.source===document.querySelector('#messages-dialog iframe')?.contentWindow&&e.data?.type==='lifetop:messages-room'&&toggle.checked)void shared(e.data.roomId);});
- window.addEventListener('pagehide',()=>{detach();audio.stop('');scene?.destroy();weather?.destroy();authWatch?.();channel?.close();});
+ window.addEventListener('pagehide',event=>{
+  audio.stop('');
+  if(event.persisted)return;
+  stopSharing();scene?.destroy();weather?.destroy();channel?.close();
+ });
  apply();
 }

@@ -3,6 +3,7 @@
    ========================================================================== */
 
 :root {
+  color-scheme: light;
   /* --- Brand & Surface Colors (Light Theme) --- */
   --pasidea-primary: #2b5bb5;
   --pasidea-on-primary: #ffffff;
@@ -68,9 +69,33 @@
   --pasidea-shadow-overlay: 0 12px 32px rgba(24, 28, 34, 0.14);
 }
 
-/* ダークテーマ自動対応（.dark-theme クラスでも切替可） */
+:root:is([data-theme="dark"], .dark-theme) {
+  color-scheme: dark;
+  --pasidea-primary: #a8c7fa;
+  --pasidea-on-primary: #062e6f;
+  --pasidea-primary-container: #0842a0;
+  --pasidea-on-primary-container: #d3e3fd;
+
+  --pasidea-success: #81c995;
+  --pasidea-success-container: #0d3b22;
+  --pasidea-warning: #ffb951;
+  --pasidea-warning-container: #4d2c00;
+  --pasidea-error: #f2b8b5;
+  --pasidea-on-error: #601410;
+  --pasidea-error-container: #601410;
+
+  --pasidea-surface: #111318;
+  --pasidea-surface-container-low: #191c22;
+  --pasidea-surface-container: #232730;
+  --pasidea-on-surface: #e2e6ee;
+  --pasidea-on-surface-variant: #c4c6d0;
+  --pasidea-outline-variant: #44474f;
+  --pasidea-sheen: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
 @media (prefers-color-scheme: dark) {
-  :root:not(.light-theme):not([data-theme="light"]) {
+  :root:not([data-theme], .light-theme) {
+    color-scheme: dark;
     --pasidea-primary: #a8c7fa;
     --pasidea-on-primary: #062e6f;
     --pasidea-primary-container: #0842a0;
@@ -124,8 +149,10 @@ body {
   background: rgba(128, 128, 128, 0.3);
   border-radius: var(--pasidea-radius-full);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(128, 128, 128, 0.5);
+@media (hover: hover) {
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(128, 128, 128, 0.5);
+  }
 }
 
 .pasidea-page-container {
@@ -144,7 +171,7 @@ body {
 /* レスポンシブ自動折り返しグリッド（カード一覧用） */
 .pasidea-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: var(--pasidea-space-2);
 }
 
@@ -213,7 +240,8 @@ body {
 /* 操作不能（Disabled）状態の統一表現 */
 .pasidea-interactive:disabled,
 .pasidea-interactive[aria-disabled="true"],
-.pasidea-input:disabled {
+.pasidea-input:disabled,
+.pasidea-input[aria-disabled="true"] {
   opacity: 0.45;
   cursor: not-allowed;
   transform: none !important;
@@ -239,7 +267,7 @@ body {
 }
 
 @media (hover: hover) {
-  .pasidea-close-btn:not(:disabled):hover {
+  .pasidea-close-btn:not(:disabled, [aria-disabled="true"]):hover {
     background-color: rgba(128, 128, 128, 0.12);
     color: var(--pasidea-on-surface);
     opacity: 1;
@@ -305,10 +333,9 @@ body {
   transition: border-color var(--pasidea-duration-hover) var(--pasidea-ease-out);
 }
 
-.pasidea-input:focus {
-  outline: none;
-  border-color: var(--pasidea-primary);
-  box-shadow: 0 0 0 2px rgba(43, 91, 181, 0.2);
+.pasidea-input:focus-visible {
+  outline: 2px solid var(--pasidea-primary);
+  outline-offset: 2px;
 }
 
 /* ステータスバッジ（成功・警告・エラー統一） */

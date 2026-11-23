@@ -17,12 +17,16 @@ withApp(async page => {
     assert.deepEqual((await styles())[0], (await styles())[1], 'legacy and native dialog close controls share size, surface and glyph');
     assert.equal((await styles())[0].width, '44px');
     assert.equal((await styles())[0].iconWidth, '20px');
-    await page.locator('#close-style-test [data-cancel]').hover();
+    const close = page.locator('#close-style-test [data-cancel]');
+    await close.hover();
     await page.mouse.down();
-    await page.waitForTimeout(180);
-    const pressed = await page.locator('#close-style-test [data-cancel]').evaluate(e => ({transform:getComputedStyle(e).transform,scale:getComputedStyle(e).scale}));
-    assert.match(pressed.transform, /0\.96/);
-    assert.ok(['none', '1'].includes(pressed.scale), 'close feedback does not stack JS scale with CSS transform');
+    await page.waitForFunction(() => {
+        const style = getComputedStyle(document.querySelector('#close-style-test [data-cancel]'));
+        const matrix = new DOMMatrixReadOnly(style.transform === 'none' ? '' : style.transform);
+        return Math.abs(matrix.a - .96) < .001 && Math.abs(matrix.d - .96) < .001;
+    });
+    assert.ok(['none', '1'].includes(await close.evaluate(button => getComputedStyle(button).scale)),
+        'close feedback does not stack JS scale with CSS transform');
     await page.mouse.up();
     await page.locator('#close-style-test').waitFor({state:'detached'});
     console.log('PASS: shared close glyph, size, surface, press feedback and dismissal');
