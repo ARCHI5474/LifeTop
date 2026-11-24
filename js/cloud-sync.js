@@ -1,12 +1,13 @@
-import { cloudSyncConfig } from './firebase-config.js?v=13.0.1';
-import { createFirebaseAdapter } from './firebase-adapter.js?v=13.0.1';
-import { createSyncEngine, SYNC_RECOVERY_KEY, SYNC_META_KEY } from './sync-engine.js?v=13.0.1';
-import { userConfig, STORAGE_KEY, DEFAULT_SETTINGS } from './config.js?v=13.0.1';
-import { onLocalSave, writeStoredConfig, acceptStoredConfig } from './storage.js?v=13.0.1';
-import { createBackup, parseBackup } from './data-management.js?v=13.0.1';
-import { mergeInitialData } from './sync-migration.js?v=13.0.1';
-import { initSyncOnboarding } from './sync-onboarding.js?v=13.0.1';
-import {beginSyncVisit, automaticSyncDue, normalizeSyncTiming} from './sync-timing.js?v=13.0.1';
+import {requestDecision} from './ui-dialog.js?v=14.0.0';
+import { cloudSyncConfig } from './firebase-config.js?v=14.0.0';
+import { createFirebaseAdapter } from './firebase-adapter.js?v=14.0.0';
+import { createSyncEngine, SYNC_RECOVERY_KEY, SYNC_META_KEY } from './sync-engine.js?v=14.0.0';
+import { userConfig, STORAGE_KEY, DEFAULT_SETTINGS } from './config.js?v=14.0.0';
+import { onLocalSave, writeStoredConfig, acceptStoredConfig } from './storage.js?v=14.0.0';
+import { createBackup, parseBackup } from './data-management.js?v=14.0.0';
+import { mergeInitialData } from './sync-migration.js?v=14.0.0';
+import { initSyncOnboarding } from './sync-onboarding.js?v=14.0.0';
+import {beginSyncVisit, automaticSyncDue, normalizeSyncTiming} from './sync-timing.js?v=14.0.0';
 
 // Sync only the content advertised in the UI. Cached location, health logs,
 // game scores, auth tokens and legacy fields never enter a cloud payload.
@@ -189,11 +190,11 @@ export async function initCloudSync(refreshUI) {
         }
     });
     retry.addEventListener('click', () => void engine.sync());
-    useLocal.addEventListener('click', () => {
-        if (window.confirm('この端末の設定・ブックマーク・タスク・メモをクラウドに保存します。クラウドの既存データは置き換わります。続けますか？')) void engine.sync('local');
+    useLocal.addEventListener('click', async () => {
+        if (await requestDecision('この端末の設定・ブックマーク・タスク・メモをクラウドに保存します。クラウドの既存データは置き換わります。続けますか？')) void engine.sync('local');
     });
-    useCloud.addEventListener('click', () => {
-        if (window.confirm('この端末の内容をクラウドのデータで置き換えます。置き換え前の内容は復旧用に端末内に保存します。続けますか？')) void engine.sync('cloud');
+    useCloud.addEventListener('click', async () => {
+        if (await requestDecision('この端末の内容をクラウドのデータで置き換えます。置き換え前の内容は復旧用に端末内に保存します。続けますか？')) void engine.sync('cloud');
     });
     recovery.addEventListener('click', () => {
         try {

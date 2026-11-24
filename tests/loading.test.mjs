@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { initLoading } from '../js/loading.js?v=13.0.1';
+import { initLoading } from '../js/loading.js?v=14.0.0';
 const screen={inert:false,matches:()=>false,remove(){this.removed=true;}};
 const page={inert:false,matches:()=>false},modal={inert:true,matches:()=>false},script={inert:false,matches:()=>true};
 globalThis.document={getElementById:()=>screen,body:{children:[screen,page,modal,script],style:{overflow:'auto'}}};

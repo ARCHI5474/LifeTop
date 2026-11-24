@@ -1,4 +1,4 @@
-import {frequencyBands} from './live-model.js?v=13.0.1';
+import {frequencyBands} from './live-model.js?v=14.0.0';
 
 // Sources never connect to a network or to the microphone's speaker output.
 export function createLiveAudio(onBands, onStatus) {

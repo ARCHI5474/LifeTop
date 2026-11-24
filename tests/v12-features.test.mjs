@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
-import {quickLinks,fixedBookmarks} from '../js/quick-links-data.js?v=13.0.1';
-import {searchQuickLinks,pinQuickLink,isQuickLinkPinned} from '../js/quick-links.js?v=13.0.1';
-import {userConfig,APP_VERSION} from '../js/config.js?v=13.0.1';
-import {eggVersion,readVersionEggs,saveVersionEgg} from '../js/version-eggs.js?v=13.0.1';
+import {quickLinks,fixedBookmarks} from '../js/quick-links-data.js?v=14.0.0';
+import {searchQuickLinks,pinQuickLink,isQuickLinkPinned} from '../js/quick-links.js?v=14.0.0';
+import {userConfig,APP_VERSION} from '../js/config.js?v=14.0.0';
+import {eggVersion,readVersionEggs,saveVersionEgg} from '../js/version-eggs.js?v=14.0.0';
 
-assert.equal(APP_VERSION,'13.0.0');
+assert.equal(APP_VERSION,'14.0.0');
 assert.equal(quickLinks.length,1000);
 assert.equal(new Set(quickLinks.map(item=>new URL(item.url).href.replace(/\/$/,'').toLowerCase())).size,1000);
 assert.equal(Object.values(fixedBookmarks).flat().length,1000);

@@ -19,7 +19,7 @@ class AudioContext {
  createGain(){return {gain:{setValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){},disconnect(){}}}
 }
 globalThis.window = {AudioContext};
-const clock = await import('../js/clock-tools.js?v=13.0.1');
+const clock = await import('../js/clock-tools.js?v=14.0.0');
 const tick = ms => { now += ms; for (const fn of [...callbacks.values()]) fn(); };
 clock.initClockTools();
 assert.equal(element('timer-display').innerText, '05:00');

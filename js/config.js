@@ -1,13 +1,13 @@
-import {fixedBookmarks} from './quick-links-data.js?v=13.0.1';
+import {fixedBookmarks} from './quick-links-data.js?v=14.0.0';
 
 /* ========================    
-LifeTop v13.0
+LifeTop v14.0
    ======================== */
 const UPDATE_CONFIG = {
-    notice: "LifeTop v13.0。上から開くQuickパネル、ホームのLive、Googleアカウントで使うMessages。",
-    tag: "LifeTop v13.0"
+    notice: "LifeTop v14.0。Pasidea DesignSystem 3.0を適用しました。",
+    tag: "LifeTop v14.0"
 };
-export const APP_VERSION = '13.0.0';
+export const APP_VERSION = '14.0.0';
 /* ========================================= */
 
 const STORAGE_KEY = 'lifetop_v1_0_data';
@@ -28,17 +28,18 @@ const fontStyles = [
 ];
 
 const clockDesigns = [
-    {id:'orbit',name:'Orbit',description:'円形目盛り'},
-    {id:'minimal',name:'Minimal',description:'余白と数字'},
-    {id:'split',name:'Split',description:'分割パネル'},
-    {id:'digital',name:'Digital',description:'デジタル表示'},
-    {id:'classic',name:'Classic',description:'クラシック'},
-    {id:'blueprint',name:'Blueprint',description:'設計図'},
-    {id:'bloom',name:'Bloom',description:'まるく、かわいく'},
-    {id:'editorial',name:'Editorial',description:'雑誌のような佇まい'},
-    {id:'terminal',name:'Terminal',description:'端正な等幅数字'},
-    {id:'analog',name:'Analog',description:'針で感じる時間'}
+    {id:'minimal',name:'ミニマル',description:'装飾を省いた数字'},
+    {id:'digital',name:'デジタル',description:'等幅の数字'},
+    {id:'analog',name:'アナログ',description:'目盛りと針'}
 ];
+export const DEFAULT_CLOCK_DESIGN = 'minimal';
+const legacyClockDesigns = new Map([
+    ['orbit','minimal'], ['classic','minimal'], ['bloom','minimal'], ['editorial','minimal'],
+    ['split','digital'], ['blueprint','digital'], ['terminal','digital']
+]);
+export function normalizeClockDesign(value) {
+    return clockDesigns.some(design => design.id === value) ? value : legacyClockDesigns.get(value);
+}
 const bgGradients = {
     'gradient-blue': '#203A52',
     'gradient-dark': '#292F3A',
@@ -64,36 +65,37 @@ const bgGradients = {
 
 
 const colorCombos = [
-    { name: 'ブルーベリー', bgType: 'gradient-blue', theme: '#2F75A8' },
-    { name: 'オリーブ', bgType: 'gradient-dark', theme: '#6C7A3D' },
-    { name: 'アプリコット', bgType: 'gradient-sunset', theme: '#A94F45' },
-    { name: 'ミント', bgType: 'gradient-aurora', theme: '#2E8B72' },
-    { name: 'レモン', bgType: 'gradient-cyber', theme: '#927C2F' },
-    { name: 'サクラ', bgType: 'gradient-deepsea', theme: '#A94D68' },
-    { name: 'カモミール', bgType: 'gradient-berry', theme: '#A76A3E' },
-    { name: 'ラベンダー', bgType: 'gradient-lavender', theme: '#7054A0' },
-    { name: 'カカオ', bgType: 'gradient-cocoa', theme: '#936044' },
-    { name: 'ユーカリ', bgType: 'gradient-teal', theme: '#327D80' },
-    { name: 'ザクロ', bgType: 'gradient-rose', theme: '#A13E5D' },
-    { name: 'アイリス', bgType: 'gradient-indigo', theme: '#5C63A8' },
-    { name: 'プラム', bgType: 'gradient-plum', theme: '#914D86' },
-    { name: 'ローズマリー', bgType: 'gradient-leaf', theme: '#56804A' },
-    { name: 'マンダリン', bgType: 'gradient-citrus', theme: '#B66A2C' },
-    { name: 'マッチャ', bgType: 'gradient-matcha', theme: '#4E8A56' },
-    { name: 'サイバー', bgType: 'gradient-neon', theme: '#22B4BA' },
-    { name: 'ミッドナイト', bgType: 'gradient-midnight', theme: '#4962A8' },
-    { name: 'サンライズ', bgType: 'gradient-sunrise', theme: '#C27339' },
-    { name: 'チェリー', bgType: 'gradient-cherry', theme: '#B53957' },
-    {name:'スレート',bgType:'gradient-dark',theme:'#546E7A'},
-    {name:'コーラル',bgType:'gradient-sunset',theme:'#B95048'},
-    {name:'アクア',bgType:'gradient-teal',theme:'#167D9A'},
-    {name:'セージ',bgType:'gradient-leaf',theme:'#5A7860'},
-    {name:'ピオニー',bgType:'gradient-rose',theme:'#A44277'},
-    {name:'アメジスト',bgType:'gradient-lavender',theme:'#7D50A5'},
-    {name:'ハニー',bgType:'gradient-citrus',theme:'#946B16'},
-    {name:'オーシャン',bgType:'gradient-deepsea',theme:'#246AA2'},
-    {name:'テラコッタ',bgType:'gradient-cocoa',theme:'#A45238'},
-    {name:'ムーンライト',bgType:'gradient-midnight',theme:'#6277AD'}
+    { name:'標準ブルー', group:'標準・ニュートラル', bgType: 'gradient-blue', theme: '#2B5BB5', featured: true },
+    { name:'澄んだブルー', group:'ブルー・パープル', bgType: 'gradient-blue', theme: '#2F75A8' },
+    { name:'オリーブグリーン', group:'グリーン・ティール', bgType: 'gradient-dark', theme: '#6C7A3D' },
+    { name:'アプリコットレッド', group:'ピンク・レッド', bgType: 'gradient-sunset', theme: '#A94F45' },
+    { name:'ミントグリーン', group:'グリーン・ティール', featured: true, bgType: 'gradient-aurora', theme: '#2E8B72' },
+    { name:'レモンイエロー', group:'イエロー・ブラウン', bgType: 'gradient-cyber', theme: '#927C2F' },
+    { name:'桜ピンク', group:'ピンク・レッド', bgType: 'gradient-deepsea', theme: '#A94D68' },
+    { name:'琥珀ブラウン', group:'イエロー・ブラウン', bgType: 'gradient-berry', theme: '#A76A3E' },
+    { name:'ラベンダーパープル', group:'ブルー・パープル', featured: true, bgType: 'gradient-lavender', theme: '#7054A0' },
+    { name:'カカオブラウン', group:'イエロー・ブラウン', bgType: 'gradient-cocoa', theme: '#936044' },
+    { name:'ユーカリティール', group:'グリーン・ティール', bgType: 'gradient-teal', theme: '#327D80' },
+    { name:'ザクロレッド', group:'ピンク・レッド', bgType: 'gradient-rose', theme: '#A13E5D' },
+    { name:'アイリスブルー', group:'ブルー・パープル', bgType: 'gradient-indigo', theme: '#5C63A8' },
+    { name:'プラムパープル', group:'ブルー・パープル', bgType: 'gradient-plum', theme: '#914D86' },
+    { name:'ローズマリーグリーン', group:'グリーン・ティール', bgType: 'gradient-leaf', theme: '#56804A' },
+    { name:'マンダリンオレンジ', group:'イエロー・ブラウン', bgType: 'gradient-citrus', theme: '#B66A2C' },
+    { name:'抹茶グリーン', group:'グリーン・ティール', bgType: 'gradient-matcha', theme: '#4E8A56' },
+    { name:'ネオンティール', group:'グリーン・ティール', bgType: 'gradient-neon', theme: '#22B4BA' },
+    { name:'ミッドナイトブルー', group:'ブルー・パープル', bgType: 'gradient-midnight', theme: '#4962A8' },
+    { name:'朝焼けオレンジ', group:'イエロー・ブラウン', bgType: 'gradient-sunrise', theme: '#C27339' },
+    { name:'チェリーレッド', group:'ピンク・レッド', bgType: 'gradient-cherry', theme: '#B53957' },
+    {name:'スレートグレー', group:'標準・ニュートラル',featured:true,bgType:'gradient-dark',theme:'#546E7A'},
+    {name:'コーラルピンク', group:'ピンク・レッド',bgType:'gradient-sunset',theme:'#B95048'},
+    {name:'アクアブルー', group:'ブルー・パープル',bgType:'gradient-teal',theme:'#167D9A'},
+    {name:'セージグリーン', group:'グリーン・ティール',bgType:'gradient-leaf',theme:'#5A7860'},
+    {name:'ピオニーピンク', group:'ピンク・レッド',bgType:'gradient-rose',theme:'#A44277'},
+    {name:'アメジストパープル', group:'ブルー・パープル',bgType:'gradient-lavender',theme:'#7D50A5'},
+    {name:'ハニーイエロー', group:'イエロー・ブラウン',bgType:'gradient-citrus',theme:'#946B16'},
+    {name:'オーシャンブルー', group:'ブルー・パープル',bgType:'gradient-deepsea',theme:'#246AA2'},
+    {name:'テラコッタブラウン', group:'イエロー・ブラウン',bgType:'gradient-cocoa',theme:'#A45238'},
+    {name:'ムーンライトブルー', group:'ブルー・パープル',bgType:'gradient-midnight',theme:'#6277AD'}
 ];
 
 const bgPresets = [
@@ -188,7 +190,7 @@ let userConfig = {
     colorMode: "dark",
     clock12h: false,
     clockShowSec: false,
-    clockDesign: 'orbit',
+    clockDesign: DEFAULT_CLOCK_DESIGN,
     profileIcon: "person",
     searchShape: "pill",
     reduceMotion: false,
@@ -310,7 +312,7 @@ function mergeUserConfig(parsed) {
         colorMode: parsed.colorMode === 'light' ? 'light' : 'dark',
         clock12h: typeof parsed.clock12h === 'boolean' ? parsed.clock12h : userConfig.clock12h,
         clockShowSec: typeof parsed.clockShowSec === 'boolean' ? parsed.clockShowSec : userConfig.clockShowSec,
-        clockDesign: clockDesigns.some(design => design.id === parsed.clockDesign) ? parsed.clockDesign : 'orbit',
+        clockDesign: normalizeClockDesign(parsed.clockDesign) ?? DEFAULT_CLOCK_DESIGN,
         profileIcon: typeof parsed.profileIcon === 'string' && (/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(parsed.profileIcon) || ['person','face','pets','eco','rocket_launch','favorite','star','sports_esports'].includes(parsed.profileIcon)) && parsed.profileIcon.length < 3000000 ? parsed.profileIcon : 'person',
         searchShape: ["pill", "rounded", "square"].includes(parsed.searchShape) ? parsed.searchShape : "pill",
         reduceMotion: parsed.reduceMotion === true,

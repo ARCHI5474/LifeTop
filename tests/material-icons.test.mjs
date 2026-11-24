@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import {iconAliases,uiButton} from '../js/canvas-ui.js?v=13.0.1';
+import {iconAliases,uiButton} from '../js/canvas-ui.js?v=14.0.0';
 const root=new URL('../icons/material/',import.meta.url);
 const b=fs.readFileSync(new URL('material-symbols-outlined.ttf',root));
 assert.equal(b.readUInt32BE(0),0x00010000,'official subset is a TrueType font');

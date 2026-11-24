@@ -1,7 +1,8 @@
-import {initUISystem} from './ui-system.js?v=13.0.1';
-import {googleSession} from './google-session.js?v=13.0.1';
-import {createChatService} from './chat-service.js?v=13.0.1';
-import {initResponsiveUI} from './responsive-ui.js?v=13.0.1';
+import {requestDecision} from './ui-dialog.js?v=14.0.0';
+import {initUISystem} from './ui-system.js?v=14.0.0';
+import {googleSession} from './google-session.js?v=14.0.0';
+import {createChatService} from './chat-service.js?v=14.0.0';
+import {initResponsiveUI} from './responsive-ui.js?v=14.0.0';
 const $=id=>document.getElementById(id), show=(id,on)=>$(id).hidden=!on;
 let pendingInvite=new URLSearchParams(location.hash.slice(1)).get('invite'),session,client,roomId='',unwatch,unwatchRoom,authEpoch=0,roomEpoch=0,queue=Promise.resolve(),next=0;
 const drafts=new Map(),pendingSends=new Map();
@@ -50,7 +51,7 @@ function openRoom(id){
   for(const doc of [...snapshot.docs].reverse()){
    const m=doc.data();if(!m.createdAt||m.createdAt.toMillis()<=client.now()-90*86400000)continue;
    const li=document.createElement('li'),small=document.createElement('small'),p=document.createElement('p');small.textContent=m.nickname+' · '+m.createdAt.toDate().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});p.textContent=m.body;li.append(small,p);
-   if(m.sender===auth.currentUser?.uid){li.className='messages-own';const b=document.createElement('button');b.className='text-btn';b.textContent='削除';b.onclick=async()=>{if(!confirm('このメッセージを削除しますか？'))return;b.disabled=true;try{await command('deleteMessage',{roomId:id,messageId:doc.id});}catch(e){status(errorText(e));b.disabled=false;}};li.append(b);}
+   if(m.sender===auth.currentUser?.uid){li.className='messages-own';const b=document.createElement('button');b.className='text-btn';b.textContent='削除';b.onclick=async()=>{if(!await requestDecision('このメッセージを削除しますか？',{acceptLabel:'削除',variant:'danger'}))return;b.disabled=true;try{await command('deleteMessage',{roomId:id,messageId:doc.id});}catch(e){status(errorText(e));b.disabled=false;}};li.append(b);}
    list.append(li);if(initialized&&!seen.has(doc.id)&&m.sender!==auth.currentUser?.uid&&document.hidden)document.title='新着 · Messages | LifeTop';seen.add(doc.id);
   }
   if(scroll||!initialized)list.scrollTop=list.scrollHeight;initialized=true;
@@ -75,9 +76,9 @@ bind('messages-connect',async()=>{if(!session)await initialize();if(session)awai
 bind('messages-retry',initialize);bind('messages-refresh',rooms);bind('messages-logout',async()=>{closeRoom();await session.logout();});
 $('messages-create-form').onsubmit=async e=>{e.preventDefault();const b=$('messages-create');b.disabled=true;try{const result=await command('create',{name:$('messages-name').value});await rooms();openRoom(result.roomId);invitation(result.token);$('messages-name').value='';}catch(error){status(errorText(error));}finally{b.disabled=false;}};
 bind('messages-join',async()=>{const result=await command('join',{token:pendingInvite});pendingInvite=null;show('messages-join',false);await rooms();openRoom(result.roomId);});
-bind('messages-rotate',async()=>{if(!confirm('以前の招待リンクを無効にして、新しく発行しますか？'))return;const id=roomId,result=await command('rotate',{roomId:id});if(roomId===id)invitation(result.token);});
-bind('messages-leave',async()=>{if(!confirm('ルームから退出しますか？'))return;const id=roomId;await command('leave',{roomId:id});if(roomId===id)closeRoom();selectSharedRoom('');await rooms();});
-bind('messages-delete-room',async()=>{if(!confirm('ルームを削除しますか？'))return;const id=roomId;await command('deleteRoom',{roomId:id});if(roomId===id)closeRoom();selectSharedRoom('');await rooms();});
+bind('messages-rotate',async()=>{const id=roomId;if(!await requestDecision('以前の招待リンクを無効にして、新しく発行しますか？')||roomId!==id)return;const result=await command('rotate',{roomId:id});if(roomId===id)invitation(result.token);});
+bind('messages-leave',async()=>{const id=roomId;if(!await requestDecision('ルームから退出しますか？')||roomId!==id)return;await command('leave',{roomId:id});if(roomId===id)closeRoom();selectSharedRoom('');await rooms();});
+bind('messages-delete-room',async()=>{const id=roomId;if(!await requestDecision('ルームを削除しますか？',{acceptLabel:'削除',variant:'danger'})||roomId!==id)return;await command('deleteRoom',{roomId:id});if(roomId===id)closeRoom();selectSharedRoom('');await rooms();});
 $('messages-send').onsubmit=async e=>{
  e.preventDefault();const b=e.target.querySelector('button');if(b.disabled||!roomId)return;b.disabled=true;const epoch=authEpoch;
  try{

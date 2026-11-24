@@ -3,8 +3,8 @@ const {withApp}=require('./helpers/browser.cjs');
 withApp(async page=>{
  await page.locator('[aria-label="Quickパネル"]').click();
  await require('./helpers/browser.cjs').quickDetails(page,'advanced');
- const violations=await page.evaluate(()=>[...document.querySelectorAll('.pasidea-btn:not(.pasidea-close-btn),input.pasidea-input,select.pasidea-input,.pasidea-close-btn')].filter(n=>n.getClientRects().length&&getComputedStyle(n).visibility!=='hidden'&&!n.closest('.game-stage-wrap,.extra-board,.puzzle-board,.othello-board')).flatMap(n=>{const s=getComputedStyle(n);return s.height!=='44px'?[{id:n.id,cls:n.className,height:s.height}]:[];}));
- assert.deepEqual(violations,[],'shared controls are exactly 44px');
+ const violations=await page.evaluate(()=>[...document.querySelectorAll('.pasidea-btn:not(.pasidea-close-btn),input.pasidea-input,select.pasidea-input,.pasidea-close-btn')].filter(n=>n.getClientRects().length&&getComputedStyle(n).visibility!=='hidden'&&!n.closest('.game-stage-wrap,.extra-board,.puzzle-board,.othello-board')).flatMap(n=>{const s=getComputedStyle(n);return s.height!=='48px'?[{id:n.id,cls:n.className,height:s.height}]:[];}));
+ assert.deepEqual(violations,[],'shared controls are exactly 48px');
  assert.equal(await page.locator('#settings-panel .pasidea-close-btn svg').count()>0,true);
  await page.screenshot({path:'test-artifacts/pasidea-settings-desktop.png'});
  await page.setViewportSize({width:320,height:1000});

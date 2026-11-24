@@ -4,7 +4,7 @@ import {
     STORAGE_KEY,
     userConfig,
     mergeUserConfig
-} from "./config.js?v=13.0.1";
+} from "./config.js?v=14.0.0";
 
 const saveListeners = new Set();
 const snapshot = value => value === undefined ? undefined : JSON.parse(JSON.stringify(value));

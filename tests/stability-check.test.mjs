@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {percentile,probeStorage,summarizeStability,collectStabilitySamples} from '../js/stability-check.js?v=13.0.1';
+import {percentile,probeStorage,summarizeStability,collectStabilitySamples} from '../js/stability-check.js?v=14.0.0';
 assert.equal(percentile([], .95),null);
 assert.equal(percentile([NaN,Infinity,-1,1,2,3],.5),2);
 const data=new Map([['lifetop_v1_0_data','important']]);

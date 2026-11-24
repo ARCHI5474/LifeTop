@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {initSyncOnboarding} from '../js/sync-onboarding.js?v=13.0.1';
+import {initSyncOnboarding} from '../js/sync-onboarding.js?v=14.0.0';
 const elements=new Map();
 let loginCalls=0,accountCalls=0;
 const element=id=>{

@@ -1,51 +1,70 @@
-/* Brand loading: expressive shape, restrained light, no pretend percentage. */
-body .loading-screen {
-    padding: 24px;
+/* Opening brand mark. The loader leaves as soon as the app is ready. */
+body.ui-system .loading-screen {
+    padding: var(--pasidea-space-24);
     overflow: hidden;
-    background: radial-gradient(ellipse at 50% 35%, rgba(var(--p-rgb), .22), transparent 65%), #10171f;
+    background: radial-gradient(ellipse at center, var(--ui-primary-soft), transparent 65%), var(--ui-bg);
+    color: var(--ui-text);
     transition: none;
 }
-.loading-content { display: flex; flex-direction: column; align-items: center; width: min(100%, 480px); text-align: center; }
-.loading-eyebrow { font-size: .65rem; font-weight: 650; letter-spacing: .24em; color: var(--md-sys-color-primary); }
-.loading-art { position: relative; display: grid; place-items: center; width: 216px; height: 196px; margin-top: 16px; }
+
+.loading-content {
+    display: grid;
+    justify-items: center;
+    gap: var(--pasidea-space-24);
+    text-align: center;
+}
+
 .loading-emblem {
-    display: grid; place-items: center; width: 112px; height: 112px;
-    border-radius: 38px 44px 36px 46px;
-    background: radial-gradient(ellipse at 20% 0, rgb(255 255 255 / .2), transparent 65%), var(--md-sys-color-primary-container);
-    border: 1px solid rgb(255 255 255 / .14);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / .2), inset 0 -4px 8px rgb(0 0 0 / .12), 0 20px 40px rgb(0 0 0 / .2);
-    animation: none;
+    position: relative;
+    width: clamp(8rem, min(59vw, 53svh), 17rem);
+    aspect-ratio: 1;
+    border-radius: var(--pasidea-radius-xl);
+    isolation: isolate;
+    animation: loading-logo-arrive var(--pasidea-duration-celebrate) var(--pasidea-ease-enter) both;
 }
-body .loading-icon { width: 64px; height: 64px; border-radius: 20px; border: 0; box-shadow: none; }
-.loading-pebble { position: absolute; display: block; background: var(--md-sys-color-primary); border-radius: 45% 55% 52% 48%; box-shadow: inset 0 2px 2px rgb(255 255 255 / .3), inset 0 -3px 5px rgb(0 0 0 / .12); animation: loading-pebble-float 1800ms ease-in-out infinite; }
-.pebble-one { width: 30px; height: 30px; top: 20px; right: 18px; }
-.pebble-two { width: 19px; height: 19px; bottom: 30px; left: 16px; opacity: .65; animation-delay: -600ms; }
-.pebble-three { width: 12px; height: 12px; bottom: 21px; right: 35px; opacity: .45; animation-delay: -1200ms; }
-body .loading-logo { font-size: clamp(3rem, 10vw, 4.25rem); font-weight: 800; letter-spacing: -.065em; line-height: 1.12; }
-.loading-logo-dot { color: var(--md-sys-color-primary); }
-.loading-tagline { margin-top: 14px; color: var(--text-secondary); font-size: clamp(.85rem, 3.3vw, 1rem); letter-spacing: .04em; }
-.loading-status { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 44px; }
-body .loading-label { font-size: .75rem; color: var(--text-muted); line-height: 1.6; }
-.loading-status-dot { width: 6px; height: 6px; flex: 0 0 6px; border-radius: 50%; background: var(--md-sys-color-primary); animation: loading-breathe 1600ms ease-in-out infinite; }
-.loading-release { margin-top: 20px; color: var(--text-muted); font-size: .65rem; letter-spacing: .08em; }
-.loading-release > span { margin-inline: 8px; opacity: .5; }
-@keyframes loading-emblem-float {
-    0%, 100% { transform: translateY(0) rotate(-5deg); }
-    50% { transform: translateY(-9px) rotate(3deg); }
+
+.loading-emblem::before {
+    content: "";
+    position: absolute;
+    inset: calc(-1 * var(--pasidea-space-8));
+    border: 1px solid var(--ui-primary);
+    border-radius: var(--pasidea-radius-2xl);
+    opacity: .45;
+    animation: loading-logo-halo var(--pasidea-duration-celebrate) var(--pasidea-ease-enter) both;
 }
-@keyframes loading-pebble-float {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-8px) scale(1.06, .96); }
+
+.loading-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: inherit;
+    box-shadow: var(--pasidea-shadow-overlay);
 }
-@keyframes loading-breathe { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
-@media (max-height: 500px) {
-    .loading-art { width: 170px; height: 118px; margin-top: 8px; }
-    .loading-emblem { width: 82px; height: 82px; border-radius: 28px; }
-    body .loading-icon { width: 48px; height: 48px; border-radius: 16px; }
-    body .loading-logo { font-size: 2.5rem; }
-    .loading-status { margin-top: 20px; }
-    .loading-release { margin-top: 12px; }
+
+.loading-label {
+    margin: 0;
+    color: var(--ui-text-muted);
+    font-size: var(--pasidea-text-label);
+    line-height: 1.4;
 }
+
+@keyframes loading-logo-arrive {
+    from { opacity: .85; transform: translateY(var(--pasidea-space-8)) scale(.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes loading-logo-halo {
+    from { opacity: .2; transform: scale(.94); }
+    to { opacity: .45; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loading-emblem, .loading-emblem::before { animation: none; }
+}
+
+:root.reduce-motion :is(.loading-emblem, .loading-emblem::before) { animation: none; }
+
 /* Opening: an explicit, single landing; closing remains a short transition. */
 @keyframes window-bounce-in {
     0% { opacity: 0; scale: .96; }

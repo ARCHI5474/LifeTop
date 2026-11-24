@@ -1,6 +1,6 @@
-import {eventWindow,readFestival,updateFestival} from './festival-model.js?v=13.0.1';
-import {findHiddenTen} from './festival-hunt-model.js?v=13.0.1';
-import {huntSpots} from './festival-hunt-spots.js?v=13.0.1';
+import {eventWindow,readFestival,updateFestival} from './festival-model.js?v=14.0.0';
+import {findHiddenTen} from './festival-hunt-model.js?v=14.0.0';
+import {huntSpots} from './festival-hunt-spots.js?v=14.0.0';
 
 let initialized=false;
 export function initHiddenTens(config) {

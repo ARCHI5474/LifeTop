@@ -1,5 +1,5 @@
-import {escapeHTML as esc} from './mini-model.js?v=13.0.1';
-import {outlineIcon} from './icons.js?v=13.0.1';
+import {escapeHTML as esc} from './mini-model.js?v=14.0.0';
+import {outlineIcon} from './icons.js?v=14.0.0';
 export const iconAliases={account_tree:'dashboard_customize',apps:'grid_view',arrow_downward:'keyboard_arrow_down',arrow_upward:'keyboard_arrow_up',calendar_month:'schedule',description:'edit_note',forum:'newspaper',insert_drive_file:'edit_note',more_horiz:'keyboard_arrow_down',restore:'replay',slideshow:'smart_display',table_chart:'grid_on',tune:'settings'};
 export const icon=name=>outlineIcon(name)||`<span class="material-symbols-outlined cc-icon-svg" aria-hidden="true">${iconAliases[name]||name}</span>`;
 

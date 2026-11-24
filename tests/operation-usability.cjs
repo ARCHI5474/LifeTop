@@ -20,12 +20,14 @@ withApp(async(page,context)=>{
     await page.locator('#mini-app-dialog').waitFor({state:'detached'});
     await page.evaluate(()=>window.openBookmarkDialog());
     await page.locator('#bookmark-title-input').fill('まだ保存していないリンク');
-    page.once('dialog',dialog=>dialog.dismiss());
     await page.keyboard.press('Escape');
+    await page.locator('.ui-decision [data-cancel]').click();
+    await page.locator('.ui-decision').waitFor({state:'detached'});
     assert.equal(await page.locator('#bookmark-title-input').inputValue(),'まだ保存していないリンク');
     assert.equal(await page.locator('#bookmark-dialog').evaluate(e=>e.inert),false,'cancelled discard keeps the form open');
-    page.once('dialog',dialog=>dialog.accept());
     await page.keyboard.press('Escape');
+    await page.locator('.ui-decision [type=submit]').click();
+    await page.waitForFunction(()=>document.querySelector('#bookmark-dialog').inert);
     assert.equal(await page.locator('#bookmark-dialog').evaluate(e=>e.inert),true);
     console.log('PASS: Studio tab keyboard navigation, composition Escape and bookmark draft protection');
 }).catch(error=>{console.error(error);process.exitCode=1;});

@@ -1,5 +1,5 @@
-import { esc,download,canvasBlob } from './mini-common.js?v=13.0.1';
-import { wavBlob } from './mini-model.js?v=13.0.1';
+import { esc,download,canvasBlob } from './mini-common.js?v=14.0.0';
+import { wavBlob } from './mini-model.js?v=14.0.0';
 
 export function imageApp(ctx,state={}) {
     let files=[],index=0,turn=Number(state.turn)||0,bitmap=null;

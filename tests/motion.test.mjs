@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { initMotion } from '../js/motion.js?v=13.0.1';
+import { initMotion } from '../js/motion.js?v=14.0.0';
 const events = new Map();
 let reduce = false;
 globalThis.Element = class {};

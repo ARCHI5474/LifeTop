@@ -1,12 +1,11 @@
-import {clockDesigns,userConfig} from './config.js?v=13.0.1';
-import {onLocalSave,writeStoredConfig} from './storage.js?v=13.0.1';
-import {applyPasidea} from './pasidea.js?v=13.0.1';
+import {createColorPalette} from './color-palette.js?v=14.0.0';
+import {DEFAULT_CLOCK_DESIGN,normalizeClockDesign,userConfig} from './config.js?v=14.0.0';
+import {onLocalSave,writeStoredConfig} from './storage.js?v=14.0.0';
+import {applyPasidea} from './pasidea.js?v=14.0.0';
 const storageKey='lifetop_v1_0_data';
 let initialized=false;
-const hex=rgb=>'#'+rgb.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
+const cornerPresses=new WeakMap();
 const rgb=hex=>hex.replace('#','').match(/../g).map(v=>parseInt(v,16));
-function luminance(values){const c=values.map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;});return c[0]*.2126+c[1]*.7152+c[2]*.0722;}
-function contrast(a,b){a=luminance(a);b=luminance(b);return(Math.max(a,b)+.05)/(Math.min(a,b)+.05);}
 function modeOf(config){return config?.colorMode==='light'?'light':'dark';}
 function setScopeTheme(scope,mode){if(scope.dataset.theme!==mode)scope.dataset.theme=mode;}
 function updateControls(mode){
@@ -17,27 +16,20 @@ export function applyUISystemPreferences(config={}) {
  root.dataset.theme=mode;root.dataset.colorMode=mode;root.style.colorScheme=mode;
  setScopeTheme(body,mode);
  document.querySelectorAll('.ui-scope').forEach(scope=>setScopeTheme(scope,mode));
- const names=['--ui-accent-override','--ui-accent-hover-override','--ui-accent-pressed-override','--ui-accent-soft-override'];
- names.forEach(name=>root.style.removeProperty(name));
- const palette=getComputedStyle(body),background=palette.getPropertyValue('--ui-bg').trim(),surface=palette.getPropertyValue('--ui-surface').trim();
- if(typeof config.theme==='string'&&/^#[a-f0-9]{6}$/i.test(config.theme)&&config.theme.toLowerCase()!=='#2f75a8'){
-  let primary=rgb(config.theme);const light=mode==='light';
-  const worst=rgb(surface).map(value=>Math.round(value*.88+(light?0:255)*.12));
-  for(let i=0;i<50&&Math.min(contrast(primary,rgb(background)),contrast(primary,worst))<4.5;i++)primary=primary.map(v=>light?v*.93:v+(255-v)*.07);
-  primary=primary.map(Math.round);const color=hex(primary);
-  root.style.setProperty('--ui-accent-override',color);
-  root.style.setProperty('--ui-accent-hover-override',hex(primary.map(v=>light?v*.9:v+(255-v)*.2)));
-  root.style.setProperty('--ui-accent-pressed-override',hex(primary.map(v=>light?v*.8:v+(255-v)*.4)));
-  root.style.setProperty('--ui-accent-soft-override',`color-mix(in srgb, ${color} 18%, ${surface})`);
- }
+ const style=getComputedStyle(root);
+ const tokens={background:'surface',surface:'surface-container-low',muted:'surface-container',primary:'primary',soft:'primary-container',onPrimary:'on-primary',onSoft:'on-primary-container',text:'on-surface',outline:'outline'};
+ const base=Object.fromEntries(Object.entries(tokens).map(([key,name])=>[key,style.getPropertyValue('--pasidea-'+name).trim()]));
+ const palette=createColorPalette({theme:config.theme,mode,base});
+ const properties={background:'bg',surface:'surface',muted:'surface-muted',primary:'override',hover:'hover-override',pressed:'pressed-override',soft:'soft-override',onPrimary:'on-primary',onSoft:'on-soft',outline:'outline'};
+ for(const [key,name] of Object.entries(properties))root.style.setProperty('--ui-accent-'+name,palette[key]);
  const hasCustomBackground=Boolean(config.bgImage)||(Boolean(config.bgType)&&config.bgType!=='gradient-blue');
  body.classList.toggle('has-custom-background',hasCustomBackground);
  root.classList.toggle('reduce-motion',Boolean(config.reduceMotion));
- body.dataset.clockDesign=clockDesigns.some(design=>design.id===config.clockDesign)?config.clockDesign:'orbit';
- body.style.setProperty('--ui-clock-font',body.dataset.clockDesign==='classic'?'Georgia, serif':body.dataset.clockDesign==='digital'||body.dataset.clockDesign==='blueprint'?'ui-monospace, Consolas, monospace':'var(--ui-font)');
+ body.dataset.clockDesign=normalizeClockDesign(config.clockDesign)??DEFAULT_CLOCK_DESIGN;
+ body.style.setProperty('--ui-clock-font',body.dataset.clockDesign==='digital'?'ui-monospace, Consolas, monospace':'var(--ui-font)');
  const primary=getComputedStyle(body).getPropertyValue('--ui-primary').trim();
  if(/^#[a-f0-9]{6}$/i.test(primary))root.style.setProperty('--ui-primary-rgb',rgb(primary).join(', '));
- root.style.backgroundColor=hasCustomBackground?'transparent':background;
+ root.style.backgroundColor=palette.background;
  updateControls(mode);
 }
 function restorePreferences(){try{applyUISystemPreferences(JSON.parse(localStorage.getItem(storageKey)||'{}'));}catch{applyUISystemPreferences({});}}
@@ -57,11 +49,39 @@ function setMode(mode){
  }
 }
 
+function pressButtonCorners(event) {
+ const root=document.documentElement;
+ if(!event.isTrusted||root.classList.contains('reduce-motion')||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const button=event.target.closest('button,a.pasidea-btn,a.text-btn,label[role=button]');
+ if(!button||button.matches(':disabled,[aria-disabled=true]'))return;
+ const style=getComputedStyle(button);
+ const duration=parseFloat(style.getPropertyValue('--pasidea-duration-morph'));
+ const hold=parseFloat(style.getPropertyValue('--pasidea-duration-press'));
+ cornerPresses.get(button)?.();
+ let timer;
+ function clear() {
+  clearTimeout(timer);
+  button.removeEventListener('transitionend',finish);
+  delete button.dataset.pasideaPress;
+  cornerPresses.delete(button);
+ }
+ function finish(change) {
+  if(change.target!==button||!/^border-(?:top-left-)?radius$/.test(change.propertyName))return;
+  clearTimeout(timer);
+  timer=setTimeout(clear,hold);
+ }
+ cornerPresses.set(button,clear);
+ button.addEventListener('transitionend',finish);
+ button.dataset.pasideaPress='';
+ timer=setTimeout(clear,duration*2+hold);
+}
+
 export function initUISystem(){
  restorePreferences();
  applyPasidea();
  if(!initialized){
   initialized=true;onLocalSave(restorePreferences);
+  document.addEventListener('click',pressButtonCorners,true);
   document.addEventListener('click',event=>{
    if(event.target.closest('[aria-disabled="true"]')){event.preventDefault();event.stopImmediatePropagation();}
   },true);

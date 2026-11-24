@@ -76,7 +76,7 @@ withApp(async page => {
         if(width===390||width===1440) await page.screenshot({path:`test-artifacts/gamebox-stable-${width}.png`});
         await page.keyboard.press('Escape');
         await page.locator('#mini-app-dialog').waitFor({state:'detached'});
-        await page.evaluate(async () => (await import('/js/festival-popup.js?v=13.0.1')).openFestival());
+        await page.evaluate(async () => (await import('/js/page-popup.js?v=14.0.0')).openPagePopup('festival.html','LifeTop14 Festival'));
         await fits('#festival-dialog');
         await page.keyboard.press('Escape');
         await page.locator('#festival-dialog').waitFor({state:'detached'});
@@ -96,7 +96,7 @@ withApp(async page => {
     await page.locator('#backup-upload').setInputFiles({ name:'invalid.json',mimeType:'application/json',buffer:Buffer.from('{}') });
     await page.locator('#data-management-status').filter({hasText:'対応するLifeTopバックアップではありません'}).waitFor();
     assert.equal(await page.locator('#backup-restore').isVisible(),false);
-    const backup=await page.evaluate(async () => (await import('/js/data-management.js?v=13.0.1')).createBackup());
+    const backup=await page.evaluate(async () => (await import('/js/data-management.js?v=14.0.0')).createBackup());
     await page.locator('#backup-upload').setInputFiles({name:'backup.json',mimeType:'application/json',buffer:Buffer.from(backup)});
     await page.locator('#backup-restore').waitFor({state:'visible'});
     await page.locator('#backup-cancel').click();

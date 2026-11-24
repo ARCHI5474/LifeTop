@@ -1,5 +1,5 @@
-import {cloudSyncConfig} from './firebase-config.js?v=13.0.1';
-import {messagesConfig} from './messages-config.js?v=13.0.1';
+import {cloudSyncConfig} from './firebase-config.js?v=14.0.0';
+import {messagesConfig} from './messages-config.js?v=14.0.0';
 const SDK='https://www.gstatic.com/firebasejs/13.1.0';
 let pending;
 export function googleSession() {

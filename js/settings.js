@@ -1,8 +1,8 @@
 /* LifeTop - settings panel controls */
-import { colorCombos, bgPresets, clockDesigns, userConfig } from "./config.js?v=13.0.1";
-import { applyStyles, renderColorCombos, renderBgPresets, renderBgSelector } from "./styles.js?v=13.0.1";
-import { save } from "./storage.js?v=13.0.1";
-import { updateClock, updateGreeting } from "./clock.js?v=13.0.1";
+import { colorCombos, bgPresets, clockDesigns, userConfig } from "./config.js?v=14.0.0";
+import { applyStyles, renderColorCombos, renderBgPresets, renderBgSelector } from "./styles.js?v=14.0.0";
+import { save } from "./storage.js?v=14.0.0";
+import { updateClock, updateGreeting } from "./clock.js?v=14.0.0";
 
 let settingsTrigger;
 let helpTrigger;
@@ -140,7 +140,8 @@ function initSettingsCategories() {
     select(0);
 }
 
-export function setColorCombo(index) {
+export function setColorCombo(index, trigger) {
+    const restoreFocus = document.activeElement === trigger;
     const combo = colorCombos[index];
     if (!combo) return;
     backgroundRevision++;
@@ -150,9 +151,11 @@ export function setColorCombo(index) {
     renderBgPresets();
     document.getElementById('background-image-url').value = '';
     document.getElementById('background-image-upload').value = '';
+    if (restoreFocus) document.querySelector('#color-combos [aria-pressed="true"]')?.focus({preventScroll:true});
 }
 
-export function setPresetWallpaper(index) {
+export function setPresetWallpaper(index, trigger) {
+    const restoreFocus = document.activeElement === trigger;
     const preset = bgPresets[index];
     if (!preset) return;
     backgroundRevision++;
@@ -166,6 +169,7 @@ export function setPresetWallpaper(index) {
     const uploadInput = document.getElementById('background-image-upload');
     if (urlInput) urlInput.value = '';
     if (uploadInput) uploadInput.value = '';
+    if (restoreFocus) document.querySelector('#bg-presets [aria-pressed="true"]')?.focus({preventScroll:true});
 }
 
 // 設定変更
@@ -188,7 +192,7 @@ export function setFontFamily(f, element) {
 export function renderClockDesigns() {
     const picker=document.getElementById('clock-designs');
     if(!picker)return;
-    picker.innerHTML=clockDesigns.map(design=>`<button type="button" class="clock-design-option" data-clock-design="${design.id}" aria-pressed="${userConfig.clockDesign===design.id}" onclick="setClockDesign('${design.id}')"><span class="clock-design-preview" aria-hidden="true">10:08</span><strong>${design.name}</strong><span>${design.description}</span></button>`).join('');
+    picker.innerHTML=clockDesigns.map(design=>`<button type="button" class="clock-design-option pasidea-choice" data-clock-design="${design.id}" aria-pressed="${userConfig.clockDesign===design.id}" onclick="setClockDesign('${design.id}')"><span class="clock-design-preview" aria-hidden="true">10:08</span><strong>${design.name}</strong><span>${design.description}</span></button>`).join('');
 }
 export function setClockDesign(id) {
     if(!clockDesigns.some(design=>design.id===id)||!savePreferences({clockDesign:id}))return;

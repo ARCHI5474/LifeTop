@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const { withApp } = require('./helpers/browser.cjs');
 withApp(async page => {
     await page.evaluate(async () => {
-        const {openUIDialog} = await import('./js/ui-dialog.js?v=13.0.1');
+        const {openUIDialog} = await import('./js/ui-dialog.js?v=14.0.0');
         const dialog = document.createElement('dialog');
         dialog.id = 'close-style-test';
         dialog.className = 'cc-dialog ui-scope';
@@ -15,16 +15,21 @@ withApp(async page => {
         return {width:s.width, height:s.height, radius:s.borderRadius, background:s.backgroundColor, mask:icon.maskImage, iconWidth:icon.width};
     }));
     assert.deepEqual((await styles())[0], (await styles())[1], 'legacy and native dialog close controls share size, surface and glyph');
-    assert.equal((await styles())[0].width, '44px');
+    assert.equal((await styles())[0].width, '48px');
     assert.equal((await styles())[0].iconWidth, '20px');
     const close = page.locator('#close-style-test [data-cancel]');
     await close.hover();
+    assert.equal(await close.evaluate(n=>getComputedStyle(n).borderRadius),'16px');
+    const originalSize = await close.boundingBox();
     await page.mouse.down();
     await page.waitForFunction(() => {
         const style = getComputedStyle(document.querySelector('#close-style-test [data-cancel]'));
         const matrix = new DOMMatrixReadOnly(style.transform === 'none' ? '' : style.transform);
         return Math.abs(matrix.a - .96) < .001 && Math.abs(matrix.d - .96) < .001;
     });
+    await page.waitForFunction(() => getComputedStyle(document.querySelector('#close-style-test [data-cancel]')).borderRadius === '32px');
+    const pressedSize = await close.boundingBox();
+    assert.ok(pressedSize.width >= originalSize.width * .95 && pressedSize.height >= originalSize.height * .95);
     assert.ok(['none', '1'].includes(await close.evaluate(button => getComputedStyle(button).scale)),
         'close feedback does not stack JS scale with CSS transform');
     await page.mouse.up();

@@ -1,6 +1,6 @@
-import {readVersionEggs,versionEggs} from './version-eggs.js?v=13.0.1';
-import {readFestival,eggNames} from './festival-model.js?v=13.0.1';
-import {openUIDialog} from './ui-dialog.js?v=13.0.1';
+import {readVersionEggs,versionEggs} from './version-eggs.js?v=14.0.0';
+import {readFestival,eggNames} from './festival-model.js?v=14.0.0';
+import {openUIDialog} from './ui-dialog.js?v=14.0.0';
 export async function openEggLogs(){
  if(document.getElementById('egg-logs-dialog'))return;
  const dialog=document.createElement('dialog');dialog.id='egg-logs-dialog';dialog.className='cc-dialog ui-scope egg-logs-dialog';dialog.setAttribute('aria-labelledby','egg-logs-title');dialog.innerHTML='<header class="v12-dialog-header"><h2 id="egg-logs-title">Easter Egg Logs</h2><button type="button" class="icon-btn close-action" data-cancel aria-label="Easter Egg Logsを閉じる"></button></header><div class="egg-logs-content"><p role="status">記録を読み込んでいます。</p><ul class="egg-log-list"></ul></div>';

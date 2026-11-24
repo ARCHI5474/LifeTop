@@ -14,9 +14,9 @@ withApp(async page => {
     await page.reload();
     await page.locator('#loading-screen').waitFor({ state: 'detached' });
     assert.equal(await page.locator('body').getAttribute('data-theme'), 'light');
-    assert.equal(await page.locator('body').evaluate(e => getComputedStyle(e).backgroundColor), 'rgb(245, 247, 250)');
-    assert.equal(await page.locator('#todo-input').evaluate(e => getComputedStyle(e).backgroundColor), 'rgb(255, 255, 255)');
-    assert.equal(await page.locator('.weather-summary-icon').evaluate(e => getComputedStyle(e).backgroundColor), 'rgb(230, 238, 247)');
+    assert.equal(await page.locator('body').evaluate(e => getComputedStyle(e).backgroundColor), 'rgb(248, 249, 252)');
+    assert.equal(await page.locator('#todo-input').evaluate(e => getComputedStyle(e).backgroundColor), 'rgb(231, 236, 245)');
+    assert.equal(await page.locator('.weather-summary-icon').evaluate(e => getComputedStyle(e).backgroundColor), 'rgb(211, 227, 253)');
     assert.equal(await page.locator('.hero-section + .weather-summary-row').count(), 1);
     // Scopes inserted with an old theme must follow the current page theme.
     await page.evaluate(() => {
@@ -27,9 +27,9 @@ withApp(async page => {
     await page.waitForFunction(() => document.querySelector('#theme-probe').dataset.theme === 'light');
     await page.locator('#theme-probe').evaluate(e => e.remove());
     await page.evaluate(async () => {
-        const { userConfig } = await import('/js/config.js?v=13.0.1');
-        const { applyStyles } = await import('/js/styles.js?v=13.0.1');
-        const { applyUISystemPreferences } = await import('/js/ui-system.js?v=13.0.1');
+        const { userConfig } = await import('/js/config.js?v=14.0.0');
+        const { applyStyles } = await import('/js/styles.js?v=14.0.0');
+        const { applyUISystemPreferences } = await import('/js/ui-system.js?v=14.0.0');
         userConfig.bgType = 'gradient-purple'; userConfig.highContrast = true;
         applyStyles(); applyUISystemPreferences(userConfig);
         document.documentElement.classList.add('high-contrast');

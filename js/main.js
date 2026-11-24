@@ -1,31 +1,32 @@
-import {initModalScroll} from './modal-scroll.js?v=13.0.1';
-import { initIcons } from './icons.js?v=13.0.1';
-import {initUISystem} from './ui-system.js?v=13.0.1';
-import {initCanvas} from './connected-canvas.js?v=13.0.1';
-import {initFestivalEntry} from './festival-entry.js?v=13.0.1';
-import {initCamera} from './camera.js?v=13.0.1';
-import {initLiveHome} from './live-home.js?v=13.0.1';
-import {initQuickPanel,showQuickDetails,toggleQuickPanel} from './quick-panel.js?v=13.0.1';
-import {initQuickLinks} from './quick-links.js?v=13.0.1';
-import {initVersionEggs} from './version-eggs.js?v=13.0.1';
-import {openPagePopup} from './page-popup.js?v=13.0.1';
-import { initMotion } from './motion.js?v=13.0.1';
-import { initLoading } from './loading.js?v=13.0.1';
-import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=13.0.1';
-import { initProfile, renderProfile } from './profile.js?v=13.0.1';
-import { initExtraGames } from './extra-games.js?v=13.0.1';
-import { initCasualGames } from './casual-games.js?v=13.0.1';
-import { initDataManagement } from './data-management.js?v=13.0.1';
-import { initCloudSync } from './cloud-sync.js?v=13.0.1';
-import { initSyncExplanation } from './sync-explanation.js?v=13.0.1';
-import { initResponsiveUI } from './responsive-ui.js?v=13.0.1';
-import { initStabilityCheck } from './stability-check.js?v=13.0.1';
-import { applyStyles, renderBgSelector, renderColorCombos, renderBgPresets } from "./styles.js?v=13.0.1";
-import { openMiniApps } from "./mini-popup.js?v=13.0.1";
+import {initHelpChat} from './help-chat.js?v=14.0.0';
+import {initModalScroll} from './modal-scroll.js?v=14.0.0';
+import { initIcons } from './icons.js?v=14.0.0';
+import {initUISystem} from './ui-system.js?v=14.0.0';
+import {initCanvas} from './connected-canvas.js?v=14.0.0';
+import {initFestivalEntry} from './festival-entry.js?v=14.0.0';
+import {initCamera} from './camera.js?v=14.0.0';
+import {initLiveHome} from './live-home.js?v=14.0.0';
+import {initQuickPanel,showQuickDetails,toggleQuickPanel} from './quick-panel.js?v=14.0.0';
+import {initQuickLinks} from './quick-links.js?v=14.0.0';
+import {initVersionEggs} from './version-eggs.js?v=14.0.0';
+import {openPagePopup} from './page-popup.js?v=14.0.0';
+import { initMotion } from './motion.js?v=14.0.0';
+import { initLoading } from './loading.js?v=14.0.0';
+import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=14.0.0';
+import { initProfile, renderProfile } from './profile.js?v=14.0.0';
+import { initExtraGames } from './extra-games.js?v=14.0.0';
+import { initCasualGames } from './casual-games.js?v=14.0.0';
+import { initDataManagement } from './data-management.js?v=14.0.0';
+import { initCloudSync } from './cloud-sync.js?v=14.0.0';
+import { initSyncExplanation } from './sync-explanation.js?v=14.0.0';
+import { initResponsiveUI } from './responsive-ui.js?v=14.0.0';
+import { initStabilityCheck } from './stability-check.js?v=14.0.0';
+import { applyStyles, renderBgSelector, renderColorCombos, renderBgPresets } from "./styles.js?v=14.0.0";
+import { openMiniApps } from "./mini-popup.js?v=14.0.0";
 
 /* LifeTop - application entry point */
-import { userConfig, mergeUserConfig } from "./config.js?v=13.0.1";
-import { loadData, save } from "./storage.js?v=13.0.1";
+import { userConfig, mergeUserConfig } from "./config.js?v=14.0.0";
+import { loadData, save } from "./storage.js?v=14.0.0";
 import {
     initPickers,
     setTheme,
@@ -41,9 +42,9 @@ import {
     toggleSettings,
     toggleHelp,
     
-} from "./settings.js?v=13.0.1";
-import { updateClock, updateGreeting } from "./clock.js?v=13.0.1";
-import { initSearchSuggestions } from "./search.js?v=13.0.1";
+} from "./settings.js?v=14.0.0";
+import { updateClock, updateGreeting } from "./clock.js?v=14.0.0";
+import { initSearchSuggestions } from "./search.js?v=14.0.0";
 import {
     toggleBookmarkEditMode,
     renderBookmarks,
@@ -67,7 +68,7 @@ import {
     clearBookmarkUndo,
     handleFaviconLoad,
     handleFaviconError
-} from "./bookmarks.js?v=13.0.1";
+} from "./bookmarks.js?v=14.0.0";
 import {
     renderTodoList,
     addTodo,
@@ -77,14 +78,14 @@ import {
     clearTodoUndo,
     initUtilityTabs,
     switchUtilityTab
-} from "./todo.js?v=13.0.1";
+} from "./todo.js?v=14.0.0";
 import {
     initMemoEditor,
     syncMemoFromConfig,
     formatMemo,
     copyMemoContent,
     updateMemoStatus
-} from "./memo.js?v=13.0.1";
+} from "./memo.js?v=14.0.0";
 import {
     initGames,
     toggleGameModal,
@@ -103,10 +104,10 @@ import {
     initOthelloGame,
     playOthelloMove,
     undoOthelloMove
-} from "./games.js?v=13.0.1";
-import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=13.0.1";
-import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=13.0.1";
-import { initNews, switchNewsCategory, refreshNews, refreshTrends } from "./news.js?v=13.0.1";
+} from "./games.js?v=14.0.0";
+import { fetchWeather, showWeatherDetail, closeWeatherDetail } from "./weather.js?v=14.0.0";
+import { initClockTools, switchClockToolTab, setTimerPreset, adjustTimer, toggleTimer, resetTimer, stopAlarmSound, toggleStopwatch, resetStopwatch, recordLap } from "./clock-tools.js?v=14.0.0";
+import { initNews, switchNewsCategory, refreshNews, refreshTrends } from "./news.js?v=14.0.0";
 
 // HTMLのイベントハンドラーから呼び出す関数
 Object.assign(window, {
@@ -200,7 +201,8 @@ document.addEventListener('keydown', event => {
         if (document.getElementById('weather-detail-modal')?.classList.contains('active')) {
             closeWeatherDetail();
         } else if (document.getElementById('bookmark-dialog')?.classList.contains('active')) {
-            closeBookmarkDialog();
+            event.preventDefault();
+            void closeBookmarkDialog();
         } else if (document.getElementById('game-modal')?.classList.contains('active')) {
             toggleGameModal(false);
         } else if (document.getElementById('quick-panel')?.classList.contains('active')) {
@@ -209,6 +211,9 @@ document.addEventListener('keydown', event => {
             toggleSettings();
         } else if (document.getElementById('help-modal')?.classList.contains('active')) {
             toggleHelp();
+        } else if (document.querySelector('.bookmark-card.edit-mode')?.contains(document.activeElement)) {
+            toggleBookmarkEditMode();
+            document.getElementById('edit-bookmarks-btn').focus();
         }
     }
 });
@@ -227,11 +232,11 @@ window.addEventListener('DOMContentLoaded', () => {
     loadData();
     initUISystem();
     initQuickPanel();
+    initHelpChat();
     initCamera();
     initLiveHome();
     initQuickLinks();
     initVersionEggs();
-    document.querySelector('[data-festival-memories]')?.addEventListener('click',event=>{event.preventDefault();openPagePopup('festival.html#memories','FestivalMemories');});
     void initCanvas();
     void initFestivalEntry();
 

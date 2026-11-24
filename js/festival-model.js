@@ -1,13 +1,17 @@
-import {huntSpots} from './festival-hunt-spots.js?v=13.0.1';
+import {validateFestival14} from './festival14-model.js?v=14.0.0';
+import {festivalConfig} from './festival-config.js?v=14.0.0';
+import {huntSpots} from './festival-hunt-spots.js?v=14.0.0';
 export const FESTIVAL_DB='lifetop-festival-v10';
+const stateKey = festivalConfig.edition === 10 ? 'state' : 'state-v14';
 export const DAY_MS=86400000;
 export const collectionNames=Object.freeze(['LifeTop Beginner','LifeTop Explorer','LifeTop Creator','LifeTop Challenger','LifeTop Dreamer','LifeTop Innovator','LifeTop Partner','LifeTop Pioneer','LifeTop Master','LifeTop Legend']);
 export const eggNames=Object.freeze({home:'Hidden Ten',version:'Version X',studio:'Creator 10'});
 export function eventWindow(config,now=Date.now()){
  const startAt=config.startAt??config.releaseAt;
  if(startAt===undefined||startAt===null||startAt==='')return {phase:'unconfigured',start:null,end:null};
- if(typeof startAt!=='string'||!/(?:Z|[+-]\d{2}:\d{2})$/.test(startAt)||!Number.isFinite(Date.parse(startAt))||config.durationDays!==10)throw Error('Festivalの公開日時設定を確認してください。');
- const start=Date.parse(startAt),end=config.endAt ? Math.min(start+10*DAY_MS,Date.parse(config.endAt)) : start+10*DAY_MS;return {phase:now<start?'before':now<end?'active':'ended',start,end};
+ if(typeof startAt!=='string'||!/(?:Z|[+-]\d{2}:\d{2})$/.test(startAt)||!Number.isFinite(Date.parse(startAt))||![5,10].includes(config.durationDays))throw Error('Festivalの公開日時設定を確認してください。');
+ const start=Date.parse(startAt),limit=start+config.durationDays*DAY_MS,end=config.endAt ? Math.min(limit,Date.parse(config.endAt)) : limit;
+ if(!Number.isFinite(end)||end<=start)throw Error('Festivalの終了日時設定を確認してください。');return {phase:now<start?'before':now<end?'active':'ended',start,end};
 }
 export function japanDate(now){return new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(now));}
 export function emptyFestival(){return {schema:1,ticket:null,draws:[],eggs:{},best:null,welcomeSeen:false};}
@@ -20,6 +24,7 @@ export function validateFestival(s){
  if(s.best!==null&&(!s.best||!Number.isFinite(s.best.elapsedMs)||s.best.elapsedMs<0||!Number.isFinite(s.best.at)))throw Error('記録の形式が不正です。');
  if(s.hunt!==undefined&&(!s.hunt||!Number.isFinite(s.hunt.bestMs)||s.hunt.bestMs<0||!Number.isInteger(s.hunt.plays)||s.hunt.plays<1||!Number.isFinite(s.hunt.at)))throw Error('探索記録の形式が不正です。');
  if(s.hideAndSeek!==undefined&&(!s.hideAndSeek||!s.hideAndSeek.found||typeof s.hideAndSeek.found!=='object'||Array.isArray(s.hideAndSeek.found)||Object.entries(s.hideAndSeek.found).some(([id,at])=>!huntSpots.some(spot=>spot.id===id)||!Number.isFinite(at))))throw Error('かくれんぼの記録が不正です。');
+ if(s.festival14!==undefined)validateFestival14(s.festival14);
  return s;
 }
 export function randomInt(max,fill=bytes=>crypto.getRandomValues(bytes)){
@@ -34,6 +39,6 @@ export function saveChallenge(s,config,elapsedMs,now=Date.now(),random=randomInt
 export function discoverEgg(s,config,id,now=Date.now(),random=randomInt){requireActive(config,now);if(!Object.hasOwn(eggNames,id))throw Error('未対応のバッジです。');issueTicket(s,now,random);if(!Object.hasOwn(s.eggs,id))s.eggs[id]=now;return s;}
 let connection;
 function database(){if(!connection)connection=new Promise((resolve,reject)=>{const r=indexedDB.open(FESTIVAL_DB,1);r.onupgradeneeded=()=>r.result.createObjectStore('data');r.onsuccess=()=>{r.result.onversionchange=()=>{r.result.close();connection=null;};resolve(r.result);};r.onerror=()=>{connection=null;reject(r.error);};r.onblocked=()=>{connection=null;reject(Error('ほかのLifeTopタブを閉じて再試行してください。'));};});return connection;}
-export async function readFestival(){const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction('data'),r=tx.objectStore('data').get('state');tx.oncomplete=()=>{try{resolve(r.result===undefined?emptyFestival():validateFestival(r.result));}catch(e){reject(e);}};tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});}
+export async function readFestival(){const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction('data'),r=tx.objectStore('data').get(stateKey);tx.oncomplete=()=>{try{resolve(r.result===undefined?emptyFestival():validateFestival(r.result));}catch(e){reject(e);}};tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});}
 // Read, daily-limit check and write share one transaction across tabs.
-export async function updateFestival(change){const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction('data','readwrite'),store=tx.objectStore('data'),r=store.get('state');let next,cause;r.onsuccess=()=>{try{next=structuredClone(r.result===undefined?emptyFestival():validateFestival(r.result));change(next);validateFestival(next);store.put(next,'state');}catch(e){cause=e;tx.abort();}};tx.oncomplete=()=>resolve(next);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(cause||tx.error||Error('記念品を保存できませんでした。'));});}
+export async function updateFestival(change){const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction('data','readwrite'),store=tx.objectStore('data'),r=store.get(stateKey);let next,cause;r.onsuccess=()=>{try{next=structuredClone(r.result===undefined?emptyFestival():validateFestival(r.result));change(next);validateFestival(next);store.put(next,stateKey);}catch(e){cause=e;tx.abort();}};tx.oncomplete=()=>resolve(next);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(cause||tx.error||Error('記念品を保存できませんでした。'));});}

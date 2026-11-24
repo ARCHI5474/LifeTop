@@ -10,19 +10,14 @@ withApp(async page=>{
  await page.screenshot({path:'test-artifacts/pasidea-game-popup.png'});
  await page.locator('#mini-app-dialog > header [data-cancel]').click();
  await page.locator('#mini-app-dialog').waitFor({state:'detached'});
- await require('./helpers/browser.cjs').quickTile(page,'files');
+ await require('./helpers/browser.cjs').quickTile(page,'search');
  await page.locator('#cc-dialog').waitFor();
  const files=await page.locator('#cc-dialog').boundingBox();
- assert.ok(files.width>1000&&files.width>files.height,'landscape Files popup');
- assert.equal(await page.locator('#cc-app-section').isVisible(),false);
- await page.locator('#cc-dialog [data-cc=panel][data-id=search]').click();
+ assert.ok(files.width>1000&&files.width>files.height,'landscape Search popup');
  for(const width of [768,375,320]){
   await page.setViewportSize({width,height:900});
   const box=await page.locator('#cc-dialog').boundingBox();
-  assert.ok(box.x>=0&&box.x+box.width<=width,'Files/Search stays in viewport');
-  assert.equal(await page.locator('#cc-app-section').isVisible(),true);
-  await page.locator('#cc-app-section').selectOption('workspace');
-  await page.locator('#cc-app-section').selectOption('search');
+  assert.ok(box.x>=0&&box.x+box.width<=width,'Search stays in viewport');
   await page.locator('#cc-query').fill('テスト');
   assert.equal(await page.locator('#cc-dialog').evaluate(n=>n.scrollWidth<=n.clientWidth+1),true,'no horizontal overflow');
  }
@@ -33,5 +28,5 @@ withApp(async page=>{
  await page.locator('.cc-calendar-cell').first().waitFor();
  assert.equal(await page.locator('.cc-calendar-cell').count(),42);
  assert.ok((await page.locator('#cc-dialog').boundingBox()).width<=1200);
- console.log('PASS: fullscreen GameBox play, landscape Files/Search switching and Calendar');
+ console.log('PASS: fullscreen GameBox play, landscape Search switching and Calendar');
 }).catch(e=>{console.error(e);process.exitCode=1;});

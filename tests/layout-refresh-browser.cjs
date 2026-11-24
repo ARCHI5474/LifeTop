@@ -9,7 +9,10 @@ withApp(async page => {
         await page.setViewportSize({width,height:900});
         await page.evaluate(() => scrollTo(0,0));
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1),true);
-        assert.equal(await page.locator('.festival-banner').count(),0);
+        if(await page.locator('.festival-banner').isVisible()){
+            const banner=await page.locator('.festival-banner').boundingBox();
+            assert.ok(banner.x>=0&&banner.x+banner.width<=width+1);
+        }
         assert.equal(await page.locator('.dashboard-header button').count(),1);
         const form=await page.locator('#search-form').boundingBox();
         const submit=await page.locator('.search-button').boundingBox();
@@ -26,9 +29,6 @@ withApp(async page => {
     await page.waitForFunction(()=>!document.querySelector('#settings-panel').classList.contains('active'));
     await page.locator('#settings-panel').waitFor({state:'hidden'});
     await page.screenshot({path:'test-artifacts/home-refreshed-light.png'});
-    await page.getByRole('button',{name:'ホームを編集',exact:true}).click();
-    const panel=await page.locator('#cc-dashboard-editor').boundingBox();
-    assert.ok(panel.x>=0&&panel.y>=0&&panel.x+panel.width<=1440&&panel.y+panel.height<=900);
-    await page.getByRole('button',{name:'ホーム編集を閉じる',exact:true}).click();
-    console.log('PASS: compact top Festival, bounded Quick access/search, navigation-first settings and fullscreen home editor');
+    assert.equal(await page.locator('[data-cc=dashboard-edit],#cc-dashboard-editor').count(),0);
+    console.log('PASS: compact top Festival, bounded Quick access/search, navigation-first settings and fixed home layout');
 }).catch(error => {console.error(error);process.exitCode=1;});

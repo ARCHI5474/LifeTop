@@ -90,32 +90,6 @@
     transition: opacity var(--duration-fast) ease, visibility var(--duration-fast) ease;
 }
 
-.loading-screen.is-hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.loading-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
-    object-fit: cover;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
-}
-
-.loading-logo {
-    font-size: 2rem;
-    font-weight: 800;
-    letter-spacing: -0.045em;
-}
-
-.loading-label {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-}
-
 html {
     background-color: var(--page-bg);
     scroll-behavior: smooth;

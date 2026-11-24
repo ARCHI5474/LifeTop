@@ -1,5 +1,5 @@
-import {userConfig} from './config.js?v=13.0.1';
-import {openUIDialog} from './ui-dialog.js?v=13.0.1';
+import {userConfig} from './config.js?v=14.0.0';
+import {openUIDialog} from './ui-dialog.js?v=14.0.0';
 export function openScreensaver(){
  if(document.getElementById('screensaver-dialog'))return;
  const dialog=document.createElement('dialog');dialog.id='screensaver-dialog';dialog.className='cc-dialog ui-scope screensaver-dialog';dialog.setAttribute('aria-label','スクリーンセーバー');

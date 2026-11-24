@@ -22,7 +22,7 @@ withApp(async page => {
         await page.locator('#settings-panel').waitFor({state:'hidden'});
         const card=await page.locator('.bookmark-card').evaluate(e=>{const s=getComputedStyle(e);return {image:s.backgroundImage,blur:s.backdropFilter};});
         assert.equal(card.image,'none');
-        assert.match(card.blur,/blur/);
+        assert.equal(card.blur,'none');
         for(const width of [320,390,768,1440]) {
             await page.setViewportSize({width,height:1000});
             assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
@@ -32,8 +32,8 @@ withApp(async page => {
         }
     }
     const result=await page.evaluate(async()=>{
-        const {userConfig}=await import('/js/config.js?v=13.0.1');
-        const {updateClock}=await import('/js/clock.js?v=13.0.1');
+        const {userConfig}=await import('/js/config.js?v=14.0.0');
+        const {updateClock}=await import('/js/clock.js?v=14.0.0');
         const OriginalDate=Date;
         const hour=document.querySelector('.clock-hours');
         try {
@@ -42,9 +42,9 @@ withApp(async page => {
             const pm={label:document.querySelector('#clock').getAttribute('aria-label'),period:document.querySelector('#clock-period').textContent,seconds:document.querySelector('#clock-sec').textContent};
             window.Date=class extends OriginalDate {constructor(...args){super(...(args.length?args:[2026,10,9,0,0,0]));}};
             updateClock();
-            return {pm,am:document.querySelector('#clock').getAttribute('aria-label'),stable:hour===document.querySelector('.clock-hours'),progress:document.querySelector('#clock-day-progress').style.width};
+            return {pm,am:document.querySelector('#clock').getAttribute('aria-label'),stable:hour===document.querySelector('.clock-hours')};
         } finally {window.Date=OriginalDate;userConfig.clock12h=false;updateClock();}
     });
-    assert.deepEqual(result,{pm:{label:'11:07 PM',period:'PM',seconds:'09'},am:'12:00 AM',stable:true,progress:'0%'});
+    assert.deepEqual(result,{pm:{label:'11:07 PM',period:'PM',seconds:'09'},am:'12:00 AM',stable:true});
     console.log('PASS: glass surfaces, mode-aware controls, light/dark text contrast, responsive clock, stable digits and 12-hour midnight rollover');
 }).catch(error=>{console.error(error);process.exitCode=1;});

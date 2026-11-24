@@ -1,7 +1,8 @@
+import {requestDecision} from './ui-dialog.js?v=14.0.0';
 /* LifeTop - bookmarks (with folder management, drag-and-drop & touch reordering) */
-import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=13.0.1";
-import { save } from "./storage.js?v=13.0.1";
-import {openQuickLinks} from './quick-links.js?v=13.0.1';
+import { FIXED_BOOKMARKS, userConfig } from "./config.js?v=14.0.0";
+import { save } from "./storage.js?v=14.0.0";
+import {openQuickLinks} from './quick-links.js?v=14.0.0';
 
 let bookmarkEditMode = false;
 let currentBookmarkTab = "ブックマーク";
@@ -81,8 +82,8 @@ function syncEditButtonState(btn, isEditing) {
     btn.title = isEditing ? '編集を完了' : 'ブックマークを編集・並べ替え';
     btn.setAttribute?.('aria-label', isEditing ? 'ブックマークの編集を完了' : 'ブックマークを編集・並べ替え');
     btn.innerHTML = isEditing
-        ? '<span class="material-symbols-outlined" aria-hidden="true">check</span>'
-        : '<span class="material-symbols-outlined" aria-hidden="true">edit</span>';
+        ? '<span class="material-symbols-outlined" aria-hidden="true">check</span> 完了'
+        : '<span class="material-symbols-outlined" aria-hidden="true">edit</span> 編集';
 }
 
 // ブックマーク編集モード切り替え
@@ -272,7 +273,7 @@ export function renderBookmarks() {
     } else {
         if (addBtn?.style) addBtn.style.display = 'flex';
         if (actionsRow?.style) actionsRow.style.display = 'flex';
-        if (editBtn?.style) editBtn.style.display = 'grid';
+        if (editBtn?.style) editBtn.style.display = 'inline-flex';
         syncEditButtonState(editBtn, bookmarkEditMode);
     }
 
@@ -328,27 +329,33 @@ export function renderBookmarks() {
     const availableFolders = getUserFolders();
     const totalCount = bookmarksToRender.length;
     
+    const deleteControl = (label, index) => `
+        <button type="button" class="bookmark-delete-btn danger-btn" aria-label="${escapeHtml(label)}を削除" onclick="deleteBookmark(${index}, event)">
+            <span class="material-symbols-outlined" aria-hidden="true">delete</span><span>削除</span>
+        </button>
+    `;
+
     grid.innerHTML = indexedEntries.map(({ b: _unused, item: b, originalIndex: index }, renderIdx) => {
         const staggerIdx = Math.min(renderIdx, 12);
         const isFirst = index === 0;
         const isLast = index === totalCount - 1;
 
-        const reorderControlsHtml = isFixed ? "" : `
+        const reorderControlsHtml = isFixed || !bookmarkEditMode ? "" : `
             <div class="bookmark-edit-bar" role="group" aria-label="並べ替えと整理">
-                <button type="button" class="bookmark-reorder-btn" ${isFirst ? 'disabled' : ''} aria-label="前へ移動" title="前へ移動" onclick="moveBookmark(${index}, -1, event)">
-                    <span class="material-symbols-outlined" aria-hidden="true">chevron_left</span>
+                <button type="button" class="bookmark-reorder-btn pasidea-outline" ${isFirst ? 'disabled' : ''} data-move="-1" aria-label="${escapeHtml(b.title)}を上へ移動" onclick="moveBookmark(${index}, -1, event)">
+                    <span class="material-symbols-outlined" aria-hidden="true">keyboard_arrow_up</span><span>上へ</span>
                 </button>
                 ${activeFolder ? `
-                    <button type="button" class="bookmark-folder-move-btn" aria-label="フォルダから出す" title="フォルダから出す" onclick="removeBookmarkFromFolder(${index}, event)">
-                        <span class="material-symbols-outlined" aria-hidden="true">drive_file_move_rtl</span>
+                    <button type="button" class="bookmark-folder-move-btn tonal-btn" aria-label="フォルダから出す" title="フォルダから出す" onclick="removeBookmarkFromFolder(${index}, event)">
+                        <span class="material-symbols-outlined" aria-hidden="true">drive_file_move_rtl</span><span>外へ出す</span>
                     </button>
                 ` : (b.type !== 'folder' && availableFolders.length > 0 ? `
-                    <button type="button" class="bookmark-folder-move-btn" aria-label="フォルダへ移動" title="フォルダへ移動" onclick="promptMoveToFolder(${index}, event)">
-                        <span class="material-symbols-outlined" aria-hidden="true">drive_file_move</span>
+                    <button type="button" class="bookmark-folder-move-btn tonal-btn" aria-label="フォルダへ移動" title="フォルダへ移動" onclick="promptMoveToFolder(${index}, event)">
+                        <span class="material-symbols-outlined" aria-hidden="true">drive_file_move</span><span>移動</span>
                     </button>
                 ` : '')}
-                <button type="button" class="bookmark-reorder-btn" ${isLast ? 'disabled' : ''} aria-label="次へ移動" title="次へ移動" onclick="moveBookmark(${index}, 1, event)">
-                    <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+                <button type="button" class="bookmark-reorder-btn pasidea-outline" ${isLast ? 'disabled' : ''} data-move="1" aria-label="${escapeHtml(b.title)}を下へ移動" onclick="moveBookmark(${index}, 1, event)">
+                    <span class="material-symbols-outlined" aria-hidden="true">keyboard_arrow_down</span><span>下へ</span>
                 </button>
             </div>
         `;
@@ -359,11 +366,7 @@ export function renderBookmarks() {
             const folderId = String(b.id || '');
             const children = Array.isArray(b.children) ? b.children : [];
             const previewLetters = children.slice(0, 4).map(ch => escapeHtml(String(ch?.title || '•')[0])).join('');
-            const deleteBtnHtml = !bookmarkEditMode ? "" : `
-                <button type="button" class="bookmark-delete-btn close-action" aria-label="フォルダ「${escapeHtml(folderTitle)}」を削除" onclick="deleteBookmark(${index}, event)">
-                    <span class="material-symbols-outlined" aria-hidden="true">close</span>
-                </button>
-            `;
+            const deleteBtnHtml = bookmarkEditMode ? deleteControl('フォルダ「' + folderTitle + '」', index) : '';
             return `
                 <div class="bookmark-item-wrapper is-folder-wrapper" draggable="true" data-bm-index="${index}" style="position: relative; --item-idx: ${staggerIdx};">
                     <button type="button" class="bookmark-item bookmark-folder-item" title="${escapeHtml(folderTitle)} (${children.length}件)" onclick="openBookmarkFolder('${escapeHtml(folderId)}')">
@@ -405,11 +408,7 @@ export function renderBookmarks() {
            >`
         : `<span class="icon-letter">${escapeHtml(title[0])}</span>`;
             
-        const deleteBtnHtml = isFixed || !bookmarkEditMode ? "" : `
-            <button type="button" class="bookmark-delete-btn close-action" aria-label="${escapeHtml(title)}を削除" onclick="deleteBookmark(${index}, event)">
-                <span class="material-symbols-outlined" aria-hidden="true">close</span>
-            </button>
-        `;
+        const deleteBtnHtml = !isFixed && bookmarkEditMode ? deleteControl(title, index) : '';
 
         const linkAttrs = url
             ? `href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"`
@@ -417,12 +416,12 @@ export function renderBookmarks() {
 
         return `
             <div class="bookmark-item-wrapper" ${isFixed ? '' : `draggable="true" data-bm-index="${index}"`} style="position: relative; --item-idx: ${staggerIdx};">
-                <a ${linkAttrs} class="bookmark-item" title="${escapeHtml(title)}">
+                <${bookmarkEditMode ? 'div' : 'a'} ${bookmarkEditMode ? '' : linkAttrs} class="bookmark-item" title="${escapeHtml(title)}">
                     <div class="icon-wrapper" aria-hidden="true">
                         ${iconHtml}
                     </div>
                     <span class="bookmark-title">${escapeHtml(title)}</span>
-                </a>
+                </${bookmarkEditMode ? 'div' : 'a'}>
                 ${deleteBtnHtml}
                 ${reorderControlsHtml}
             </div>
@@ -439,7 +438,6 @@ export function renderBookmarks() {
 
 // フォルダを開く・閉じる・名前変更
 export function openBookmarkFolder(folderId) {
-    if (bookmarkEditMode) return;
     if (!folderId) return;
     activeFolderId = folderId;
     renderBookmarks();
@@ -450,12 +448,12 @@ export function closeBookmarkFolder() {
     renderBookmarks();
 }
 
-export function renameBookmarkFolder(folderId) {
+export async function renameBookmarkFolder(folderId) {
     const folders = getUserFolders();
     const target = folders.find(f => f.id === folderId) || getActiveFolder();
     if (!target) return;
-    const nextTitle = prompt('新しいフォルダ名を入力してください:', target.title);
-    if (nextTitle === null) return;
+    const nextTitle = await requestDecision('フォルダ名を変更します。', {title:'名前を変更',acceptLabel:'保存',field:{label:'フォルダ名',value:target.title,maxLength:20}});
+    if (nextTitle === null || !getUserFolders().includes(target)) return;
     const trimmed = nextTitle.trim().slice(0, 20);
     if (!trimmed) return;
     const before = structuredClone(userConfig.bookmarks);
@@ -483,10 +481,16 @@ export function moveBookmark(index, delta, event) {
     const list = getTargetList();
     const targetIndex = index + delta;
     if (targetIndex < 0 || targetIndex >= list.length) return;
+    const item = list[index];
     reorderBookmark(index, targetIndex);
+    if (bookmarkEditMode && document.querySelector) {
+        const moved = getTargetList().indexOf(item);
+        const row = document.querySelector(`#bookmark-grid [data-bm-index="${moved}"]`);
+        (row?.querySelector(`[data-move="${delta}"]:not(:disabled)`) ?? row?.querySelector('[data-move]:not(:disabled)'))?.focus();
+    }
 }
 
-export function promptMoveToFolder(index, event) {
+export async function promptMoveToFolder(index, event) {
     event?.preventDefault?.();
     event?.stopPropagation?.();
     const folders = getUserFolders();
@@ -494,29 +498,21 @@ export function promptMoveToFolder(index, event) {
     const list = userConfig.bookmarks || [];
     const item = list[index];
     if (!item || item.type === 'folder') return;
-    const before = structuredClone(userConfig.bookmarks);
-
-    if (folders.length === 1) {
-        const targetFolder = folders[0];
-        if (!Array.isArray(targetFolder.children)) targetFolder.children = [];
-        list.splice(index, 1);
-        targetFolder.children.push(item);
-        if (!saveBookmarks(before)) return;
-        renderBookmarks();
-        return;
-    }
-
-    const optionsText = folders.map((f, i) => `${i + 1}: ${f.title}`).join('\n');
-    const input = prompt(`「${item.title}」を移動するフォルダ番号を入力してください:\n${optionsText}`, '1');
-    if (input === null) return;
-    const chosenIdx = parseInt(input.trim(), 10) - 1;
-    const targetFolder = folders[chosenIdx];
+    const input = folders.length === 1 ? folders[0].id : await requestDecision('「' + item.title + '」の移動先を選んでください。', {
+        title: 'フォルダへ移動',
+        acceptLabel: '移動',
+        choices: folders.map(folder=>({label:folder.title,value:folder.id}))
+    });
+    if (input === null || list !== userConfig.bookmarks || list[index] !== item) return;
+    const targetFolder = getUserFolders().find(folder=>folder.id === input);
     if (!targetFolder) return;
+    const before = structuredClone(userConfig.bookmarks);
     if (!Array.isArray(targetFolder.children)) targetFolder.children = [];
     list.splice(index, 1);
     targetFolder.children.push(item);
     if (!saveBookmarks(before)) return;
     renderBookmarks();
+    document.querySelector?.(`#bookmark-grid [data-bm-index="${list.indexOf(targetFolder)}"] .bookmark-folder-item`)?.focus();
 }
 
 export function removeBookmarkFromFolder(index, event) {
@@ -530,6 +526,7 @@ export function removeBookmarkFromFolder(index, event) {
     userConfig.bookmarks.push(removed);
     if (!saveBookmarks(before)) return;
     renderBookmarks();
+    document.querySelector?.('#bookmark-folder-bar .folder-back-btn')?.focus();
 }
 
 // カテゴリタブ切り替え
@@ -657,14 +654,14 @@ export function openFolderDialog() {
     openBookmarkDialog('folder');
 }
 
-export function closeBookmarkDialog(saved = false) {
+export async function closeBookmarkDialog(saved = false) {
     const overlay = document.getElementById('bookmark-dialog-overlay');
     const dialog = document.getElementById('bookmark-dialog');
     if (!overlay || !dialog) return;
     const hasDraft = document.getElementById('bookmark-title-input')?.value.trim()
         || document.getElementById('bookmark-url-input')?.value.trim();
     if (saved !== true && dialog.classList.contains('active') && hasDraft
-        && !confirm('未保存の入力を破棄して閉じますか？')) return;
+        && !await requestDecision('未保存の入力を破棄して閉じますか？')) return;
     overlay.classList.remove('active');
     dialog.classList.remove('active');
     dialog.inert = true;

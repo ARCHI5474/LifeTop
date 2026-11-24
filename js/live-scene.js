@@ -1,6 +1,6 @@
-import {skyState} from './live-model.js?v=13.0.1';
+import {skyState} from './live-model.js?v=14.0.0';
 
-export function createLiveScene(canvas, {home = false, reduced = () => false} = {}) {
+export function createLiveScene(canvas, {home = false, reduced = () => false, speed = () => 1} = {}) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return {setWeather(){}, setScene(){}, setBands(){}, setPeople(){}, ripple(){}, destroy(){}};
     let width = 1, height = 1, frame = 0, last = 0, elapsed = 0, weather, scene = 'aurora', people = [], bands = [0, 0, 0], ripples = [], alive = true;
@@ -13,7 +13,7 @@ export function createLiveScene(canvas, {home = false, reduced = () => false} = 
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     function draw(time) {
-        const still = media.matches || reduced();
+        const still = media.matches || reduced() || speed() === 0;
         const t = still ? 0 : elapsed;
         const sky = skyState(weather), d = sky.daylight;
         const gradient = ctx.createLinearGradient(0, 0, 0, height);
@@ -43,7 +43,7 @@ export function createLiveScene(canvas, {home = false, reduced = () => false} = 
                 ctx.lineWidth = height * (.06 + bands[1] * .05); ctx.lineCap = 'round'; ctx.shadowBlur = 45; ctx.shadowColor = ctx.strokeStyle; ctx.stroke();
             }
             ctx.filter = 'none';
-        } else {
+        } else if (scene === 'ripple') {
             for (let line = 0; line < 14; line++) {
                 ctx.beginPath();
                 for (let x = 0; x <= width + 16; x += 16) {
@@ -106,15 +106,15 @@ export function createLiveScene(canvas, {home = false, reduced = () => false} = 
     }
     function tick(time) {
         if (!alive || document.hidden) return;
-        const interval = media.matches || reduced() ? 1000 : home ? 50 : 33;
-        if (time - last >= interval) { elapsed += Math.min(.1, (time - (last || time)) / 1000); last = time; draw(time); }
+        const interval = media.matches || reduced() || speed() === 0 ? 1000 : home ? 50 : 33;
+        if (time - last >= interval) { elapsed += Math.min(.1, (time - (last || time)) / 1000) * speed(); last = time; draw(time); }
         frame = requestAnimationFrame(tick);
     }
     const visibility = () => { cancelAnimationFrame(frame); last = 0; if (!document.hidden) frame = requestAnimationFrame(tick); };
     observer.observe(canvas); resize(); document.addEventListener('visibilitychange', visibility); frame = requestAnimationFrame(tick);
     return {
         setWeather(value) { weather = value; },
-        setScene(value) { if (['aurora', 'ripple'].includes(value)) scene = value; },
+        setScene(value) { if (['aurora', 'ripple', 'horizon'].includes(value)) { scene = value; draw(performance.now()); } },
         setBands(value) { bands = value; },
         setPeople(value) { people = value; },
         ripple(x, y) { ripples.push({x, y, started: performance.now()}); ripples = ripples.slice(-25); },

@@ -1,8 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {createLiveService, PRESENCE_TTL, LIVE_DAILY_LIMIT} from '../functions/live-service.js?v=13.0.1';
-import {createMessagesService, DAY} from '../functions/messages-service.js?v=13.0.1';
-import {activePresence, newRipples, skyState, frequencyBands} from '../js/live-model.js?v=13.0.1';
+import {createLiveService, PRESENCE_TTL, LIVE_DAILY_LIMIT} from '../functions/live-service.js?v=14.0.0';
+import {createMessagesService, DAY} from '../functions/messages-service.js?v=14.0.0';
+import {activePresence, newRipples, skyState, frequencyBands} from '../js/live-model.js?v=14.0.0';
 import {database} from './helpers/memory-firestore.mjs';
 const now = Date.UTC(2026, 10, 16), stamp = {fromMillis: value => value};
 async function fixture() {

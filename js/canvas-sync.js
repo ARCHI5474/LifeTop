@@ -1,7 +1,7 @@
-import {cloudSyncConfig} from './firebase-config.js?v=13.0.1';
-import {createFirebaseAdapter} from './firebase-adapter.js?v=13.0.1';
-import {emptyCanvas,validateCanvas} from './canvas-model.js?v=13.0.1';
-import {checkedPayload} from './sync-engine.js?v=13.0.1';
+import {cloudSyncConfig} from './firebase-config.js?v=14.0.0';
+import {createFirebaseAdapter} from './firebase-adapter.js?v=14.0.0';
+import {emptyCanvas,validateCanvas} from './canvas-model.js?v=14.0.0';
+import {checkedPayload} from './sync-engine.js?v=14.0.0';
 export const syncGroups={workspace:['projects','folders','files'],calendar:['events'],flow:['flows','runs'],dashboard:['dashboard','pins']};
 export function selectedCanvas(state){const selection=state.sync?.mode==='all'?Object.keys(syncGroups):state.sync?.mode==='selected'?(state.sync.groups||[]):[];if(!selection.length)throw Error('同期対象がオフ、または未選択です。');const data={};for(const group of selection){if(!syncGroups[group])throw Error('同期対象が不正です。');for(const key of syncGroups[group])data[key]=state[key];}return {schema:1,selection,data};}
 export function parseCanvasCloud(payload){const value=JSON.parse(payload);if(value.schema!==1||!Array.isArray(value.selection)||!value.selection.length||!value.data||typeof value.data!=='object')throw Error('クラウドの形式が不正です。');const keys=value.selection.flatMap(k=>{if(!syncGroups[k])throw Error('クラウドの同期対象が不正です。');return syncGroups[k];});if(Object.keys(value.data).some(k=>!keys.includes(k))||keys.some(k=>!Object.hasOwn(value.data,k)))throw Error('同期データが不足しています。');validateCanvas({...emptyCanvas(),...value.data});return value;}

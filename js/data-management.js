@@ -1,5 +1,6 @@
-import { APP_VERSION, userConfig, DEFAULT_SETTINGS, STORAGE_KEY, themes, colorCombos, fontStyles, clockDesigns, bgGradients } from './config.js?v=13.0.1';
-import { writeStoredConfig } from './storage.js?v=13.0.1';
+import {requestDecision} from './ui-dialog.js?v=14.0.0';
+import { APP_VERSION, userConfig, DEFAULT_SETTINGS, STORAGE_KEY, themes, colorCombos, fontStyles, normalizeClockDesign, bgGradients } from './config.js?v=14.0.0';
+import { writeStoredConfig } from './storage.js?v=14.0.0';
 
 export const MAX_BACKUP_BYTES = 10 * 1024 * 1024;
 const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -31,12 +32,14 @@ export function parseBackup(text) {
     for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
         if (typeof data[key] !== typeof value) throw new Error('設定データが不足しているか、形式が正しくありません。');
     }
+    const supportedClockDesign = normalizeClockDesign(data.clockDesign);
     const choices = {textSize:['standard','large','larger'],searchShape:['pill','rounded','square'],searchEngine:['google','bing','duckduckgo','yahoo'],colorMode:['dark','light'],syncTiming:['every3','everyVisit','live','manual']};
     if (Object.entries(choices).some(([key, values]) => !values.includes(data[key])) ||
         ![...themes, ...colorCombos.map(combo => combo.theme)].includes(data.theme) ||
-        !fontStyles.some(font => font.family === data.fontFamily) || !clockDesigns.some(design=>design.id===data.clockDesign) || !Object.hasOwn(bgGradients, data.bgType)) {
+        !fontStyles.some(font => font.family === data.fontFamily) || !supportedClockDesign || !Object.hasOwn(bgGradients, data.bgType)) {
         throw new Error('対応していない設定値が含まれています。');
     }
+    data.clockDesign = supportedClockDesign;
     if (typeof data.memo !== 'string' || typeof data.memoHtml !== 'string' || !Array.isArray(data.todoList) || !Array.isArray(data.bookmarks)) {
         throw new Error('メモ・タスク・ブックマークの形式が正しくありません。');
     }
@@ -121,8 +124,8 @@ export function initDataManagement() {
             window.location.reload();
         } catch { status.textContent = '保存できませんでした。現在のデータは変更していません。ブラウザの保存設定や空き容量を確認してください。'; }
     });
-    reset.addEventListener('click', () => {
-        if (!window.confirm('プロフィール・外観・時計・表示設定をデフォルトに戻します。ブックマーク・タスク・メモは残ります。実行しますか？')) return;
+    reset.addEventListener('click', async () => {
+        if (!await requestDecision('プロフィール・外観・時計・表示設定をデフォルトに戻します。ブックマーク・タスク・メモは残ります。実行しますか？')) return;
         try {
             storeSnapshot(resetSettingsSnapshot());
             window.location.reload();

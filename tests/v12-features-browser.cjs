@@ -31,7 +31,7 @@ withApp(async(page)=>{
  await page.reload();await page.locator('#loading-screen').waitFor({state:'detached'});
  assert.equal(await page.locator('#bookmark-grid a').filter({hasText:'Photopea'}).count(),1);
  await page.evaluate(async()=>{
-  const {switchBookmarkTab}=await import('./js/bookmarks.js?v=13.0.1');switchBookmarkTab('ニュース・新聞');
+  const {switchBookmarkTab}=await import('./js/bookmarks.js?v=14.0.0');switchBookmarkTab('ニュース・新聞');
  });
  assert.ok(await page.locator('#bookmark-grid .bookmark-item').count()<=12);
  await page.locator('#bookmark-grid .quick-links-more').click();

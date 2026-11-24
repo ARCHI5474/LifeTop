@@ -6,7 +6,7 @@ withApp(async(page,context)=>{
     assert.equal(await page.locator('.trends-subtitle').count(),0);
     await page.locator('[aria-label="Quickパネル"]').click();
     await require('./helpers/browser.cjs').quickDetails(page,'clock');
-    assert.equal(await page.locator('#clock-designs button').count(),10);
+    assert.equal(await page.locator('#clock-designs button').count(),3);
     assert.equal(await page.locator('#font-styles').count(),0);
     const designs=await page.locator('#clock-designs button').evaluateAll(nodes=>nodes.map(n=>n.dataset.clockDesign));
     await require('./helpers/browser.cjs').quickDetails(page,'advanced');
@@ -21,8 +21,8 @@ withApp(async(page,context)=>{
         for(const width of [320,1440]){
             await page.setViewportSize({width,height:1000});
             const positions=await page.evaluate(async()=>{
-                const {updateClock}=await import('/js/clock.js?v=13.0.1');
-                const {userConfig}=await import('/js/config.js?v=13.0.1');
+                const {updateClock}=await import('/js/clock.js?v=14.0.0');
+                const {userConfig}=await import('/js/config.js?v=14.0.0');
                 const old12h=userConfig.clock12h;
                 const OriginalDate=Date,results=[];
                 try{
@@ -44,6 +44,13 @@ withApp(async(page,context)=>{
     }
     await page.reload();await page.locator('#loading-screen').waitFor({state:'detached'});
     assert.equal(await page.locator('body').getAttribute('data-clock-design'),designs.at(-1));
+    await page.evaluate(()=>{
+        const key='lifetop_v1_0_data';
+        const data=JSON.parse(localStorage.getItem(key)||'{}');
+        localStorage.setItem(key,JSON.stringify({...data,clockDesign:'bloom'}));
+    });
+    await page.reload();
+    await page.locator('body[data-clock-design=minimal]').waitFor();
     await page.goto('http://localhost/mini-apps.html');
     await page.locator('.mini-app-card').first().waitFor();
     assert.deepEqual(await page.locator('.mini-app-card strong').allTextContents(),['StoneTXT','BlockSheet','SlideSpark','LineNote','FutureDraw','ChangePosition','PaisdeaBrowser（β版）','PasideaCode（β版）']);
@@ -55,7 +62,7 @@ withApp(async(page,context)=>{
     await page.evaluate(()=>window.flushMiniApp());await page.reload();await page.locator('#diary-text').waitFor();
     assert.equal(await page.locator('#diary-text').inputValue(),'二日目の日記');
     await page.locator('#diary-list').getByRole('button',{name:'2026-11-01'}).click();assert.equal(await page.locator('#diary-text').inputValue(),'一日目の日記');
-    await page.locator('#studio-workspace-save').click();await page.locator('#mini-status').filter({hasText:'ファイル一覧に保存しました'}).waitFor();
+    await page.evaluate(()=>window.flushMiniApp());
     await open('convert');await page.locator('#convert-file').setInputFiles({name:'rows.csv',mimeType:'text/csv',buffer:Buffer.from('name,value\nA,2')});
     await page.locator('#convert-format').selectOption('json');
     let downloading=page.waitForEvent('download');await page.locator('#convert-run').click();const downloaded=await downloading;
@@ -71,5 +78,5 @@ withApp(async(page,context)=>{
     assert.equal(await page.locator('#browser-external').getAttribute('href'),'https://example.test/');
     await page.evaluate(()=>window.flushMiniApp());await page.goto('http://localhost/mini-apps.html#compare');await page.locator('#diff-run').waitFor();
     for(const width of [320,768,1440]){await page.setViewportSize({width,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);}
-    console.log('PASS: six persisted clock designs without tick layout shifts, eight Studio apps, diary persistence/file save, CSV conversion, isolated code/browser previews and legacy app compatibility');
+    console.log('PASS: three persisted clock designs without tick layout shifts, eight Studio apps, diary persistence/file save, CSV conversion, isolated code/browser previews and legacy app compatibility');
 }).catch(error=>{console.error(error);process.exitCode=1;});

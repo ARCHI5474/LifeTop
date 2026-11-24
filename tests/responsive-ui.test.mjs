@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {protectBrandWords,initResponsiveUI} from '../js/responsive-ui.js?v=13.0.1';
+import {protectBrandWords,initResponsiveUI} from '../js/responsive-ui.js?v=14.0.0';
 globalThis.Node={ELEMENT_NODE:1,TEXT_NODE:3};globalThis.NodeFilter={SHOW_TEXT:4};
 class Text {
     nodeType=3;

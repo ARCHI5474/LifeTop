@@ -3,9 +3,9 @@ const { withApp } = require('./helpers/browser.cjs');
 
 withApp(async page => {
     const result = await page.evaluate(async () => {
-        const { sanitizeMemoHtml, syncMemoFromConfig } = await import('./js/memo.js?v=13.0.1');
-        const { sanitizeDocument } = await import('./js/mini-common.js?v=13.0.1');
-        const { userConfig } = await import('./js/config.js?v=13.0.1');
+        const { sanitizeMemoHtml, syncMemoFromConfig } = await import('./js/memo.js?v=14.0.0');
+        const { sanitizeDocument } = await import('./js/mini-common.js?v=14.0.0');
+        const { userConfig } = await import('./js/config.js?v=14.0.0');
         window.sanitizerExecuted = 0;
         const payloads = [
             '<img src=x onerror="window.sanitizerExecuted++"><b>本文</b>',

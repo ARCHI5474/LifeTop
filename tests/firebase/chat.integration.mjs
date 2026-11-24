@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {initializeApp,deleteApp} from 'firebase/app';
 import {getAuth,connectAuthEmulator,signInWithCredential,GoogleAuthProvider,signInAnonymously} from 'firebase/auth';
 import * as fs from 'firebase/firestore';
-import {createChatService} from '../../js/chat-service.js?v=13.0.1';
+import {createChatService} from '../../js/chat-service.js?v=14.0.0';
 if(!process.env.FIRESTORE_EMULATOR_HOST||process.env.GCLOUD_PROJECT!=='demo-lifetop')throw Error('Emulator only.');
 const clients=[],pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function client(name,anonymous=false){

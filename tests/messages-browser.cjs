@@ -11,8 +11,8 @@ const{chromium}=require('./helpers/browser.cjs');
  await p.locator('#messages-connect:not(:disabled)').waitFor();assert.equal(await p.locator('#messages-controls').isVisible(),false);assert.equal(await p.locator('canvas').count(),0);assert.equal(await p.locator('#live-title').count(),0);
  await p.locator('#messages-connect').click();await p.locator('#messages-room-title').filter({hasText:'Room A'}).waitFor();
  await p.locator('#messages-room summary').click();
- p.once('dialog', dialog=>dialog.accept());
  await p.locator('#messages-rotate').click();
+ await p.locator('.ui-decision [type=submit]').click();
  const invite=p.locator('#messages-invite a');
  await invite.waitFor();
  await p.getByRole('button',{name:'Room A',exact:true}).click();
@@ -31,7 +31,7 @@ const{chromium}=require('./helpers/browser.cjs');
   '#messages-history li>button','#messages-logout','.messages-home'];
  for(const mode of ['light','dark']){
   await p.evaluate(async mode=>{
-   const{applyUISystemPreferences}=await import('/js/ui-system.js?v=13.0.1');
+   const{applyUISystemPreferences}=await import('/js/ui-system.js?v=14.0.0');
    applyUISystemPreferences({colorMode:mode});
   },mode);
   for(const[width,height]of viewports){

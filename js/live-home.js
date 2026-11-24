@@ -1,12 +1,15 @@
-import {createLiveScene} from './live-scene.js?v=13.0.1';
-import {createLiveWeather} from './live-weather.js?v=13.0.1';
-import {createLiveAudio} from './live-audio.js?v=13.0.1';
-import {googleSession} from './google-session.js?v=13.0.1';
-import {createChatService} from './chat-service.js?v=13.0.1';
-import {activePresence,newRipples} from './live-model.js?v=13.0.1';
+import {createLiveScene} from './live-scene.js?v=14.0.0';
+import {createLiveWeather} from './live-weather.js?v=14.0.0';
+import {createLiveAudio} from './live-audio.js?v=14.0.0';
+import {googleSession} from './google-session.js?v=14.0.0';
+import {createChatService} from './chat-service.js?v=14.0.0';
+import {activePresence,newRipples} from './live-model.js?v=14.0.0';
 export function initLiveHome(){
  const $=id=>document.getElementById(id),toggle=$('live-home-enabled'),background=$('bg-overlay');if(!toggle||!background)return;
  let scene,weather,canvas,settings={};try{const s=JSON.parse(localStorage.getItem('lifetop_live_v1')||'{}');if(s&&typeof s==='object')settings=s;toggle.checked=localStorage.getItem('lifetop_live_home_v1')!=='false';}catch{toggle.checked=true;}
+ if (!['aurora','ripple','horizon'].includes(settings.scene)) settings.scene = 'aurora';
+ const motion = $('live-home-motion');
+ const speed = () => settings.motion === 'still' ? 0 : settings.motion === 'calm' ? 0.4 : 1;
  const audio=createLiveAudio(bands=>scene?.setBands(bands),(text,running)=>{$('live-home-audio-status').textContent=text;$('live-home-audio-stop').disabled=!running;});
  let session,client,roomId='',members=[],rows=[],unwatch,unwatchRoom,authWatch,timer,expiry,epoch=0,ack=0,ready=false,lastWrite=0,busy=false;
  let sharedGeneration=0;
@@ -14,7 +17,7 @@ export function initLiveHome(){
  function people(){
   const connected=roomId&&ready&&ack>Date.now()-45000&&!document.hidden&&navigator.onLine;
   const present=connected?activePresence(rows,members,client.now()):[];scene?.setPeople(present);
-  $('live-home-people').textContent=roomId?(connected?present.length+'人が接続中':'再接続中'):'';
+  $('live-home-people').textContent=roomId?(connected?present.length+'人が接続中':navigator.onLine?'再接続中':'オフライン'):'';
   if(connected)for(const wave of newRipples(present,seen,client.now()))scene?.ripple(wave.x,wave.y);
  }
  function detach(){const old=roomId,oldSession=sessionId;epoch++;roomId='';rows=[];members=[];ack=0;ready=false;busy=false;seen.clear();unwatch?.();unwatchRoom?.();clearInterval(timer);clearInterval(expiry);scene?.setPeople([]);$('live-home-people').textContent='';if(old&&client)void client.presence(old,oldSession,true).catch(()=>{});}
@@ -56,11 +59,15 @@ export function initLiveHome(){
   stopSharing();audio.stop('');scene?.destroy();weather?.destroy();canvas?.remove();scene=weather=canvas=null;document.body.classList.toggle('live-home-enabled',toggle.checked);document.dispatchEvent(new Event('lifetop:live-change'));
   if(!toggle.checked)return;
   canvas=document.createElement('canvas');canvas.id='live-home-canvas';canvas.setAttribute('aria-hidden','true');background.append(canvas);
-  scene=createLiveScene(canvas,{home:true,reduced:()=>document.documentElement.classList.contains('reduce-motion')});scene.setScene(settings.scene||'aurora');
+  scene=createLiveScene(canvas,{home:true,speed,reduced:()=>document.documentElement.classList.contains('reduce-motion')});scene.setScene(settings.scene||'aurora');
   weather=createLiveWeather(value=>scene?.setWeather(value),text=>$('live-home-status').textContent=text);$('live-home-location').value=weather.getLocation();void weather.refresh();
   let id='';try{id=localStorage.getItem('lifetop_live_room_v13')||'';}catch{}if(id)void shared(id);
  }
  toggle.onchange=()=>{try{localStorage.setItem('lifetop_live_home_v1',String(toggle.checked));apply();}catch{toggle.checked=!toggle.checked;$('live-home-status').textContent='設定を保存できませんでした。';}};
+ if (motion) {
+  motion.value = ['calm','still'].includes(settings.motion) ? settings.motion : 'normal';
+  motion.onchange = () => { settings.motion = motion.value; save(); };
+ }
  $('live-home-scene').value=settings.scene||'aurora';$('live-home-scene').onchange=e=>{settings.scene=e.target.value;scene?.setScene(settings.scene);save();};
  $('live-home-location').onchange=e=>void weather?.select(e.target.value);
  $('live-home-mic').onclick=()=>{if(!toggle.checked)toggle.click();if(toggle.checked)void audio.start('mic');};

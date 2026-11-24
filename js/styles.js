@@ -1,5 +1,5 @@
 /* LifeTop - visual style application */
-import { bgGradients, colorCombos, bgPresets, userConfig } from "./config.js?v=13.0.1";
+import { bgGradients, colorCombos, bgPresets, userConfig } from "./config.js?v=14.0.0";
 
 
 export function applyStyles() {
@@ -77,15 +77,24 @@ export function renderColorCombos() {
     const container = document.getElementById('color-combos');
     if (!container) return;
 
-    container.innerHTML = colorCombos.map((combo, index) => {
+    const expanded = new Set([...container.querySelectorAll('details[open]')].map(details=>details.dataset.group));
+    const cards = colorCombos.map((combo, index) => {
         const activeClass = !userConfig.bgImage && userConfig.bgType === combo.bgType && userConfig.theme.toLowerCase() === combo.theme.toLowerCase()
             ? 'active'
             : '';
         const background = bgGradients[combo.bgType];
-        return `<button type="button" class="color-combo ${activeClass}" aria-pressed="${Boolean(activeClass)}" onclick="setColorCombo(${index}, this)">
+        return `<button type="button" class="color-combo pasidea-choice ${activeClass}" aria-pressed="${Boolean(activeClass)}" onclick="setColorCombo(${index}, this)">
             <span class="color-combo-swatch" style="background:${background};"><span style="background:${combo.theme};"></span></span>
             <span class="color-combo-name">${combo.name}</span>
         </button>`;
+    });
+    const featured = cards.filter((_, index) => colorCombos[index].featured).join('');
+    const alternatives = colorCombos.filter(combo => !combo.featured);
+    const groups = [...new Set(alternatives.map(combo => combo.group))];
+    container.innerHTML = featured + groups.map(group => {
+        const matches = cards.filter((_, index) => !colorCombos[index].featured && colorCombos[index].group === group);
+        const open = expanded.has(group) || matches.some(card => card.includes('aria-pressed="true"'));
+        return `<details class="appearance-options" data-group="${group}" ${open ? 'open' : ''}><summary>${group}</summary><div class="appearance-option-grid">${matches.join('')}</div></details>`;
     }).join('');
 }
 
@@ -93,18 +102,21 @@ export function renderBgPresets() {
     const container = document.getElementById('bg-presets');
     if (!container) return;
 
-    container.innerHTML = bgPresets.map((preset, index) => {
+    const expanded = container.querySelector('details')?.open;
+    const cards = bgPresets.map((preset, index) => {
         const isActive = userConfig.bgImage === preset.url;
         const activeClass = isActive ? 'active' : '';
         const fallbackBg = bgGradients[preset.bgType] || '#182238';
-        return `<button type="button" class="bg-preset-card ${activeClass}" aria-pressed="${isActive}" onclick="setPresetWallpaper(${index}, this)">
+        return `<button type="button" class="bg-preset-card pasidea-choice ${activeClass}" aria-pressed="${isActive}" onclick="setPresetWallpaper(${index}, this)">
             <span class="bg-preset-thumb" style="background-color:${fallbackBg}; background-image:url('${preset.thumb}');">
                 <span class="bg-preset-accent" style="background:${preset.theme};" aria-hidden="true"></span>
-                <span class="bg-preset-check material-symbols-outlined" aria-hidden="true">check</span>
             </span>
             <span class="bg-preset-name">${preset.name}</span>
         </button>`;
-    }).join('');
+    });
+    const local = cards.filter((_, index) => bgPresets[index].url.startsWith('assets/')).join('');
+    const photos = cards.filter((_, index) => !bgPresets[index].url.startsWith('assets/')).join('');
+    container.innerHTML = local + `<details class="appearance-options" ${expanded ? 'open' : ''}><summary>写真の壁紙</summary><div class="appearance-option-grid">${photos}</div></details>`;
 
     const clearBtn = document.getElementById('background-image-clear');
     if (clearBtn) {

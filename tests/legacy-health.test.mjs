@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
-import {userConfig,mergeUserConfig} from '../js/config.js?v=13.0.1';
-import {createBackup,parseBackup} from '../js/data-management.js?v=13.0.1';
+import {userConfig,mergeUserConfig} from '../js/config.js?v=14.0.0';
+import {createBackup,parseBackup} from '../js/data-management.js?v=14.0.0';
 
 const medications=[{id:'legacy-a',name:'旧データA',taken:true,dose:'1'},{id:'legacy-b',name:'旧データB',taken:false}];
 mergeUserConfig({healthLog:{meals:{'2026-11-07':{breakfast:true}},medications}});

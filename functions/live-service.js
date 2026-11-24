@@ -1,4 +1,4 @@
-import {assertMember, text, DAY} from './messages-service.js?v=13.0.1';
+import {assertMember, text, DAY} from './messages-service.js?v=14.0.0';
 
 export const PRESENCE_TTL = 80000;
 export const LIVE_DAILY_LIMIT = 100000;

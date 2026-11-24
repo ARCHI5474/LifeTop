@@ -1,8 +1,8 @@
-import {APP_VERSION} from './config.js?v=13.0.1';
-import {openUIDialog} from './ui-dialog.js?v=13.0.1';
+import {APP_VERSION} from './config.js?v=14.0.0';
+import {openUIDialog} from './ui-dialog.js?v=14.0.0';
 
 const storageKey='lifetop_version_eggs_v1';
-export const versionEggs=Object.freeze({'12.0':{name:'Twelve Lights',count:12},'13.0':{name:'Thirteen Signals',count:13}});
+export const versionEggs=Object.freeze({'12.0':{name:'Twelve Lights',count:12},'13.0':{name:'Thirteen Signals',count:13},'14.0':{name:'Fourteen Lights',count:14}});
 export function eggVersion(version){const match=/^(\d+)\.0(?:\.\d+)?$/.exec(version);return match&&Number(match[1])>=12?match[1]+'.0':null;}
 export function readVersionEggs(storage=localStorage){
     const raw=storage.getItem(storageKey);if(raw===null)return {schema:1,versions:{}};

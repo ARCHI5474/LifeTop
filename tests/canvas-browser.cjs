@@ -21,7 +21,7 @@ withApp(async page => {
     await page.reload();
     await page.locator('#todo-list').filter({hasText:'共同タスク'}).waitFor();
     const stored = await page.evaluate(async () => {
-        const m = await import('./js/canvas-model.js?v=13.0.1');
+        const m = await import('./js/canvas-model.js?v=14.0.0');
         const a = await m.readCanvas(), stale = structuredClone(a);
         await m.commitCanvas(a, a.revision);
         let conflict = false;
@@ -32,8 +32,7 @@ withApp(async page => {
     await page.goto('http://localhost/mini-apps.html#document');
     await page.locator('#editor').fill('保存テスト');
     await page.locator('#mini-name').fill('文書A');
-    await page.locator('#studio-workspace-save').click();
-    await page.locator('#mini-status').filter({hasText:'ファイル一覧に保存しました'}).waitFor();
+    await page.evaluate(()=>window.flushMiniApp());
     await page.locator('#editor').fill('変更後');
     await page.waitForTimeout(600);
     await page.locator('#studio-undo').click();
@@ -45,10 +44,9 @@ withApp(async page => {
     await page.locator('#studio-new').click();
     await page.locator('#editor').fill('文書B本文');
     await page.locator('#mini-name').fill('文書B');
-    await page.locator('#studio-workspace-save').click();
-    await page.locator('#mini-status').filter({hasText:'ファイル一覧に保存しました'}).waitFor();
-    const files = await page.evaluate(async () => (await (await import('./js/canvas-model.js?v=13.0.1')).readCanvas()).files);
-    assert.equal(files.length, 3);
+    await page.evaluate(()=>window.flushMiniApp());
+    const files = await page.evaluate(async () => (await (await import('./js/canvas-model.js?v=14.0.0')).readCanvas()).files);
+    assert.equal(files.length, 1);
     await page.goto('http://localhost/mini-apps.html?file=' + files[0].id + '#document');
     await page.locator('#editor').waitFor();
     assert.equal(await page.locator('#editor').innerText(), '変更後');
@@ -56,5 +54,5 @@ withApp(async page => {
     await page.locator('#messages-login').waitFor();
     assert.equal(await page.locator('#messages-controls').isVisible(), false);
     assert.equal(new URL(page.url()).hash, '');
-    console.log('PASS: calendar/task/search persistence, stale write protection, Studio undo/redo/templates/multiple files and unconfigured Messages');
+    console.log('PASS: calendar/task/search persistence, stale write protection, Studio autosave/undo/redo/templates and unconfigured Messages');
 }).catch(error => {console.error(error); process.exitCode = 1;});

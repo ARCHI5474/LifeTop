@@ -4,31 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>try{const c=JSON.parse(localStorage.getItem('lifetop_v1_0_data')||'{}');const m=c?.colorMode==='light'?'light':'dark';document.documentElement.dataset.theme=m;document.documentElement.dataset.colorMode=m;document.documentElement.style.colorScheme=m;}catch{document.documentElement.dataset.theme='dark';}</script>
-    <title>LifeTop│全部ここで。</title>
+    <title>LifeTop│全部ここで。</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap">
     <meta name="description" content="Google検索、よく使うサイト、タスク、メモ、時計をひとつに。毎日に役立つスタートページ、LifeTop。">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@500;700&family=Comfortaa:wght@400;700&family=Courier+Prime&family=DotGothic16&family=M+PLUS+1+Code&family=Oswald:wght@300;400;700&family=Outfit:wght@300;400;500;700;900&family=Righteous&family=Roboto+Mono:wght@200;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <link rel="preload" href="icons/material/material-symbols-outlined.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="stylesheet" href="css/style.css?v=10.0-ui7"> <!-- バージョン番号は毎回更新すること -->
-<link rel="stylesheet" href="css/festival.css?v=10.1-hide1">
-<link rel="stylesheet" href="css/35-unified-ui.css?v=10.0-ui9"><link rel="stylesheet" href="css/36-glass-finish.css?v=11.0.0"><link rel="stylesheet" href="css/37-pasidea.css?v=13.0.4"><link rel="stylesheet" href="css/38-v12.css?v=12.0.0"><link rel="stylesheet" href="css/39-live.css?v=13.0.0"><link rel="stylesheet" href="css/40-v13-system.css?v=13.0.4"></head>
+    <link rel="stylesheet" href="css/style.css?v=14.0.1"> <!-- バージョン番号は毎回更新すること -->
+<link rel="stylesheet" href="css/festival.css?v=14.0.0">
+<link rel="stylesheet" href="css/35-unified-ui.css?v=14.0.1"><link rel="stylesheet" href="css/36-glass-finish.css?v=14.0.0"><link rel="stylesheet" href="css/pasidea-components.css?v=14.0.3"><link rel="stylesheet" href="css/38-v12.css?v=12.0.0"><link rel="stylesheet" href="css/39-live.css?v=13.0.0"><link rel="stylesheet" href="css/lifetop-layout.css?v=14.0.0"></head>
 <body id="top" class="ui-system ui-scope">
 
 <!-- 起動時のブランドシーケンス -->
 <div class="loading-screen" id="loading-screen" role="status" aria-live="polite" aria-label="LifeTopを準備しています">
     <div class="loading-content">
-        <p class="loading-eyebrow">YOUR EVERYDAY START</p>
-        <div class="loading-art" aria-hidden="true">
-            <span class="loading-pebble pebble-one"></span>
-            <span class="loading-pebble pebble-two"></span>
-            <span class="loading-pebble pebble-three"></span>
-            <div class="loading-emblem"><img class="loading-icon" src="icons/icon-192.png" alt="" width="64" height="64" decoding="async"></div>
+        <div class="loading-emblem" aria-hidden="true">
+            <img class="loading-icon" src="icons/icon-512.png" alt="" width="512" height="512" fetchpriority="high">
         </div>
-        <span class="loading-logo">LifeTop<span class="loading-logo-dot" aria-hidden="true">.</span></span>
-        <p class="loading-tagline">全部ここで。</p>
-        <div class="loading-status"><span class="loading-status-dot" aria-hidden="true"></span><span class="loading-label">あなたのスタートページを準備しています</span></div>
-        <p class="loading-release">v13.0 <span aria-hidden="true">/</span> LifeTop Live</p>
+        <p class="loading-label" aria-hidden="true">読み込み中</p>
     </div>
 </div>
 
@@ -47,7 +40,6 @@
     <div class="game-modal-card">
         <div class="popup-modal-header game-modal-header">
             <div class="game-header-title-wrap">
-                <p class="help-kicker">LifeTop ARCADE</p>
                 <h2 id="game-modal-title"><span class="material-symbols-outlined" aria-hidden="true">sports_esports</span> GameBox</h2>
             </div>
             <div class="game-selector-tabs" role="tablist" aria-label="GameBoxのゲーム選択">
@@ -252,13 +244,14 @@
             <div id="date-display" class="animate-fade-in" style="animation-delay: 0.1s;">2026年7月10日 (金)</div>
             <div id="greeting" class="animate-fade-in" style="animation-delay: 0.2s;">ようこそ</div>
             <div class="clock-composition">
-                <div class="clock-caption"><span>LOCAL TIME</span><span id="clock-period">24H</span></div>
+
                 <div id="clock-container" class="animate-clock">
                     <div id="clock" role="timer" aria-live="off" aria-label="現在時刻"><span class="clock-hours">00</span><span class="clock-colon" aria-hidden="true">:</span><span class="clock-minutes">00</span></div>
                     <div id="clock-sec" aria-hidden="true">00</div>
+                    <span id="clock-period" aria-hidden="true"></span>
                 </div>
-                <div class="clock-day-track" aria-hidden="true"><span id="clock-day-progress"></span></div>
-                <div class="clock-day-labels" aria-hidden="true"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div>
+
+
             </div>
         </div>
 
@@ -291,8 +284,8 @@
                     <h3><span class="material-symbols-outlined" aria-hidden="true">bookmarks</span> Quickアクセス</h3>
                     <button type="button" class="tonal-btn" id="quick-links-open" aria-haspopup="dialog">1000件から探す</button>
                     <div class="bookmark-header-controls">
-                        <button type="button" class="icon-btn-small" id="edit-bookmarks-btn" aria-pressed="false" onclick="toggleBookmarkEditMode()" title="ブックマークを編集" aria-label="ブックマークを編集">
-                            <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+                        <button type="button" class="tonal-btn" id="edit-bookmarks-btn" aria-pressed="false" onclick="toggleBookmarkEditMode()" title="ブックマークを編集" aria-label="ブックマークを編集">
+                            <span class="material-symbols-outlined" aria-hidden="true">edit</span> 編集
                         </button>
                     </div>
                 </div>
@@ -310,9 +303,9 @@
                 </div>
                 <div class="bookmark-folder-bar" id="bookmark-folder-bar" hidden></div>
                 <div class="bookmark-grid" id="bookmark-grid"></div>
-                <div id="bookmark-undo" class="bookmark-undo" hidden>
+                <div id="bookmark-undo" class="bookmark-undo pasidea-notice" hidden>
                     <span id="bookmark-undo-text" role="status">ブックマークを削除しました</span>
-                    <button type="button" onclick="undoDeleteBookmark()">
+                    <button type="button" class="tonal-btn" onclick="undoDeleteBookmark()">
                         <span class="material-symbols-outlined" aria-hidden="true">undo</span> 元に戻す
                     </button>
                 </div>
@@ -570,7 +563,7 @@
             <p class="settings-help">変更が競合した場合は自動同期を止めて確認します。大きな画像などを含む900KB超のデータは同期できません。JSONバックアップをご利用ください。</p>
         </section>
         <section class="settings-section" id="cc-settings-storage-section" data-setting-category="advanced" aria-labelledby="cc-settings-storage-title">
-            <h3 class="settings-label" id="cc-settings-storage-title">ファイルの保存と同期</h3>
+            <h3 class="settings-label" id="cc-settings-storage-title">保存と同期</h3>
             <div id="cc-settings-storage">保存と同期の設定を読み込んでいます。</div>
         </section>
         <!-- ユーザー名設定 -->
@@ -598,8 +591,8 @@
             <h3 id="display-mode-title">表示モード</h3>
             <p class="settings-help">すべての画面に同じモードを適用します。</p>
             <div class="ui-theme-options" role="group" aria-label="表示モード">
-                <button type="button" data-ui-mode="light" data-color-mode-btn="light" aria-pressed="false">ライト</button>
-                <button type="button" data-ui-mode="dark" data-color-mode-btn="dark" aria-pressed="true">ダーク</button>
+                <button type="button" class="pasidea-choice" data-ui-mode="light" data-color-mode-btn="light" aria-pressed="false">ライト</button>
+                <button type="button" class="pasidea-choice" data-ui-mode="dark" data-color-mode-btn="dark" aria-pressed="true">ダーク</button>
             </div>
         </section>
         <div class="settings-section" data-setting-category="appearance">
@@ -634,7 +627,7 @@
             <button type="button" class="tonal-btn" onclick="openPagePopup('messages.html','Messages')">Messagesを開く</button>
         </div>
 
-        <div class="settings-section" data-setting-category="appearance" id="live-home-options"><h3 class="settings-label">Live</h3><div class="quick-live-fields"><label>景色<select id="live-home-scene"><option value="aurora">Aurora</option><option value="ripple">Ripple</option></select></label><label>場所<select id="live-home-location"><option value="tokyo">東京</option><option value="london">ロンドン</option><option value="newyork">ニューヨーク</option><option value="current">現在地</option></select></label></div><div class="mini-tools"><button type="button" class="tonal-btn" id="live-home-mic">マイク</button><label class="mini-file-label">音声ファイル<input id="live-home-audio-file" type="file" accept="audio/*" hidden></label><button type="button" class="text-btn" id="live-home-audio-stop" disabled>停止</button></div><p class="settings-help" id="live-home-audio-status" role="status"></p><p id="live-home-people" class="settings-help" role="status"></p></div><!-- 時計表示設定 -->
+        <div class="settings-section" data-setting-category="appearance" id="live-home-options"><h3 class="settings-label">Live</h3><div class="quick-live-fields"><label>景色<select id="live-home-scene"><option value="aurora">Aurora</option><option value="ripple">Ripple</option><option value="horizon">Horizon</option></select></label><label>動き<select id="live-home-motion"><option value="normal">標準</option><option value="calm">ゆっくり</option><option value="still">静止</option></select></label><label>場所<select id="live-home-location"><option value="tokyo">東京</option><option value="london">ロンドン</option><option value="newyork">ニューヨーク</option><option value="current">現在地</option></select></label></div><div class="mini-tools"><button type="button" class="tonal-btn" id="live-home-mic">マイク</button><label class="mini-file-label">音声ファイル<input id="live-home-audio-file" type="file" accept="audio/*" hidden></label><button type="button" class="text-btn" id="live-home-audio-stop" disabled>停止</button></div><p class="settings-help" id="live-home-audio-status" role="status"></p><p id="live-home-people" class="settings-help" role="status"></p></div><!-- 時計表示設定 -->
         <div class="settings-section" data-setting-category="clock">
             <label class="settings-label">時計の設定</label>
             <div class="toggle-wrapper">
@@ -686,9 +679,9 @@
         <section class="settings-about" aria-labelledby="settings-about-title" data-setting-category="advanced">
             <h3>FestivalMemories</h3>
             <p class="settings-help">Festivalは今後も不定期に開催します。開催のお知らせをお楽しみに。過去のFestivalで獲得した記念品や記録は、いつでも見返せます。</p>
-            <a class="tonal-btn" href="festival.html#memories" data-festival-memories aria-haspopup="dialog">FestivalMemoriesを見る</a>
+            <a class="tonal-btn" href="festival.html?edition=10#memories" data-festival-memories aria-haspopup="dialog">v10 Festival Memories</a>
             <h3 id="settings-about-title">情報</h3>
-            <p class="settings-about-version">LifeTop <span id="app-version-label">v13.0</span></p>
+            <p class="settings-about-version">LifeTop <span id="app-version-label">v14.0</span></p>
             <p class="settings-about-codename">リリース：<span lang="en">LifeTop Live</span></p>
             <details class="environment-info" open>
                 <summary>推奨環境・対応環境</summary>
@@ -709,11 +702,12 @@
     </div>
 </div>
 
-<footer class="app-footer">LifeTop <span id="footer-version">v13.0</span></footer>
+<div class="home-help"><button id="help-chat-open" type="button" class="text-btn" aria-haspopup="dialog">LifeTop ヘルプ</button></div>
+<footer class="app-footer">LifeTop <span id="footer-version">v14.0</span></footer>
 <div id="storage-status" class="storage-status" role="status" hidden></div>
 
 <dialog id="stability-check" class="sync-guide stability-check" aria-labelledby="stability-check-title" aria-describedby="stability-check-description">
-    <p class="help-kicker">LifeTop CHECK</p>
+
     <h2 id="stability-check-title">安定性チェック</h2>
     <p id="stability-check-description">約3秒で、このブラウザでのLifeTopの動作目安を確認します。描画の滑らかさ・短い処理の応答・端末内保存・表示機能を検証します。</p>
     <p class="settings-help">端末全体の故障・安全性・将来の安定性を判定するものではありません。ほかのアプリや省電力設定で結果は変わります。通信速度やGoogle同期の接続は検証しません。</p>
@@ -740,7 +734,7 @@
 </dialog>
 
 <dialog id="sync-explanation" class="sync-guide sync-explanation" aria-labelledby="sync-explanation-title">
-    <p class="help-kicker">SAVE &amp; SYNC</p>
+
     <h2 id="sync-explanation-title">同期と保存のしくみ</h2>
     <p id="sync-explanation-mode" class="cloud-save-badge"></p>
     <dl>
@@ -760,7 +754,7 @@
     <div class="weather-modal-content">
         <div class="popup-modal-header weather-modal-header">
             <div>
-                <p class="help-kicker">TODAY'S WEATHER</p>
+
                 <h2 id="weather-modal-title">天気の詳細</h2>
             </div>
             <button type="button" class="icon-btn weather-modal-close close-action" onclick="closeWeatherDetail()" title="閉じる" aria-label="天気の詳細を閉じる">
@@ -778,7 +772,7 @@
     <div class="popup-modal-card">
         <div class="popup-modal-header">
             <div>
-                <p class="help-kicker">QUICK ACCESS</p>
+
                 <h3 id="bookmark-dialog-title">Quickアクセスを追加</h3>
             </div>
             <button type="button" class="icon-btn close-action" onclick="closeBookmarkDialog()" title="閉じる" aria-label="閉じる">
@@ -817,7 +811,7 @@
     </div>
 </div>
 
-<script type="module" src="./js/main.js?v=13.0.1"></script>
+<script type="module" src="./js/main.js?v=14.0.0"></script>
 
 
 </body>

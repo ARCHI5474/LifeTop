@@ -1,5 +1,5 @@
 /* LifeTop - clock and greeting */
-import { userConfig } from "./config.js?v=13.0.1";
+import { userConfig } from "./config.js?v=14.0.0";
 
 // 挨拶と時計の更新
 export function updateClock() {
@@ -32,9 +32,7 @@ export function updateClock() {
     const secondPart = document.getElementById('clock-sec');
     if (secondPart.textContent !== seconds) secondPart.textContent = seconds;
     const period = document.getElementById('clock-period');
-    if (period && period.textContent !== (ampm.trim() || '24H')) period.textContent = ampm.trim() || '24H';
-    const progress = document.getElementById('clock-day-progress');
-    if (progress) progress.style.width = `${((now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) / 86400) * 100}%`;
+    if (period && period.textContent !== ampm.trim()) period.textContent = ampm.trim();
     
     const days = ['日', '月', '火', '水', '木', '金', '土'];
     const year = now.getFullYear();

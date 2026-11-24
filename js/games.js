@@ -370,10 +370,11 @@ function renderSnakeCanvas() {
     const canvas = document.getElementById('snake-canvas');
     if (!canvas || !canvas.getContext) return;
     const ctx = canvas.getContext('2d');
+    const palette = getComputedStyle(ctx.canvas);
     const isLight = document.documentElement.dataset?.colorMode === 'light';
 
     // Background
-    ctx.fillStyle = isLight ? '#eef4fb' : '#091222';
+    ctx.fillStyle = palette.getPropertyValue('--ui-surface').trim();
     ctx.fillRect(0, 0, SNAKE_CANVAS_SIZE, SNAKE_CANVAS_SIZE);
 
     // Subtle checker grid
@@ -432,8 +433,8 @@ function renderSnakeCanvas() {
     }
 
     // Draw Snake Segments
-    const accent = getComputedStyle(document.documentElement).getPropertyValue('--p-strong').trim() || '#38bdf8';
-    const primary = getComputedStyle(document.documentElement).getPropertyValue('--p').trim() || '#2F75A8';
+    const accent = palette.getPropertyValue('--ui-primary').trim();
+    const primary = palette.getPropertyValue('--ui-primary-hover').trim();
 
     snakeState.snake.forEach((seg, index) => {
         const x = seg.x * SNAKE_CELL + 2;
@@ -462,7 +463,7 @@ function renderSnakeCanvas() {
         // Draw eyes on head
         if (index === 0) {
             ctx.shadowBlur = 0;
-            ctx.fillStyle = '#091222';
+            ctx.fillStyle = palette.getPropertyValue('--ui-on-primary').trim();
             const cx = seg.x * SNAKE_CELL + SNAKE_CELL / 2;
             const cy = seg.y * SNAKE_CELL + SNAKE_CELL / 2;
             const offset = 4.5;

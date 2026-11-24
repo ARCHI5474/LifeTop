@@ -1,10 +1,10 @@
 /* Messages-only presentation. Authentication, storage and messaging remain unchanged. */
-html:root body.messages-page .messages-shell{max-width:var(--pasidea-container-max);padding:var(--pasidea-space-2) var(--pasidea-space-3) var(--pasidea-space-1);gap:var(--pasidea-space-1)}
+html:root body.messages-page .messages-shell{max-width:var(--pasidea-container-max);padding:var(--pasidea-space-16) var(--pasidea-space-24) var(--pasidea-space-8);gap:var(--pasidea-space-8)}
 html:root body.messages-page .messages-header{min-height:52px;padding-bottom:12px;border:0;gap:12px}
 html:root body.ui-system.messages-page .messages-header h1{font-size:var(--pasidea-text-title)!important;line-height:1.35;letter-spacing:-.025em;font-weight:700}
 html:root body.messages-page :is(#messages-connect,#messages-join,#messages-create,#messages-send>button){
- background:var(--pasidea-primary)!important;
- color:var(--pasidea-on-primary)!important;
+ background:var(--ui-primary)!important;
+ color:var(--ui-on-primary)!important;
  border-radius:var(--pasidea-radius-lg)!important;
  box-shadow:var(--pasidea-sheen)!important
 }
@@ -13,12 +13,12 @@ html:root body.messages-page .messages-content{grid-template-columns:232px minma
 html:root body.messages-page .messages-sidebar{padding:16px;border-right:1px solid var(--ui-border);background:color-mix(in srgb,var(--ui-surface-muted) 45%,var(--ui-surface));overscroll-behavior:contain}
 html:root body.messages-page .messages-sidebar .messages-room-header{gap:8px;min-height:44px}
 html:root body.messages-page :is(#messages-refresh,.messages-header-actions :is(a,button),.messages-room-actions button){min-width:var(--pasidea-control-height);min-height:var(--pasidea-control-height)}
-html:root body.messages-page summary:focus-visible{outline:2px solid var(--pasidea-primary);outline-offset:-2px}
+html:root body.messages-page summary:focus-visible{outline:2px solid var(--ui-primary);outline-offset:-2px}
 html:root body.messages-page .messages-sidebar h2{margin:0!important;color:var(--ui-text-muted);font-size:12px!important;letter-spacing:.04em}
 html:root body.messages-page #messages-rooms{gap:6px;margin:12px 0 20px}
 html:root body.messages-page #messages-rooms button{min-height:var(--pasidea-control-height);padding:10px 12px!important;border:1px solid transparent!important;border-radius:8px!important;color:var(--ui-text)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;justify-content:flex-start}
-html:root body.messages-page #messages-rooms button[aria-current=true]{border-color:var(--pasidea-primary)!important;background:var(--pasidea-primary-container)!important;color:var(--pasidea-on-primary-container)!important;font-weight:600}
-html:root body.messages-page .messages-sidebar summary{min-height:var(--pasidea-control-height);font-size:var(--pasidea-text-body);background:var(--pasidea-surface);border-radius:var(--pasidea-radius-sm)}
+html:root body.messages-page #messages-rooms button[aria-current=true]{border-color:var(--ui-primary)!important;background:var(--ui-primary-soft)!important;color:var(--ui-on-primary-soft)!important;font-weight:600}
+html:root body.messages-page .messages-sidebar summary{min-height:var(--pasidea-control-height);font-size:var(--pasidea-text-body);background:var(--ui-bg);border-radius:var(--pasidea-radius-sm)}
 html:root body.messages-page #messages-create-form{padding-top:12px;gap:12px}
 html:root body.messages-page #messages-create-form label{display:grid;gap:6px;font-size:12px;color:var(--ui-text-muted)}
 html:root body.messages-page #messages-name{width:100%;min-width:0}
@@ -28,7 +28,7 @@ html:root body.messages-page #messages-room-title{font-size:16px!important;line-
 #messages-members{display:block;margin-top:2px;font-size:12px;color:var(--ui-text-muted)}
 html:root body.messages-page #messages-room>.messages-room-header>div{min-width:0}
 html:root body.messages-page #messages-room>.messages-room-header>details{flex-shrink:0;max-width:55%;position:relative;align-self:flex-start}
-html:root body.messages-page #messages-room summary{font-size:12px;background:transparent;border-color:transparent;min-height:var(--pasidea-control-height);padding:var(--pasidea-space-1)}
+html:root body.messages-page #messages-room summary{font-size:12px;background:transparent;border-color:transparent;min-height:var(--pasidea-control-height);padding:var(--pasidea-space-8)}
 html:root body.messages-page .messages-room-actions{position:absolute;right:0;top:calc(100% + 4px);z-index:3;min-width:144px;display:flex;flex-direction:column;padding:8px;gap:4px;border:1px solid var(--ui-border);border-radius:8px;background:var(--ui-surface);box-shadow:var(--ui-shadow-md)}
 html:root body.messages-page #messages-history{padding:16px 4px;gap:20px;scrollbar-gutter:stable;scroll-padding-block:16px}
 html:root body.messages-page #messages-history>li{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:12px;max-width:min(82%,68ch)}
@@ -43,7 +43,7 @@ html:root body.messages-page #messages-history li>button{grid-column:2;grid-row:
 html:root body.messages-page #messages-send{padding-top:12px;border-top:1px solid var(--ui-border);gap:12px}
 html:root body.messages-page #messages-send label{gap:6px;color:var(--ui-text-muted);font-size:12px}
 html:root body.messages-page #messages-body{min-height:72px!important;max-height:min(180px,25dvh);padding:12px 14px!important;line-height:1.6;font-size:var(--pasidea-text-body)!important;border-color:var(--ui-border)!important;border-radius:var(--pasidea-radius-md)!important;resize:vertical}
-html:root body.messages-page #messages-send>button{min-width:72px;min-height:44px!important;margin-bottom:2px}
+html:root body.messages-page #messages-send>button{min-width:72px;min-height:var(--pasidea-control-height)!important;margin-bottom:2px}
 html:root body.messages-page #messages-status:not(:empty){padding:10px 14px;border:1px solid var(--ui-border);border-radius:8px;background:var(--ui-surface-muted);line-height:1.6}
 html:root body.messages-page #messages-invite:not(:empty){margin-top:12px;padding:10px 12px;border:1px solid var(--ui-border);border-radius:8px;background:var(--ui-surface-muted);font-size:12px;line-height:1.6}
 html:root body.messages-page .messages-footer{text-align:center;font-size:12px;color:var(--ui-text-muted);flex:none;padding:0;line-height:1.5}
@@ -55,7 +55,7 @@ html:root body.messages-page .messages-footer{text-align:center;font-size:12px;c
  html:root body.messages-page #messages-rooms{display:flex;gap:8px;overflow:auto;margin:4px 0 8px;padding-bottom:2px}
  html:root body.messages-page #messages-rooms button{width:auto;min-width:96px;max-width:200px;flex:0 0 auto}
  html:root body.messages-page .messages-sidebar>details{display:block}
- html:root body.messages-page .messages-sidebar>details>summary{padding-inline:var(--pasidea-space-1);font-size:var(--pasidea-text-caption)}
+ html:root body.messages-page .messages-sidebar>details>summary{padding-inline:var(--pasidea-space-8);font-size:var(--pasidea-text-caption)}
  html:root body.messages-page #messages-room{padding:12px;min-height:0}
  html:root body.messages-page #messages-room>.messages-room-header{min-height:48px;padding-bottom:8px;gap:8px}
  html:root body.messages-page #messages-history{padding-block:12px;gap:16px}
@@ -66,7 +66,7 @@ html:root body.messages-page .messages-footer{text-align:center;font-size:12px;c
  html:root body.messages-page #messages-send>button{min-width:60px;padding-inline:12px!important}
 }
 @media(max-width:600px){
- html:root body.messages-page .messages-shell{padding-inline:var(--pasidea-space-2)}
+ html:root body.messages-page .messages-shell{padding-inline:var(--pasidea-space-16)}
 }
 @media(max-height:450px){
  html:root body.messages-page .messages-shell{padding-block:6px;gap:6px}

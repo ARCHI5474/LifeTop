@@ -1,38 +1,41 @@
-@import url('./pasidea-base.css?v=2.0.1');
+@import url('./pasidea-base.css?v=3.0.1');
 
-/* Pasidea 2.0 compatibility layer for existing and dynamically created UI. */
+/* Pasidea 3.0 component bindings for existing and dynamically created UI. */
 html:root body.ui-system.ui-system, html:root body.ui-system.ui-system .ui-scope {
   --ui-font: var(--pasidea-font-sans);
-  --ui-bg: var(--pasidea-surface);
-  --ui-surface: var(--pasidea-surface-container-low);
-  --ui-surface-muted: var(--pasidea-surface-container);
+  --ui-bg: var(--ui-accent-bg, var(--pasidea-surface));
+  --ui-surface: var(--ui-accent-surface, var(--pasidea-surface-container-low));
+  --ui-surface-muted: var(--ui-accent-surface-muted, var(--pasidea-surface-container));
   --ui-text: var(--pasidea-on-surface);
   --ui-text-muted: var(--pasidea-on-surface-variant);
   --ui-border: var(--pasidea-outline-variant);
-  --ui-control-border: var(--pasidea-outline-variant);
-  --ui-primary: var(--pasidea-primary);
-  --ui-primary-hover: var(--pasidea-primary);
-  --ui-primary-pressed: var(--pasidea-primary);
-  --ui-primary-soft: var(--pasidea-primary-container);
-  --ui-on-primary: var(--pasidea-on-primary);
+  --ui-control-border: var(--ui-accent-outline, var(--pasidea-outline));
+  --ui-primary: var(--ui-accent-override, var(--pasidea-primary));
+  --ui-primary-hover: var(--ui-accent-hover-override, var(--pasidea-primary));
+  --ui-primary-pressed: var(--ui-accent-pressed-override, var(--pasidea-primary));
+  --ui-primary-soft: var(--ui-accent-soft-override, var(--pasidea-primary-container));
+  --ui-on-primary: var(--ui-accent-on-primary, var(--pasidea-on-primary));
+  --ui-on-primary-soft: var(--ui-accent-on-soft, var(--pasidea-on-primary-container));
   --ui-danger: var(--pasidea-error);
   --ui-success: var(--pasidea-success);
-  --ui-focus: var(--pasidea-primary);
+  --ui-focus: var(--ui-primary);
+  --ui-icon-fill: var(--ui-primary-soft);
+  --ui-icon-color: var(--ui-on-primary-soft);
   --ui-radius-xs: var(--pasidea-radius-sm);
   --ui-radius-sm: var(--pasidea-radius-md);
   --ui-radius-md: var(--pasidea-radius-lg);
   --ui-radius-lg: var(--pasidea-radius-xl);
   --ui-radius-xl: var(--pasidea-radius-xl);
   --ui-radius-pill: var(--pasidea-radius-full);
-  --ui-space-1: var(--pasidea-space-1);
-  --ui-space-2: var(--pasidea-space-1);
-  --ui-space-3: var(--pasidea-space-2);
-  --ui-space-4: var(--pasidea-space-2);
-  --ui-space-5: var(--pasidea-space-3);
-  --ui-space-6: var(--pasidea-space-3);
-  --ui-space-8: var(--pasidea-space-4);
-  --ui-space-10: var(--pasidea-space-6);
-  --ui-space-12: var(--pasidea-space-6);
+  --ui-space-1: var(--pasidea-space-8);
+  --ui-space-2: var(--pasidea-space-8);
+  --ui-space-3: var(--pasidea-space-16);
+  --ui-space-4: var(--pasidea-space-16);
+  --ui-space-5: var(--pasidea-space-24);
+  --ui-space-6: var(--pasidea-space-24);
+  --ui-space-8: var(--pasidea-space-32);
+  --ui-space-10: var(--pasidea-space-48);
+  --ui-space-12: var(--pasidea-space-48);
   --ui-content-max: var(--pasidea-container-max);
   --ui-control-height: var(--pasidea-control-height);
   --ui-control-height-sm: var(--pasidea-control-height);
@@ -42,9 +45,9 @@ html:root body.ui-system.ui-system, html:root body.ui-system.ui-system .ui-scope
   --ui-shadow-lg: var(--pasidea-shadow-overlay);
   --ui-duration-instant: var(--pasidea-duration-press);
   --ui-duration-fast: var(--pasidea-duration-hover);
-  --ui-duration-normal: var(--pasidea-duration-release);
-  --ui-ease-standard: var(--pasidea-spring);
-  --frost-control: var(--pasidea-surface-container);
+  --ui-duration-normal: var(--pasidea-duration-standard);
+  --ui-ease-standard: var(--pasidea-ease-standard);
+  --frost-control: var(--ui-surface-muted);
   --frost-edge: var(--pasidea-outline-variant);
   --frost-shine: var(--pasidea-sheen);
   font-family: var(--pasidea-font-sans);
@@ -53,51 +56,51 @@ html:root body.ui-system.ui-system, html:root body.ui-system.ui-system .ui-scope
   font-variant-numeric: tabular-nums;
 }
 html:root body.ui-system.ui-system:not(.has-custom-background), html:root body.ui-system.ui-system:not(.has-custom-background) .bg-overlay {
-  background: var(--pasidea-surface) !important;
+  background: var(--ui-bg) !important;
 }
 html:root body.ui-system.ui-system :is(.glass-card,.hero-section,.mini-content,.settings-section,.mini-app-card,.festival-card,.cc-settings-section,.clock-tool-card,.cc-flow-card) {
-  background: var(--pasidea-surface-container-low) !important;
+  background: var(--ui-surface) !important;
   border-radius: var(--pasidea-radius-lg) !important;
   box-shadow: var(--pasidea-shadow-card) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  padding: var(--pasidea-space-3);
+  padding: var(--pasidea-space-24);
 }
-html:root body.ui-system.ui-system :is(dialog,.settings-panel,.popup-modal-card,.help-modal-card,.weather-modal-content,.cc-dashboard-panel), html:root body.ui-system.ui-system #settings-panel {
-  background: var(--pasidea-surface) !important;
+html:root body.ui-system.ui-system :is(dialog,.settings-panel,.popup-modal-card,.help-modal-card,.weather-modal-content), html:root body.ui-system.ui-system #settings-panel {
+  background: var(--ui-bg) !important;
   border-radius: var(--pasidea-radius-xl) !important;
   box-shadow: var(--pasidea-shadow-overlay) !important;
   backdrop-filter: none !important;
 }
 html:root body.ui-system.ui-system :is(.dashboard-header,.weather-summary-row,.hero-section,.dashboard-content > .container) {
-  width: calc(100% - var(--pasidea-space-3) * 2);
+  width: calc(100% - var(--pasidea-space-24) * 2);
   max-width: var(--pasidea-container-max);
   margin-inline: auto;
 }
-html:root body.ui-system.ui-system :is(.mini-main,.festival-main) { max-width: var(--pasidea-container-max); padding: var(--pasidea-space-3); }
-html:root body.ui-system.ui-system :is(.dashboard-grid,.mini-app-grid,.cc-widget-grid) { gap: var(--pasidea-space-2); }
+html:root body.ui-system.ui-system :is(.mini-main,.festival-main) { max-width: var(--pasidea-container-max); padding: var(--pasidea-space-24); }
+html:root body.ui-system.ui-system :is(.dashboard-grid,.mini-app-grid,.cc-widget-grid) { gap: var(--pasidea-space-16); }
 html:root body.ui-system.ui-system :is(h1,.settings-title,.help-modal-title,.weather-modal-title) { font-size: var(--pasidea-text-title); line-height: 1.35; font-weight: 700; }
 html:root body.ui-system.ui-system :is(h2,h3,.card-header h3,.mini-app-card strong) { font-size: var(--pasidea-text-heading); line-height: 1.4; font-weight: 700; }
 html:root body.ui-system.ui-system :is(.todo-text,.news-title,.news-item-title,.mini-intro,.settings-section p,.settings-section label,.mini-page label) { font-size: var(--pasidea-text-body); }
 
 /* Shared controls retain existing classes and event handlers. Game boards keep
-   their own geometry; action buttons use the standard 44px target. */
+   their own geometry; action buttons use the standard 48px target. */
 html:root body.ui-system.ui-system :is(button,.cc-control,a.primary-btn,a.tonal-btn):not(:where(.game-stage-wrap *,.extra-board *,.puzzle-board *,.othello-board *,.go-board *,.shogi-board *,.casual-board *,.memory-board *)) {
   min-height: var(--pasidea-control-height);
   border-radius: var(--pasidea-radius-lg);
   font-size: var(--pasidea-text-body);
-  transition: transform var(--pasidea-duration-release) var(--pasidea-spring), opacity var(--pasidea-duration-hover) var(--pasidea-ease-out) !important;
+  transition: transform var(--pasidea-duration-release) var(--pasidea-spring), background-color var(--pasidea-duration-hover) var(--pasidea-ease-standard), border-color var(--pasidea-duration-hover) var(--pasidea-ease-standard) !important;
 }
 html:root body.ui-system.ui-system :is(.primary-btn,.search-button,.todo-input-wrapper > button,.cc-primary):is(:hover,:not(:hover)),
 html:root body.ui-system.ui-system #game-modal .primary-btn:is(:hover,:not(:hover)) {
-  background: var(--pasidea-primary) !important;
-  color: var(--pasidea-on-primary) !important;
+  background: var(--ui-primary) !important;
+  color: var(--ui-on-primary) !important;
   box-shadow: var(--pasidea-sheen) !important;
   filter: none;
 }
 html:root body.ui-system.ui-system :is(.secondary-btn,.tonal-btn,.ctrl-btn,.add-bookmark-btn,.add-folder-btn,.cc-secondary-button):is(:hover,:not(:hover)) {
-  background: var(--pasidea-primary-container) !important;
-  color: var(--pasidea-on-primary-container) !important;
+  background: var(--ui-primary-soft) !important;
+  color: var(--ui-on-primary-soft) !important;
 }
 html:root body.ui-system.ui-system :is(.icon-btn,.icon-btn-small,.memo-tool-btn,.cc-icon,.close-action,.search-clear-btn):is(:hover,:not(:hover)),
 html:root body.ui-system.ui-system .dashboard-header .header-right .icon-btn:is(:hover,:not(:hover)) {
@@ -116,25 +119,24 @@ html:root body.ui-system.ui-system :is(button.close-action:not(.search-clear-btn
 html:root body.ui-system.ui-system :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea,.settings-input) {
   min-height: var(--pasidea-control-height);
   border-radius: var(--pasidea-radius-md);
-  background-color: var(--pasidea-surface-container);
+  background-color: var(--ui-surface-muted);
   font-size: var(--pasidea-text-body);
 }
 html:root body.ui-system.ui-system :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select) { height: var(--pasidea-control-height); padding-block: 0; }
 html:root body.ui-system.ui-system :is(.tab-btn,.tool-tab-btn,.news-tab-btn,.bookmark-tab-item,.settings-category-tabs > button):is(.active,[aria-selected=true],[aria-pressed=true]) {
-  background: var(--pasidea-primary-container) !important;
-  color: var(--pasidea-on-primary-container) !important; box-shadow: none !important;
+  background: var(--ui-primary-soft) !important;
+  color: var(--ui-on-primary-soft) !important; box-shadow: none !important;
 }
 html:root body.ui-system.ui-system :is(button,a):is(:hover,:active) { translate: none !important; rotate: none !important; scale: 1 !important; filter: none; }
 html:root body.ui-system.ui-system :is(button,a):hover { transform: none; }
 html:root body.ui-system.ui-system :is(button,a):active:not(:disabled):not([aria-disabled=true]) { transform: scale(.96); transition-duration: var(--pasidea-duration-press) !important; }
 html:root body.ui-system.ui-system :is(:disabled,[aria-disabled=true]):is(:hover,:active,:not(:hover)) { opacity: .45 !important; cursor: not-allowed; transform: none !important; scale: 1 !important; animation: none !important; }
-html:root body.ui-system.ui-system :is(button,a,input,textarea,select):focus-visible { outline: 2px solid var(--pasidea-primary); outline-offset: 2px; }
+html:root body.ui-system.ui-system :is(button,a,input,textarea,select):focus-visible { outline: 2px solid var(--ui-primary); outline-offset: 2px; }
 @media (hover: hover) {
-  html:root body.ui-system.ui-system :is(button,a):hover:not(:disabled):not([aria-disabled=true]) { opacity: .9; }
 }
 @media (max-width: 600px) {
-  html:root body.ui-system.ui-system :is(.dashboard-header,.weather-summary-row,.hero-section,.dashboard-content > .container) { width: calc(100% - var(--pasidea-space-2) * 2); }
-  html:root body.ui-system.ui-system :is(.mini-main,.festival-main,.glass-card,.hero-section,.mini-content,.settings-section,.mini-app-card,.festival-card) { padding: var(--pasidea-space-2); }
+  html:root body.ui-system.ui-system :is(.dashboard-header,.weather-summary-row,.hero-section,.dashboard-content > .container) { width: calc(100% - var(--pasidea-space-16) * 2); }
+  html:root body.ui-system.ui-system :is(.mini-main,.festival-main,.glass-card,.hero-section,.mini-content,.settings-section,.mini-app-card,.festival-card) { padding: var(--pasidea-space-16); }
   html:root body.ui-system.ui-system .dashboard-grid { grid-template-columns: minmax(0,1fr); }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -162,7 +164,7 @@ html:root body.ui-system.ui-system .hero-section::after { display: none !importa
 html:root body.ui-system.ui-system .pasidea-btn:not(.pasidea-close-btn):not(:where(.game-stage-wrap *,.extra-board *,.puzzle-board *,.othello-board *,.go-board *,.shogi-board *,.memory-board *)) {
   height: var(--pasidea-control-height) !important;
   min-height: var(--pasidea-control-height) !important;
-  padding: 0 var(--pasidea-space-3) !important;
+  padding: 0 var(--pasidea-space-24) !important;
   border-radius: var(--pasidea-radius-lg) !important;
   font: 600 var(--pasidea-text-body)/1 var(--pasidea-font-sans) !important;
 }
@@ -184,46 +186,44 @@ html:root body.ui-system.ui-system .pasidea-close-btn > svg[data-pasidea-close] 
 html:root body.ui-system.ui-system .pasidea-input {
   border: 1px solid var(--pasidea-outline-variant) !important;
   border-radius: var(--pasidea-radius-md) !important;
-  background: var(--pasidea-surface-container) !important;
+  background: var(--ui-surface-muted) !important;
   color: var(--pasidea-on-surface) !important;
-  padding-inline: var(--pasidea-space-2) !important;
+  padding-inline: var(--pasidea-space-16) !important;
   font: 400 var(--pasidea-text-body)/1.6 var(--pasidea-font-sans) !important;
   transition: none !important;
 }
-html:root body.ui-system.ui-system textarea.pasidea-input { padding-block: var(--pasidea-space-2); }
+html:root body.ui-system.ui-system textarea.pasidea-input { padding-block: var(--pasidea-space-16); }
 html:root body.ui-system.ui-system .pasidea-btn-danger:is(:hover,:not(:hover)) { background: var(--pasidea-error) !important; color: var(--pasidea-on-error) !important; }
-html:root body.ui-system.ui-system :is(.mini-tools,.cc-toolbar,.cc-form-footer,.game-action-row) { gap: var(--pasidea-space-1); }
-html:root body.ui-system.ui-system :is(.cc-form-fields,.mini-form,.settings-section,.cc-settings-section) { gap: var(--pasidea-space-2); }
-html:root body.ui-system.ui-system :is(.cc-form-header,.mini-popup-header,.settings-header,.cc-app-header,.cc-form-fields,.cc-form-footer) { padding: var(--pasidea-space-3); }
+html:root body.ui-system.ui-system :is(.mini-tools,.cc-toolbar,.cc-form-footer,.game-action-row) { gap: var(--pasidea-space-8); }
+html:root body.ui-system.ui-system :is(.cc-form-fields,.mini-form,.settings-section,.cc-settings-section) { gap: var(--pasidea-space-16); }
+html:root body.ui-system.ui-system :is(.cc-form-header,.mini-popup-header,.settings-header,.cc-app-header,.cc-form-fields,.cc-form-footer) { padding: var(--pasidea-space-24); }
 html:root body.ui-system.ui-system :is(.cc-form-header,.settings-category-tabs,.mini-popup-header,.settings-header,.cc-app-header) { z-index: var(--pasidea-z-sticky); }
-html:root body.ui-system.ui-system :is(.modal-overlay,.settings-overlay,.settings-panel,.cc-dashboard-panel,dialog) { z-index: var(--pasidea-z-modal); }
+html:root body.ui-system.ui-system :is(.modal-overlay,.settings-overlay,.settings-panel,dialog) { z-index: var(--pasidea-z-modal); }
 html:root body.ui-system.ui-system :is(.toast,.cc-toast,.festival-found-toast,[role=tooltip]) { z-index: var(--pasidea-z-toast); }
 html:root body.ui-system.ui-system :is(.mini-app-card,.bookmark-item,.todo-item,.cc-project-card,.cc-flow-card) { min-width: 0; }
 html:root body.ui-system.ui-system :is(.weather-summary-card,.home-summary-card,.cc-project-card,.cc-widget,.cc-empty) {
-  background: var(--pasidea-surface-container-low) !important;
+  background: var(--ui-surface) !important;
   border-radius: var(--pasidea-radius-lg) !important;
   box-shadow: var(--pasidea-shadow-card) !important;
-  padding: var(--pasidea-space-3);
+  padding: var(--pasidea-space-24);
 }
 html:root body.ui-system.ui-system :is(.search-form,#search-form):is(:hover,:focus-within,:not(:hover)) {
-  background: var(--pasidea-surface-container) !important;
+  background: var(--ui-surface-muted) !important;
   border-radius: var(--search-radius,var(--pasidea-radius-lg)) !important;
-  padding: var(--pasidea-space-1) !important;
+  padding: var(--pasidea-space-8) !important;
   box-shadow: none !important; translate: none !important;
 }
 html:root body.ui-system.ui-system #search-input { border: none !important; }
 html:root body.ui-system.ui-system .search-button { width: var(--pasidea-control-height) !important; min-width: var(--pasidea-control-height) !important; padding: 0 !important; }
-html:root body.ui-system.ui-system :is(.utility-tabs,.news-tabs,.bookmark-tabs-container,.clock-tool-switch,.settings-category-tabs) { gap: var(--pasidea-space-1); padding: var(--pasidea-space-1); border-radius: var(--pasidea-radius-md); }
+html:root body.ui-system.ui-system :is(.utility-tabs,.news-tabs,.bookmark-tabs-container,.clock-tool-switch,.settings-category-tabs) { gap: var(--pasidea-space-8); padding: var(--pasidea-space-8); border-radius: var(--pasidea-radius-md); }
 html:root body.ui-system.ui-system :is(.tab-btn,.tool-tab-btn,.news-tab-btn,.bookmark-tab-item,.settings-category-tabs > button) { height: var(--pasidea-control-height); min-height: var(--pasidea-control-height); }
 /* One typography scale; icon glyphs and clock artwork retain their geometry. */
 html:root body.ui-system.ui-system :is(p,label,li,input,select,textarea,.cc-secondary,.cc-summary-empty,.cc-form-error,.news-title,.todo-text,.mini-app-card span) { font-size: var(--pasidea-text-body); line-height: 1.6; }
 html:root body.ui-system.ui-system :is(small,.pasidea-caption,.cc-eyebrow,.settings-help,.settings-section-desc,.mini-note,.mini-storage-note,.news-status-text,.news-source-badge,.memo-save-status,.weather-summary-label,.environment-info) { font-size: var(--pasidea-text-caption) !important; line-height: 1.4; font-weight: 500; }
 html:root body.ui-system.ui-system :is(h1,.settings-title,.cc-form-header h2,.mini-popup-header h2,.help-modal-title,.weather-modal-title) { font-size: var(--pasidea-text-title) !important; line-height: 1.35; font-weight: 700; }
 html:root body.ui-system.ui-system :is(h2,h3,h4,.card-header h3,.mini-app-card strong) { font-size: var(--pasidea-text-heading); line-height: 1.4; font-weight: 700; }
-/* Never transition a layout or shadow property from an older stylesheet. */
-html:root body.ui-system.ui-system *, html:root body.ui-system.ui-system *::before, html:root body.ui-system.ui-system *::after { transition-property: transform, opacity !important; }
 html:root body.ui-system.ui-system .pasidea-interactive {
-  transition: transform var(--pasidea-duration-release) var(--pasidea-spring), opacity var(--pasidea-duration-hover) var(--pasidea-ease-out) !important;
+  transition: transform var(--pasidea-duration-release) var(--pasidea-spring), background-color var(--pasidea-duration-hover) var(--pasidea-ease-standard), border-color var(--pasidea-duration-hover) var(--pasidea-ease-standard) !important;
 }
 html:root body.ui-system.ui-system .pasidea-interactive:active:not(:disabled):not([aria-disabled=true]) { transform: scale(.96) !important; transition-duration: var(--pasidea-duration-press) !important; }
 @keyframes pasidea-enter { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
@@ -231,10 +231,10 @@ html:root body.ui-system.ui-system .pasidea-interactive:active:not(:disabled):no
 html:root body.ui-system.ui-system dialog[data-state=open] { animation: pasidea-enter 240ms var(--pasidea-ease-out) both !important; }
 html:root body.ui-system.ui-system dialog[data-state=closing] { animation: pasidea-exit var(--pasidea-duration-hover) var(--pasidea-ease-out) both !important; }
 @media (hover: hover) {
-  html:root body.ui-system.ui-system .pasidea-close-btn:hover:not(:disabled):not([aria-disabled=true]) { background: var(--pasidea-surface-container) !important; }
+  html:root body.ui-system.ui-system .pasidea-close-btn:hover:not(:disabled):not([aria-disabled=true]) { background: var(--ui-surface-muted) !important; }
 }
 @media (max-width: 600px) {
-  html:root body.ui-system.ui-system :is(.pasidea-card,.cc-form-header,.mini-popup-header,.settings-header,.cc-app-header,.cc-form-fields,.cc-form-footer,.weather-summary-card,.home-summary-card,.cc-project-card,.cc-widget,.cc-empty) { padding: var(--pasidea-space-2); }
+  html:root body.ui-system.ui-system :is(.pasidea-card,.cc-form-header,.mini-popup-header,.settings-header,.cc-app-header,.cc-form-fields,.cc-form-footer,.weather-summary-card,.home-summary-card,.cc-project-card,.cc-widget,.cc-empty) { padding: var(--pasidea-space-16); }
 }
 @media (prefers-reduced-motion: reduce) {
   html:root body.ui-system.ui-system *, html:root body.ui-system.ui-system *::before, html:root body.ui-system.ui-system *::after { animation: none !important; transition: opacity var(--pasidea-duration-hover) linear !important; }
@@ -243,10 +243,10 @@ html:root body.ui-system.ui-system dialog[data-state=closing] { animation: pasid
 html:root.reduce-motion body.ui-system.ui-system *, html:root.reduce-motion body.ui-system.ui-system .pasidea-interactive:is(:active,:hover) { animation: none !important; transform: none !important; transition: none !important; }
 html:root body.ui-system.ui-system :is(input,select).pasidea-input { height: var(--pasidea-control-height) !important; min-height: var(--pasidea-control-height) !important; padding-block: 0 !important; }
 html:root body.ui-system.ui-system :is(p,label,li,h1,h2,h3,h4,small,strong,button,input,textarea,select,a) { font-family: var(--pasidea-font-sans) !important; }
-html:root body.ui-system.ui-system .mini-popup-header { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: var(--pasidea-space-1); }
+html:root body.ui-system.ui-system .mini-popup-header { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: var(--pasidea-space-8); }
 html:root body.ui-system.ui-system .mini-popup-header h2 { grid-column: 1; }
 html:root body.ui-system.ui-system .mini-popup-header > .pasidea-close-btn { grid-column: 2; grid-row: 1; }
-html:root body.ui-system.ui-system .mini-popup-tabs { grid-column: 1 / -1; grid-row: 2; min-width: 0; flex-wrap: wrap; gap: var(--pasidea-space-1); }
+html:root body.ui-system.ui-system .mini-popup-tabs { grid-column: 1 / -1; grid-row: 2; min-width: 0; flex-wrap: wrap; gap: var(--pasidea-space-8); }
 html:root body.ui-system.ui-system .mini-popup-header h2 { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
 
 /* Popup layout contract: every popup uses the standard 480px modal. */
@@ -261,69 +261,69 @@ html:root body.ui-system.ui-system dialog.cc-dialog {
   position: fixed !important;
   inset: var(--visual-top,0) 0 calc(100dvh - var(--visual-top,0) - var(--visual-height,100dvh)) !important;
   margin: auto !important;
-  width: min(var(--pasidea-modal-max),calc(100% - var(--pasidea-space-3) * 2)) !important;
-  max-width: calc(100% - var(--pasidea-space-3) * 2) !important;
-  max-height: calc(var(--visual-height,100dvh) - var(--pasidea-space-3) * 2) !important;
+  width: min(var(--pasidea-modal-max),calc(100% - var(--pasidea-space-24) * 2)) !important;
+  max-width: calc(100% - var(--pasidea-space-24) * 2) !important;
+  max-height: calc(var(--visual-height,100dvh) - var(--pasidea-space-24) * 2) !important;
   padding: 0 !important;
   border: 1px solid var(--pasidea-outline-variant) !important;
   border-radius: var(--pasidea-radius-xl) !important;
-  background: var(--pasidea-surface) !important;
+  background: var(--ui-bg) !important;
   color: var(--pasidea-on-surface) !important;
   overflow: auto;
 }
 html:root body.ui-system.ui-system dialog:is(.mini-popup,.cc-app-popup,.pasidea-app-popup,.cc-form-wide) {
-  width: min(var(--pasidea-modal-max),calc(100% - var(--pasidea-space-3) * 2)) !important;
+  width: min(var(--pasidea-modal-max),calc(100% - var(--pasidea-space-24) * 2)) !important;
 }
 html:root body.ui-system.ui-system dialog:is(.mini-popup,.cc-app-popup,.pasidea-app-popup) {
-  height: calc(var(--visual-height,100dvh) - var(--pasidea-space-3) * 2) !important;
+  height: calc(var(--visual-height,100dvh) - var(--pasidea-space-24) * 2) !important;
   overflow: hidden;
 }
 html:root body.ui-system.ui-system dialog.pasidea-app-popup[open] { display: flex; flex-direction: column; }
-html:root body.ui-system.ui-system .pasidea-app-popup iframe { display: block; flex: 1; min-height: 0; width: 100%; border: 0; background: var(--pasidea-surface); }
-html:root body.ui-system.ui-system .pasidea-popup-header { display: flex; align-items: center; justify-content: space-between; gap: var(--pasidea-space-2); padding: var(--pasidea-space-3); flex: none; border-bottom: 1px solid var(--pasidea-outline-variant); }
+html:root body.ui-system.ui-system .pasidea-app-popup iframe { display: block; flex: 1; min-height: 0; width: 100%; border: 0; background: var(--ui-bg); }
+html:root body.ui-system.ui-system .pasidea-popup-header { display: flex; align-items: center; justify-content: space-between; gap: var(--pasidea-space-16); padding: var(--pasidea-space-24); flex: none; border-bottom: 1px solid var(--pasidea-outline-variant); }
 html:root body.ui-system.ui-system dialog::backdrop { background: var(--pasidea-backdrop); backdrop-filter: blur(var(--pasidea-backdrop-blur)); }
 html:root body.ui-system.ui-system .modal-overlay { background: var(--pasidea-backdrop) !important; backdrop-filter: blur(var(--pasidea-backdrop-blur)) !important; }
 html:root body.ui-system.ui-system #settings-panel {
-  width: min(var(--pasidea-modal-max),calc(100% - var(--pasidea-space-3) * 2)) !important;
-  max-width: calc(100% - var(--pasidea-space-3) * 2) !important;
+  width: min(var(--pasidea-modal-max),calc(100% - var(--pasidea-space-24) * 2)) !important;
+  max-width: calc(100% - var(--pasidea-space-24) * 2) !important;
   height: auto !important;
-  max-height: calc(var(--visual-height,100dvh) - var(--pasidea-space-3) * 2) !important;
+  max-height: calc(var(--visual-height,100dvh) - var(--pasidea-space-24) * 2) !important;
   border-radius: var(--pasidea-radius-xl) !important;
 }
-html:root body.ui-system.ui-system :is(.settings-body,.settings-header,.cc-form-header,.cc-form-fields,.cc-form-footer,.cc-app-header,.mini-popup-header) { padding: var(--pasidea-space-3) !important; gap: var(--pasidea-space-2); }
-html:root body.ui-system.ui-system :is(.settings-section,.settings-category-tabs,.settings-release-notes,.mini-filter-label) { margin-block: 0 var(--pasidea-space-2); }
-html:root body.ui-system.ui-system .settings-body { gap: var(--pasidea-space-2); }
+html:root body.ui-system.ui-system :is(.settings-body,.settings-header,.cc-form-header,.cc-form-fields,.cc-form-footer,.cc-app-header,.mini-popup-header) { padding: var(--pasidea-space-24) !important; gap: var(--pasidea-space-16); }
+html:root body.ui-system.ui-system :is(.settings-section,.settings-category-tabs,.settings-release-notes,.mini-filter-label) { margin-block: 0 var(--pasidea-space-16); }
+html:root body.ui-system.ui-system .settings-body { gap: var(--pasidea-space-16); }
 html:root body.ui-system.ui-system .settings-header h2 { font-size: var(--pasidea-text-title) !important; font-weight: 700; line-height: 1.35; }
 html:root body.ui-system.ui-system .pasidea-modal :is(.cc-form-header,.mini-popup-header,.pasidea-popup-header) h2 { margin: 0; }
-html:root body.ui-system.ui-system :is(.mini-popup-tabs,.cc-segment,.utility-tabs,.clock-tool-switch) { gap: var(--pasidea-space-1); }
-html:root body.ui-system.ui-system .mini-popup-tabs button { padding-inline: var(--pasidea-space-2) !important; }
-html:root body.ui-system.ui-system .mini-catalog { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,280px),1fr)); gap: var(--pasidea-space-2) !important; }
-html:root body.ui-system.ui-system.mini-embedded .mini-main { padding: var(--pasidea-space-3) !important; max-width: var(--pasidea-container-max); }
-html:root body.ui-system.ui-system .mini-app-card { padding: var(--pasidea-space-3) !important; height: auto; min-height: 0; }
+html:root body.ui-system.ui-system :is(.mini-popup-tabs,.cc-segment,.utility-tabs,.clock-tool-switch) { gap: var(--pasidea-space-8); }
+html:root body.ui-system.ui-system .mini-popup-tabs button { padding-inline: var(--pasidea-space-16) !important; }
+html:root body.ui-system.ui-system .mini-catalog { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,280px),1fr)); gap: var(--pasidea-space-16) !important; }
+html:root body.ui-system.ui-system.mini-embedded .mini-main { padding: var(--pasidea-space-24) !important; max-width: var(--pasidea-container-max); }
+html:root body.ui-system.ui-system .mini-app-card { padding: var(--pasidea-space-24) !important; height: auto; min-height: 0; }
 html:root body.ui-system.ui-system .mini-app-card strong { font-size: var(--pasidea-text-heading) !important; line-height: 1.4; font-weight: 700; }
 html:root body.ui-system.ui-system .mini-app-card span { font-size: var(--pasidea-text-body) !important; line-height: 1.6; }
 html:root body.ui-system.ui-system .mini-app-card small { font-size: var(--pasidea-text-caption) !important; line-height: 1.4; }
 html:root body.ui-system.ui-system .pasidea-interactive:disabled,
 html:root body.ui-system.ui-system .pasidea-interactive[aria-disabled=true] { opacity: .45 !important; cursor: not-allowed !important; transform: none !important; animation: none !important; }
 html:root body.ui-system.ui-system :is(img,video).pasidea-media { object-fit: cover; border-radius: var(--pasidea-radius-md); }
-html:root body.ui-system.ui-system .pasidea-btn-secondary { background: var(--pasidea-primary-container) !important; color: var(--pasidea-on-primary-container) !important; }
+html:root body.ui-system.ui-system .pasidea-btn-secondary { background: var(--ui-primary-soft) !important; color: var(--ui-on-primary-soft) !important; }
 html:root body.ui-system.ui-system .pasidea-btn-danger { background: var(--pasidea-error) !important; color: var(--pasidea-on-error) !important; }
 @media(max-width:600px) {
   html:root body.ui-system.ui-system dialog.cc-dialog,
   html:root body.ui-system.ui-system #settings-panel {
-    width: calc(100% - var(--pasidea-space-2) * 2) !important;
-    max-width: calc(100% - var(--pasidea-space-2) * 2) !important;
-    max-height: calc(var(--visual-height,100dvh) - var(--pasidea-space-2) * 2) !important;
+    width: calc(100% - var(--pasidea-space-16) * 2) !important;
+    max-width: calc(100% - var(--pasidea-space-16) * 2) !important;
+    max-height: calc(var(--visual-height,100dvh) - var(--pasidea-space-16) * 2) !important;
   }
-  html:root body.ui-system.ui-system dialog:is(.mini-popup,.cc-app-popup,.pasidea-app-popup) { height: calc(var(--visual-height,100dvh) - var(--pasidea-space-2) * 2) !important; }
+  html:root body.ui-system.ui-system dialog:is(.mini-popup,.cc-app-popup,.pasidea-app-popup) { height: calc(var(--visual-height,100dvh) - var(--pasidea-space-16) * 2) !important; }
   html:root body.ui-system.ui-system :is(.settings-body,.settings-header,.cc-form-header,.cc-form-fields,.cc-form-footer,.cc-app-header,.mini-popup-header,.pasidea-popup-header),
   html:root body.ui-system.ui-system.mini-embedded .mini-main,
-  html:root body.ui-system.ui-system .mini-app-card { padding: var(--pasidea-space-2) !important; }
+  html:root body.ui-system.ui-system .mini-app-card { padding: var(--pasidea-space-16) !important; }
 }
 /* Legacy overlays use the same centered surface and backdrop as native dialogs. */
-html:root body.ui-system.ui-system { --dialog-gap: var(--pasidea-space-3); }
+html:root body.ui-system.ui-system { --dialog-gap: var(--pasidea-space-24); }
 html:root body.ui-system.ui-system :is(.help-modal,.popup-modal,.weather-modal) {
-  padding: var(--pasidea-space-3) !important;
+  padding: var(--pasidea-space-24) !important;
   background: var(--pasidea-backdrop) !important;
   backdrop-filter: blur(var(--pasidea-backdrop-blur)) !important;
   z-index: var(--pasidea-z-modal) !important;
@@ -331,21 +331,21 @@ html:root body.ui-system.ui-system :is(.help-modal,.popup-modal,.weather-modal) 
 html:root body.ui-system.ui-system :is(.help-modal-card,.popup-modal-card,.weather-modal-content) {
   width: min(100%,var(--pasidea-modal-max)) !important;
   max-width: var(--pasidea-modal-max) !important;
-  max-height: calc(var(--visual-height,100dvh) - var(--pasidea-space-3) * 2) !important;
+  max-height: calc(var(--visual-height,100dvh) - var(--pasidea-space-24) * 2) !important;
   height: auto !important;
-  padding: var(--pasidea-space-3) !important;
+  padding: var(--pasidea-space-24) !important;
   margin: auto;
   border-radius: var(--pasidea-radius-xl) !important;
-  background: var(--pasidea-surface) !important;
+  background: var(--ui-bg) !important;
   box-shadow: var(--pasidea-shadow-overlay) !important;
 }
 html:root body.ui-system.ui-system .mini-popup-tabs [role=tab]:is(:hover,:not(:hover)) { background: transparent !important; color: var(--pasidea-on-surface-variant) !important; box-shadow: none !important; }
-html:root body.ui-system.ui-system .mini-popup-tabs [role=tab][aria-selected=true]:is(:hover,:not(:hover)) { background: var(--pasidea-primary-container) !important; color: var(--pasidea-on-primary-container) !important; }
+html:root body.ui-system.ui-system .mini-popup-tabs [role=tab][aria-selected=true]:is(:hover,:not(:hover)) { background: var(--ui-primary-soft) !important; color: var(--ui-on-primary-soft) !important; }
 html:root body.ui-system.ui-system .cc-menu-content { z-index: var(--pasidea-z-sticky); }
 @media(max-width:600px) {
-  html:root body.ui-system.ui-system { --dialog-gap: var(--pasidea-space-2); }
-  html:root body.ui-system.ui-system :is(.help-modal,.popup-modal,.weather-modal) { padding: var(--pasidea-space-2) !important; }
-  html:root body.ui-system.ui-system :is(.help-modal-card,.popup-modal-card,.weather-modal-content) { padding: var(--pasidea-space-2) !important; max-height: calc(var(--visual-height,100dvh) - var(--pasidea-space-2) * 2) !important; }
+  html:root body.ui-system.ui-system { --dialog-gap: var(--pasidea-space-16); }
+  html:root body.ui-system.ui-system :is(.help-modal,.popup-modal,.weather-modal) { padding: var(--pasidea-space-16) !important; }
+  html:root body.ui-system.ui-system :is(.help-modal-card,.popup-modal-card,.weather-modal-content) { padding: var(--pasidea-space-16) !important; max-height: calc(var(--visual-height,100dvh) - var(--pasidea-space-16) * 2) !important; }
 }
 html:root body.ui-system.ui-system #settings-panel {
   left: 50% !important; right: auto !important;
@@ -357,15 +357,15 @@ html:root body.ui-system.ui-system #settings-panel {
 html:root body.ui-system.ui-system #settings-panel.active { transform: translate(-50%,-50%) scale(1) !important; }
 html:root body.ui-system.ui-system .settings-body .notice-board {
   display: flex; flex-direction: column; align-items: flex-start;
-  gap: var(--pasidea-space-1); padding: var(--pasidea-space-2) !important;
-  background: var(--pasidea-primary-container) !important;
-  color: var(--pasidea-on-primary-container) !important;
+  gap: var(--pasidea-space-8); padding: var(--pasidea-space-16) !important;
+  background: var(--ui-primary-soft) !important;
+  color: var(--ui-on-primary-soft) !important;
   border: none; border-radius: var(--pasidea-radius-lg);
 }
-html:root body.ui-system.ui-system .notice-tag { color: var(--pasidea-on-primary-container); background: transparent; font-size: var(--pasidea-text-caption); padding: 0; }
+html:root body.ui-system.ui-system .notice-tag { color: var(--ui-on-primary-soft); background: transparent; font-size: var(--pasidea-text-caption); padding: 0; }
 html:root body.ui-system.ui-system #notice-text { font-size: var(--pasidea-text-body); font-weight: 400; line-height: 1.6; }
 html:root body.ui-system.ui-system .settings-body .settings-section { margin: 0 !important; }
-html:root body.ui-system.ui-system .settings-release-notes a { padding: var(--pasidea-space-2); gap: var(--pasidea-space-1); border-radius: var(--pasidea-radius-lg); }
+html:root body.ui-system.ui-system .settings-release-notes a { padding: var(--pasidea-space-16); gap: var(--pasidea-space-8); border-radius: var(--pasidea-radius-lg); }
 html:root body.ui-system.ui-system .pasidea-badge { border-radius: var(--pasidea-radius-sm); font-size: var(--pasidea-text-caption) !important; line-height: 1.4; }
 /* Application surfaces use the space appropriate to their content. */
 html:root body.ui-system.ui-system [hidden][hidden][hidden],
@@ -394,36 +394,138 @@ html:root body.ui-system.ui-system .mini-popup-header h2 { margin-right: auto; }
 html:root body.ui-system.ui-system .mini-popup-tabs { flex-wrap: nowrap; }
 html:root body.ui-system.ui-system .mini-popup-header > [data-cancel] { margin-left: auto; }
 html:root body.ui-system.ui-system .cc-app-popup .cc-app-shell { display: block; overflow: auto; }
-html:root body.ui-system.ui-system .cc-app-popup .cc-app-sidebar { display: none; }
-html:root body.ui-system.ui-system .cc-app-popup .cc-mobile-section:not([hidden]) { display: block; min-width: 0; margin-left: auto; }
-html:root body.ui-system.ui-system .cc-app-popup .cc-app-main { padding: var(--pasidea-space-2); overflow: visible; }
+html:root body.ui-system.ui-system .cc-app-popup .cc-app-main { padding: var(--pasidea-space-16); overflow: visible; }
 html:root body.ui-system.ui-system #mini-app-dialog .mini-popup-games:not([hidden]) { overflow: auto; }
 html:root body.ui-system.ui-system #mini-app-dialog #game-modal.active { display: block; height: auto; min-height: 100%; }
 html:root body.ui-system.ui-system #mini-app-dialog #game-modal .game-selector-tabs { display: none; }
-html:root body.ui-system.ui-system #mini-app-dialog #game-modal .gamebox-picker { display: grid; grid-template-columns: auto minmax(0,1fr); gap: var(--pasidea-space-1); }
-html:root body.ui-system.ui-system #mini-app-dialog #game-modal .game-modal-card { width: min(100%,1440px); height: auto; max-height: none; overflow: visible; padding: var(--pasidea-space-2); margin-inline: auto; }
+html:root body.ui-system.ui-system #mini-app-dialog #game-modal .gamebox-picker { display: grid; grid-template-columns: auto minmax(0,1fr); gap: var(--pasidea-space-8); }
+html:root body.ui-system.ui-system #mini-app-dialog #game-modal .game-modal-card { width: min(100%,1440px); height: auto; max-height: none; overflow: visible; padding: var(--pasidea-space-16); margin-inline: auto; }
 html:root body.ui-system.ui-system #mini-app-dialog #game-modal :is(.game-modal-body,.game-pane.active) { height: auto; overflow: visible; container-type: normal; }
 html:root body.ui-system.ui-system #mini-app-dialog #game-modal .game-modal-body { flex: 1 0 auto; }
-html:root body.ui-system.ui-system #mini-app-dialog #game-modal .game-layout { display: flex; flex-direction: column; height: auto; gap: var(--pasidea-space-2); }
+html:root body.ui-system.ui-system #mini-app-dialog #game-modal .game-layout { display: flex; flex-direction: column; height: auto; gap: var(--pasidea-space-16); }
 html:root body.ui-system.ui-system #mini-app-dialog #game-modal .game-stage-wrap { width: 100%; height: auto; aspect-ratio: 1; flex: none; }
-html:root body.ui-system.ui-system #mini-app-dialog #game-modal .game-sidebar { display: flex; flex-direction: column; gap: var(--pasidea-space-1); }
+html:root body.ui-system.ui-system #mini-app-dialog #game-modal .game-sidebar { display: flex; flex-direction: column; gap: var(--pasidea-space-8); }
 @media(min-width:900px) {
-  html:root body.ui-system.ui-system .cc-app-popup .cc-app-shell { display: grid; grid-template-columns: 208px minmax(0,1fr); overflow: hidden; }
+  html:root body.ui-system.ui-system .cc-app-popup .cc-app-shell { display: grid; grid-template-columns: minmax(0,1fr); overflow: hidden; }
   html:root body.ui-system.ui-system .cc-app-popup.cc-calendar-only .cc-app-shell { grid-template-columns: minmax(0,1fr); }
-  html:root body.ui-system.ui-system .cc-app-popup .cc-app-sidebar { display: block; }
-  html:root body.ui-system.ui-system .cc-app-popup .cc-mobile-section:not([hidden]) { display: none; }
-  html:root body.ui-system.ui-system .cc-app-popup .cc-app-main { overflow: auto; padding: var(--pasidea-space-3); }
+  html:root body.ui-system.ui-system .cc-app-popup .cc-app-main { overflow: auto; padding: var(--pasidea-space-24); }
   html:root body.ui-system.ui-system #mini-app-dialog #game-modal .game-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(240px,300px); align-items: start; }
   html:root body.ui-system.ui-system #mini-app-dialog #game-modal .game-stage-wrap { max-width: min(100%,calc(var(--visual-height,100dvh) - 240px)); margin-inline: auto; }
 }
 @media(max-width:600px) {
   html:root body.ui-system.ui-system .mini-popup-header h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   html:root body.ui-system.ui-system .mini-popup-tabs { flex: 1; }
-  html:root body.ui-system.ui-system .cc-saved-files .cc-row { flex-wrap: wrap; overflow-wrap: anywhere; }
 }
 @media(prefers-reduced-motion:reduce) {
   html:root body.ui-system.ui-system :is(.help-modal,.popup-modal,.weather-modal,.settings-panel,dialog,button,a) {
     transition-duration: 0s !important;
     animation-duration: 0s !important;
+  }
+}
+
+/* Playground patterns: outline action, visual choice and feedback. */
+html:root body.ui-system .pasidea-outline {
+  min-height: var(--pasidea-control-height);
+  border: 1px solid var(--ui-control-border);
+  border-radius: var(--pasidea-radius-full);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+@media (hover: hover) {
+  html:root body.ui-system .pasidea-outline:hover:not(:disabled,[aria-disabled=true]) {
+    border-color: var(--ui-primary);
+    background: var(--ui-primary-soft);
+    color: var(--ui-on-primary-soft);
+  }
+}
+html:root body.ui-system .pasidea-choice {
+  position: relative;
+  min-height: var(--pasidea-control-height);
+}
+html:root body.ui-system.ui-system .pasidea-choice[aria-pressed="true"] {
+  border-color: var(--ui-primary) !important;
+  background: var(--ui-primary-soft) !important;
+  color: var(--ui-on-primary-soft) !important;
+}
+html:root body.ui-system .pasidea-choice::after {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  vertical-align: middle;
+  visibility: hidden;
+}
+html:root body.ui-system .pasidea-choice[aria-pressed="true"]::after {
+  visibility: visible;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m5 12 4 4L19 6' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+html:root body.ui-system :is(.color-combo,.bg-preset-card,.clock-design-option).pasidea-choice[aria-pressed="true"]::before {
+  content: "";
+  position: absolute;
+  inset: 4px 4px auto auto;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--pasidea-radius-full);
+  background: var(--ui-primary-soft);
+  border: 1px solid var(--ui-control-border);
+  z-index: 1;
+}
+html:root body.ui-system :is(.color-combo,.bg-preset-card,.clock-design-option).pasidea-choice::after {
+  position: absolute;
+  inset: var(--pasidea-space-8) var(--pasidea-space-8) auto auto;
+  border-radius: var(--pasidea-radius-full);
+}
+html:root body.ui-system :is(.color-combo,.bg-preset-card,.clock-design-option).pasidea-choice[aria-pressed="true"]::after {
+  background: var(--ui-on-primary-soft);
+}
+html:root body.ui-system .pasidea-notice:not([hidden]):not(:empty) {
+  min-width: 0;
+  padding: var(--pasidea-space-12) var(--pasidea-space-16);
+  border: 1px solid var(--ui-control-border);
+  border-radius: var(--pasidea-radius-md);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  overflow-wrap: anywhere;
+}
+html:root body.ui-system .pasidea-notice[data-error="true"]:not(:empty) {
+  border-color: var(--ui-danger);
+  color: var(--ui-danger);
+}
+html:root body.ui-system #bookmark-undo:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pasidea-space-8);
+}
+@media (forced-colors: active) {
+  html:root body.ui-system .pasidea-choice[aria-pressed="true"]::after {
+    forced-color-adjust: none;
+    background: ButtonText;
+  }
+}
+
+/* Press corners change without changing the button's hit area. */
+@layer pasidea-button-press {
+  body.ui-system :is(button, a.pasidea-btn, a.text-btn, label[role="button"]) {
+    border-radius: var(--pasidea-radius-md) !important;
+    transition:
+      border-radius var(--pasidea-duration-morph) var(--pasidea-ease-standard),
+      background-color var(--pasidea-duration-hover) var(--pasidea-ease-standard),
+      border-color var(--pasidea-duration-hover) var(--pasidea-ease-standard),
+      transform var(--pasidea-duration-release) var(--pasidea-ease-bounce-soft) !important;
+  }
+  body.ui-system :is(button, a.pasidea-btn, a.text-btn, label[role="button"]):is(:active,[data-pasidea-press]):not(:disabled,[aria-disabled="true"]) {
+    border-radius: var(--pasidea-radius-xl) !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body.ui-system :is(button, a.pasidea-btn, a.text-btn, label[role="button"]) {
+      transition: none !important;
+    }
+  }
+  :root.reduce-motion body.ui-system :is(button, a.pasidea-btn, a.text-btn, label[role="button"]) {
+    transition: none !important;
   }
 }

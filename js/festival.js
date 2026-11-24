@@ -1,19 +1,40 @@
-import {initFestivalHunt} from './festival-hunt.js?v=13.0.1';
-import {initUISystem} from './ui-system.js?v=13.0.1';
-import {festivalConfig} from './festival-config.js?v=13.0.1';
-import {eventWindow,japanDate,collectionNames,eggNames,readFestival,updateFestival,participate,drawCollection,challengeResult,saveChallenge,discoverEgg,validateFestival} from './festival-model.js?v=13.0.1';
-import {download} from './mini-common.js?v=13.0.1';
-const $=id=>document.getElementById(id);let state,running=false,started=0,frame=0,lastPhase='';
+import {initFestival14} from './festival14.js?v=14.0.0';
+import {initFestivalHunt} from './festival-hunt.js?v=14.0.0';
+import {initUISystem} from './ui-system.js?v=14.0.0';
+import {festivalConfig} from './festival-config.js?v=14.0.0';
+import {eventWindow,japanDate,collectionNames,eggNames,readFestival,updateFestival,participate,drawCollection,challengeResult,saveChallenge,discoverEgg,validateFestival} from './festival-model.js?v=14.0.0';
+import {download} from './mini-common.js?v=14.0.0';
+const $=id=>document.getElementById(id);
+const edition = festivalConfig.edition ?? 14;
+const archive = edition === 10;
+const currentFestival = festivalConfig.edition === 14;
+const festivalName = archive ? 'LifeTop v10.0 Festival' : 'LifeTop14 Festival';
+const memoriesName = archive ? 'v10 Festival Memories' : 'LifeTop14 Festival Memories';
+document.title = festivalName + ' | LifeTop';
+if (archive) {
+ const link = $('festival-other-edition');
+ link.href = 'festival.html';
+ link.textContent = 'LifeTop14 Festivalへ戻る';
+}
+function confirmImport() {
+ const dialog = $('festival-import-dialog');
+ dialog.returnValue = 'cancel';
+ return new Promise(resolve => {
+  dialog.addEventListener('close', () => resolve(dialog.returnValue === 'restore'), {once:true});
+  dialog.showModal();
+ });
+}
+let state,running=false,started=0,frame=0,lastPhase='';
 function status(message,error=false){$('festival-status').textContent=message;$('festival-status').dataset.error=error;}
 function windowState(){return eventWindow(festivalConfig);}
 function issuedDate(at){return japanDate(at).replaceAll('-','/');}
 function theme(){initUISystem();try{const config=JSON.parse(localStorage.getItem('lifetop_v1_0_data')||'{}');if(/^#[\da-f]{6}$/i.test(config.theme)){document.documentElement.style.setProperty('--p',config.theme);const rgb=config.theme.slice(1).match(/../g).map(x=>parseInt(x,16)).join(', ');document.documentElement.style.setProperty('--p-rgb',rgb);}if(config.reduceMotion)document.documentElement.classList.add('reduce-motion');}catch{}}
 function drawTicket(){if(!state.ticket)return;const canvas=$('festival-ticket'),g=canvas.getContext('2d'),ticket=state.ticket,style=getComputedStyle(document.body),accent=style.getPropertyValue('--ui-primary').trim()||'#72a9ca';
- g.fillStyle=style.getPropertyValue('--ui-surface').trim();g.fillRect(0,0,1200,660);g.fillStyle=accent;g.fillRect(0,0,14,660);g.strokeStyle=style.getPropertyValue('--ui-border').trim();g.lineWidth=2;g.strokeRect(40,40,1120,580);g.fillStyle=style.getPropertyValue('--ui-text').trim();g.textAlign='left';g.font='700 44px system-ui';g.fillText('LIFETOP v10.0 FESTIVAL',78,116);g.fillStyle=accent;g.font='700 28px system-ui';g.fillText('CELEBRATE VERSION 10!',78,171);g.fillStyle=style.getPropertyValue('--ui-text').trim();g.font='700 132px system-ui';g.fillText('10',78,332);
- let size=34;g.font=`600 ${size}px system-ui`;while(g.measureText(ticket.nickname||'LifeTop Guest').width>680&&size>18){size--;g.font=`600 ${size}px system-ui`;}g.fillText(ticket.nickname||'LifeTop Guest',280,296,680);g.font='22px system-ui';g.fillStyle=style.getPropertyValue('--ui-text-muted').trim();g.fillText('THANK YOU FOR CELEBRATING WITH US!',78,403);g.beginPath();g.setLineDash([8,8]);g.moveTo(78,447);g.lineTo(1120,447);g.stroke();g.setLineDash([]);g.font='26px system-ui';g.fillText('Issued: '+issuedDate(ticket.issuedAt),78,510);g.font='600 26px monospace';g.fillText('Ticket No: '+ticket.number,78,558);g.font='18px system-ui';g.fillText('LifeTop v10.0 · Digital commemorative ticket',660,558);
- $('festival-ticket-text').textContent=`LIFETOP v10.0 FESTIVAL / CELEBRATE VERSION 10! / THANK YOU FOR CELEBRATING WITH US! / Issued: ${issuedDate(ticket.issuedAt)} / Ticket No: ${ticket.number}`;
+ g.fillStyle=style.getPropertyValue('--ui-surface').trim();g.fillRect(0,0,1200,660);g.fillStyle=accent;g.fillRect(0,0,14,660);g.strokeStyle=style.getPropertyValue('--ui-border').trim();g.lineWidth=2;g.strokeRect(40,40,1120,580);g.fillStyle=style.getPropertyValue('--ui-text').trim();g.textAlign='left';g.font='700 44px system-ui';g.fillText(festivalName,78,116);g.fillStyle=accent;g.font='700 28px system-ui';g.fillText('CELEBRATE VERSION '+edition+'!',78,171);g.fillStyle=style.getPropertyValue('--ui-text').trim();g.font='700 132px system-ui';g.fillText(String(edition),78,332);
+ let size=34;g.font=`600 ${size}px system-ui`;while(g.measureText(ticket.nickname||'LifeTop Guest').width>680&&size>18){size--;g.font=`600 ${size}px system-ui`;}g.fillText(ticket.nickname||'LifeTop Guest',280,296,680);g.font='22px system-ui';g.fillStyle=style.getPropertyValue('--ui-text-muted').trim();g.fillText('THANK YOU FOR CELEBRATING WITH US!',78,403);g.beginPath();g.setLineDash([8,8]);g.moveTo(78,447);g.lineTo(1120,447);g.stroke();g.setLineDash([]);g.font='26px system-ui';g.fillText('Issued: '+issuedDate(ticket.issuedAt),78,510);g.font='600 26px monospace';g.fillText('Ticket No: '+ticket.number,78,558);g.font='18px system-ui';g.fillText('LifeTop '+edition+' · Digital commemorative ticket',660,558);
+ $('festival-ticket-text').textContent=`${festivalName} / CELEBRATE VERSION ${edition}! / THANK YOU FOR CELEBRATING WITH US! / Issued: ${issuedDate(ticket.issuedAt)} / Ticket No: ${ticket.number}`;
 }
-function render(){if(!state)return;const w=windowState(),active=w.phase==='active',memories=w.phase==='ended'||location.hash==='#memories';$('festival-title').textContent=memories?'v10 Festival Memories':'LifeTop v10.0 Festival';$('festival-activities').hidden=!active;$('festival-egg-hint').hidden=!active;$('festival-no-ticket').hidden=Boolean(state.ticket);$('festival-ticket-content').hidden=!state.ticket;
+function render(){if(!state)return;const w=windowState(),active=!archive&&w.phase==='active',memories=archive||w.phase==='ended'||location.hash==='#memories';$('festival-title').textContent=memories?memoriesName:festivalName;$('festival-activities').hidden=!active;$('festival-egg-hint').hidden=!active;$('festival-no-ticket').hidden=Boolean(state.ticket);$('festival-ticket-content').hidden=!state.ticket;
  $('festival-period').textContent=w.phase==='unconfigured'?'開催開始日時は未設定です。イベントはまだ始まっていません。':w.phase==='before'?'イベント開催前です。':w.phase==='ended'?'イベントは終了しました。獲得した記念品はこのページに残ります。':'開催中 · '+new Date(w.start).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'})+' 〜 '+new Date(w.end).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'})+'（日本時間）';
  const todayDraw=state.draws.find(d=>d.day===japanDate(Date.now()));$('festival-draw').disabled=!active||Boolean(todayDraw);$('festival-draw').textContent=todayDraw?'本日は獲得済み':'今日の1回を引く';if(todayDraw&&!$('festival-draw-result').textContent)$('festival-draw-result').textContent=collectionNames[todayDraw.item]+' を獲得しました。';$('festival-next-draw').textContent=todayDraw?'本日分は獲得済みです。次は日本時間0時から。':'本日の日付（日本時間）: '+japanDate(Date.now());$('festival-start').disabled=!active||running;$('festival-stop').disabled=!active||!running;
  const counts=Array.from({length:10},(_,i)=>state.draws.filter(d=>d.item===i).length);$('festival-completion').textContent=`${counts.filter(Boolean).length} / 10 · ${counts.filter(Boolean).length*10}%`;$('festival-collection').replaceChildren();collectionNames.forEach((name,i)=>{const li=document.createElement('li'),strong=document.createElement('strong'),small=document.createElement('small');li.dataset.owned=String(counts[i]>0);strong.textContent=String(i+1).padStart(2,'0')+' '+name;small.textContent=counts[i]?'獲得済み · '+counts[i]+'個':'未獲得';li.append(strong,small);$('festival-collection').append(li);});
@@ -31,22 +52,30 @@ $('festival-start').onclick=()=>{if(windowState().phase!=='active'||running)retu
 $('festival-stop').onclick=()=>{if(!running)return;const elapsed=performance.now()-started;running=false;cancelAnimationFrame(frame);const result=challengeResult(elapsed);$('festival-timer').textContent=result.elapsed;$('festival-game-result').textContent=`${result.label} · 10.00秒との差 ${result.difference}秒`;
  void action($('festival-stop'),async()=>{state=await updateFestival(s=>saveChallenge(s,festivalConfig,elapsed));status('記録を保存しました。');});};
 $('festival-nickname-form').onsubmit=e=>{e.preventDefault();const nickname=$('festival-nickname').value.trim();void action(e.target.querySelector('[type=submit]'),async()=>{if(nickname.length>40)throw Error('ニックネームは40文字までです。');state=await updateFestival(s=>{if(!s.ticket)throw Error('チケットがありません。');s.ticket.nickname=nickname;});status('チケットに反映しました。');});};
-$('festival-ticket-png').onclick=()=>action($('festival-ticket-png'),async()=>{if(!state?.ticket)throw Error('チケットがありません。');drawTicket();const blob=await new Promise((resolve,reject)=>$('festival-ticket').toBlob(b=>b?resolve(b):reject(Error('PNG出力に失敗しました。')),'image/png'));download(blob,'LifeTop-v10-Festival-'+state.ticket.number+'.png');status('チケットのPNG画像を保存しました。');});
-$('festival-export').onclick=()=>{if(state)download(JSON.stringify({format:'lifetop-festival',version:1,state},null,2),'lifetop-festival-memories.json','application/json');};
-$('festival-import').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>1024*1024)throw Error('記念品データは1MBまでです。');const data=JSON.parse(await file.text());if(data.format!=='lifetop-festival'||data.version!==1)throw Error('対応する記念品データではありません。');validateFestival(data.state);if(!confirm('記念品を追加して復元しますか？現在のチケットと同じ日付の獲得記録は維持します。'))return;state=await updateFestival(s=>{s.ticket ||= data.state.ticket;const days=new Set(s.draws.map(d=>d.day));for(const d of data.state.draws)if(!days.has(d.day)){s.draws.push(d);days.add(d.day);}for(const [id,at]of Object.entries(data.state.eggs))s.eggs[id] ||= at;if(data.state.best&&(!s.best||Math.abs(data.state.best.elapsedMs-10000)<Math.abs(s.best.elapsedMs-10000)))s.best=data.state.best;if(data.state.hunt){const current=s.hunt;s.hunt={bestMs:Math.min(current?.bestMs??Infinity,data.state.hunt.bestMs),plays:Math.max(current?.plays??0,data.state.hunt.plays),at:Math.max(current?.at??0,data.state.hunt.at)};}if(data.state.hideAndSeek){s.hideAndSeek??={found:{}};for(const [id,at] of Object.entries(data.state.hideAndSeek.found))s.hideAndSeek.found[id]??=at;}s.welcomeSeen ||= data.state.welcomeSeen;});render();status('記念品を復元しました。');}catch(error){status(error.message,true);}finally{e.target.value='';}};
+$('festival-ticket-png').onclick=()=>action($('festival-ticket-png'),async()=>{if(!state?.ticket)throw Error('チケットがありません。');drawTicket();const blob=await new Promise((resolve,reject)=>$('festival-ticket').toBlob(b=>b?resolve(b):reject(Error('PNG出力に失敗しました。')),'image/png'));download(blob,'LifeTop-'+edition+'-Festival-'+state.ticket.number+'.png');status('チケットのPNG画像を保存しました。');});
+$('festival-export').onclick=async()=>{try{const saved=await readFestival();download(JSON.stringify({format:'lifetop-festival',version:1,edition,state:saved},null,2),'lifetop-'+edition+'-festival-memories.json','application/json');}catch(error){status(error.message,true);}};
+$('festival-import-open').onclick=()=>$('festival-import').click();
+$('festival-import').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>1024*1024)throw Error('記念品データは1MBまでです。');const data=JSON.parse(await file.text());if(data.format!=='lifetop-festival'||data.version!==1||(data.edition??10)!==edition)throw Error('対応する記念品データではありません。');validateFestival(data.state);if(!await confirmImport())return;state=await updateFestival(s=>{s.ticket ||= data.state.ticket;const days=new Set(s.draws.map(d=>d.day));for(const d of data.state.draws)if(!days.has(d.day)){s.draws.push(d);days.add(d.day);}for(const [id,at]of Object.entries(data.state.eggs))s.eggs[id] ||= at;if(data.state.best&&(!s.best||Math.abs(data.state.best.elapsedMs-10000)<Math.abs(s.best.elapsedMs-10000)))s.best=data.state.best;if(data.state.hunt){const current=s.hunt;s.hunt={bestMs:Math.min(current?.bestMs??Infinity,data.state.hunt.bestMs),plays:Math.max(current?.plays??0,data.state.hunt.plays),at:Math.max(current?.at??0,data.state.hunt.at)};}if(data.state.hideAndSeek){s.hideAndSeek??={found:{}};for(const [id,at] of Object.entries(data.state.hideAndSeek.found))s.hideAndSeek.found[id]??=at;}s.welcomeSeen ||= data.state.welcomeSeen;if(data.state.festival14){const imported=data.state.festival14;const previous=s.festival14;s.festival14=previous?{points:Math.max(previous.points,imported.points),draws:[...new Map([...imported.draws,...previous.draws].map(draw=>[draw.at+'-'+draw.bonus,draw])).values()],found:[...new Set([...previous.found,...imported.found])],best:[previous.best,imported.best].filter(n=>n!==null).sort((a,b)=>Math.abs(a-1400)-Math.abs(b-1400))[0]??null}:imported;}});render();document.dispatchEvent(new Event('festival:restored'));status('記念品を復元しました。');}catch(error){status(error.message,true);}finally{e.target.value='';}};
 async function boot(){theme();try{state=await readFestival();if(windowState().phase==='active')state=await updateFestival(s=>participate(s,festivalConfig));render();}catch(e){status(e.message,true);document.querySelectorAll('main button,main input').forEach(b=>b.disabled=true);}}
 setInterval(()=>{try{const w=windowState();if(w.phase!==lastPhase){if(running&&w.phase!=='active'){running=false;cancelAnimationFrame(frame);$('festival-game-result').textContent='イベントは終了しました。';}render();}updateCountdown(w);if(state&&w.phase==='active')$('festival-draw').disabled=state.draws.some(d=>d.day===japanDate(Date.now()));}catch(e){status(e.message,true);}},1000);
 window.addEventListener('focus',async()=>{try{state=await readFestival();render();}catch(e){status(e.message,true);}});window.addEventListener('pagehide',()=>cancelAnimationFrame(frame));window.addEventListener('pageshow',()=>{if(running){cancelAnimationFrame(frame);animateTimer();}});void boot();
 
-document.addEventListener('keydown',e=>{if(e.code!=='Space'||e.repeat||e.target.closest('input,textarea,select,button,a,summary'))return;if(windowState().phase!=='active')return;e.preventDefault();$(running?'festival-stop':'festival-start').click();});
+document.addEventListener('keydown',e=>{if(currentFestival||e.code!=='Space'||e.repeat||e.target.closest('input,textarea,select,button,a,summary'))return;if(windowState().phase!=='active')return;e.preventDefault();$(running?'festival-stop':'festival-start').click();});
 
 // Small, keyboard-accessible secrets live inside the venue as well.
-for(const [selector,id,label] of [['.festival-heading','home','10'],['#memories-title','version','X'],['#collection-title','studio','1 + 0']]){
+if (!currentFestival) for(const [selector,id,label] of [['.festival-heading','home','10'],['#memories-title','version','X'],['#collection-title','studio','1 + 0']]){
  const button=document.createElement('button');button.type='button';button.className='festival-secret';button.textContent=label;button.setAttribute('aria-label',label+'の秘密');
  document.querySelector(selector).append(button);
  button.onclick=()=>{if(windowState().phase!=='active')return;void action(button,async()=>{const owned=Boolean(state.eggs[id]);state=await updateFestival(s=>discoverEgg(s,festivalConfig,id));status(owned?'発見済みのバッジです。':'✦ 10の秘密を発見！「'+eggNames[id]+'」バッジを獲得しました。');button.classList.remove('is-revealed');requestAnimationFrame(()=>button.classList.add('is-revealed'));});};
 }
 
-if(new URLSearchParams(location.search).has('embedded'))document.querySelector('.mini-header')?.remove();
+if (new URLSearchParams(location.search).has('embedded')) {
+ document.querySelector('.mini-header')?.remove();
+ const link = $('festival-other-edition');
+ const url = new URL(link.href);
+ url.searchParams.set('embedded','1');
+ link.href = url.href;
+}
 
-initFestivalHunt({config:festivalConfig,onSaved:next=>{state=next;render();}});
+if (currentFestival) initFestival14(festivalConfig);
+else initFestivalHunt({config:festivalConfig,onSaved:next=>{state=next;render();}});

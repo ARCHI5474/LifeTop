@@ -1,5 +1,5 @@
 /* ==========================================================================
-   PasideaDesignSystem 2.0 (Final) - Complete Tokens & Unified Components
+   Pasidea DesignSystem 3.0 — shared tokens and controls
    ========================================================================== */
 
 :root {
@@ -25,43 +25,70 @@
   --pasidea-surface-container: #e7ecf5;
   --pasidea-on-surface: #181c22;
   --pasidea-on-surface-variant: #44474f;
+  --pasidea-outline: #747780;
   --pasidea-outline-variant: #c4c6d0;
 
   /* --- Typography --- */
-  --pasidea-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  --pasidea-font-sans: "Inter", "Noto Sans JP", system-ui, sans-serif;
+  --pasidea-text-display-large: 3rem;
+  --pasidea-text-display: 2.25rem;
+  --pasidea-text-headline: 1.75rem;
+  --pasidea-text-body-large: 1.125rem;
+  --pasidea-text-label: 0.875rem;
   --pasidea-text-title: 1.375rem;    /* 22px */
   --pasidea-text-heading: 1.0625rem; /* 17px */
   --pasidea-text-body: 0.9375rem;    /* 15px */
   --pasidea-text-caption: 0.75rem;   /* 12px */
 
-  /* --- Radius (4段階 + 正円固定) --- */
+  /* Shape */
+  --pasidea-radius-none: 0;
+  --pasidea-radius-xs: 4px;
   --pasidea-radius-sm: 8px;
   --pasidea-radius-md: 16px;
   --pasidea-radius-lg: 24px;
   --pasidea-radius-xl: 32px;
+  --pasidea-radius-2xl: 48px;
   --pasidea-radius-full: 9999px;
 
-  /* --- Spacing (8pxグリッド) --- */
-  --pasidea-space-1: 8px;
-  --pasidea-space-2: 16px;
-  --pasidea-space-3: 24px;
-  --pasidea-space-4: 32px;
-  --pasidea-space-6: 48px;
+  /* Spacing primitives */
+  --pasidea-space-0: 0;
+  --pasidea-space-4: 4px;
+  --pasidea-space-8: 8px;
+  --pasidea-space-12: 12px;
+  --pasidea-space-16: 16px;
+  --pasidea-space-24: 24px;
+  --pasidea-space-32: 32px;
+  --pasidea-space-48: 48px;
+  --pasidea-space-64: 64px;
 
   /* --- Layout, Control Size & Z-Index --- */
   --pasidea-container-max: 960px;
-  --pasidea-control-height: 44px;
+  --pasidea-control-height: 48px;
+  --pasidea-dialog-max: 480px;
+  --pasidea-focus-width: 2px;
+  --pasidea-focus-offset: 2px;
+  --pasidea-duration-expand: 280ms;
+  --pasidea-duration-morph: 300ms;
   --pasidea-z-base: 1;
   --pasidea-z-sticky: 100;
+  --pasidea-z-navigation: 200;
+  --pasidea-z-popover: 500;
   --pasidea-z-modal: 1000;
   --pasidea-z-toast: 2000;
 
   /* --- Motion (60fps 軽量スプリング) --- */
-  --pasidea-spring: cubic-bezier(0.2, 0.9, 0.3, 1.1);
+  --pasidea-ease-bounce-soft: cubic-bezier(.2, .9, .3, 1.1);
+  --pasidea-spring: var(--pasidea-ease-bounce-soft);
+  --pasidea-ease-standard: cubic-bezier(.2, 0, 0, 1);
+  --pasidea-ease-enter: cubic-bezier(0, 0, .2, 1);
+  --pasidea-ease-exit: cubic-bezier(.4, 0, 1, 1);
+  --pasidea-ease-slide: cubic-bezier(.22, 1, .36, 1);
   --pasidea-ease-out: cubic-bezier(0.2, 0, 0, 1);
   --pasidea-duration-hover: 150ms;
   --pasidea-duration-press: 80ms;
   --pasidea-duration-release: 220ms;
+  --pasidea-duration-standard: 240ms;
+  --pasidea-duration-celebrate: 500ms;
 
   /* --- Gummy Sheen & Elevation --- */
   --pasidea-sheen: inset 0 1px 0 rgba(255, 255, 255, 0.28);
@@ -89,6 +116,7 @@
   --pasidea-surface-container: #232730;
   --pasidea-on-surface: #e2e6ee;
   --pasidea-on-surface-variant: #c4c6d0;
+  --pasidea-outline: #9296a0;
   --pasidea-outline-variant: #44474f;
   --pasidea-sheen: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
@@ -114,6 +142,7 @@
     --pasidea-surface-container: #232730;
     --pasidea-on-surface: #e2e6ee;
     --pasidea-on-surface-variant: #c4c6d0;
+    --pasidea-outline: #9296a0;
     --pasidea-outline-variant: #44474f;
     --pasidea-sheen: inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
@@ -159,12 +188,12 @@ body {
   width: 100%;
   max-width: var(--pasidea-container-max);
   margin: 0 auto;
-  padding: var(--pasidea-space-3);
+  padding: var(--pasidea-space-24);
 }
 
 @media (max-width: 600px) {
   .pasidea-page-container {
-    padding: var(--pasidea-space-2);
+    padding: var(--pasidea-space-16);
   }
 }
 
@@ -172,7 +201,7 @@ body {
 .pasidea-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-  gap: var(--pasidea-space-2);
+  gap: var(--pasidea-space-16);
 }
 
 /* 横並びアクションバー（ボタン群用） */
@@ -180,7 +209,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--pasidea-space-1);
+  gap: var(--pasidea-space-8);
 }
 
 /* タイポグラフィ統一クラス */
@@ -221,19 +250,15 @@ body {
     opacity var(--pasidea-duration-hover) var(--pasidea-ease-out);
 }
 
-@media (hover: hover) {
-  .pasidea-interactive:not(:disabled):not([aria-disabled="true"]):hover {
-    opacity: 0.9;
-  }
-}
 
 .pasidea-interactive:not(:disabled):not([aria-disabled="true"]):active {
-  transform: scale(0.96);
+  transform: none;
+  box-shadow: inset 0 1px 2px color-mix(in srgb, currentColor 24%, transparent);
   transition-duration: var(--pasidea-duration-press);
 }
 
 .pasidea-interactive:focus-visible {
-  outline: 2px solid var(--pasidea-primary);
+  outline: 2px solid var(--ui-primary, var(--pasidea-primary));
   outline-offset: 2px;
 }
 
@@ -293,24 +318,24 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--pasidea-space-1);
+  gap: var(--pasidea-space-8);
   height: var(--pasidea-control-height);
   min-height: var(--pasidea-control-height);
-  padding: 0 var(--pasidea-space-3);
+  padding: 0 var(--pasidea-space-24);
   border: none;
   border-radius: var(--pasidea-radius-lg);
   font-family: inherit;
   font-weight: 600;
   font-size: var(--pasidea-text-body);
   line-height: 1;
-  background-color: var(--pasidea-primary);
-  color: var(--pasidea-on-primary);
+  background-color: var(--ui-primary, var(--pasidea-primary));
+  color: var(--ui-on-primary, var(--pasidea-on-primary));
   box-shadow: var(--pasidea-sheen);
 }
 
 .pasidea-btn-secondary {
-  background-color: var(--pasidea-primary-container);
-  color: var(--pasidea-on-primary-container);
+  background-color: var(--ui-primary-soft, var(--pasidea-primary-container));
+  color: var(--ui-on-primary-soft, var(--pasidea-on-primary-container));
   box-shadow: none;
 }
 
@@ -323,7 +348,7 @@ body {
   width: 100%;
   height: var(--pasidea-control-height);
   min-height: var(--pasidea-control-height);
-  padding: 0 var(--pasidea-space-2);
+  padding: 0 var(--pasidea-space-16);
   border: 1px solid var(--pasidea-outline-variant);
   border-radius: var(--pasidea-radius-md);
   font-family: inherit;
@@ -334,7 +359,7 @@ body {
 }
 
 .pasidea-input:focus-visible {
-  outline: 2px solid var(--pasidea-primary);
+  outline: 2px solid var(--ui-primary, var(--pasidea-primary));
   outline-offset: 2px;
 }
 
@@ -343,7 +368,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px var(--pasidea-space-1);
+  padding: 4px var(--pasidea-space-8);
   border-radius: var(--pasidea-radius-sm);
   font-size: var(--pasidea-text-caption);
   font-weight: 600;
@@ -369,7 +394,7 @@ body {
 .pasidea-card {
   position: relative;
   z-index: var(--pasidea-z-base);
-  padding: var(--pasidea-space-3);
+  padding: var(--pasidea-space-24);
   border-radius: var(--pasidea-radius-lg);
   background-color: var(--pasidea-surface-container-low);
   color: var(--pasidea-on-surface);
@@ -391,7 +416,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--pasidea-space-2);
+  padding: var(--pasidea-space-16);
   background-color: rgba(17, 19, 24, 0.45);
   backdrop-filter: blur(4px);
 }
@@ -400,7 +425,7 @@ body {
   position: relative;
   width: 100%;
   max-width: 480px;
-  padding: var(--pasidea-space-3);
+  padding: var(--pasidea-space-24);
   border-radius: var(--pasidea-radius-xl);
   background-color: var(--pasidea-surface);
   color: var(--pasidea-on-surface);
@@ -410,14 +435,14 @@ body {
 /* コンテナ右上の閉じるボタン標準配置 */
 .pasidea-container-close {
   position: absolute;
-  top: var(--pasidea-space-2);
-  right: var(--pasidea-space-2);
+  top: var(--pasidea-space-16);
+  right: var(--pasidea-space-16);
 }
 
 @media (max-width: 600px) {
   .pasidea-card,
   .pasidea-modal {
-    padding: var(--pasidea-space-2);
+    padding: var(--pasidea-space-16);
   }
 }
 
@@ -452,7 +477,30 @@ body {
     --pasidea-surface-container: #232730;
     --pasidea-on-surface: #e2e6ee;
     --pasidea-on-surface-variant: #c4c6d0;
+    --pasidea-outline: #9296a0;
     --pasidea-outline-variant: #44474f;
     --pasidea-sheen: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
+
+:where(button, input, select, textarea) {
+  font: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --pasidea-duration-press: 0ms;
+    --pasidea-duration-hover: 0ms;
+    --pasidea-duration-release: 0ms;
+    --pasidea-duration-standard: 0ms;
+    --pasidea-duration-celebrate: 0ms;
+  }
+}
+
+:root.reduce-motion {
+  --pasidea-duration-press: 0ms;
+  --pasidea-duration-hover: 0ms;
+  --pasidea-duration-release: 0ms;
+  --pasidea-duration-standard: 0ms;
+  --pasidea-duration-celebrate: 0ms;
+}

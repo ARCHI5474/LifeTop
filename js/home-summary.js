@@ -1,5 +1,5 @@
-import {icon} from './canvas-ui.js?v=13.0.1';
-import {openPagePopup} from './page-popup.js?v=13.0.1';
+import {icon} from './canvas-ui.js?v=14.0.0';
+import {openPagePopup} from './page-popup.js?v=14.0.0';
 export function initHomeSummary() {
     const row = document.querySelector('.weather-summary-row');
     if (!row || document.getElementById('home-messages-card')) return;

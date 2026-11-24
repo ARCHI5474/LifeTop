@@ -1,4 +1,4 @@
-import {applyPasidea} from './pasidea.js?v=13.0.1';
+import {applyPasidea} from './pasidea.js?v=14.0.0';
 
 export function openUIDialog(dialog, {onRequestClose = () => true} = {}) {
     applyPasidea(dialog);
@@ -44,4 +44,52 @@ export function openUIDialog(dialog, {onRequestClose = () => true} = {}) {
     dialog.showModal();
     dialog.querySelector('.cc-form-fields input:not([type=checkbox]), .cc-form-fields textarea, .cc-form-fields select')?.focus();
     return {close: requestClose};
+}
+
+let decisionSequence = 0;
+
+/** Present a confirmation or a single-field choice with the shared dialog lifecycle. */
+export function requestDecision(message, {title = '確認', acceptLabel = '続ける', variant = 'primary', field, choices} = {}) {
+    return new Promise(resolve => {
+        const id = 'ui-decision-' + ++decisionSequence;
+        const dialog = document.createElement('dialog');
+        dialog.className = 'cc-dialog ui-scope ui-decision';
+        dialog.setAttribute('aria-labelledby', id);
+        dialog.setAttribute('aria-describedby', id + '-message');
+        dialog.innerHTML = '<form><header class="pasidea-popup-header"><h2></h2></header><div class="ui-decision-body"><p></p><div class="mini-tools"><button type="button" class="text-btn" data-cancel autofocus>キャンセル</button><button type="submit" class="primary-btn"></button></div></div></form>';
+        const heading = dialog.querySelector('h2');
+        const description = dialog.querySelector('p');
+        heading.id = id;
+        heading.textContent = title;
+        description.id = id + '-message';
+        description.textContent = message;
+        const accept = dialog.querySelector('[type=submit]');
+        accept.className = variant === 'danger' ? 'danger-btn' : 'primary-btn';
+        accept.textContent = acceptLabel;
+        let input;
+        if (field || choices) {
+            const label = document.createElement('label');
+            label.textContent = choices ? '移動先' : field.label;
+            input = document.createElement(choices ? 'select' : 'input');
+            input.required = true;
+            if (choices) {
+                for (const choice of choices) input.add(new Option(choice.label, choice.value));
+            } else {
+                input.value = field.value;
+                input.maxLength = field.maxLength;
+            }
+            label.append(input);
+            description.after(label);
+        }
+        let result = null;
+        document.body.append(dialog);
+        const lifecycle = openUIDialog(dialog);
+        dialog.addEventListener('close', () => resolve(result), {once:true});
+        dialog.querySelector('form').addEventListener('submit', event => {
+            event.preventDefault();
+            result = input ? input.value : true;
+            void lifecycle.close();
+        });
+        input?.focus();
+    });
 }

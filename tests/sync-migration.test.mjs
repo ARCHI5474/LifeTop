@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import {DEFAULT_SETTINGS,DEFAULT_CONTENT} from '../js/config.js?v=13.0.1';
-import {mergeInitialData} from '../js/sync-migration.js?v=13.0.1';
-import {createSyncEngine,canonicalJson,SYNC_META_KEY,SYNC_RECOVERY_KEY} from '../js/sync-engine.js?v=13.0.1';
+import {DEFAULT_SETTINGS,DEFAULT_CONTENT} from '../js/config.js?v=14.0.0';
+import {mergeInitialData} from '../js/sync-migration.js?v=14.0.0';
+import {createSyncEngine,canonicalJson,SYNC_META_KEY,SYNC_RECOVERY_KEY} from '../js/sync-engine.js?v=14.0.0';
 
 const defaults=()=>structuredClone({...DEFAULT_SETTINGS,...DEFAULT_CONTENT});
 const local=defaults(), cloud=defaults();

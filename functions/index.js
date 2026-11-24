@@ -2,8 +2,8 @@ import {initializeApp} from 'firebase-admin/app';
 import {getFirestore,Timestamp} from 'firebase-admin/firestore';
 import {onCall,HttpsError} from 'firebase-functions/v2/https';
 import {onSchedule} from 'firebase-functions/v2/scheduler';
-import {createMessagesService,DAY} from './messages-service.js?v=13.0.1';
-import {createLiveService} from './live-service.js?v=13.0.1';
+import {createMessagesService,DAY} from './messages-service.js?v=14.0.0';
+import {createLiveService} from './live-service.js?v=14.0.0';
 initializeApp();const db=getFirestore(),service=createMessagesService(db,Timestamp);
 const liveService=createLiveService(db);
 // Only the Firebase local emulator skips App Check; deployed functions always enforce it.

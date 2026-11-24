@@ -3,3 +3,8 @@
 body.live-home-enabled{isolation:isolate}
 html:root body.ui-system.live-home-enabled #bg-overlay::after{background:color-mix(in srgb,var(--ui-bg) 28%,transparent)!important}
 html[data-theme=light] body.ui-system.live-home-enabled #bg-overlay::after{background:color-mix(in srgb,var(--ui-bg) 58%,transparent)!important}
+
+html[data-theme=light] body.ui-system.live-home-enabled #bg-overlay::after {
+  background: color-mix(in srgb, var(--pasidea-surface) 75%, transparent) !important;
+}
+.quick-live-fields { grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }

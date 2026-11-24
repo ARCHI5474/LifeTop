@@ -1,8 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {huntSpots} from '../js/festival-hunt-spots.js?v=13.0.1';
-import {findHiddenTen} from '../js/festival-hunt-model.js?v=13.0.1';
-import {emptyFestival,validateFestival,DAY_MS} from '../js/festival-model.js?v=13.0.1';
+import {huntSpots} from '../js/festival-hunt-spots.js?v=14.0.0';
+import {findHiddenTen} from '../js/festival-hunt-model.js?v=14.0.0';
+import {emptyFestival,validateFestival,DAY_MS} from '../js/festival-model.js?v=14.0.0';
 const start=Date.parse('2026-11-07T14:11:54+09:00'),config={startAt:'2026-11-07T14:11:54+09:00',durationDays:10};
 test('ten unique hiding spots; discoveries are independent and idempotent',()=>{
  assert.equal(huntSpots.length,10);assert.equal(new Set(huntSpots.map(s=>s.id)).size,10);

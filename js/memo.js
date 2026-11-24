@@ -1,6 +1,6 @@
 /* LifeTop - Rich Text Memo with formatting toolbar, auto-save, copy & export */
-import { userConfig } from "./config.js?v=13.0.1";
-import { save } from "./storage.js?v=13.0.1";
+import { userConfig } from "./config.js?v=14.0.0";
+import { save } from "./storage.js?v=14.0.0";
 
 const ALLOWED_TAGS = new Set([
     'B', 'STRONG', 'I', 'EM', 'U', 'S', 'STRIKE', 'DEL', 'MARK',

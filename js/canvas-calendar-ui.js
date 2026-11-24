@@ -1,6 +1,6 @@
-import {escapeHTML as esc} from './mini-model.js?v=13.0.1';
-import {eventOccurrences} from './canvas-model.js?v=13.0.1';
-import {icon,uiButton} from './canvas-ui.js?v=13.0.1';
+import {escapeHTML as esc} from './mini-model.js?v=14.0.0';
+import {eventOccurrences} from './canvas-model.js?v=14.0.0';
+import {icon,uiButton} from './canvas-ui.js?v=14.0.0';
 const weekdays=['日','月','火','水','木','金','土'];
 const dayKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const time=e=>e.allDay?'終日':new Date(e.start).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});

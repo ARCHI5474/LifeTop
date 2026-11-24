@@ -1,4 +1,5 @@
-import { createMaterialIcon } from './icons.js?v=13.0.1';
+import {requestDecision} from './ui-dialog.js?v=14.0.0';
+import { createMaterialIcon } from './icons.js?v=14.0.0';
 /* Local two-player board games and a solo deduction game. */
 export const neighbors = (i, size=9) => [i%size ? i-1:-1, i%size<size-1?i+1:-1, i>=size?i-size:-1, i<size*(size-1)?i+size:-1].filter(n=>n>=0);
 function group(board,i) {
@@ -97,7 +98,7 @@ function renderShogi(note=''){
     if (focusedHand) { const button = el('shogi-hands').querySelector('[data-hand="' + focusedHand + '"]'); (button && !button.disabled ? button : el('shogi-board')).focus({ preventScroll: true }); }
     el('shogi-status').textContent=note||`${name(shogi.turn)}の番${inCheck(shogi.board,shogi.turn)?'（王手）':''} — ${shogi.drop?'打つ場所を選択':'駒と移動先を選択'}`;
 }
-function playShogi(to){
+async function playShogi(to){
     if(shogi.over)return;
     const {board,turn,selected,drop}=shogi;
     if(board[to]?.c===turn){shogi.selected=to;shogi.drop=null;renderShogi();return;}
@@ -105,7 +106,8 @@ function playShogi(to){
     if(drop){if(!legalDrop(board,drop,turn,to,shogi.hands)){el('shogi-status').textContent='ここには打てません。二歩・行き所のない駒・打ち歩詰め・王手を確認してください。';return;}next=[...board];next[to]={t:drop,c:turn};}
     else {if(selected===null||!shogiTargets(board,selected).includes(to)||board[to]?.t==='K'||inCheck(moved(board,selected,to),turn))return;
         const t=board[selected].t;const zone=i=>turn===1?Math.floor(i/9)<3:Math.floor(i/9)>5;
-        const promote=!t.startsWith('+')&&!['K','G'].includes(t)&&(deadRank(t,turn,to)||((zone(selected)||zone(to))&&window.confirm('この駒を成りますか？')));
+        const promote=!t.startsWith('+')&&!['K','G'].includes(t)&&(deadRank(t,turn,to)||((zone(selected)||zone(to))&&await requestDecision('この駒を成りますか？',{title:'駒を成る',acceptLabel:'成る'})));
+        if(shogi.board!==board||shogi.turn!==turn||shogi.selected!==selected)return;
         next=moved(board,selected,to,promote);
     }
     shogi.history.push(JSON.stringify({...shogi,history:[]}));

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {emptyCanvas} from '../js/canvas-model.js?v=13.0.1';
-import {selectedCanvas,parseCanvasCloud} from '../js/canvas-sync.js?v=13.0.1';
+import {emptyCanvas} from '../js/canvas-model.js?v=14.0.0';
+import {selectedCanvas,parseCanvasCloud} from '../js/canvas-sync.js?v=14.0.0';
 test('sync off does not produce an upload; selected groups exclude unrelated data',()=>{const s=emptyCanvas();assert.throws(()=>selectedCanvas(s));s.sync={mode:'selected',groups:['calendar']};s.events=[{id:'e',title:'test',start:'2026-11-06T10:00:00Z',end:'2026-11-06T11:00:00Z',repeat:'none'}];const payload=selectedCanvas(s);assert.deepEqual(Object.keys(payload.data),['events']);assert.deepEqual(parseCanvasCloud(JSON.stringify(payload)),payload);s.sync.mode='all';assert.equal(Object.keys(selectedCanvas(s).data).length,8);assert.throws(()=>parseCanvasCloud(JSON.stringify({...payload,data:{...payload.data,files:[]}})));assert.throws(()=>parseCanvasCloud(JSON.stringify({...payload,selection:['unknown']})));});

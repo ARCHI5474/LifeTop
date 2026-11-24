@@ -2,7 +2,7 @@ const assert=require('node:assert/strict');
 const {withApp}=require('./helpers/browser.cjs');
 withApp(async(page)=>{
  for(const theme of ['light','dark']){
-  await page.evaluate(async mode=>(await import('./js/ui-system.js?v=13.0.1')).applyUISystemPreferences({colorMode:mode}),theme);
+  await page.evaluate(async mode=>(await import('./js/ui-system.js?v=14.0.0')).applyUISystemPreferences({colorMode:mode}),theme);
   for(const width of [1440,768,375,320]){
    await page.setViewportSize({width,height:900});
    await require('./helpers/browser.cjs').quickTile(page,'studio');
@@ -15,12 +15,12 @@ withApp(async(page)=>{
    assert.equal(await dialog.evaluate(n=>getComputedStyle(n).borderRadius),'0px');
    const close=dialog.locator(':scope > header .pasidea-close-btn');
    assert.equal(await close.isVisible(),true);
-   const cb=await close.boundingBox();assert.equal(cb.width,44);assert.equal(cb.height,44);
+   const cb=await close.boundingBox();assert.equal(cb.width,48);assert.equal(cb.height,48);
    assert.ok(cb.x>=box.x&&cb.x+cb.width<=box.x+box.width,'close stays inside dialog');
-   assert.match(await page.frameLocator('#mini-app-dialog iframe').locator('.mini-app-card strong').first().evaluate(n=>getComputedStyle(n).fontFamily),/Segoe UI/);
+   assert.match(await page.frameLocator('#mini-app-dialog iframe').locator('.mini-app-card strong').first().evaluate(n=>getComputedStyle(n).fontFamily),/Inter/);
    const cards=page.frameLocator('#mini-app-dialog iframe').locator('.mini-app-card');
-   assert.equal(await cards.first().evaluate(n=>getComputedStyle(n).borderRadius),'12px');
-   assert.equal(await cards.first().locator('strong').evaluate(n=>getComputedStyle(n).fontSize),'16px');
+   assert.equal(await cards.first().evaluate(n=>getComputedStyle(n).borderRadius),'16px');
+   assert.equal(await cards.first().locator('strong').evaluate(n=>getComputedStyle(n).fontSize),'17px');
    assert.equal(await page.frameLocator('#mini-app-dialog iframe').locator('html').evaluate(n=>n.scrollWidth<=innerWidth+1),true,'embedded content overflow');
    if(width===320)await page.screenshot({path:`test-artifacts/pasidea-popup-${theme}-320.png`});
    await close.click();await dialog.waitFor({state:'detached'});

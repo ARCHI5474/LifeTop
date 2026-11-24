@@ -10,8 +10,8 @@ globalThis.document = {
 };
 let stored = null;
 globalThis.localStorage = {getItem:() => stored, setItem:(_key,value) => {stored=value;}};
-const {userConfig, mergeUserConfig} = await import('../js/config.js?v=13.0.1');
-const {addTodo} = await import('../js/todo.js?v=13.0.1');
+const {userConfig, mergeUserConfig} = await import('../js/config.js?v=14.0.0');
+const {addTodo} = await import('../js/todo.js?v=14.0.0');
 userConfig.todoList = [
     {id:Number.MAX_SAFE_INTEGER,text:'旧データの大きいID',completed:false},
     {id:Number.MAX_SAFE_INTEGER-1,text:'もう一つの大きいID',completed:false},

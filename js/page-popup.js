@@ -1,4 +1,4 @@
-import {openUIDialog} from './ui-dialog.js?v=13.0.1';
+import {openUIDialog} from './ui-dialog.js?v=14.0.0';
 
 // Internal destinations stay in the home context and share one dialog shell.
 export function openPagePopup(path, title) {
