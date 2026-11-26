@@ -10,6 +10,8 @@ const { withApp } = require('./helpers/browser.cjs');
         assert.equal(await dialog.isVisible(), true);
         assert.match(await dialog.innerText(), new RegExp(text));
         assert.match(await banner.innerText(), new RegExp(text));
+        assert.doesNotMatch(await dialog.innerText(), /現在、LifeTopは閉鎖しており/);
+        assert.doesNotMatch(await banner.innerText(), /現在、LifeTopは閉鎖しており/);
 
         await page.locator('#closure-notice-close').click();
         assert.equal(await dialog.isVisible(), false);
