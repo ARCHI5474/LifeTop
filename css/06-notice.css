@@ -34,3 +34,50 @@
     color: var(--text-color);
     line-height: 1.5;
 }
+
+.closure-notice {
+    box-sizing: border-box;
+    width: min(1240px, calc(100% - 64px));
+    margin: 0 auto 16px;
+    padding: 20px 24px;
+    border: 1px solid rgba(var(--p-rgb), 0.34);
+    border-inline-start: 4px solid var(--p);
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(var(--p-rgb), 0.18), rgba(var(--p-rgb), 0.06));
+    color: var(--text-color);
+    box-shadow: 0 8px 20px rgba(4, 12, 25, 0.14), var(--inner-highlight);
+}
+
+.closure-notice h1 {
+    margin: 0 0 10px;
+    font-size: clamp(1.05rem, 2vw, 1.3rem);
+    line-height: 1.5;
+}
+
+.closure-notice p,
+#closure-notice-dialog-copy p {
+    margin: 0 0 10px;
+    line-height: 1.8;
+}
+
+.closure-notice .closure-notice-signature,
+#closure-notice-dialog-copy .closure-notice-signature {
+    margin: 14px 0 0;
+    font-weight: 700;
+}
+
+body #closure-notice-dialog #closure-notice-status[hidden] {
+    display: none;
+}
+
+body #closure-notice-dialog #closure-notice-status:not([hidden]) {
+    color: var(--text-color);
+    line-height: 1.7;
+}
+
+@media (max-width: 760px) {
+    .closure-notice {
+        width: calc(100% - 32px);
+        padding: 16px 18px;
+    }
+}

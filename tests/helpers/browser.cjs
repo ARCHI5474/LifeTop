@@ -26,7 +26,7 @@ exports.chromium = {
     },
 };
 
-exports.withApp = async function withApp(test) {
+exports.withApp = async function withApp(test, { dismissClosureNotice = true } = {}) {
     const assert = require('node:assert/strict');
     const fs = require('node:fs/promises');
     const path = require('node:path');
@@ -50,6 +50,9 @@ exports.withApp = async function withApp(test) {
             }
         });
         const page = await context.newPage();
+        if (dismissClosureNotice) {
+            await context.addInitScript(() => localStorage.setItem('lifetop_closure_notice_dismissed', 'true'));
+        }
         await page.goto('http://localhost/');
         await page.locator('#loading-screen').waitFor({ state: 'detached' });
         await page.locator('#cc-settings-storage .cc-settings-layout').waitFor({ state: 'attached' });
