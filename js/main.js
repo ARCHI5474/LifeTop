@@ -12,6 +12,7 @@ import {initVersionEggs} from './version-eggs.js?v=14.0.0';
 import {openPagePopup} from './page-popup.js?v=14.0.0';
 import { initMotion } from './motion.js?v=14.0.0';
 import { initLoading } from './loading.js?v=14.0.0';
+import { initClosureNotice } from './closure-notice.js?v=14.0.0';
 import { applyAdvancedSettings, setAdvancedSetting, resetAdvancedSettings } from './advanced.js?v=14.0.0';
 import { initProfile, renderProfile } from './profile.js?v=14.0.0';
 import { initExtraGames } from './extra-games.js?v=14.0.0';
@@ -288,6 +289,7 @@ window.addEventListener('DOMContentLoaded', () => {
     updateGreeting();
 
     finishLoading();
+    initClosureNotice();
 
 
 

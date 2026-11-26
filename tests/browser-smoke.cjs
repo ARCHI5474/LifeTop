@@ -20,6 +20,8 @@ const { chromium } = require('./helpers/browser.cjs');
         });
         await page.goto('http://lifetop.test/', { waitUntil: 'domcontentloaded' });
         await page.locator('#loading-screen').waitFor({ state: 'detached' });
+        await page.locator('#closure-notice-close').click();
+        assert.match(await page.locator('#closure-notice').innerText(), /2027年1月をもってサービスの提供を終了/);
         const bookmarkMotion = await page.evaluate(() => {
             const tabs = [...document.querySelectorAll('.bookmark-tab-item')];
             const original = tabs[0];
@@ -43,6 +45,7 @@ const { chromium } = require('./helpers/browser.cjs');
         await page.locator('[data-tab="memo"]').click();
         await page.locator('#memo-editor').fill('保存確認メモ');
         await page.reload({ waitUntil: 'domcontentloaded' });
+        await page.locator('#closure-notice-close').click();
         await page.locator('[data-tab="memo"]').click();
         assert.equal(await page.locator('#memo-editor').innerText(), '保存確認メモ');
         await page.locator('[data-tab="todo"]').click();
